@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>站点详情</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <!--标准mui.css-->
+    <link rel="stylesheet" href="../components/mui/css/mui.min.css">
+    <link rel="stylesheet" href="../css/my.css" />
+    <style>
+
+        html,
+        body {
+            height: 100%;
+            overflow: hidden;
+        }
+        .mui-content{
+            padding: 0px;
+            background-color: #fff;
+        }
+        table{
+            width: 100%;
+            margin: 8px 0px;
+        }
+        th,td{
+            text-align: left;
+            height: 40px;
+            border-bottom: #eee 1px solid;
+            font-size: 14px;
+        }
+        .dev-status{
+            margin-top: 4px;
+        }
+        tbody tr:nth-child(odd) {background: rgba(246, 246, 246, 0.6)}
+        tbody tr:nth-child(even) {background: #FFF}
+        td, th{
+            padding-left: 16px;
+        }
+    </style>
+    <script type="text/javascript" src="../components/libs/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="../components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="../js/app/app.js"></script>
+    <script type="text/javascript" src="../js/controller/device.js"></script>
+</head>
+
+<body class="mui-android mui-android-5 mui-android-5-1 mui-android-5-1-1" ng-app="myApp">
+<header class="mui-bar mui-bar-transparent">
+    <a class="mui-icon mui-action-back mui-icon-left-nav mui-pull-left text-white"></a>
+    <h1 class="mui-title" id="header_title"></h1>
+</header>
+<div style="padding: 10px 0px;position: fixed;top: 44px;left: 0;">
+    <div id="segmentedControl" class="mui-segmented-control">
+        <a class="mui-control-item mui-active" href="#analog">模拟量</a>
+        <a class="mui-control-item" href="#digital">状态量</a>
+    </div>
+</div>
+<div class="mui-content" ng-controller="DeviceDetailCtrl" ng-cloak>
+    <div id="analog" class="mui-control-content height-wrap-parent mui-active">
+        <table ng-if="has_data">
+            <thead>
+            <tr>
+                <th style="width: 50%;">名称</th>
+                <th style="width: 25%;">实际值</th>
+                <th style="width: 25%;">单位</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="item in analogValues">
+                <td>{{item.name}}</td>
+                <td>{{item.data}}</td>
+                <td>{{item.unit}}</td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="page-alert-wrapper" ng-if="!has_data">
+            <div class="page-alert">
+                <i class="alert-icon nodata"></i>
+                <div class="alert-text info">暂无数据</div>
+            </div>
+        </div>
+    </div>
+    <div id="digital" class="mui-control-content height-wrap-parent" data-init="false">
+        <table ng-if="has_data">
+            <thead>
+            <tr>
+                <th>名称</th>
+                <th>状态</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="item in digitalValues">
+                <td>{{item.name}}</td>
+                <td><i class="dev-status" ng-class="{'green': item.data < 1, 'red': item.data > 0}"></i></td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="page-alert-wrapper" ng-if="!has_data">
+            <div class="page-alert">
+                <i class="alert-icon nodata"></i>
+                <div class="alert-text info">暂无数据</div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../components/mui/js/mui.min.js"></script>
+<script src="../components/fastclick-master/lib/fastclick.js"></script>
+<script src="../js/my/notify.js"></script>
+<script>
+    function setTitle() {
+        $("#header_title").html(GetQueryString('device'));
+    }
+    setTitle();
+</script>
+</body>
+
+</html>

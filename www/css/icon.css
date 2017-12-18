@@ -1,0 +1,116 @@
+
+.icon{
+    display: inline-block;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: 50%;
+}
+.icon-xs{
+    height: 14px;
+    width: 14px;
+}
+.icon-ms{
+    height: 24px;
+    width: 24px;
+}
+.icon-md{
+    height: 42px;
+    width: 42px;
+}
+.icon-32{
+    height: 32px;
+    width: 32px;
+}
+.icon-devices{
+    background-image: url("../img/dark/64X64/device.png");
+}
+.icon-events{
+    background-image: url("../img/dark/64X64/ring.png");
+}
+.icon-docs{
+    background-image: url("../img/dark/64X64/docs.png");
+}
+.icon-more{
+    background-image: url("../img/light/64X64/more.png");
+}
+.icon-scan{
+    background-image: url("../img/dark/64X64/scan.png");
+}
+.white.icon-scan{
+    background-image: url("../img/light/64X64/scan.png");
+}
+.icon-add{
+    background-image: url("../img/dark/64X64/add.png");
+}
+.white.icon-add{
+    background-image: url("../img/light/64X64/add.png");
+}
+.icon-txt{
+    background-image: url("../img/dark/64X64/txt.png");
+}
+.icon-doc{
+    background-image: url("../img/dark/64X64/doc.png");
+}
+.icon-pdf{
+    background-image: url("../img/dark/64X64/pdf.png");
+}
+.icon-rar{
+    background-image: url("../img/dark/64X64/rar.png");
+}
+.icon-unknown-file{
+    background-image: url("../img/dark/64X64/unknown-file.png");
+}
+.icon-dwg{
+    background-image: url("../img/dark/64X64/dwg.png");
+}
+.icon-csv{
+    background-image: url("../img/dark/64X64/csv.png");
+}
+.icon-download{
+    background-image: url("../img/dark/64X64/down_load.png");
+}
+.icon-kanban{
+    background-image: url("../img/dark/64X64/kanban.png");
+}
+.icon-monitor-list{
+    background-image: url("../img/icon/monitor-list.png");
+}
+.icon-monitor{
+    background-image: url("../img/dark/64X64/monitor.png");
+}
+.icon-clock{
+    background-image: url("../img/dark/64X64/clock.png");
+}
+.icon-device-grey{
+    background-image: url("../img/icon/device-grey.png");
+}
+.icon-event-red{
+    background-image: url("../img/icon/event-red.png");
+}
+.icon-site-blue{
+    background-image: url("../img/icon/site-blue.png");
+}
+.icon-phone{
+    background-image: url("../img/icon/phone.png");
+}
+.icon-location{
+    background-image: url("../img/icon/location.png");
+}
+.icon-device-analog{
+    background-image: url("../img/icon/icon-device-analog.png");
+}
+.icon-device-status{
+    background-image: url("../img/icon/icon-device-status.png");
+}
+.icon-task-history{
+    background-image: url("../img/icon/task-history.png");
+}
+.icon-device-info{
+    background-image: url("../img/icon/icon-device-info.png");
+}
+.icon-device-install{
+    background-image: url("../img/icon/icon-device-install.png");
+}
+.icon-card-event{
+    background-image: url("../img/icon/icon-card-event.png");
+}

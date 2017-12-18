@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        #myElement {
+            background: silver;
+            height: 100px;
+            text-align: center;
+            font: 30px/300px Helvetica, Arial, sans-serif;
+        }
+    </style>
+</head>
+<body>
+<!--<div style="position:relative;width: 100%;height: 250px;overflow: hidden;border: 1px dashed #ff0000;">-->
+    <!--<div id="targetObj" style="position:relative;transform-origin:center" >-->
+        <!--<img src="http://demo.somethingwhat.com/images/flower1.jpg" />-->
+    <!--</div>-->
+<!--</div>-->
+<div id="myElement"></div>
+<div id="output" style="font-size: 12px;"></div>
+<script type="text/javascript" src="../components/libs/jquery-2.1.4.js"></script>
+<!--<script type="text/javascript" src="./components/touchjs/js/touch.min.js"></script>-->
+<!--<script type="text/javascript" src="./components/touchjs/js/cat.touchjs.js"></script>-->
+<script type="text/javascript" src="./hammer.js-master/hammer.js"></script>
+<script>
+    var myElement = document.getElementById('myElement');
+    var mc = new Hammer.Manager(myElement);
+    // create a pinch and rotate recognizer
+    // these require 2 pointers
+    var pinch = new Hammer.Pinch();
+    var rotate = new Hammer.Rotate();
+    // we want to detect both the same time
+    pinch.recognizeWith(rotate);
+    // add to the Manager
+    mc.add([pinch, rotate]);
+
+    var $target = $(myElement);
+    var currentScale = 1;
+    var lastScale = 1;
+    mc.on("pinchmove", function(ev) {
+        $target.css('transform', 'scale(' + lastScale*ev.scale + ')');
+        currentScale = lastScale * ev.scale;
+    });
+    mc.on('pinchend', function (ev) {
+        lastScale = currentScale;
+        if (currentScale < 1){
+            $target.css('transform', 'scale(1)');
+            lastScale = 1;
+        }
+    });
+</script>
+</body>
+</html>

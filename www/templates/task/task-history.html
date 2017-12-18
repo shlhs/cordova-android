@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>所有任务</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <link rel="stylesheet" href="../../components/mui/css/mui.min.css">
+    <link rel="stylesheet" href="../../components/mui/css/icons-extra.css">
+    <link rel="stylesheet" href="../../css/my.css">
+    <link rel="stylesheet" href="../../css/setting.css">
+    <style>
+        html,
+        body {
+            background-color: #efeff4;
+        }
+        /*p {*/
+        /*text-indent: 22px;*/
+        /*}*/
+        .site-value .mui-icon {
+            font-size: 14px;
+            color: #007aff;
+            margin-left: -15px;
+            padding-right: 10px;
+        }
+        input {
+            color: #000;
+        }
+        .mui-grid-view.mui-grid-9 .mui-media .mui-icon {
+            font-size: 1.6em;
+            position: relative;
+            padding: 0;
+            margin: 0;
+        }
+        .mui-grid-view.mui-grid-9 {
+            border: 0;
+        }
+        .mui-grid-view.mui-grid-9 .mui-media {
+            border: 0;
+        }
+        .mui-table-view.mui-grid-view .mui-table-view-cell .mui-media-body {
+            font-size: 12px;
+        }
+        .red{
+            color: red !important;
+        }
+        .mui-grid-view.mui-grid-9 {
+            background-color: transparent;
+            border-radius: 0;
+        }
+        .site-list .mui-card:nth-child(odd){
+            background: -webkit-gradient(linear, 0 0, 0 bottom, from(#CFD9DF), to(#E2EBF0));
+        }
+        .site-list .mui-card:nth-child(even){
+            /*background: -webkit-gradient(linear, 0 0, 0 bottom, from(#FDFBFB), to(#EBEDEE));*/
+            /*background: -webkit-gradient(linear, 0 0, 0 bottom, from(#FDFCFB), to(#E2D1C3));*/
+            background: -webkit-gradient(linear, 0 0, 0 bottom, from(#CFD9DF), to(#E2EBF0));
+        }
+        .mui-table-view-cell.mui-media{
+            border-radius: 0 !important;
+        }
+        .mui-content{
+            padding-left: 0;
+            top:0px;
+        }
+        .text-red{
+            color: red !important;
+        }
+        .text-grey{
+            color: #6d6d6d !important;
+        }
+        header.bg-header{
+            background-color: #2856b6;
+        }
+        .bg-header h1{
+            color: #fff;
+        }
+        .bg-header .mui-action-back{
+            color: #fff;
+        }
+        .info-list span{
+            display: inline-block;
+        }
+        .task-title{
+            font-weight: normal;
+            line-height: 22px;
+            position: relative;
+            padding-right: 80px;
+            margin: 0;
+        }
+        .info-list{
+            margin-bottom: 0;
+        }
+        .task-title .time{
+            position: absolute;
+            right: 0;
+            top:0;
+        }
+        .info-list .status{
+            float: right;
+            color: #007aff;
+            font-weight: 700;
+        }
+        .cell-body{
+            padding: 11px 16px;
+        }
+        .cell-footer{
+            border-top: #eee 1px solid;
+            padding: 6px 16px;
+            line-height: 26px;
+        }
+        .mui-bar-nav~.mui-content{
+            margin-top: 60px;
+        }
+        .task-list .mui-table-view .mui-media-object{
+            line-height: 32px;
+            max-width: 32px;
+            height: 32px;
+            margin-top: 5px;
+        }
+        .mui-center.mui-title{
+            margin-left: 0 !important;
+        }
+    </style>
+    <script type="text/javascript" src="../components/libs/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="../components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="../components/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script type="text/javascript" src="../components/me-lazyimg-master/me-lazyimg.js"></script>
+    <script type="text/javascript" src="../js/app/app.js"></script>
+    <!--<script type="text/javascript" src="./js/router/router.js"></script>-->
+    <script type="text/javascript" src="../js/controller/sites.js"></script>
+    <script type="text/javascript" src="../js/controller/task.js"></script>
+</head>
+
+<body ng-app="myApp">    <!--主界面部分-->
+<!--侧滑菜单部分-->
+<div id="offCanvasWrapper" class="mui-off-canvas-wrap">
+    <div class="mui-inner-wrap" >
+        <div class="">
+            <header class="mui-bar mui-bar-nav bg-header">
+                <a class="mui-icon mui-action-back mui-icon-left-nav mui-pull-left text-white"></a>
+                <h1 class="mui-title" id="header_title">所有任务</h1>
+            </header>
+            <div id="task_history" class="mui-content no-padding mui-control-content mui-active task-list" ng-controller="TaskHistoryCtrl">
+                <div id="task_types" class="mui-slider-indicator mui-segmented-control mui-segmented-control-inverted"
+                     style="margin-left: 0;position: fixed;top:60px;background-color: #fff;box-shadow: 0 0 1px #ccc;">
+                    <a class="mui-control-item mui-active" href="#all">
+                        全部
+                    </a>
+                    <a class="mui-control-item" href="#open" >未关闭</a>
+                    <a class="mui-control-item" href="#closed" >
+                        已关闭
+                    </a>
+                </div>
+                <div style="position: fixed;top: 93px;bottom: 0px;overflow-y: auto;left:8px;right:8px;" id="task_history_scroll">
+                    <div class="mui-scroll1" ng-if="showTasks.length">
+                        <ul class="mui-table-view mui-table-view-striped mui-table-view-condensed mui-segmented-control-vertical">
+                            <li class="mui-table-view-cell mui-media " ng-repeat="task in showTasks" data-id="{{task.id}}">
+                                <img class="mui-media-object mui-pull-left" src="./img/task_type_{{task.task_type_id}}.png">
+                                <div class="mui-media-body">
+                                    <h4 class="mui-ellipsis task-title" style="margin-top: 0">
+                                        <strong>{{task.task_type_name}}</strong>: {{ task.name }}
+                                        <span class="mui-h5 time">{{task.last_modified_time.substring(5)}}</span>
+                                    </h4>
+                                    <h5 class="info-list">
+                                    <span class="mui-h6 mui-ellipsis" style="font-size: 14px;">
+                                        上一环节处理人：{{task.pre_handler_name}}
+                                    </span>
+                                        <span class="status {{task.status}}">{{task.stage}}</span>
+                                    </h5>
+                                    <h5 class="info-list" ng-if="task.station_name">
+                                    <span class="mui-h6 mui-ellipsis" style="font-size: 14px;">
+                                        <i class="mui-icon-extra footer-icon sites icon-xs mr8"></i>{{task.station_name}}
+                                    </span>
+                                    </h5>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="page-alert-wrapper" ng-if="isLoading">
+                    <div class="page-alert">
+                        <span class="mui-spinner"></span>
+                        <div class="alert-text info">正在加载...</div>
+                    </div>
+                </div>
+                <div class="page-alert-wrapper" ng-if="showTasks.length==0 && !isLoading">
+                    <div class="page-alert">
+                        <i class="alert-icon nodata-info"></i>
+                        <div class="alert-text info">无任务处理记录</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+<script src="../components/mui/js/mui.min.js"></script>
+<script src="../components/mui/js/mui.view.min.js"></script>
+<script src="../components/fastclick-master/lib/fastclick.js"></script>
+<script src="../js/my/notify.js"></script>
+<script src="../components/dropload-gh-pages/dist/dropload.min.js"></script>
+<script>
+    mui.init();
+    $(function () {
+        initTaskSelector();
+        $(".task-list").on('tap', 'li', function (e) {
+            console.log('open task');
+            window.location.href = 'task-detail.html?id=' + $(this).data('id');
+        });
+    });
+    function initTaskSelector() {       // 所有任务筛选
+        $("#task_types").on('tap', 'a', function(){
+            var scope = angular.element('#task_history').scope();
+            scope.changeTaskType($(this).attr('href').substring(1));
+        });
+    }
+    initScroll('#task_history');
+</script>
+</body>
+
+</html>

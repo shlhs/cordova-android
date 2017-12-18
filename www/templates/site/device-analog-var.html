@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>设备模拟量</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <link rel="stylesheet" href="../../components/mui/css/mui.min.css">
+    <link rel="stylesheet" href="../../css/my.css">
+    <link rel="stylesheet" href="../../css/icon.css">
+    <link rel="stylesheet" href="../../css/animate.css">
+    <link rel="stylesheet" href="../../components/mui/css/icons-extra.css">
+    <link rel="stylesheet" href="../../css/setting.css">
+    <!--<script type="text/javascript" src="../../cordova.js"></script>-->
+    <!--<script type="text/javascript" src="../../cordova_plugins.js"></script>-->
+    <script type="text/javascript" src="../../components/libs/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <!--<script type="text/javascript" src="components/ui-router-extras/release/ct-ui-router-extras.js"></script>-->
+    <script type="text/javascript" src="../../components/angular-animate/angular-animate.js"></script>
+    <script type="text/javascript" src="../../components/angular-ui-router/release/stateEvents.min.js"></script>
+    <script type="text/javascript" src="../../js/app/utils.js"></script>
+    <script type="text/javascript" src="../../js/app/app.js"></script>
+    <script type="text/javascript" src="../../js/router/site-router.js"></script>
+    <script type="text/javascript" src="../../js/controller/device.js"></script>
+    <style>
+
+        html,
+        body {
+            height: 100%;
+            overflow: hidden;
+        }
+        .mui-content{
+            padding: 0px;
+        }
+        table{
+            width: 100%;
+            margin: 8px 0px;
+        }
+        th,td{
+            text-align: left;
+            height: 40px;
+            border-bottom: #eee 1px solid;
+            font-size: 14px;
+        }
+        .mui-table-view.mui-grid-view .mui-table-view-cell .mui-media-body{
+            font-size: 0.8em;
+        }
+        tbody tr:nth-child(odd) {background: rgba(246, 246, 246, 0.6)}
+        tbody tr:nth-child(even) {background: #FFF}
+        td, th{
+            padding-left: 16px;
+        }
+    </style>
+<body class="box-vertical-center bg-white" ng-app="myApp" ng-controller="DeviceAnalogVarCtrl">
+    <header class="mui-bar mui-bar-nav bg-header">
+        <a class="mui-icon mui-action-back mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
+        <h1 class="mui-title" id="header_title">设备模拟量</h1>
+    </header>
+    <div class="mui-content bg-white" ng-cloak>
+        <div id="analog" class="mui-control-content height-wrap-parent mui-active" ng-if="!isLoading && analogValues.length">
+            <table ng-if="has_data">
+                <thead>
+                <tr>
+                    <th style="width: 65%;">名称</th>
+                    <th style="width: 35%;">实际值</th>
+                    <!--<th style="width: 15%;">单位</th>-->
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="item in analogValues">
+                    <td>{{item.name}}</td>
+                    <td>{{item.data}}{{item.unit}}</td>
+                    <!--<td>{{item.unit}}</td>-->
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="page-alert-wrapper" ng-if="isLoading">
+            <div class="page-alert">
+                <span class="mui-spinner"></span>
+                <div class="alert-text info">正在加载...</div>
+            </div>
+        </div>
+        <div class="page-alert-wrapper" ng-if="analogValues.length==0 && !isLoading">
+            <div class="page-alert">
+                <i class="alert-icon nodata"></i>
+                <div class="alert-text info">暂无数据</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

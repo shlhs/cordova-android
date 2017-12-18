@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>首页</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <link rel="stylesheet" href="../components/mui/css/icons-extra.css">
+    <link rel="stylesheet" href="../css/setting.css">
+    <!--<script type="text/javascript" src="../cordova.js"></script>-->
+    <!--<script type="text/javascript" src="../cordova_plugins.js"></script>-->
+    <script type="text/javascript" src="../components/libs/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="../components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="../components/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <!--<script type="text/javascript" src="components/ui-router-extras/release/ct-ui-router-extras.js"></script>-->
+    <script type="text/javascript" src="../components/angular-animate/angular-animate.js"></script>
+    <script type="text/javascript" src="../components/angular-ui-router/release/stateEvents.min.js"></script>
+    <script type="text/javascript" src="../js/app/utils.js"></script>
+    <script type="text/javascript" src="../js/app/app.js"></script>
+    <script type="text/javascript" src="../js/service/common-service.js"></script>
+    <script type="text/javascript" src="../js/router/router.js"></script>
+    <link rel="stylesheet" href="../components/mui/css/mui.min.css">
+    <link rel="stylesheet" href="../css/my.css">
+    <link rel="stylesheet" href="../css/icon.css">
+    <link rel="stylesheet" href="../css/animate.css">
+    <link rel="stylesheet" href="../css/task.css">
+    <style>
+        html,
+        body {
+            background-color: #efeff4;
+        }
+        /*p {*/
+            /*text-indent: 22px;*/
+        /*}*/
+        .site-value .mui-icon {
+            font-size: 14px;
+            color: #007aff;
+            margin-left: -15px;
+            padding-right: 10px;
+        }
+        input {
+            color: #000;
+        }
+        .mui-grid-view.mui-grid-9 .mui-media .mui-icon {
+            font-size: 1.6em;
+            position: relative;
+            padding: 0;
+            margin: 0;
+        }
+        .mui-grid-view.mui-grid-9 {
+            border: 0;
+        }
+        .mui-grid-view.mui-grid-9 .mui-media {
+            border: 0;
+        }
+        .mui-table-view.mui-grid-view .mui-table-view-cell .mui-media-body {
+            font-size: 12px;
+        }
+        .red{
+            color: red !important;
+        }
+        .mui-grid-view.mui-grid-9 {
+            background-color: transparent;
+            border-radius: 0;
+        }
+        .site-list .mui-card:nth-child(odd){
+            background: -webkit-gradient(linear, 0 0, 0 bottom, from(#CFD9DF), to(#E2EBF0));
+        }
+        .site-list .mui-card:nth-child(even){
+            /*background: -webkit-gradient(linear, 0 0, 0 bottom, from(#FDFBFB), to(#EBEDEE));*/
+            /*background: -webkit-gradient(linear, 0 0, 0 bottom, from(#FDFCFB), to(#E2D1C3));*/
+            background: -webkit-gradient(linear, 0 0, 0 bottom, from(#CFD9DF), to(#E2EBF0));
+        }
+        .mui-table-view-cell.mui-media{
+            border-radius: 0 !important;
+        }
+        .text-red{
+            color: red !important;
+        }
+        .text-grey{
+            color: #6d6d6d !important;
+        }
+        header.bg-header{
+             background-color: #2856b6;
+         }
+        .bg-header h1{
+            color: #fff;
+        }
+        .bg-header .mui-action-back{
+            color: #fff;
+        }
+        .info-list span{
+            display: inline-block;
+        }
+        .task-title{
+            font-weight: normal;
+            line-height: 22px;
+            position: relative;
+            /*padding-right: 80px;*/
+            margin: 0;
+        }
+        .info-list{
+            margin-bottom: 0;
+        }
+        .task-title .time{
+            position: absolute;
+            right: 0;
+            top:0;
+        }
+        .info-list .status{
+            float: right;
+            color: #007aff;
+        }
+        .cell-body{
+            padding: 11px 16px;
+        }
+        .cell-footer{
+            border-top: #eee 1px solid;
+            padding: 6px 16px;
+            line-height: 26px;
+        }
+        .task-list .mui-table-view .mui-media-object{
+            line-height: 32px;
+            max-width: 32px;
+            height: 32px;
+            margin-top: 5px;
+        }
+        .mui-center.mui-title{
+            margin-left: 0 !important;
+        }
+    </style>
+
+<body class="box-vertical-center" ng-app="myApp" ng-controller="HomeCtrl">
+    <header class="mui-bar mui-bar-nav bg-header" style="z-index:0;">
+        <h1 class="mui-title" id="header_title">{{title}}</h1>
+        <a onclick="showTopMenu()" class="mui-action-menu mui-icon mui-pull-right" ><i class="header-icon white icon-add"></i></a>
+    </header>
+<div ng-include="'/templates/top-menu.html'"></div>
+    <div class="mui-content no-padding" style="height: auto;">
+            <div class="scroll" style="height: 100%;overflow-y: hidden;" ng-controller="TaskBaseCtrl">
+                <div ng-controller="CompetitionTaskListCtrl" id="competition_tasks" class=" no-padding mui-control-content scroll-wrapper"
+                     ng-cloak ng-class="{'mui-active': tabName === 'competition_tasks'}" style="bottom:54px;">
+                    <div ng-include="'/templates/task/task-competition-list.html'"></div>
+                </div>
+                <div ng-controller="TaskListCtrl" id="my_tasks" class="no-padding mui-control-content scroll-wrapper"
+                     ng-cloak ng-class="{'mui-active': tabName === 'my_tasks'}" style="bottom:54px;">
+                    <div ng-include="'/templates/task/task-list.html'"></div>
+                </div>
+
+                <div ng-controller="SiteListCtrl" id="sites" class=" no-padding mui-control-content scroll-wrapper"
+                     ng-class="{'mui-active': tabName === 'sites'}" style="bottom:54px;">
+                    <div ng-include="'/templates/site/site-list.html'"></div>
+                </div>
+                <div ng-controller="SettingCtrl" id="setting" class=" no-padding mui-control-content"
+                     ng-class="{'mui-active': tabName === 'setting'}">
+                    <div ng-include="'/templates/setting/setting.html'"></div>
+                </div>
+            </div>
+    </div>
+<nav id="menu" class="mui-bar mui-bar-tab bg-footer nav-horizontal" style="box-shadow: none !important;z-index:0;">
+    <a class="mui-tab-item mui-active" href="javascript:void(0)" ng-click="chooseNav('competition_tasks', '抢单')"
+       ng-class="{'mui-active': tabName==='competition_tasks'}">
+        <span class="mui-icon nav-icon nav-task-grab" style="font-size: 20px;"></span>
+        <span class="mui-tab-label">抢单</span>
+    </a>
+    <a class="mui-tab-item" href="javascript:void(0)" ng-click="chooseNav('my_tasks', '所有任务')"
+       ng-class="{'mui-active': tabName==='my_tasks'}">
+        <span class="mui-icon nav-icon nav-all-tasks" style="font-size: 20px;"></span>
+        <span class="mui-tab-label">所有任务</span>
+    </a>
+    <a class="mui-tab-item" href="javascript:void(0)" ng-click="chooseNav('sites', '站点监控')"
+       ng-class="{'mui-active': tabName==='sites'}">
+        <span class="mui-icon nav-icon nav-sites"></span>
+        <span class="mui-tab-label">站点监控</span>
+    </a>
+    <a class="mui-tab-item" href="javascript:void(0)" ng-click="chooseNav('setting', '我')" ng-class="{'mui-active': tabName==='setting'}">
+        <span class="mui-icon nav-icon nav-setting"></span>
+        <span class="mui-tab-label">我</span>
+    </a>
+</nav>
+<div ui-view></div>
+<div ng-include="'/templates/top-menu.html'"></div>
+    <script src="../components/fastclick-master/lib/fastclick.js"></script>
+    <script src="../js/my/notify.js"></script>
+    <script src="../components/dropload-gh-pages/dist/dropload.min.js"></script>
+    <script src="../components/handlebars-v4.0.10.js"></script>
+    <script type="text/javascript" src="../js/controller/login.js"></script>
+    <script type="text/javascript" src="../js/controller/task.js"></script>
+    <script type="text/javascript" src="../js/controller/sites.js"></script>
+    <script type="text/javascript" src="../js/controller/device.js"></script>
+    <script src="../js/controller/setting.js"></script>
+    <script src="../js/controller/monitor.js"></script>
+    <script src="../js/controller/kanban.js"></script>
+    <script id="grab-task-template" type="text/x-handlebars-template">
+        <div class="mui-popup mui-popup-in android-dialog" style="display: block;">
+            <div class="mui-popup-inner">
+                <div class="mui-popup-title">
+                    <label class="mui-ellipsis">{{name}}</label>
+                </div>
+                <div class="mui-popup-text">
+                    <h5><i class="icon icon-xs map"></i>{{station_address}}</h5>
+                    <h5><i class="icon icon-xs clock"></i> {{expect_complete_time}}前完成</h5>
+                </div>
+            </div>
+            <button type="button" class="mui-btn mui-btn-primary mui-btn-block" data-role="accept">接单</button>
+            <button type="button" class="mui-btn mui-btn-block" data-role="cancel">取消</button>
+        </div>
+        <div class="mui-popup-backdrop mui-active" style="display: block;"></div>
+    </script>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=ITbaaCqA7nMWRjEIycEpddoUW1AvZvRq"></script>
+    </body>
+</html>

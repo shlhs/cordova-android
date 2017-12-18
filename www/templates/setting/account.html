@@ -1,0 +1,41 @@
+
+<!-- 用户账号 -->
+<div class="mui-page" ng-controller="AccountCtrl">
+    <header class="mui-navbar-inner mui-bar">
+        <button type="button" class="mui-left mui-btn mui-btn-link mui-btn-nav mui-pull-left" onclick="history.back()">
+            <span class="mui-icon mui-icon-left-nav"></span>设置
+        </button>
+        <h1 class="mui-center mui-title">账号与安全</h1>
+    </header>
+    <div class="mui-content" style="margin-top: 1px;">
+        <ul class="mui-table-view">
+            <li class="mui-table-view-cell">
+                <a style="line-height: 40px;">头像
+                    <span class="mui-pull-right head">
+                            <img class="head-img mui-action-preview" src="{{ user.photo ? host + user.photo : '/img/dark/64X64/profile-outline.png'}}" style="position: absolute;right: 15px;">
+                        </span>
+                </a>
+            </li>
+            <li class="mui-table-view-cell">
+                <a>姓名<span class="mui-pull-right">{{user.name}}</span></a>
+            </li>
+            <li class="mui-table-view-cell">
+                <a>账号<span class="mui-pull-right">{{user.account}}</span></a>
+            </li>
+            <li class="mui-table-view-cell">
+                <a>手机号<span class="mui-pull-right">{{user.phone}}</span></a>
+            </li>
+        </ul>
+        <ul class="mui-table-view" ng-if="user.user_groups.length">
+            <li class="mui-table-view-cell">
+                <a>角色<span class="mui-pull-right">{{user.user_groups[0].description}}</span></a>
+            </li>
+        </ul>
+        <ul class="mui-table-view mui-table-view-chevron mt20">
+            <li class="mui-table-view-cell">
+                <a class="mui-navigate-right" ui-sref="index.account.password" style="color:#007aff;">修改密码</a>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="page page-left" ui-view></div>

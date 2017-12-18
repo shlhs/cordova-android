@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+<head>
+    <meta charset="utf-8">
+    <!--
+    Customize this policy to fit your own app's needs. For more guidance, see:
+        https://github.com/apache/cordova-plugin-whitelist/blob/master/README.md#content-security-policy
+    Some notes:
+        * gap: is required only on iOS (when using UIWebView) and is needed for JS->native communication
+        * https://ssl.gstatic.com is required only on Android and is needed for TalkBack to function properly
+        * Disables use of inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
+            * Enable inline JS: add 'unsafe-inline' to default-src
+    -->
+    <!--<meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *">-->
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <script type="text/javascript" src="../components/libs/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="../components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="../js/app/app.js"></script>
+    <script type="text/javascript" src="../js/controller/login.js"></script>
+
+    <style>
+        body{font-family:SimHei,'Helvetica Neue',Arial,'Droid Sans',sans-serif;font-size:14px;color:#333;background:#f2f2f2;background:url(../img/login-bg.png) no-repeat;background-size:cover;}
+        html,body{
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        a, a.link{color:#666;text-decoration:none;font-weight:500;}
+        a, a.link:hover{color:#666;}
+        h1,h2,h3,h4,h5,h6{font-weight: normal;}
+
+        .login{
+            width: 100%;
+            position: fixed;
+            top: calc(50% - 110px);
+        }
+        .welcome{width:100%;margin:25% 0;}
+        .welcome img{width:100%;}
+        .login-form{
+            padding: 0 30px;
+        }
+        .login-inp{margin-top:15px;border:1px solid #fff;border-radius:25px;}
+        .login-inp label{width:4em;text-align:center;display:inline-block;color:#fff;}
+        .login-inp input{line-height:40px;color:#fff;background-color:transparent;border:none;outline: none;margin: 0;font-size: 14px;}
+        .login-inp a{display:block;width:100%;text-align:center;line-height:40px;color:#fff;font-size:16px;letter-spacing:5px;}
+        .login-txt{text-align:center;color:#fff;padding: 6px;}
+        .login-txt a{color:#fff;padding:0 5px;}
+        input{
+            padding-left: 20px;
+        }
+        input::-webkit-input-placeholder {
+            /* placeholder颜色  */
+            color: #fff;
+        }
+        input::-moz-placeholder {
+            /* placeholder颜色  */
+            color: #fff;
+        }
+        .error{
+            color: red;
+            padding-left: 20px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body ng-app="myApp" ng-controller="LoginCtrl">
+<div class="login">
+    <div class="login-form">
+        <div class="login-inp">
+            <label>平台</label><input type="text" placeholder="请输入平台编号" ng-model="platformCode" ng-change="platformError=''"></div>
+        <div class="error">{{platformError}}</div>
+        <div class="login-inp"><label>用户名</label><input type="text" ng-model="username" ng-change="error=''"></div>
+        <div class="login-inp"><label>密码</label><input type="password" ng-model="password" ng-change="error=''"></div>
+        <div class="error">{{error}}</div>
+        <div class="login-inp" style="background-color: #88c1e3;border: #1f6377;" ng-if="!isLogin"><a href="#" ng-click="login()">立即登录</a></div>
+        <div class="login-inp" style="background-color: #88c1e3;border: #1f6377;" ng-if="isLogin" disabled><a href="#" >正在登录...</a></a></div>
+    </div>
+    <!--<div class="login-txt"><a href="#">立即注册</a>|<a href="#">忘记密码？</a></div>-->
+</div>
+
+<script>
+</script>
+</body>
+</html>

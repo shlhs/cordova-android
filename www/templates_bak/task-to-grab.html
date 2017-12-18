@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>站点详情</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <!--标准mui.css-->
+    <link rel="stylesheet" href="../components/mui/css/mui.min.css">
+    <link rel="stylesheet" href="../components/libs/font-awesome-4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/my.css" />
+    <script type="text/javascript" src="../components/libs/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="../components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="../js/app/app.js"></script>
+    <script type="text/javascript" src="../js/controller/task.js"></script>
+    <style>
+        html,
+        body {
+            height: 100%;
+            overflow: hidden;
+        }
+        .mui-bar {
+            -webkit-box-shadow: none;
+            box-shadow: none;
+        }
+        .mui-content{
+            top:70px;
+        }
+        .mui-media-body{
+            height: 16px;
+        }
+        .mui-table-view.mui-grid-view .mui-table-view-cell .mui-media-body{
+            height: 18px;
+        }
+        strong{
+            height: 18px;
+            display: inline-block;
+        }
+        .task-info{
+            padding-top: 0px !important;
+            margin-top: 2px;
+        }
+        .mui-table-view{
+            margin-top: 8px;
+        }
+    </style>
+</head>
+
+<body class="mui-android mui-android-5 mui-android-5-1 mui-android-5-1-1 mui-segmented-control-vertical" ng-app="myApp">
+<header class="mui-bar bg-header">
+    <a class="mui-icon mui-icon-left-nav mui-pull-left text-white" href="/app/home"></a>
+    <h1 class="mui-title" id="head_title">任务详情</h1>
+</header>
+<div  ng-controller="TaskDetailCtrl" ng-cloak>
+    <div class="mui-content" style="padding: 0" ng-class="{'page-bottom': canHandle}">
+        <ul class="mui-table-view" style="margin-top: 0px;">
+            <li class="mui-table-view-cell">
+                <div class="task-desp">[{{taskData.id}}] {{taskData.name}}</div>
+            </li>
+        </ul>
+        <div class="mui-card" style="box-shadow: none;margin: 0;">
+            <div class="mui-card-content">
+                <div class="mui-card-content-inner" style="padding-top: 0px;">
+                    <ul class="mui-table-view mui-grid-view task-detail" style="padding-bottom: 0px;margin-top: 0px;">
+                        <li class="task-info mui-table-view-cell mui-media mui-col-xs-12 mui-col-sm-12" ng-if="taskData.station_name">
+                            <div class="mui-media-body"><div style="display: inline-block;font-weight: 700;line-height: 18px;">站点</div>：{{taskData.station_name}}</div>
+                        </li>
+                        <li class="task-info mui-table-view-cell mui-media mui-col-xs-12 mui-col-sm-12">
+                            <div class="mui-media-body"><div style="display: inline-block;font-weight: 700;line-height: 18px;">事件类型</div>：{{taskData.task_type_name}}</div>
+                        </li>
+                        <li class="task-info mui-table-view-cell mui-media mui-col-xs-12 mui-col-sm-12">
+                            <div class="mui-media-body"><div style="display: inline-block;font-weight: 700;line-height: 18px;">创建时间</div>：{{taskData.create_time}}</div>
+                        </li>
+                        <li class="task-info mui-table-view-cell mui-media mui-col-xs-12 mui-col-sm-12">
+                            <div class="mui-media-body"><div style="display: inline-block;font-weight: 700;line-height: 18px;">截止日期</div>：{{taskData.expect_complete_time.substring(0,10)}}</div>
+                        </li>
+                        <li class="task-info mui-table-view-cell mui-media mui-col-xs-12 mui-col-sm-12" ng-if="taskData.desp">
+                            <div class="mui-media-body" style="height: auto;"><div style="display: inline-block;font-weight: 700;line-height: 18px;">任务描述</div>：{{taskData.desp}}</div>
+                        </li>
+                    </ul>
+                    <!--<div class="mui-pull-right bg-image" style="width: 32px;height: 32px;background-image: url(images/phone.png)">-->
+                    <!--</div>-->
+                </div>
+            </div>
+        </div>
+        <ul class="mui-table-view">
+            <li class="mui-table-view-cell">
+                <i class="icon icon-ms location mui-pull-left"></i>
+                <label style="font-size: 14px;">闵行区七莘路1839号 <span class="mui-pull-right"><span class="text-red">13.4</span>公里</span></label>
+            </li>
+            <div id="container" style="width: 100%;height: 300px;"></div>
+        </ul>
+        <nav class="mui-bar mui-bar-tab" style="box-shadow: none;background-color: #efeff4;">
+            <a class="mui-tab-item mui-active mui-segmented-control-vertical" href="#" style="padding: 8px;" ng-controller="GrabTaskCtrl">
+                <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-btn-outlined mui-control-item accept"
+                        style="margin-bottom: 6px;background-color: #f0ad4e;color: #fff;border: #f0ad4e;padding: 8px;"
+                        ng-click="toGrabTask($event, taskData)">抢单</button>
+            </a>
+        </nav>
+    </div>
+</div>
+<script src="../components/mui/js/mui.min.js"></script>
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=ITbaaCqA7nMWRjEIycEpddoUW1AvZvRq"></script>
+<script src="../components/fastclick-master/lib/fastclick.js"></script>
+<script src="../js/my/notify.js"></script>
+<script src="../components/handlebars-v4.0.10.js"></script>
+<script id="grab-task-template" type="text/x-handlebars-template">
+    <div class="mui-popup mui-popup-in android-dialog" style="display: block;">
+        <div class="mui-popup-inner">
+            <div class="mui-popup-title">
+                <!--<img class="icon icon-ms" src="./images/task_type_{{task_type_name}}.png">-->
+                <label class="mui-ellipsis">{{name}}</label>
+            </div>
+            <div class="mui-popup-text">
+                <!--<h5 style="color: #444;" class="mui-ellipsis-2">{{desp}}</h5>-->
+                <h5><i class="icon icon-xs map"></i>{{station_address}}</h5>
+                <h5><i class="icon icon-xs clock"></i> {{expect_complete_time}}前完成</h5>
+            </div>
+        </div>
+        <button type="button" class="mui-btn mui-btn-primary mui-btn-block" data-role="accept">接单</button>
+        <button type="button" class="mui-btn mui-btn-block" data-role="cancel">取消</button>
+    </div>
+    <div class="mui-popup-backdrop mui-active" style="display: block;"></div>
+</script>
+<script>
+    var map = new BMap.Map("container");          // 创建地图实例
+    var point = new BMap.Point(121.368532,31.140822);  // 创建点坐标
+    map.centerAndZoom(point, 15);                 // 初始化地图，设置中心点坐标和地图级别
+
+    // 导航
+    var driving = new BMap.DrivingRoute(map, {
+        renderOptions: {
+            map   : map,
+            panel : "results",
+            autoViewport: true
+        },
+        onSearchComplete: function (result) {
+            console.log('result');
+            console.log(result.getPlan(0).getDistance());
+        }
+    });
+    driving.search("淞虹路地铁站", "闵行区七莘路1839号");
+
+</script>
+</body>
+
+</html>

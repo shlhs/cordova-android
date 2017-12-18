@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>电子档案</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <!--标准mui.css-->
+    <link rel="stylesheet" href="../components/mui/css/mui.min.css">
+    <link rel="stylesheet" href="../css/my.css" />
+    <script type="text/javascript" src="../components/libs/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="../components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="../js/app/app.js"></script>
+    <script type="text/javascript" src="../js/controller/sites.js"></script>
+    <style>
+        .mui-table-view-cell{
+            padding-right: 60px;
+        }
+        .mui-content{
+            padding-left: 0px;
+            padding-right: 0px;
+        }
+        .mui-card{
+            margin: 6px 0;
+        }
+        .icon-download{
+            position: absolute;
+            right: 8px;
+            top: 10px;
+            width: 20px;
+            height: 20px;
+        }
+        .title{
+            margin: 0px 15px;
+            color: #6d6d72;
+            font-size: 15px;
+        }
+        .mui-table-view .mui-media-object{
+            width: 28px;
+            height: 28px;
+        }
+    </style>
+</head>
+
+<body class="mui-android mui-android-5 mui-android-5-1 mui-android-5-1-1" ng-app="myApp" ng-controller="ElectricDocCtrl">
+<header class="mui-bar mui-bar-nav bg-header mui-segmented-control-vertical">
+    <a class="mui-icon mui-action-back mui-icon-left-nav mui-pull-left text-white"></a>
+    <h1 class="mui-title">电子档案</h1>
+</header>
+<div class="mui-content" ng-cloak style="top:0px;margin-top:24px;">
+    <div ng-repeat="group in groups">
+        <div class="title">
+            {{group.name}}
+        </div>
+        <div class="mui-card">
+            <div class="mui-card-content">
+                <ul class="mui-table-view">
+                    <li class="mui-table-view-cell mui-media" ng-repeat="doc in group.docs">
+                        <i class="mui-media-object mui-pull-left icon icon-md {{doc.icon}}" ng-if="!doc.isImage"></i>
+                        <i class="mui-media-object mui-pull-left icon icon-md" style="background-image: url({{ host + doc.src_link}});" ng-if="doc.isImage"></i>
+                        <div class="mui-media-body mui-ellipsis" ng-click="open(doc)">
+                            {{doc.name}}
+                            <p class="mui-ellipsis">{{doc.create_time}}<span class="mui-pull-right">{{doc.creator}}</span></p>
+                        </div>
+                        <!--<i class="mui-pull-right icon icon-ms icon-download"></i>-->
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="page-alert-wrapper" ng-if="docLoading">
+        <div class="page-alert">
+            <span class="mui-spinner"></span>
+            <div class="alert-text info">正在加载...</div>
+        </div>
+    </div>
+    <div class="page-alert-wrapper" ng-if="!groups.length && !docLoading">
+        <div class="page-alert">
+            <div class="page-alert">
+                <i class="alert-icon nodata"></i>
+                <div class="alert-text info">当前无任何电子档案</div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="slides" style="display: none;">
+    <div class="img-container"><div><img src="{{currentImage}}"></div></div>
+</div>
+<script src="../components/mui/js/mui.min.js"></script>
+<script src="../components/fastclick-master/lib/fastclick.js"></script>
+<script src="../components/dropload-gh-pages/dist/dropload.min.js"></script>
+<script src="../js/my/notify.js"></script>
+<script>
+    initScroll('.mui-content');
+</script>
+</body>
+
+</html>

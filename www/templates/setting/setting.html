@@ -1,0 +1,34 @@
+<div class="mui-page">
+    <div class="mui-page-content">
+        <ul class="mui-table-view mui-table-view-chevron mt20">
+            <li class="mui-table-view-cell mui-media">
+                <a class="mui-navigate-right" ui-sref="index.account">
+                    <img class="mui-media-object mui-pull-left head-img" id="head-img" src="{{ user.photo ? host + user.photo : '../../img/dark/64X64/profile-outline.png'}}">
+                    <div class="mui-media-body">
+                        {{user.name}}
+                        <p class="mui-ellipsis">{{user.account}}</p>
+                    </div>
+                </a>
+            </li>
+        </ul>
+        <ul class="mui-table-view mui-table-view-chevron mt20" ng-if="company && company.id">
+            <li class="mui-table-view-cell">
+                <a ui-sref="index.company" class="mui-navigate-right">运维公司 <i class="mui-pull-right update">{{company.name}}</i></a>
+            </li>
+        </ul>
+        <ul class="mui-table-view mui-table-view-chevron mt20">
+            <li class="mui-table-view-cell">
+                <a>关于{{appName}} <i class="mui-pull-right update">{{version}}</i></a>
+            </li>
+            <!--<li class="mui-table-view-cell">-->
+                <!--<a class="mui-navigate-right" ui-sref="index.share">分享 <i class="mui-pull-right update"></i></a>-->
+            <!--</li>-->
+        </ul>
+        <ul class="mui-table-view mt20">
+            <li class="mui-table-view-cell mui-segmented-control-vertical" style="text-align: center;">
+                <a class="text-red" ng-click="logout()">退出登录</a>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="page page-left" ui-view></div>

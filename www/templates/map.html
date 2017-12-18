@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>站点位置</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <!--标准mui.css-->
+    <link rel="stylesheet" href="../components/mui/css/mui.min.css">
+    <link rel="stylesheet" href="../css/my.css" />
+    <script type="text/javascript" src="../components/libs/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="../js/app/utils.js"></script>
+    <script type="text/javascript" src="../components/angular/angular.min.js"></script>
+</head>
+
+<body class="mui-android mui-android-5 mui-android-5-1 mui-android-5-1-1 mui-segmented-control-vertical" ng-app="myApp">
+<header class="mui-bar bg-header">
+    <a class="mui-icon mui-action-back mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
+    <h1 class="mui-title" id="head_title">站点位置</h1>
+</header>
+<div>
+    <div class="mui-content bg-white" style="padding: 0" ng-class="{'page-bottom': canHandle}" ng-controller="mapCtrl" ng-cloak>
+        <div style="padding: 8px 12px;font-size: 14px;">
+            <span id="stationAddress">{{siteData.address}}</span>
+            <span class="text-red mui-pull-right" style="color: #007aff;">{{distance}}</span>
+        </div>
+        <div style="height: 100%;width: 100%;">
+            <div id="map" style="width: 100%;height: 100%;"></div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=ITbaaCqA7nMWRjEIycEpddoUW1AvZvRq"></script>
+<script src="../components/fastclick-master/lib/fastclick.js"></script>
+<script>
+
+    $("#head_title").html(GetQueryString('stationName'));
+    var app = angular.module('myApp', []);
+    app.controller('mapCtrl', function ($scope) {
+        var sn = GetQueryString('stationSn');
+
+        $scope.siteData = {};
+        $scope.distance = '';
+        function getSite() {
+            var host = JSON.parse(getStorageItem('latestPlatform')).url;
+            $.ajax({
+                url: host + '/stations/' + sn,
+                xhrFields: {
+                    withCredentials: true
+                },
+                crossDomain: true,
+                success: function (data) {
+                    data.address = (data.address_province?data.address_province:'') + (data.address_city?data.address_city:'')
+                        + (data.address_district?data.address_district:'') + data.address;
+                    $scope.siteData = data;
+                    $scope.$apply();
+                    drawMap(data);
+                },
+                error: function (a, b, c) {
+                    $.notify.error('获取站点信息失败');
+                    console.log('login fail');
+                }
+            })
+        }
+
+        function drawMap(siteData) {
+            var map = new BMap.Map("map");          // 创建地图实例
+            if (!map){ return; }
+            // 导航
+            var driving = new BMap.DrivingRoute(map, {
+                renderOptions: {
+                    map   : map,
+                    panel : "results",
+                    autoViewport: true
+                },
+                onSearchComplete: function (result) {
+                    if (result){
+                        $scope.distance = result.getPlan(0).getDistance();
+                        $scope.$apply();
+                    }
+                }
+            });
+            var end = new BMap.Point(siteData.longitude, siteData.latitude);
+            if (!window.android){
+                var start = new BMap.Point(121.629574, 31.261891);
+                // 坐标转换
+                var convertor = new BMap.Convertor();
+                var pointArr = [start];
+                convertor.translate(pointArr, 3, 5, function (data) {
+                    driving.search(data.points[0], end);
+                    map.centerAndZoom(end, 15);                 // 初始化地图，设置中心点坐标和地图级别
+                });
+            }else{
+                apiLocation.start(function (longtitude, latitude) {
+                    //如果获取不到用户的定位，则直接显示站点的位置
+                    if (typeof (longtitude) == 'undefined'){
+                        // 添加标注
+                        map.centerAndZoom(end, 15);
+                        map.enableScrollWheelZoom();
+                        var marker = new BMap.Marker(end);
+                        var mgr = new BMapLib.MarkerManager(map,{
+                            maxZoom: 15,
+                            trackMarkers: true
+                        });
+                        mgr.addMarker(marker,1, 15);
+                        mgr.showMarkers();
+                    }else{
+                        var start = new BMap.Point(longtitude, latitude);
+                        // 坐标转换
+                        var convertor = new BMap.Convertor();
+                        var pointArr = [start];
+                        convertor.translate(pointArr, 3, 5, function (data) {
+                            driving.search(data.points[0], end);
+                            map.centerAndZoom(end, 15);                 // 初始化地图，设置中心点坐标和地图级别
+                        });
+                    }
+                });
+            }
+        }
+
+        getSite();
+    });
+
+
+
+
+</script>
+</body>
+
+</html>

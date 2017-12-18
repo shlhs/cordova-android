@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>站点详情</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <!--标准mui.css-->
+    <link rel="stylesheet" href="../components/mui/css/mui.min.css">
+    <link rel="stylesheet" href="../components/libs/font-awesome-4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/my.css" />
+    <script type="text/javascript" src="../components/libs/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="../components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="../js/app/app.js"></script>
+    <script type="text/javascript" src="../js/controller/task.js"></script>
+    <style>
+        html,
+        body {
+            height: 100%;
+            overflow: hidden;
+        }
+        .mui-bar {
+            -webkit-box-shadow: none;
+            box-shadow: none;
+        }
+        .mui-content{
+            top:70px;
+        }
+        .mui-media-body{
+            height: 16px;
+        }
+        .mui-table-view.mui-grid-view .mui-table-view-cell .mui-media-body{
+            height: 18px;
+        }
+        strong{
+            height: 18px;
+            display: inline-block;
+        }
+        .task-info{
+            padding-top: 0px !important;
+            margin-top: 2px;
+        }
+        .mui-table-view{
+            margin-top: 8px;
+        }
+    </style>
+</head>
+
+<body class="mui-android mui-android-5 mui-android-5-1 mui-android-5-1-1 mui-segmented-control-vertical" ng-app="myApp">
+<header class="mui-bar bg-header">
+    <a class="mui-icon mui-action-back mui-icon-left-nav mui-pull-left text-white"></a>
+    <h1 class="mui-title" id="head_title"></h1>
+</header>
+<div>
+    <div class="mui-content" style="padding: 0" ng-class="{'page-bottom': canHandle}" ng-controller="mapCtrl" ng-cloak>
+        <div style="padding: 0px 12px;font-size: 14px;">
+            <span>{{taskData.station_address}}</span>
+            <span class="text-red mui-pull-right" id="distance"></span>
+        </div>
+        <div style="position: fixed;top:100px;bottom: 0;left: 0;width: 100%;">
+            <div id="map" style="width: 100%;height: 100%;"></div>
+        </div>
+    </div>
+</div>
+<!--<script src="./components/mui/js/mui.min.js"></script>-->
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=ITbaaCqA7nMWRjEIycEpddoUW1AvZvRq"></script>
+<!--<script type="text/javascript" src="./components/baidu/map/MarkerManager-1.2.min.js"></script>-->
+<script src="../components/fastclick-master/lib/fastclick.js"></script>
+<!--<script src="./js/my/notify.js"></script>-->
+<script>
+    $("#head_title").html(GetQueryString('name'));
+    app.controller('mapCtrl', function ($scope, $rootScope, ajax) {
+        var taskId = GetQueryString('id');
+        $scope.taskData = null;
+        var option = {
+<<<<<<< HEAD
+            url: '/opstasks/' + $rootScope.company.id + '/' + taskId,
+=======
+            url: '/opstasks/' + gCompany.id + '/' + taskId,
+>>>>>>> mingyang
+            success: function (data) {
+                $scope.taskData = data;
+                drawMap(data);
+                $scope.$apply();
+            },
+            error: function (a, b, c) {
+                console.log('get task detail fail');
+                $.notify.error('读取数据失败');
+            }};
+        ajax.get(option);
+
+
+        function drawMap(taskData) {
+            var map = new BMap.Map("map");          // 创建地图实例
+            if (!map){ return; }
+            // 导航
+            var driving = new BMap.DrivingRoute(map, {
+                renderOptions: {
+                    map   : map,
+                    panel : "results",
+                    autoViewport: true
+                },
+                onSearchComplete: function (result) {
+                    if (result){
+                        angular.element("#distance").html(result.getPlan(0).getDistance());
+                    }
+                }
+            });
+            var end = new BMap.Point(taskData.station_longitude, taskData.station_latitude);
+            if (!window.android){
+                var start = new BMap.Point(121.629574, 31.261891);
+                // 坐标转换
+                var convertor = new BMap.Convertor();
+                var pointArr = [start];
+                convertor.translate(pointArr, 3, 5, function (data) {
+                    driving.search(data.points[0], end);
+                    map.centerAndZoom(end, 15);                 // 初始化地图，设置中心点坐标和地图级别
+                });
+            }else{
+                apiLocation.start(function (longtitude, latitude) {
+                    //如果获取不到用户的定位，则直接显示站点的位置
+                    if (typeof (longtitude) == 'undefined'){
+                        // 添加标注
+                        map.centerAndZoom(end, 15);
+                        map.enableScrollWheelZoom();
+                        var marker = new BMap.Marker(end);
+                        var mgr = new BMapLib.MarkerManager(map,{
+                            maxZoom: 15,
+                            trackMarkers: true
+                        });
+                        mgr.addMarker(marker,1, 15);
+                        mgr.showMarkers();
+                    }else{
+                        var start = new BMap.Point(longtitude, latitude);
+                        // 坐标转换
+                        var convertor = new BMap.Convertor();
+                        var pointArr = [start];
+                        convertor.translate(pointArr, 3, 5, function (data) {
+                            driving.search(data.points[0], end);
+                            map.centerAndZoom(end, 15);                 // 初始化地图，设置中心点坐标和地图级别
+                        });
+                    }
+                });
+            }
+        }
+    });
+
+</script>
+</body>
+
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>选择所在公司</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <link rel="stylesheet" href="../css/notify.css">
+    <link rel="stylesheet" href="../components/mui/css/mui.min.css">
+    <script type="text/javascript" src="../components/libs/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="../components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="../js/app/app.js"></script>
+    <script type="text/javascript" src="../js/controller/login.js"></script>
+    <style>
+        body{font-family:SimHei,'Helvetica Neue',Arial,'Droid Sans',sans-serif;font-size:14px;color:#333;background:#f2f2f2;background:url(./images/login-bg.png) no-repeat;background-size:cover;}
+        html,body{
+            height: 100%;
+        }
+        a, a.link{color:#666;text-decoration:none;font-weight:500;}
+        a, a.link:hover{color:#666;}
+        h1,h2,h3,h4,h5,h6{font-weight: normal;}
+
+        .login{width: 100%;}
+        .welcome{width:100%;margin:25% 0;}
+        .welcome img{width:100%;}
+        .login-form{
+            padding: 0 30px;
+        }
+        .login-inp{margin-top:15px;border:1px solid #fff;border-radius:25px;}
+        .login-inp label{width:4em;text-align:center;display:inline-block;color:#fff;}
+        .login-inp input{line-height:40px;color:#fff;background-color:transparent;border:none;outline: none;margin: 0;font-size: 14px;}
+        .login-inp a{display:block;width:100%;text-align:center;line-height:40px;color:#fff;font-size:16px;letter-spacing:5px;}
+        .login-txt{text-align:center;color:#fff;}
+        .login-txt a{color:#fff;padding:0 5px;}
+        input{
+            padding-left: 20px;
+        }
+        input::-webkit-input-placeholder {
+            /* placeholder颜色  */
+            color: #fff;
+        }
+        input::-moz-placeholder {
+            /* placeholder颜色  */
+            color: #fff;
+        }
+        .icon-scan{
+            width: 24px;
+            height: 24px;
+            background: url(./images/dark/64X64/scan.png) no-repeat 50%;
+            background-size: cover;
+            display: inline-block;
+        }
+        .box-vertical-center{
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-box-align: center;
+            -webkit-box-pack:center;
+        }
+        .error{
+            color: red;
+            padding-left: 20px;
+            margin-top: 10px;
+        }
+        @keyframes spinner-spin {
+            0% {transform: rotate(0)}
+            100% {transform: rotate(360deg)}
+        }
+        .spinner{
+            animation: spinner-spin 1s linear infinite;
+        }
+        .icon-loading{
+            width: 24px;
+            height: 24px;
+            background: url(./images/dark/48X48/loading.png) no-repeat 50%;
+            background-size: cover;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body class="box-vertical-center" ng-app="myApp" ng-controller="CompanySelectorCtrl">
+<div class="login" style="margin-top: -40px;">
+    <div class="login-form">
+        <div class="login-inp"><input type="text" placeholder="请输入公司名称" ng-model="platform" ng-change="error=''"></div>
+        <div class="error">{{error}}</div>
+        <div class="login-inp" style="background-color: #88c1e3;border: #1f6377;">
+            <a href="#" ng-click="queryCompany($event)">确定</a>
+        </div>
+    </div>
+    <!--<div class="login-txt"><a href="#">您还可以：<i class="icon-scan"></i>扫描二维码</a></div>-->
+</div>
+
+<script src="../components/mui/js/mui.min.js"></script>
+<script type="text/javascript" src="../js/my/notify.js"></script>
+<script>
+    mui.init();
+    function startCaptureQR() {
+        window.android && window.android.openQRCapturePage();
+    }
+
+    function openDeviceFromQR(data) {   //根据扫码结果打开设备详情
+        console.log(data);
+        window.location.href = 'device_info.html?sn=' + data.sn;
+    }
+
+</script>
+</body>
+</html>

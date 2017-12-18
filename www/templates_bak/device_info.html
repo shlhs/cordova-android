@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>站点详情</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <!--标准mui.css-->
+    <link rel="stylesheet" href="../components/mui/css/mui.min.css">
+    <link rel="stylesheet" href="../css/my.css" />
+    <script type="text/javascript" src="../components/libs/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="../components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="../js/app/app.js"></script>
+    <script type="text/javascript" src="../js/controller/device.js"></script>
+    <style>
+        .mui-content{
+            padding: 0;
+        }
+        .info-title{
+            display: inline-block;
+            color:#949494;
+        }
+        .mui-card-header{
+            padding: 0px 15px;
+            min-height: 36px;
+        }
+        .mui-card-header:before{
+            display: block;
+            content: '';
+            position: absolute;
+            left:0;
+            top:0;
+            bottom:0;
+            width: 3px;
+            background-color: #007aff;
+        }
+    </style>
+</head>
+
+<body class="mui-android mui-android-5 mui-android-5-1 mui-android-5-1-1" ng-app="myApp">
+<header class="mui-bar bg-header">
+    <a class="mui-icon mui-action-back mui-icon-left-nav mui-pull-left text-white"></a>
+    <h1 class="mui-title" id="head_title">设备详情</h1>
+</header>
+<div class="mui-content" ng-controller="DeviceInfoDetailCtrl" ng-cloak style="top:60px;">
+    <div class="mui-card">
+        <div class="mui-card-header left-vertical">设备信息</div>
+        <div class="mui-card-content">
+            <div class="mui-card-content-inner">
+                <ul class="mui-table-view mui-grid-view task-detail" style="padding-bottom: 0px;margin-top:-15px;">
+                    <!-- ngIf: taskData.station_name -->
+                    <li class="task-info mui-table-view-cell mui-media mui-col-xs-12 mui-col-sm-12">
+                        <div class="mui-media-body ng-binding"><div class="info-title">设备名称：</div>{{deviceInfo.name}}</div>
+                    </li>
+                    <li class="task-info mui-table-view-cell mui-media mui-col-xs-12 mui-col-sm-12">
+                        <div class="mui-media-body ng-binding"><div class="info-title">设备编号：</div>{{deviceInfo.system_sn}}</div>
+                    </li>
+                    <li class="task-info mui-table-view-cell mui-media mui-col-xs-12 mui-col-sm-12 ng-scope">
+                        <div class="mui-media-body ng-binding" style="height: auto;"><div class="info-title">产品型号：</div>{{deviceInfo.product.model_number}}</div>
+                    </li>
+                    <li class="task-info mui-table-view-cell mui-media mui-col-xs-12 mui-col-sm-12">
+                        <div class="mui-media-body ng-binding"><div class="info-title">生产厂家：</div>{{deviceInfo.product.provider.name}}</div>
+                    </li>
+                    <li class="task-info mui-table-view-cell mui-media mui-col-xs-12 mui-col-sm-12">
+                        <div class="mui-media-body ng-binding"><div class="info-title">设备描述：</div>{{deviceInfo.description}}</div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="mui-card">
+        <div class="mui-card-header left-vertical">安装信息</div>
+        <div class="mui-card-content">
+            <div class="mui-card-content-inner">
+                <ul class="mui-table-view mui-grid-view task-detail" style="padding-bottom: 0px;margin-top:-15px;">
+                    <!-- ngIf: taskData.station_name -->
+                    <li class="task-info mui-table-view-cell mui-media mui-col-xs-12 mui-col-sm-12">
+                        <div class="mui-media-body ng-binding"><div class="info-title">安装位置：</div>{{deviceInfo.position_desp}}</div>
+                    </li>
+                    <li class="task-info mui-table-view-cell mui-media mui-col-xs-12 mui-col-sm-12">
+                        <div class="mui-media-body ng-binding"><div class="info-title">投运时间：</div>{{deviceInfo.initial_time}}</div>
+                    </li>
+                    <li class="task-info mui-table-view-cell mui-media mui-col-xs-12 mui-col-sm-12 ng-scope">
+                        <div class="mui-media-body ng-binding"><div class="info-title">上次年检时间：</div>{{deviceInfo.last_overhaul_time}}</div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../components/mui/js/mui.min.js"></script>
+<script src="../components/fastclick-master/lib/fastclick.js"></script>
+<script src="../js/my/notify.js"></script>
+<script>
+    function setTitle() {
+        $("#header_title").html(GetQueryString('device'));
+    }
+    setTitle();
+</script>
+</body>
+
+</html>

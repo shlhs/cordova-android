@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录页</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <link rel="stylesheet" href="../components/mui/css/icons-extra.css">
+    <link rel="stylesheet" href="../css/setting.css">
+    <!--<script type="text/javascript" src="../cordova.js"></script>-->
+    <!--<script type="text/javascript" src="../cordova_plugins.js"></script>-->
+    <script type="text/javascript" src="../components/libs/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="../components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="../components/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <!--<script type="text/javascript" src="../components/ui-router-extras/release/ct-ui-router-extras.js"></script>-->
+    <script type="text/javascript" src="../components/angular-animate/angular-animate.js"></script>
+    <script type="text/javascript" src="../components/angular-ui-router/release/stateEvents.min.js"></script>
+    <script type="text/javascript" src="../js/app/utils.js"></script>
+    <script type="text/javascript" src="../js/app/app.js"></script>
+    <script type="text/javascript" src="../js/service/common-service.js"></script>
+<style>
+    body{font-family:SimHei,'Helvetica Neue',Arial,'Droid Sans',sans-serif;font-size:14px;color:#333;background:#f2f2f2;background:url(../img/login-bg.png) no-repeat;background-size:cover;}
+    html,body{
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+    a, a.link{color:#666;text-decoration:none;font-weight:500;}
+    a, a.link:hover{color:#666;}
+    h1,h2,h3,h4,h5,h6{font-weight: normal;}
+
+    .login{
+        width: 100%;
+        position: fixed;
+        top: calc(50% - 110px);
+    }
+    .welcome{width:100%;margin:25% 0;}
+    .welcome img{width:100%;}
+    .login-form{
+        padding: 0 30px;
+    }
+    .login-inp{margin-top:15px;border:1px solid #fff;border-radius:25px;}
+    .login-inp label{width:4em;text-align:center;display:inline-block;color:#fff;}
+    .login-inp input{line-height:40px;color:#fff;background-color:transparent;border:none;outline: none;margin: 0;font-size: 14px;}
+    .login-inp a{display:block;width:100%;text-align:center;line-height:40px;color:#fff;font-size:16px;letter-spacing:5px;}
+    .login-txt{text-align:center;color:#fff;padding: 6px;}
+    .login-txt a{color:#fff;padding:0 5px;}
+    input{
+        padding-left: 20px;
+    }
+    input::-webkit-input-placeholder {
+        /* placeholder颜色  */
+        color: #fff;
+    }
+    input::-moz-placeholder {
+        /* placeholder颜色  */
+        color: #fff;
+    }
+    .error{
+        color: red;
+        padding-left: 20px;
+        margin-top: 10px;
+    }
+</style>
+<body class="box-vertical-center" ng-app="myApp" >
+    <div class="login" ng-controller="LoginCtrl">
+        <div class="login-form">
+            <div class="login-inp">
+                <label>平台</label><input type="text" placeholder="请输入平台编号" ng-model="platformCode" ng-change="platformError=''"></div>
+            <div class="error">{{platformError}}</div>
+            <div class="login-inp"><label>用户名</label><input type="text" ng-model="username" ng-change="error=''"></div>
+            <div class="login-inp"><label>密码</label><input type="password" ng-model="password" ng-change="error=''"></div>
+            <div class="error">{{error}}</div>
+            <div class="login-inp" style="background-color: #88c1e3;border: #1f6377;" ng-if="!isLogin"><a href="javascript:void(0)" ng-click="login()">立即登录</a></div>
+            <div class="login-inp" style="background-color: #88c1e3;border: #1f6377;" ng-if="isLogin" disabled><a href="javascript:void(0)" >正在登录...</a></a></div>
+        </div>
+        <!--<div class="login-txt"><a href="#">立即注册</a>|<a href="#">忘记密码？</a></div>-->
+    </div>
+    <script src="../components/fastclick-master/lib/fastclick.js"></script>
+    <script src="../js/my/notify.js"></script>
+    <script src="../components/dropload-gh-pages/dist/dropload.min.js"></script>
+    <script src="../components/handlebars-v4.0.10.js"></script>
+    <script type="text/javascript" src="../js/controller/login.js"></script>
+</body>
+</html>

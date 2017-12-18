@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>站点监控列表</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <link rel="stylesheet" href="../components/mui/css/mui.min.css">
+    <link rel="stylesheet" href="../components/mui/css/icons-extra.css">
+    <link rel="stylesheet" href="../css/my.css">
+    <link rel="stylesheet" href="../css/setting.css">
+    <style>
+        html,
+        body {
+            background-color: #efeff4;
+        }
+        /*p {*/
+            /*text-indent: 22px;*/
+        /*}*/
+        .site-value .mui-icon {
+            font-size: 14px;
+            color: #007aff;
+            margin-left: -15px;
+            padding-right: 10px;
+        }
+        input {
+            color: #000;
+        }
+        .mui-grid-view.mui-grid-9 .mui-media .mui-icon {
+            font-size: 1.6em;
+            position: relative;
+            padding: 0;
+            margin: 0;
+        }
+        .mui-grid-view.mui-grid-9 {
+            border: 0;
+        }
+        .mui-grid-view.mui-grid-9 .mui-media {
+            border: 0;
+        }
+        .mui-table-view.mui-grid-view .mui-table-view-cell .mui-media-body {
+            font-size: 12px;
+        }
+        .red{
+            color: red !important;
+        }
+        .mui-grid-view.mui-grid-9 {
+            background-color: transparent;
+            border-radius: 0;
+        }
+        .site-list .mui-card:nth-child(odd){
+            background: -webkit-gradient(linear, 0 0, 0 bottom, from(#CFD9DF), to(#E2EBF0));
+        }
+        .site-list .mui-card:nth-child(even){
+            /*background: -webkit-gradient(linear, 0 0, 0 bottom, from(#FDFBFB), to(#EBEDEE));*/
+            /*background: -webkit-gradient(linear, 0 0, 0 bottom, from(#FDFCFB), to(#E2D1C3));*/
+            background: -webkit-gradient(linear, 0 0, 0 bottom, from(#CFD9DF), to(#E2EBF0));
+        }
+        .mui-table-view-cell.mui-media{
+            border-radius: 0 !important;
+        }
+        .mui-content{
+            padding-left: 0;
+            top:0px;
+        }
+        .text-red{
+            color: red !important;
+        }
+        .text-grey{
+            color: #6d6d6d !important;
+        }
+        header.bg-header{
+             background-color: #2856b6;
+         }
+        .bg-header h1{
+            color: #fff;
+        }
+        .bg-header .mui-action-back{
+            color: #fff;
+        }
+        .info-list span{
+            display: inline-block;
+        }
+        .task-title{
+            font-weight: normal;
+            line-height: 22px;
+            position: relative;
+            padding-right: 80px;
+            margin: 0;
+        }
+        .info-list{
+            margin-bottom: 0;
+        }
+        .task-title .time{
+            position: absolute;
+            right: 0;
+            top:0;
+        }
+        .info-list .status{
+            float: right;
+            color: #007aff;
+        }
+        .cell-body{
+            padding: 11px 16px;
+        }
+        .cell-footer{
+            border-top: #eee 1px solid;
+            padding: 6px 16px;
+            line-height: 26px;
+        }
+        .mui-bar-nav~.mui-content{
+            margin-top: 60px;
+        }
+        .task-list .mui-table-view .mui-media-object{
+            line-height: 32px;
+            max-width: 32px;
+            height: 32px;
+            margin-top: 5px;
+        }
+        .mui-center.mui-title{
+            margin-left: 0 !important;
+        }
+    </style>
+    <script type="text/javascript" src="../components/libs/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="../components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="../components/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script type="text/javascript" src="../components/me-lazyimg-master/me-lazyimg.js"></script>
+    <script type="text/javascript" src="../js/app/app.js"></script>
+    <!--<script type="text/javascript" src="./js/router/router.js"></script>-->
+    <script type="text/javascript" src="../js/controller/sites.js"></script>
+    <script type="text/javascript" src="../js/controller/task.js"></script>
+</head>
+
+<body ng-app="myApp">    <!--主界面部分-->
+<!--侧滑菜单部分-->
+<div id="offCanvasWrapper" class="mui-off-canvas-wrap">
+    <div class="mui-inner-wrap" id="main" ng-controller="TaskBaseCtrl">
+        <div class="">
+            <header class="mui-bar mui-bar-nav bg-header mui-segmented-control-vertical" style="z-index:0;">
+                <a class="mui-icon mui-action-menu mui-pull-left" onclick="startCaptureQR()"><i class="header-icon white icon-scan"></i></a>
+                <h1 class="mui-title" id="header_title">抢单</h1>
+                <a onclick="location.href='add-task.html'" class="mui-action-menu mui-icon mui-pull-right" ><i class="header-icon white icon-add"></i></a>
+            </header>
+            <div id="competition_tasks" class="mui-content no-padding mui-control-content mui-active task-list" style="bottom: 60px;" ng-controller="CompetitionTaskListCtrl" ng-cloak ng-if="permission.taskView">
+                <div class="mui-scroll1" ng-if="tasks.length" >
+                    <ul class="mui-table-view mui-table-view-striped mui-table-view-condensed mui-segmented-control-vertical grab-task-list">
+                        <li class="mui-table-view-cell" ng-repeat="task in tasks" data-id="{{task.id}}">
+                            <div class="mui-table">
+                                <div class="mui-table-cell mui-col-xs-10">
+                                    <h4 class="mui-ellipsis">
+                                        <img src="./img/task_type_{{task.task_type_id}}.png">
+                                        <label>{{ task.task_type_name }}单</label>
+                                        <span class="header-time">{{ task.create_time }}</span>
+                                        <span class="header-location" ng-if="task.distance"><i class="icon icon-ms location"></i><span class="text-red" style="margin-right: 2px;">{{task.distance}}</span>公里</span>
+                                    </h4>
+                                    <h5 style="color: #444;">{{task.name}}</h5>
+                                    <h5><i class="icon icon-xs map"></i>{{task.station_name}}</h5>
+                                    <h5><i class="icon icon-xs clock"></i><span style="color:#dd524d"> {{ task.expect_complete_time }}</span> 前完成</h5>
+                                </div>
+                                <div class="btn-grab" ng-controller="GrabTaskCtrl" ng-click="toGrabTask($event, task)"><label>抢单</label></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="page-alert-wrapper" ng-if="competitionLoading">
+                    <div class="page-alert">
+                        <span class="mui-spinner"></span>
+                        <div class="alert-text info">正在加载...</div>
+                    </div>
+                </div>
+                <div class="page-alert-wrapper" ng-if="tasks.length==0 && !competitionLoading">
+                    <div class="page-alert">
+                        <i class="alert-icon nodata-info"></i>
+                        <div class="alert-text info">无发布任务</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="my_tasks" class="mui-content no-padding mui-control-content task-list" style="bottom: 60px;" ng-controller="TaskListCtrl" ng-cloak ng-if="permission.taskView">
+                <div class="mui-scroll1" ng-if="tasks.length">
+                    <ul class="mui-table-view mui-table-view-striped mui-table-view-condensed mui-segmented-control-vertical">
+                        <li class="mui-table-view-cell mui-media " ng-repeat="task in tasks" data-id="{{task.id}}">
+                            <img class="mui-media-object mui-pull-left" src="./img/task_type_{{task.task_type_id}}.png">
+                            <div class="mui-media-body">
+                                <h4 class="mui-ellipsis task-title" style="margin-top: 0">
+                                    <strong>{{task.task_type_name}}</strong>: {{ task.name }}
+                                    <span class="mui-h5 time">{{task.last_modified_time.substring(5)}}</span>
+                                </h4>
+                                <h5 class="info-list">
+                                    <span class="mui-h6 mui-ellipsis" style="font-size: 14px;">
+                                        上一环节处理人：{{task.pre_handler_name}}
+                                    </span>
+                                    <span class="status {{task.status}}">{{task.stage}}</span>
+                                </h5>
+                                <h5 class="info-list" ng-if="task.station_name">
+                                    <span class="mui-h6 mui-ellipsis" style="font-size: 14px;">
+                                        <i class="mui-icon-extra footer-icon sites icon-xs mr8"></i>{{task.station_name}}
+                                    </span>
+                                </h5>
+                            </div>
+                            <div style="border-top: #eee 1px solid;margin-top:6px;" ng-if="task.stage_id == TaskStatus.Accepted || task.stage_id == TaskStatus.Coming">
+                                <button class="mui-pull-right mui-btn mui-btn-primary mui-btn-outlined" ng-if="task.stage_id == TaskStatus.Accepted" style="margin: 6px 0 -6px 0;padding: 2px 6px;" ng-click="taskHandler.gotoSpot($event, task.id)">现在出发</button>
+                                <button class="mui-pull-right mui-btn mui-btn-primary mui-btn-outlined" ng-if="task.stage_id == TaskStatus.Coming" style="margin: 6px 0 -6px 0;padding: 2px 6px;" ng-click="taskHandler.setArrived($event, task.id, task.station_longitude, task.station_latitude)">到达现场</button>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="page-alert-wrapper" ng-if="todoLoading">
+                    <div class="page-alert">
+                        <span class="mui-spinner"></span>
+                        <div class="alert-text info">正在加载...</div>
+                    </div>
+                </div>
+                <div class="page-alert-wrapper" ng-if="tasks.length==0 && !todoLoading">
+                    <div class="page-alert">
+                        <i class="alert-icon nodata-info"></i>
+                        <div class="alert-text info">暂无待办任务</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="sites" class="mui-content no-padding mui-control-content" style="bottom: 60px;" ng-controller="SiteListCtrl" ng-class="{'mui-active': !permission.taskView}">
+                <div class="mui-scroll1" ng-if="sites.length">
+                    <ul class="mui-table-view mui-table-view-striped mui-table-view-condensed site-list mui-segmented-control-vertical">
+                        <li class="mui-table-view-cell mui-media " ng-repeat="site in sites" data-sn="{{site.station.sn}}" data-name="{{site.station.name}}">
+                            <img class="mui-media-object mui-pull-left" src="../img/poi_officeBuilding.png">
+                            <div class="mui-media-body box-vertical-center" style="min-height: 42px;">
+                                <h4 class="mui-ellipsis task-title" style="margin-top: 0">
+                                    {{site.station.name}}
+                                </h4>
+                                <h5 class="info-list site-var" ng-if="site.important_realtime_datas.length">
+                                    <span style="display: block">{{site.important_realtime_datas[0].name}}:
+                                        <label><span class="value">{{site.important_realtime_datas[0].data}}</span><span class="unit" ng-if="site.important_realtime_datas[0].unit.trim())">{{site.important_realtime_datas[0].unit}}</span></label>
+                                    </span>
+                                    <span style="display: block;margin-top: 6px;">{{site.important_realtime_datas[1].name}}:
+                                        <label><span class="value">{{site.important_realtime_datas[1].data}}</span><span class="unit" ng-if="site.important_realtime_datas[1].unit.trim()">{{site.important_realtime_datas[1].unit}}</span></label>
+                                    </span>
+                                </h5>
+                            </div>
+                            <div style="position: absolute;right: 16px;top: 12px;height: 100%;">
+                                <div style="display:-webkit-box;" ng-if="site.unclosed_envet_amount">
+                                    <div style="width: 22px;"><i class="icon-20X20 event"></i></div>
+                                    <div style="color: #808080;font-size: 14px;">{{site.unclosed_envet_amount}}</div>
+                                </div>
+                                <div style="display:-webkit-box;padding-left: 3px;line-height: 16px;" ng-if="site.unclosed_task_amount">
+                                    <div style="width: 19px;"><i class="icon-24X24 todo-black" style="width: 14px;height: 14px;"></i></div>
+                                    <div style="color: #808080;font-size: 14px;">{{site.unclosed_task_amount}}</div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="page-alert-wrapper" ng-if="isLoading">
+                    <div class="page-alert">
+                        <span class="mui-spinner"></span>
+                        <div class="alert-text info">正在加载...</div>
+                    </div>
+                </div>
+                <div class="page-alert-wrapper" ng-if="sites.length==0 && !isLoading">
+                    <div class="page-alert">
+                        <i class="alert-icon nodata"></i>
+                        <div class="alert-text info">没有站点信息</div>
+                    </div>
+                </div>
+            </div>
+            <div id="profile" class="mui-content no-padding mui-control-content" style="bottom: 60px;margin-top:0px;" ng-controller="settingCtrl">
+
+                <div id="app" class="mui-views">
+                    <div class="mui-view">
+                        <div class="mui-navbar">
+                        </div>
+                        <div class="mui-pages">
+                        </div>
+                    </div>
+                </div>
+                <div id="setting" class="mui-page">
+                        <header class="mui-navbar-inner mui-bar bg-header">
+                            <h1 class="mui-center mui-title">我</h1>
+                        </header>
+                        <div class="mui-page-content">
+                            <ul class="mui-table-view mui-table-view-chevron mt20">
+                                <li class="mui-table-view-cell mui-media">
+                                    <a class="mui-navigate-right" href="#account">
+                                        <img class="mui-media-object mui-pull-left head-img" id="head-img" src="{{ user.photo ? host + user.photo : './img/dark/64X64/profile-outline.png'}}">
+                                        <div class="mui-media-body">
+                                            {{user.name}}
+                                            <p class="mui-ellipsis">{{user.account}}</p>
+                                        </div>
+                                    </a>
+                                </li>
+                            </ul>
+                            <ul class="mui-table-view mui-table-view-chevron mt20" ng-if="company">
+                                <li class="mui-table-view-cell">
+                                    <a href="#company" class="mui-navigate-right">运维公司 <i class="mui-pull-right update">{{company.name}}</i></a>
+                                </li>
+                                <li class="mui-table-view-cell">
+                                    <a href="task-history.html" class="mui-navigate-right">所有任务 <i class="mui-pull-right update"></i></a>
+                                </li>
+                            </ul>
+                            <ul class="mui-table-view mui-table-view-chevron mt20">
+                                <li class="mui-table-view-cell">
+                                    <a>关于快控电管家 <i class="mui-pull-right update">{{version}}</i></a>
+                                </li>
+                                <li class="mui-table-view-cell">
+                                    <a class="mui-navigate-right" href="#share">分享 <i class="mui-pull-right update"></i></a>
+                                </li>
+                            </ul>
+                            <ul class="mui-table-view mt20">
+                                <li class="mui-table-view-cell mui-segmented-control-vertical" style="text-align: center;">
+                                    <a class="text-red" ng-click="logout()">退出登录</a>
+                                </li>
+                            </ul>
+                        </div>
+                </div>
+                <!-- 用户账号 -->
+                <div id="account" class="mui-page" style="">
+                    <header class="mui-navbar-inner mui-bar">
+                        <button type="button" class="mui-left mui-btn mui-btn-link mui-btn-nav mui-pull-left" onclick="history.back()" style="top:8px;">
+                            <span class="mui-icon mui-icon-left-nav"></span>设置
+                        </button>
+                        <h1 class="mui-center mui-title">账号与安全</h1>
+                    </header>
+                    <div class="mui-page-content">
+                        <div class="mui-scroll-wrapper" data-scroll="3">
+                            <div class="mui-scroll" style="transform: translate3d(0px, 0px, 0px) translateZ(0px);">
+                                <ul class="mui-table-view">
+                                    <li class="mui-table-view-cell">
+                                        <a style="line-height: 40px;">头像
+                                            <span class="mui-pull-right head">
+                                            <img class="head-img mui-action-preview" src="{{ user.photo ? host + user.photo : './img/dark/64X64/profile-outline.png'}}" style="position: absolute;right: 15px;">
+                                        </span>
+                                        </a>
+                                    </li>
+                                    <li class="mui-table-view-cell">
+                                        <a>姓名<span class="mui-pull-right">{{user.name}}</span></a>
+                                    </li>
+                                    <li class="mui-table-view-cell">
+                                        <a>账号<span class="mui-pull-right">{{user.account}}</span></a>
+                                    </li>
+                                    <li class="mui-table-view-cell">
+                                        <a>手机号<span class="mui-pull-right">{{user.phone}}</span></a>
+                                    </li>
+                                </ul>
+                                <ul class="mui-table-view" ng-if="user.user_groups.length">
+                                    <li class="mui-table-view-cell">
+                                        <a>角色<span class="mui-pull-right">{{user.user_groups[0].description}}</span></a>
+                                    </li>
+                                </ul>
+                                <ul class="mui-table-view mui-table-view-chevron mt20">
+                                    <li class="mui-table-view-cell">
+                                        <a class="mui-navigate-right" href="#password" style="color:#007aff;">修改密码</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="mui-scrollbar mui-scrollbar-vertical"><div class="mui-scrollbar-indicator" style="transition-duration: 0ms; display: none; height: 8px; transform: translate3d(0px, -8px, 0px) translateZ(0px);"></div></div></div>
+                    </div>
+                </div>
+                <!-- 运维公司信息 -->
+                <div id="company" class="mui-page" style="">
+                    <header class="mui-navbar-inner mui-bar">
+                        <button type="button" class="mui-left mui-btn mui-btn-link mui-btn-nav mui-pull-left" onclick="history.back()" style="top:8px;">
+                            <span class="mui-icon mui-icon-left-nav"></span>设置
+                        </button>
+                        <h1 class="mui-center mui-title">运维公司</h1>
+                    </header>
+                    <div class="mui-page-content">
+                        <div class="mui-scroll-wrapper" data-scroll="3">
+                            <div class="mui-scroll" style="transform: translate3d(0px, 0px, 0px) translateZ(0px);">
+                                <ul class="mui-table-view">
+                                    <li class="mui-table-view-cell">
+                                        <a>公司名称<span class="mui-pull-right">{{company.name}}</span></a>
+                                    </li>
+                                    <li class="mui-table-view-cell">
+                                        <a>地址<span class="mui-pull-right">{{company.province}}{{company.city}}{{company.detail}}</span></a>
+                                    </li>
+                                    <li class="mui-table-view-cell">
+                                        <a>负责人<span class="mui-pull-right">{{company.owner}}</span></a>
+                                    </li>
+                                    <li class="mui-table-view-cell">
+                                        <a>联系电话<span class="mui-pull-right">{{company.owner_cellphone}}</span></a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="mui-scrollbar mui-scrollbar-vertical"><div class="mui-scrollbar-indicator" style="transition-duration: 0ms; display: none; height: 8px; transform: translate3d(0px, -8px, 0px) translateZ(0px);"></div></div></div>
+                    </div>
+                </div>
+                <!--密码修改-->
+                <div id="password" class="mui-page">
+                    <header class="mui-navbar-inner mui-bar">
+                        <button type="button" class="mui-left mui-btn mui-btn-link mui-btn-nav mui-pull-left" id='accountBackBtn' onclick="history.back()" style="top:8px;">
+                            <span class="mui-icon mui-icon-left-nav"></span>账号与安全
+                        </button>
+                        <h1 class="mui-center mui-title">修改密码</h1>
+                    </header>
+                    <div class="mui-page-content">
+                        <form class="mui-input-group">
+                            <div class="mui-input-row">
+                                <label>新密码</label>
+                                <input type="password" placeholder="请填写新密码" id="password1" ng-model="pwd1" ng-change="pwdError=''" ng-blur="(pwd1 && pwd2 && pwd1!=pwd2)?pwdError='两次输入的密码不一致':''">
+                            </div>
+                            <div class="mui-input-row">
+                                <label>确认密码</label>
+                                <input type="password" placeholder="请再次输入新密码" id="password2" ng-model="pwd2" ng-change="pwdError=''" ng-blur="(pwd1 && pwd2 && pwd1!=pwd2)?pwdError='两次输入的密码不一致':''">
+                            </div>
+                            <div class="error" style="margin-bottom:8px;" ng-if="pwdError"><span style="font-size:14px;margin-left: 35%;color: red;">{{pwdError}}</span></div>
+                            <div class="mui-button-row">
+                                <button type="button" class="mui-btn mui-btn-primary" ng-click="savePassword()" style="width: 50%;">确认</button>&nbsp;&nbsp;
+                            </div>
+                        </form>
+                    </div>
+                </div> <!--账号与安全设置页-->
+                <!--分享-->
+                <div id="share" class="mui-page">
+                    <header class="mui-navbar-inner mui-bar">
+                        <button type="button" class="mui-left mui-btn mui-btn-link mui-btn-nav mui-pull-left" onclick="history.back()" style="top:8px;">
+                            <span class="mui-icon mui-icon-left-nav"></span>设置
+                        </button>
+                        <h1 class="mui-center mui-title">应用分享</h1>
+                    </header>
+                    <div class="mui-page-content" style="text-align: center;margin-top: 20px;">
+                        <h4>应用下载二维码
+                        </h4>
+                        <img src="../img/qr.png">
+                    </div>
+                </div> <!--分享-->
+            </div>
+        </div>
+        <div id="map" style="width: 1px;height: 1px;"></div>
+        <nav id="menu" class="mui-bar mui-bar-tab" style="border-top: #e6e4e4 1px solid;padding-top: 2px;box-shadow: none !important;">
+            <a class="mui-tab-item mui-active" href="#competition_tasks" ng-click="chooseNav('抢单')" ng-if="permission.taskView">
+                <span class="mui-icon nav-icon todo" style="font-size: 20px;"></span>
+                <span class="mui-tab-label">抢单</span>
+            </a>
+            <a class="mui-tab-item" href="#my_tasks" ng-click="chooseNav('我的待办')" ng-if="permission.taskView">
+                <span class="mui-icon nav-icon task-history" style="font-size: 20px;"></span>
+                <span class="mui-tab-label">我的待办</span>
+            </a>
+            <a class="mui-tab-item" href="#sites" ng-click="chooseNav('站点监控')" ng-class="{'mui-active': !permission.taskView}">
+                <span class="mui-icon nav-icon sites"></span>
+                <span class="mui-tab-label">站点监控</span>
+            </a>
+            <a class="mui-tab-item" href="#profile" ng-click="chooseNav('站点监控')">
+                <span class="mui-icon nav-icon profile"></span>
+                <span class="mui-tab-label">我</span>
+            </a>
+        </nav>
+    </div>
+</div>
+<script src="../components/mui/js/mui.min.js"></script>
+<script src="../components/mui/js/mui.view.min.js"></script>
+<script src="../components/fastclick-master/lib/fastclick.js"></script>
+<script src="../js/my/notify.js"></script>
+<script src="../components/dropload-gh-pages/dist/dropload.min.js"></script>
+<script src="../components/handlebars-v4.0.10.js"></script>
+<script id="grab-task-template" type="text/x-handlebars-template">
+    <div class="mui-popup mui-popup-in android-dialog" style="display: block;">
+        <div class="mui-popup-inner">
+            <div class="mui-popup-title">
+                <!--<img class="icon icon-ms" src="./img/task_type_{{task_type_name}}.png">-->
+                <label class="mui-ellipsis">{{name}}</label>
+            </div>
+            <div class="mui-popup-text">
+                <!--<h5 style="color: #444;" class="mui-ellipsis-2">{{desp}}</h5>-->
+                <h5><i class="icon icon-xs map"></i>{{station_address}}</h5>
+                <h5><i class="icon icon-xs clock"></i> {{expect_complete_time}}前完成</h5>
+            </div>
+        </div>
+        <button type="button" class="mui-btn mui-btn-primary mui-btn-block" data-role="accept">接单</button>
+        <button type="button" class="mui-btn mui-btn-block" data-role="cancel">取消</button>
+    </div>
+    <div class="mui-popup-backdrop mui-active" style="display: block;"></div>
+</script>
+<script>
+    mui.init();
+    var viewApi = null;
+    $(function () {
+        viewApi = mui('#app').view({    //初始化
+            defaultPage: '#setting'
+        });
+        $("#sites").on('tap', 'li', function () {
+            console.log('open site');
+            window.location.href = 'site-detail.html?site=' + $(this).data('name') + '&sn=' + $(this).data('sn');
+        });
+        $(".task-list").on('tap', 'li', function (e) {
+            console.log('open task');
+            window.location.href = 'task-detail.html?id=' + $(this).data('id');
+        });
+        $(".task-list").on("tap", '.btn-grab,button', function (e) {
+            e.stopPropagation();
+        });
+        var $headerTitle = $("#header_title");
+        $('.mui-bar-tab>a').on("tap click", function () {
+            $headerTitle.html($(this).text());
+        });
+        initFooterMenu();
+    });
+    function initFooterMenu() {
+        var $items = $("#menu .mui-tab-item");
+        $items.data('inited', false).first().data('inited', true);
+        $items.on('click', function () {
+            console.log('menu click');
+        }).on('tap', function () {
+            if (!$(this).data('inited')){
+                var id=this.attributes.href.nodeValue, scope=angular.element(id).scope();
+                if (scope && scope.getDataList){
+                    scope.getDataList();
+                }
+                $(this).data('inited', true);
+            }
+            console.log('menu tap');
+        });
+    }
+    initScroll('#competition_tasks');
+    initScroll('#my_tasks');
+    initScroll('#sites');
+
+    function startCaptureQR() {
+        window.android && window.android.openQRCapturePage();
+    }
+
+    function openDeviceFromQR(data) {   //根据扫码结果打开设备详情
+        console.log(data);
+//        var jsonData = JSON.parse(data);
+        window.location.href = 'device_info.html?sn=' + data.sn;
+    }
+
+</script>
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=ITbaaCqA7nMWRjEIycEpddoUW1AvZvRq"></script>
+
+</body>
+
+</html>

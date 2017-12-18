@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>所有事件</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <link rel="stylesheet" href="../../components/mui/css/mui.min.css">
+    <link rel="stylesheet" href="../../css/my.css">
+    <link rel="stylesheet" href="../../css/icon.css">
+    <link rel="stylesheet" href="../../css/animate.css">
+    <link rel="stylesheet" href="../../components/mui/css/icons-extra.css">
+    <link rel="stylesheet" href="../../css/setting.css">
+    <!--<script type="text/javascript" src="../../cordova.js"></script>-->
+    <!--<script type="text/javascript" src="../../cordova_plugins.js"></script>-->
+    <script type="text/javascript" src="../../components/libs/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script type="text/javascript" src="../../components/angular-animate/angular-animate.js"></script>
+    <script type="text/javascript" src="../../components/angular-ui-router/release/stateEvents.min.js"></script>
+    <script type="text/javascript" src="../../js/app/utils.js"></script>
+    <script type="text/javascript" src="../../js/app/app.js"></script>
+    <script type="text/javascript" src="../../js/controller/device.js"></script>
+    <script type="text/javascript" src="../../js/service/common-service.js"></script>
+    <style>
+        .mui-table-view-cell:after{
+            right:15px;
+        }
+        .title{
+            color:#222;
+        }
+        .offline h4, .offline span{
+            color: grey;
+        }
+        h4.mui-ellipsis{
+            font-weight: normal;
+        }
+        /*.mui-table-view-cell{*/
+            /*padding: 6px 15px 8px 15px;*/
+        /*}*/
+    </style>
+<body class="box-vertical-center" ng-app="myApp" ng-controller="EventListCtrl">
+    <header class="mui-bar mui-bar-nav bg-header">
+        <a class="mui-icon mui-action-back mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
+        <h1 class="mui-title">所有事件</h1>
+        <a onclick="showTopMenu()" class="mui-action-menu mui-icon mui-pull-right" ><i class="header-icon white icon-add"></i></a>
+    </header>
+    <div ng-include="'../../templates/top-menu.html'"></div>
+    <div class="mui-content" ng-cloak>
+        <div class="scroll-wrapper" id="events">
+            <div class="mui-scroll">
+                <ul class="mui-table-view mui-table-view-striped mui-table-view-condensed" ng-if="events.length" style="margin-top:0px;">
+                    <li class="mui-table-view-cell" ng-repeat="e in events">
+                        <div class="mui-table">
+                            <div class="mui-table-cell mui-col-xs-10" ng-class="{'offline': e.status==0}">
+                                <span class="mui-ellipsis" style="font-size: 18px;">{{ e.info }}
+                                </span>
+                                <h5><span class="title">设备</span> ：{{ e.device_name }}</h5>
+                                <h5><span class="title">时间</span> ：{{e.update_time}}</h5>
+                            </div>
+                            <div class="mui-table-cell mui-col-xs-2 mui-text-right">
+                                <!--<span class="mui-h5">12:25</span>-->
+                                <span class="mui-pull-right text-status" ng-if="e.status == 0">已处理</span>
+                                <span class="mui-pull-right text-status danger" ng-if="e.status != 0">未处理</span>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                <div class="page-alert-wrapper" ng-if="eventLoading">
+                    <div class="page-alert">
+                        <span class="mui-spinner"></span>
+                        <div class="alert-text info">正在加载...</div>
+                    </div>
+                </div>
+                <div class="page-alert-wrapper" ng-if="!events.length && !eventLoading">
+                    <div class="page-alert">
+                        <i class="alert-icon nodata-info"></i>
+                        <div class="alert-text info">当前无事件</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<script src="../../components/fastclick-master/lib/fastclick.js"></script>
+<script src="../../js/my/notify.js"></script>
+<script src="../../components/dropload-gh-pages/dist/dropload.min.js"></script>
+<script type="text/javascript" src="../../js/controller/sites.js"></script>
+<script type="text/javascript" src="../../js/controller/device.js"></script>
+<script src="../../js/controller/monitor.js"></script>
+<script src="../../js/controller/kanban.js"></script>
+</body>
+</html>
