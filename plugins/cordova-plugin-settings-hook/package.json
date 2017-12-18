@@ -1,0 +1,68 @@
+{
+  "_from": "cordova-plugin-settings-hook",
+  "_id": "cordova-plugin-settings-hook@0.2.7",
+  "_inBundle": false,
+  "_integrity": "sha1-hRaFdgaZAOXwIAJa+q66iSOqT8g=",
+  "_location": "/cordova-plugin-settings-hook",
+  "_phantomChildren": {
+    "xmldom": "0.1.27"
+  },
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "cordova-plugin-settings-hook",
+    "name": "cordova-plugin-settings-hook",
+    "escapedName": "cordova-plugin-settings-hook",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/cordova-plugin-settings-hook/-/cordova-plugin-settings-hook-0.2.7.tgz",
+  "_shasum": "85168576069900e5f020025afaaeba8923aa4fc8",
+  "_spec": "cordova-plugin-settings-hook",
+  "_where": "/Users/luohusi/workspace/cordova/cordovaTest",
+  "author": {
+    "name": "Mirco Cipriani"
+  },
+  "bugs": {
+    "url": "https://github.com/mircoc/cordova-plugin-settings-hook/issues"
+  },
+  "bundleDependencies": false,
+  "cordova": {
+    "id": "cordova-plugin-settings-hook",
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  },
+  "dependencies": {
+    "plist": "^2.1.0"
+  },
+  "deprecated": false,
+  "description": "Cordova plugin helpful to modify Android and iOS settings with config.xml parameters.\n    \tBased on the work of Devin Jett and Diego Netto on generator-ionic",
+  "devDependencies": {
+    "cross-env": "^5.0.1",
+    "webpack": "^3.0.0"
+  },
+  "homepage": "https://github.com/mircoc/cordova-plugin-settings-hook",
+  "keywords": [
+    "cordova",
+    "configuration",
+    "ecosystem:cordova"
+  ],
+  "license": "MIT",
+  "name": "cordova-plugin-settings-hook",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mircoc/cordova-plugin-settings-hook.git"
+  },
+  "scripts": {
+    "build": "cross-env NODE_ENV=production webpack",
+    "postversion": "git push --tags && npm publish"
+  },
+  "version": "0.2.7"
+}

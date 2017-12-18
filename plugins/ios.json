@@ -1,0 +1,49 @@
+{
+  "prepare_queue": {
+    "installed": [],
+    "uninstalled": []
+  },
+  "config_munge": {
+    "files": {}
+  },
+  "installed_plugins": {
+    "cordova-plugin-splashscreen": {
+      "PACKAGE_NAME": "com.luohusi.kuaikong"
+    },
+    "cordova-plugin-whitelist": {
+      "PACKAGE_NAME": "com.luohusi.kuaikong"
+    },
+    "cordova-plugin-geolocation": {
+      "PACKAGE_NAME": "com.luohusi.kuaikong"
+    },
+    "cordova-plugin-network-information": {
+      "PACKAGE_NAME": "com.luohusi.kuaikong"
+    },
+    "cordova-plugin-camera": {
+      "PACKAGE_NAME": "com.luohusi.kuaikong"
+    },
+    "cordova-plugin-file": {
+      "PACKAGE_NAME": "com.luohusi.kuaikong"
+    },
+    "cordova-plugin-file-transfer": {
+      "PACKAGE_NAME": "com.luohusi.kuaikong"
+    },
+    "cordova-plugin-inappbrowser": {
+      "PACKAGE_NAME": "com.luohusi.kuaikong"
+    },
+    "phonegap-plugin-barcodescanner": {
+      "CAMERA_USAGE_DESCRIPTION": " ",
+      "PACKAGE_NAME": "com.luohusi.kuaikong"
+    },
+    "cordova-plugin-device-motion": {
+      "PACKAGE_NAME": "com.luohusi.kuaikong"
+    },
+    "cordova-plugin-device": {
+      "PACKAGE_NAME": "com.luohusi.kuaikong"
+    },
+    "cordova-hot-code-push-plugin": {
+      "PACKAGE_NAME": "com.luohusi.kuaikong"
+    }
+  },
+  "dependent_plugins": {}
+}
