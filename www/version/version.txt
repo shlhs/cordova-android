@@ -2,10 +2,10 @@
 	"versionCode": 140,
 	"versionName": "1.4.0",
 	"description": "版本升级测试",
-	"downloadUrl": "http://114.215.90.83/apk/dianguanjia-1.4.0.apk",
+	"downloadUrl": "http://47.93.32.67:8123/version/dianguanjia-1.4.0.apk",
 	"isLaunched": true,
 	"isGatedLaunch": true,
 	"forceUpdate": false,
 	"whiteList": ["zoujian"],
-	"webVersion": "20171123 11:50"
+	"webVersion": "20171221 11:50"
 }
