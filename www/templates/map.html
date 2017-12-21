@@ -33,6 +33,7 @@
     </div>
 </div>
 <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=ITbaaCqA7nMWRjEIycEpddoUW1AvZvRq"></script>
+<script type="text/javascript" src="../components/baidu/map/MarkerManager-1.2.min.js"></script>
 <script src="../components/fastclick-master/lib/fastclick.js"></script>
 <script>
 
@@ -83,41 +84,31 @@
                 }
             });
             var end = new BMap.Point(siteData.longitude, siteData.latitude);
-            if (!window.android){
-                var start = new BMap.Point(121.629574, 31.261891);
-                // 坐标转换
-                var convertor = new BMap.Convertor();
-                var pointArr = [start];
-                convertor.translate(pointArr, 3, 5, function (data) {
-                    driving.search(data.points[0], end);
-                    map.centerAndZoom(end, 15);                 // 初始化地图，设置中心点坐标和地图级别
-                });
-            }else{
-                apiLocation.start(function (longtitude, latitude) {
-                    //如果获取不到用户的定位，则直接显示站点的位置
-                    if (typeof (longtitude) == 'undefined'){
-                        // 添加标注
-                        map.centerAndZoom(end, 15);
-                        map.enableScrollWheelZoom();
-                        var marker = new BMap.Marker(end);
-                        var mgr = new BMapLib.MarkerManager(map,{
-                            maxZoom: 15,
-                            trackMarkers: true
-                        });
-                        mgr.addMarker(marker,1, 15);
-                        mgr.showMarkers();
-                    }else{
-                        var start = new BMap.Point(longtitude, latitude);
-                        // 坐标转换
-                        var convertor = new BMap.Convertor();
-                        var pointArr = [start];
-                        convertor.translate(pointArr, 3, 5, function (data) {
-                            driving.search(data.points[0], end);
-                            map.centerAndZoom(end, 15);                 // 初始化地图，设置中心点坐标和地图级别
-                        });
-                    }
-                });
-            }
+            // 添加标注
+            map.centerAndZoom(end, 15);
+            map.enableScrollWheelZoom();
+            var marker = new BMap.Marker(end);
+            var mgr = new BMapLib.MarkerManager(map,{
+                maxZoom: 15,
+                trackMarkers: true
+            });
+            mgr.addMarker(marker,1, 15);
+            mgr.showMarkers();
+            apiLocation.start(function (longtitude, latitude) {
+                //如果获取不到用户的定位，则直接显示站点的位置
+                if (longtitude && latitude) {
+                    // 添加标注
+                    var start = new BMap.Point(longtitude, latitude);
+                    // 坐标转换
+                    var convertor = new BMap.Convertor();
+                    var pointArr = [start];
+                    convertor.translate(pointArr, 3, 5, function (data) {
+                        driving.search(data.points[0], end);
+                        map.centerAndZoom(end, 15);                 // 初始化地图，设置中心点坐标和地图级别
+                    });
+                }
+            });
+
         }
 
         getSite();

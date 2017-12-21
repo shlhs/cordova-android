@@ -320,6 +320,7 @@ app.controller('CompetitionTaskListCtrl', function ($scope, $rootScope, scroller
     }
 
     $scope.getDataList = function() {
+        scrollerService.initScroll('#competition_tasks', $scope.getDataList);
         var company = userService.company;
         if (company && (company.length > 1 || company.length === 0)){    // 有两种情况，一种是该用户没有公司，一种是该用户为平台人员
             $scope.isLoading = false;
@@ -341,7 +342,6 @@ app.controller('CompetitionTaskListCtrl', function ($scope, $rootScope, scroller
                 if (!result || !result.length) {
                     $scope.tasks = [];
                     $scope.$apply();
-                    scrollerService.initScroll('#competition_tasks', $scope.getDataList);
                     return;
                 }
                 for (var i in result){
@@ -350,7 +350,6 @@ app.controller('CompetitionTaskListCtrl', function ($scope, $rootScope, scroller
                 $scope.tasks = result;
                 $scope.tasks.sort(sortByCreateTime);
                 $scope.$apply();
-                scrollerService.initScroll('#competition_tasks', $scope.getDataList);
                 getAllDistance(result);
             },
             error: function (a, b, c) {
@@ -419,6 +418,7 @@ app.controller('TaskTodoListCtrl', function ($scope, $rootScope, scrollerService
     var username=userService.username;
 
     $scope.getDataList = function() {
+        scrollerService.initScroll('#my_tasks', $scope.getDataList);
         var company = userService.company;
         if (company && company.length !== 1){
             $scope.isLoading = false;
@@ -447,7 +447,6 @@ app.controller('TaskTodoListCtrl', function ($scope, $rootScope, scrollerService
                 $scope.tasks = result;
                 $scope.tasks.sort(sortByUpdateTime);
                 $scope.$apply();
-                scrollerService.initScroll('#my_tasks', $scope.getDataList);
             },
             error: function (a, b, c) {
                 $scope.isLoading = false;
@@ -533,6 +532,7 @@ app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, us
     };
 
     $scope.getDataList = function() {
+        scrollerService.initScroll("#taskList", $scope.getDataList);
         var company = userService.company;
         if (company && (company.length > 1 || company.length === 0)){
             $scope.isLoading = false;
@@ -542,6 +542,7 @@ app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, us
             $rootScope.login($scope.getDataList);
             return;
         }
+
         ajax.get({
             url: "/opstasks/history/" + company.id,
             data:{
@@ -560,7 +561,6 @@ app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, us
                 }
                 allTasks = result.aaData;
                 $scope.changeTaskType(null, $scope.showType);
-                scrollerService.initScroll("#taskList", $scope.getDataList);
                 $scope.$apply();
             },
             error: function (a,b,c) {

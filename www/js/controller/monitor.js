@@ -7,12 +7,12 @@ app.controller('MonitorListCtrl', function ($scope, $stateParams, scrollerServic
     var sn = GetQueryString('sn');
     function getDataList () {
 
+        scrollerService.initScroll('#monitors', getDataList);
         ajax.get({
             url: '/monitoringscreens/findByStationSn?sn=' + sn,
             success: function (data) {
                 $scope.monitorLoading = false;
                 $scope.monitorScreens = data;
-                scrollerService.initScroll('#monitors', getDataList);
                 $scope.$apply();
             },
             error: function (xhr, status, error) {

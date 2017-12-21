@@ -34,13 +34,13 @@
         <div class="card">
             <ul class="mui-table-view mui-grid-view mui-grid-9 no-border" style="background-color: #fff;">
                 <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
-                    <a ui-sref="index.kanban({sn: sn})">
+                    <a href="/templates/site/device-tasks.html?deviceSn={{deviceSn}}">
                         <span class="mui-icon icon icon-ms icon-task-history"></span>
                         <div class="mui-media-body no-margin">维修历史</div>
                     </a>
                 </li>
                 <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
-                    <a ui-sref="index.eventList({sn: sn})">
+                    <a href="/templates/site/event-list.html?deviceSn={{deviceSn}}">
                         <span class="mui-icon icon icon-ms icon-events">
                         </span>
                         <div class="mui-media-body no-margin">历史事件</div>

@@ -7,6 +7,17 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
     $scope.isLoading = true;
     $scope.varGroups = {};
     var varTrendType = 'DAY';
+
+    var colors = ['#f6d365', '#fda085', '#a1c4fd', '#c2e9fb', '#cfd9df', '#accbee', 'rgb(200, 221, 253)', 'rgb(84, 185, 253)', 'rgb(250, 137, 143)'];
+
+    $scope.getRandomColor = function(index) {
+        // var index = Math.floor(Math.random() * 7 );
+        if (index >= colors.length){
+            index = index % colors.length;
+        }
+        return colors[index];
+    };
+
     function getDataList() {
         ajax.get({
             url: "/homeVargroupNames",

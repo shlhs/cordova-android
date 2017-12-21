@@ -111,7 +111,7 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
                     userService.setPassword('');
                     location.href = 'login.html';
                 }else{
-                    $scope.platformError = '平台不正确，请重新输入';
+                    $scope.platformError = '平台编码不正确，请重新输入';
                     $scope.$apply();
                 }
                 return;
@@ -124,7 +124,7 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
                 userService.setPassword('');
                 location.href = '/templates/login.html';
             }else{
-                $scope.platformError = '查询平台失败，请检查网络';
+                $scope.platformError = '查询平台失败，请检查平台编码是否正确';
                 $scope.$apply();
             }
         });

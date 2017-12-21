@@ -33,8 +33,7 @@
         .summary-list{
             list-style: none;
             padding: 0px;
-            margin:0px;
-            display: -webkit-box;
+            /*display: -webkit-box;*/
             margin: 0 3px;
         }
         .summary-item{
@@ -47,15 +46,8 @@
             margin: 0 3px;
             padding: 8px 0;
             color: #fff;
-        }
-        .summary-item:nth-child(1){
-            background-color: rgb(249, 212, 62);
-        }
-        .summary-item:nth-child(2){
-            background-color: rgb(84, 185, 253);
-        }
-        .summary-item:nth-child(3){
-            background-color: rgb(250, 137, 143);
+            width: calc(33.33% - 6px);
+            margin-bottom: 6px;
         }
         .summary-item:last-child{
             border-right: none;
@@ -144,8 +136,9 @@
     <div class="mui-content" ng-cloak ng-controller="KanbanCtrl">
         <div id="realtime" class=" height-wrap-parent">
             <div ng-show="!isLoading">
-                <ul class="mui-row summary-list" style="padding: 8px 0;">
-                    <li ng-repeat="v in varGroups.keyVarGroupName.data" class="mui-col-xs-6 mui-col-sm-6 summary-item">
+                <ul class="mui-row summary-list" style="padding-top:6px;">
+                    <li ng-repeat="v in varGroups.keyVarGroupName.data" class="mui-col-xs-6 mui-col-sm-6 summary-item"
+                    ng-style="{'background-color': getRandomColor($index)}">
                         <span class="title">{{v.name}}</span>
                         <h4 class="value">{{v.data}}<span class="unit">{{v.unit}}</span></h4>
                     </li>

@@ -1,11 +1,11 @@
 <div>
 <div class="mui-scroll1" style="margin-top:6px;">
-    <div class="card" ng-repeat="site in sites" ng-click="gotoSite(site.station.sn, site.station.name)">
+    <div class="card" ng-repeat="site in sites" ng-click="gotoSite(site.station.sn, site.station.name)" ng-if="sites.length">
         <div class="card-header">{{site.station.name}}</div>
         <div class="card-content">
-            <div class="mui-media">
-                <img class="mui-media-object mui-pull-left media-lg" src="../../img/site-default.png">
-                <div class="mui-media-body box-vertical-center" style="height: 60px;position: relative;">
+            <div class="mui-media" style="display: -webkit-box;-webkit-box-align: center;">
+                <img class="mui-media-object media-lg" src="../../img/site-default.png" style="display: block;">
+                <div class="mui-media-body box-vertical-center" style="position: relative;-webkit-box-flex:1;">
                     <h5 class=" site-var" ng-if="site.important_realtime_datas.length">
                         <span style="display: block">
                             <span class="mui-ellipsis" style="display: inline-block;width:calc(100% - 90px);">{{site.important_realtime_datas[0].name}}</span>
@@ -14,11 +14,18 @@
                                 <span class="unit">{{site.important_realtime_datas[0].unit && site.important_realtime_datas[0].unit}}</span>
                             </label>
                         </span>
-                        <span style="display: block;margin-top: 6px;">
+                        <span style="display: block;margin-top: 6px;" ng-if="site.important_realtime_datas[1]">
                             <span class="mui-ellipsis" style="display: inline-block;width:calc(100% - 90px);">{{site.important_realtime_datas[1].name}}</span>
                             <label>
                                 <span class="value">{{site.important_realtime_datas[1].data}}</span>
                                 <span class="unit">{{site.important_realtime_datas[1] && site.important_realtime_datas[1].unit}}</span>
+                            </label>
+                        </span>
+                        <span style="display: block;margin-top: 6px;" ng-if="site.important_realtime_datas[2]">
+                            <span class="mui-ellipsis" style="display: inline-block;width:calc(100% - 90px);">{{site.important_realtime_datas[2].name}}</span>
+                            <label>
+                                <span class="value">{{site.important_realtime_datas[2].data}}</span>
+                                <span class="unit">{{site.important_realtime_datas[2] && site.important_realtime_datas[2].unit}}</span>
                             </label>
                         </span>
                     </h5>

@@ -10,13 +10,13 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax) {
     $scope.isLoading = true;
 
     $scope.getDataList = function () {
+        scrollerService.initScroll('#sites', $scope.getDataList);
         ajax.get({
             url: "/stations/details",
             success: function(result) {
                 $scope.isLoading = false;
                 $scope.sites = result;
                 $scope.$apply();
-                scrollerService.initScroll('#sites', $scope.getDataList);
             },
             error: function (a,b,c) {
                 $scope.isLoading = false;
@@ -100,6 +100,13 @@ app.controller('SiteBaseInfoCtrl', function ($scope, $timeout, $stateParams, aja
 
 app.controller('EventListCtrl', function ($scope, $stateParams, scrollerService, ajax) {
     $scope.sn = GetQueryString('sn');
+    $scope.isDevice = false;   // 是设备还是站点
+    var deviceSn = GetQueryString("deviceSn");
+    if (deviceSn){
+        $scope.isDevice = true;
+        $scope.sn = deviceSn;
+    }
+
     $scope.events = [];
     $scope.eventLoading = true;
     $scope.unhandledEventCount = 0;
@@ -108,8 +115,13 @@ app.controller('EventListCtrl', function ($scope, $stateParams, scrollerService,
         function formatTime(d) {
             return d.substring(5, 10) + ' ' + d.substring(11, 19);
         }
+        var url = "/stations/" + $scope.sn + "/events";
+        if ($scope.isDevice){
+            url = "/stations/events?deviceSn=" + $scope.sn;
+        }
+        scrollerService.initScroll("#events", $scope.getDataList);
         ajax.get({
-            url: "/stations/" + $scope.sn + "/events",
+            url: url,
             cache: false,
             success: function(result) {
                 $scope.eventLoading = false;
@@ -131,7 +143,6 @@ app.controller('EventListCtrl', function ($scope, $stateParams, scrollerService,
                 });
                 $scope.events = result;
                 cb && cb($scope.events);
-                scrollerService.initScroll("#events", $scope.getDataList);
                 $scope.$apply();
             },
             error: function (a,b,c) {
