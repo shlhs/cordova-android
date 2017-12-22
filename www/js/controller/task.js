@@ -6,8 +6,6 @@
 
 var TaskAction = {Create: 0, Accept: 1, Refuse: 2, Assign: 3, Go: 4, Apply: 5, Reject: 6, Close: 7, Comment: 8, Grab: 9, Arrive: 10, Update: 11};
 var TaskStatus = {ToAccept: 1, ToAssign: 2, Accepted: 3, ToClose: 4, Closed: 5, Competition: 6, Coming: 7, Arrived: 8};
-var UserRole = {SuperUser: 'SUPERUSER', OpsAdmin: 'OPS_ADMIN', OpsOperator: 'OPS_OPERATOR', Normal: 'USER'};
-
 function formatTaskHistoryDesp(taskHistory) {     // 根据任务的action_id处理任务描述
     switch (taskHistory.action_id){
         case TaskAction.Apply:
@@ -114,18 +112,16 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, ajax, $state
 
     var company = userService.company;
     var map = null;
-    $scope.permission = {taskView: true, taskEdit:true};
+    var role = userService.getUserRole();
     $scope.viewName = '';
     $scope.tabName = 'competition_tasks';
     $scope.title = '';
+    $scope.navMenus = [];
 
-    $rootScope.getCompany(initMenu);
     $scope.chooseNav = function (tabName, title) {
         $scope.tabName = tabName;
         $scope.title = title;
-        // $state.go('index.'+tabName);
-        // $scope.$broadcast('tabChange', tabName);
-        var element=angular.element('#' + tabName), scope = element.scope();
+        var element=angular.element('#' + tabName).children().first(), scope = element.scope();
         if (scope.getDataList && !element.data('inited')){
             scope.getDataList();
             element.data('inited', true);
@@ -133,19 +129,50 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, ajax, $state
         angular.element('#' + tabName).addClass('mui-active').siblings().removeClass('mui-active');
     };
 
-    function initMenu() {
-        // $timeout(function () {
-            $scope.chooseNav('competition_tasks', '抢单');
-        // }, 500);
-    }
-    // initMenu();
 
-    if (!Permission.task.canEdit){  // 如果
-        $scope.permission.taskEdit = false;
+    function initMenu() {
+        $scope.navMenus = [];
+        if (role === UserRole.OpsOperator || role === UserRole.OpsAdmin){
+            $scope.navMenus = [
+                {
+                    id: 'competition_tasks',
+                    name: '抢单',
+                    templateUrl: '/templates/task/task-competition-list.html',
+                    icon: 'nav-task-grab'
+                },
+                {
+                    id: 'my_tasks',
+                    name: '所有任务',
+                    templateUrl: '/templates/task/task-list.html',
+                    icon: 'nav-all-tasks'
+                }
+            ];
+        }
+        else if (role === UserRole.SuperUser){
+            $scope.navMenus.push(
+                {
+                    id: 'my_tasks',
+                    name: '所有任务',
+                    templateUrl: '/templates/task/task-list.html',
+                    icon: 'nav-all-tasks'
+                }
+            );
+        }
+
+        $scope.navMenus.push(
+            {
+                id: 'sites',
+                name: '站点监控',
+                templateUrl: '/templates/site/site-list.html',
+                icon: 'nav-sites'
+            }
+        );
     }
-    if (!Permission.task.canView){
-        $scope.permission.taskView = false;
-    }
+    initMenu();
+    $rootScope.login(function () {
+        var menu = $scope.navMenus[0];
+        $scope.chooseNav(menu.id, menu.name);
+    });
 });
 
 app.controller('TaskBaseCtrl', function ($scope, ajax, userService) {

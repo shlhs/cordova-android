@@ -10,8 +10,11 @@ app.run(function ($animate) {
     $animate.enabled(true);
 });
 
-app.controller('MainCtrl', function ($scope) {
+app.controller('MainCtrl', function ($scope, $rootScope, userService) {
+
 });
+
+var UserRole = {SuperUser: 'SUPERUSER', OpsAdmin: 'OPS_ADMIN', OpsOperator: 'OPS_OPERATOR', Normal: 'USER'};
 
 
 app.service('userService', function ($rootScope) {
@@ -84,6 +87,8 @@ app.service('userService', function ($rootScope) {
     this.username = this.getUsername();
     this.password = this.getPassword();
     this.company = this.getCompany();
+
+    $rootScope.permission = {canEditTask: this.getUserRole() != UserRole.Normal};
 });
 
 app.service('platformService', function () {
@@ -133,9 +138,10 @@ app.service('ajax', function ($rootScope, platformService, userService, $http) {
     var host = platformService.host;
     $rootScope.host = host;
     var username = userService.getUsername(), password = userService.getPassword();
+
     $rootScope.user = null;
     $rootScope.login = function(callback) {
-
+        console.log('login: username=' + username + ', password='+password);
         var url = host + '/login';
         var option = {
             url: url,
@@ -189,7 +195,7 @@ app.service('ajax', function ($rootScope, platformService, userService, $http) {
                 callback && callback();
             }
         });
-    }
+    };
 
     function request(option) {
         if (option.url.indexOf("http://") === 0){

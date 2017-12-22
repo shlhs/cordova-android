@@ -1,3 +1,4 @@
+<div ng-controller="CompetitionTaskListCtrl">
 <div class="mui-scroll1">
     <ul class="mui-table-view mui-table-view-striped mui-table-view-condensed card-view grab-task-list" ng-if="tasks.length">
         <li class="mui-table-view-cell task-item" ng-repeat="task in tasks" data-id="{{task.id}}" ng-click="openTask(task.id)">
@@ -30,4 +31,5 @@
         <span class="mui-spinner"></span>
         <div class="alert-text info">正在加载...</div>
     </div>
+</div>
 </div>

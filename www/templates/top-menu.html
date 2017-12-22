@@ -3,7 +3,7 @@
     <div class="mui-scroll-wrapper" data-scroll="1" style="position: static;">
         <div class="mui-scroll" style="transform: translate3d(0px, 0px, 0px) translateZ(0px);position: static;">
             <ul class="mui-table-view">
-                <li class="mui-table-view-cell">
+                <li class="mui-table-view-cell" ng-if="permission.canEditTask">
                     <a href="/templates/task/add-task.html" style="margin-bottom:-6px;"><i class="icon icon-ms icon-add" style="float: left;width:18px;height:18px;margin-right:6px;"></i>派单</a>
                 </li>
                 <li class="mui-table-view-cell">
