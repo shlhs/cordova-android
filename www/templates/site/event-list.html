@@ -55,15 +55,14 @@
                     <li class="mui-table-view-cell" ng-repeat="e in events">
                         <div class="mui-table">
                             <div class="mui-table-cell mui-col-xs-10" ng-class="{'offline': e.status==0}">
-                                <span class="mui-ellipsis" style="font-size: 18px;">{{ e.info }}
+                                <span class="mui-ellipsis-2" style="font-size: 18px;">{{ e.info }}
                                 </span>
                                 <h5><span class="title">设备</span> ：{{ e.device_name }}</h5>
                                 <h5><span class="title">时间</span> ：{{e.update_time}}</h5>
                             </div>
                             <div class="mui-table-cell mui-col-xs-2 mui-text-right">
-                                <!--<span class="mui-h5">12:25</span>-->
-                                <span class="mui-pull-right text-status" ng-if="e.status == 0">已处理</span>
-                                <span class="mui-pull-right text-status danger" ng-if="e.status != 0">未处理</span>
+                                <span class="mui-pull-right text-status" ng-if="e.status == 0" style="position: absolute;right: 0;">已处理</span>
+                                <span class="mui-pull-right text-status danger" ng-if="e.status != 0" style="position: absolute;right: 0;">未处理</span>
                             </div>
                         </div>
                     </li>
