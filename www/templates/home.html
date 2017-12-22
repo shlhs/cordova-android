@@ -133,18 +133,8 @@
 <div ng-include="'/templates/top-menu.html'"></div>
     <div class="mui-content no-padding" style="height: auto;">
             <div class="scroll" style="height: 100%;overflow-y: hidden;" ng-controller="TaskBaseCtrl">
-                <div ng-controller="CompetitionTaskListCtrl" id="competition_tasks" class=" no-padding mui-control-content scroll-wrapper"
-                     ng-cloak ng-class="{'mui-active': tabName === 'competition_tasks'}" style="bottom:54px;">
-                    <div ng-include="'/templates/task/task-competition-list.html'"></div>
-                </div>
-                <div ng-controller="TaskListCtrl" id="my_tasks" class="no-padding mui-control-content scroll-wrapper"
-                     ng-cloak ng-class="{'mui-active': tabName === 'my_tasks'}" style="bottom:54px;">
-                    <div ng-include="'/templates/task/task-list.html'"></div>
-                </div>
-
-                <div ng-controller="SiteListCtrl" id="sites" class=" no-padding mui-control-content scroll-wrapper"
-                     ng-class="{'mui-active': tabName === 'sites'}" style="bottom:54px;">
-                    <div ng-include="'/templates/site/site-list.html'"></div>
+                <div ng-repeat="menu in navMenus" id={{menu.id}} class=" no-padding mui-control-content scroll-wrapper"
+                     ng-class="{'mui-active': tabName === menu.id}" ng-include="menu.templateUrl" style="bottom:54px;">
                 </div>
                 <div ng-controller="SettingCtrl" id="setting" class=" no-padding mui-control-content"
                      ng-class="{'mui-active': tabName === 'setting'}">
@@ -153,20 +143,10 @@
             </div>
     </div>
 <nav id="menu" class="mui-bar mui-bar-tab bg-footer nav-horizontal" style="box-shadow: none !important;z-index:0;">
-    <a class="mui-tab-item mui-active" href="javascript:void(0)" ng-click="chooseNav('competition_tasks', '抢单')"
-       ng-class="{'mui-active': tabName==='competition_tasks'}">
-        <span class="mui-icon nav-icon nav-task-grab" style="font-size: 20px;"></span>
-        <span class="mui-tab-label">抢单</span>
-    </a>
-    <a class="mui-tab-item" href="javascript:void(0)" ng-click="chooseNav('my_tasks', '所有任务')"
-       ng-class="{'mui-active': tabName==='my_tasks'}">
-        <span class="mui-icon nav-icon nav-all-tasks" style="font-size: 20px;"></span>
-        <span class="mui-tab-label">所有任务</span>
-    </a>
-    <a class="mui-tab-item" href="javascript:void(0)" ng-click="chooseNav('sites', '站点监控')"
-       ng-class="{'mui-active': tabName==='sites'}">
-        <span class="mui-icon nav-icon nav-sites"></span>
-        <span class="mui-tab-label">站点监控</span>
+    <a class="mui-tab-item" href="javascript:void(0)" ng-repeat="menu in navMenus"
+       ng-click="chooseNav(menu.id, menu.name)" ng-class="{'mui-active': tabName===menu.id}">
+        <span class="mui-icon nav-icon {{menu.icon}}"></span>
+        <span class="mui-tab-label">{{menu.name}}</span>
     </a>
     <a class="mui-tab-item" href="javascript:void(0)" ng-click="chooseNav('setting', '我')" ng-class="{'mui-active': tabName==='setting'}">
         <span class="mui-icon nav-icon nav-setting"></span>

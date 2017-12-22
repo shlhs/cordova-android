@@ -1,4 +1,4 @@
-
+<div ng-controller="TaskListCtrl">
 <div id="task_types" class="mui-slider-indicator mui-segmented-control mui-segmented-control-inverted" style="margin-left: 0;position: fixed;top:60px;background-color: #fff;box-shadow: 0 0 1px #ccc;">
     <a class="mui-control-item mui-active" ng-click="changeTaskType('$event', 'todo')" ng-class="{'mui-active': showType=='todo'}">
         待办({{todoCount}})
@@ -53,8 +53,4 @@
         <div class="alert-text info">正在加载...</div>
     </div>
 </div>
-<script>
-    function openTask(taskId) {
-        location.href = '/templates/task/task-detail.html?id=' + taskId;
-    }
-</script>
+</div>
