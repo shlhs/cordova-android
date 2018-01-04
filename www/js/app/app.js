@@ -88,7 +88,7 @@ app.service('userService', function ($rootScope) {
     this.password = this.getPassword();
     this.company = this.getCompany();
 
-    $rootScope.permission = {canEditTask: this.getUserRole() != UserRole.Normal};
+    $rootScope.permission = {canEditTask: this.getUserRole() != UserRole.Normal && this.getUserRole() != UserRole.OpsOperator};
 });
 
 app.service('platformService', function () {
