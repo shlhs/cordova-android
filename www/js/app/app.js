@@ -116,6 +116,7 @@ app.service('platformService', function () {
     this.setLatestPlatform = function (platform) {
         setStorageItem('latestPlatform', JSON.stringify(platform));
         this.host = platform.url;
+        this.thumbHost = this.getImageThumbHost();
     };
 
     this.getLatestPlatform = function () {
@@ -128,10 +129,22 @@ app.service('platformService', function () {
     };
 
     this.getHost = function () {
+        // 格式为： http://ip:port/v1
         var platform = this.getLatestPlatform();
         return platform ? platform.url : null;
     };
+
+    this.getImageThumbHost = function () {      // 获取图片压缩服务的地址
+        // 格式为： http://ip:8888/unsafe
+        return this.host.substring(0, this.host.indexOf(':', 5)) + ":8888/unsafe"
+    };
+
+    this.getImageUrl = function (width, height, imageUrl) {
+        return this.thumbHost + '/' + width + 'x' + height + '/' + imageUrl;
+    };
+
     this.host = this.getHost();
+    this.thumbHost = this.getImageThumbHost();
 });
 
 app.service('ajax', function ($rootScope, platformService, userService, $http) {
