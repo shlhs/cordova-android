@@ -18,7 +18,7 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, p
                 result.forEach(function (d) {
 
                     if (d.station.photo_src_link) {
-                        d.site_image = platformService.getImageUrl(60, 60, platformService.host + d.station.photo_src_link);
+                        d.site_image = platformService.getImageUrl(180, 180, platformService.host + d.station.photo_src_link);
                     }
                     else {
                         d.site_image = '/img/site-default.png';
@@ -63,7 +63,7 @@ app.controller('SiteBaseInfoCtrl', function ($scope, $timeout, $stateParams, aja
                 data.address = (data.address_province?data.address_province:'') + (data.address_city?data.address_city:'')
                     + (data.address_district?data.address_district:'') + data.address;
                 // 站点图片
-                var width = window.screen.width, height=Math.round(width/2);
+                var width = window.screen.width*3, height=Math.round(width/2);
                 if (data.photo_src_link) {
                     data.site_image = platformService.getImageUrl(width, height, platformService.host + data.photo_src_link);
                 }

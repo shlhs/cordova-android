@@ -11,6 +11,23 @@
     <!--标准mui.css-->
     <link rel="stylesheet" href="../components/mui/css/mui.min.css">
     <link rel="stylesheet" href="../css/my.css" />
+    <style>
+
+        .icon{
+            display: inline-block;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: 50%;
+        }
+        .icon-32{
+            height: 32px;
+            width: 32px;
+        }
+        .icon-navigate{
+            background-image: url("../img/light/64X64/navigator.png");
+        }
+
+    </style>
     <script type="text/javascript" src="../components/libs/jquery-2.1.4.js"></script>
     <script type="text/javascript" src="../js/app/utils.js"></script>
     <script type="text/javascript" src="../components/angular/angular.min.js"></script>
@@ -30,11 +47,19 @@
         <div style="height: 100%;width: 100%;">
             <div id="map" style="width: 100%;height: 100%;"></div>
         </div>
+        <div style="position: fixed;bottom: 0px;width: 100%;text-align: center;" ng-if="enableNavigate">
+            <button type="button" class="mui-btn mui-btn-warning mui-icon mui-btn-block mui-icon-navigate"
+                    style="width: 50%;padding: 6px;background-color: #FF5722;border: #FF5722 1px solid;" ng-click="openThirdMap()">
+                <!--<i class="icon icon-32 icon-navigate"></i>-->
+                导航
+            </button>
+        </div>
     </div>
 </div>
 <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=ITbaaCqA7nMWRjEIycEpddoUW1AvZvRq"></script>
 <script type="text/javascript" src="../components/baidu/map/MarkerManager-1.2.min.js"></script>
 <script src="../components/fastclick-master/lib/fastclick.js"></script>
+<script src="../js/my/notify.js"></script>
 <script>
 
     $("#head_title").html(GetQueryString('stationName'));
@@ -44,6 +69,7 @@
 
         $scope.siteData = {};
         $scope.distance = '';
+        $scope.enableNavigate = false;
         function getSite() {
             var host = JSON.parse(getStorageItem('latestPlatform')).url;
             $.ajax({
@@ -94,15 +120,17 @@
             });
             mgr.addMarker(marker,1, 15);
             mgr.showMarkers();
+            $scope.enableNavigate = true;
+            $scope.$apply();
             apiLocation.start(function (longtitude, latitude) {
                 //如果获取不到用户的定位，则直接显示站点的位置
-                if (longtitude && latitude) {
+                if (longtitude && latitude){
                     // 添加标注
                     var start = new BMap.Point(longtitude, latitude);
                     // 坐标转换
                     var convertor = new BMap.Convertor();
                     var pointArr = [start];
-                    convertor.translate(pointArr, 3, 5, function (data) {
+                    convertor.translate(pointArr, 3, 5, function (data) {   //3: gcj02坐标，5：百度坐标
                         driving.search(data.points[0], end);
                         map.centerAndZoom(end, 15);                 // 初始化地图，设置中心点坐标和地图级别
                     });
@@ -110,6 +138,19 @@
             });
 
         }
+
+        // 打开第三方地图
+        $scope.openThirdMap = function () {
+            if (window.android && window.android.gotoThirdMap){
+                var sitePoint = new BMap.Point($scope.siteData.longitude, $scope.siteData.latitude);
+
+                var convertor = new BMap.Convertor();
+                var pointArr = [sitePoint];
+                convertor.translate(pointArr, 5, 3, function (data) {   //3: gcj02坐标，5：百度坐标
+                    window.android.gotoThirdMap($scope.siteData.latitude, $scope.siteData.longitude, data.points[0].lat, data.points[0].lng);
+                });
+            }
+        };
 
         getSite();
     });
