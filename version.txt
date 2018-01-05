@@ -2,7 +2,7 @@
 	"versionCode": 140,
 	"versionName": "1.4.0",
 	"description": "",
-	"downloadUrl": "http://114.215.90.83/apk/dianguanjia-1.4.0.apk",
+	"downloadUrl": "http://120.78.49.166:8123/version/mingyang-dianguanjia-1.4.0.apk",
 	"isLaunched": true,
 	"isGatedLaunch": true,
 	"forceUpdate": false,
