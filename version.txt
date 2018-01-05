@@ -1,8 +1,8 @@
 {
-	"versionCode": 140,
-	"versionName": "1.4.0",
+	"versionCode": 110,
+	"versionName": "1.1.0",
 	"description": "",
-	"downloadUrl": "http://120.78.49.166:8123/version/mingyang-dianguanjia-1.4.0.apk",
+	"downloadUrl": "http://120.78.49.166:8123/version/mingyang-manager-1.1.0.apk",
 	"isLaunched": true,
 	"isGatedLaunch": true,
 	"forceUpdate": false,
