@@ -5,7 +5,7 @@
  */
 
 
-app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax) {
+app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, platformService) {
     $scope.sites = [];
     $scope.isLoading = true;
 
@@ -15,6 +15,15 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax) {
             url: "/stations/details",
             success: function(result) {
                 $scope.isLoading = false;
+                result.forEach(function (d) {
+
+                    if (d.station.photo_src_link) {
+                        d.site_image = platformService.getImageUrl(180, 180, platformService.host + d.station.photo_src_link);
+                    }
+                    else {
+                        d.site_image = '/img/site-default.png';
+                    }
+                });
                 $scope.sites = result;
                 $scope.$apply();
             },
@@ -42,7 +51,7 @@ app.controller('SiteDetailCtrl', function ($scope, $location, $stateParams) {
     $scope.siteData = null;
 });
 
-app.controller('SiteBaseInfoCtrl', function ($scope, $timeout, $stateParams, ajax) {      //  站点基本信息
+app.controller('SiteBaseInfoCtrl', function ($scope, $timeout, $stateParams, ajax, platformService) {      //  站点基本信息
     var sn = $scope.sn;
     $scope.baseLoading = true;
     $scope.unhandledEventCount = 0;
@@ -53,6 +62,14 @@ app.controller('SiteBaseInfoCtrl', function ($scope, $timeout, $stateParams, aja
                 $scope.baseLoading = false;
                 data.address = (data.address_province?data.address_province:'') + (data.address_city?data.address_city:'')
                     + (data.address_district?data.address_district:'') + data.address;
+                // 站点图片
+                var width = window.screen.width*3, height=Math.round(width/2);
+                if (data.photo_src_link) {
+                    data.site_image = platformService.getImageUrl(width, height, platformService.host + data.photo_src_link);
+                }
+                else {
+                    data.site_image = '/img/background/site-default.png';
+                }
                 $scope.siteData = data;
                 getUnhandledEventCount(data);
                 $scope.$apply();

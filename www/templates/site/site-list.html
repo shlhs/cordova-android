@@ -4,7 +4,7 @@
         <div class="card-header">{{site.station.name}}</div>
         <div class="card-content">
             <div class="mui-media" style="display: -webkit-box;-webkit-box-align: center;">
-                <img class="mui-media-object media-lg" src="../../img/site-default.png" style="display: block;">
+                <img class="mui-media-object media-lg" ng-src="{{site.site_image}}" style="display: block;">
                 <div class="mui-media-body box-vertical-center" style="position: relative;-webkit-box-flex:1;">
                     <h5 class=" site-var" ng-if="site.important_realtime_datas.length">
                         <span style="display: block">
