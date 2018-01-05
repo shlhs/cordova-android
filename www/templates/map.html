@@ -119,7 +119,10 @@
             });
             mgr.addMarker(marker,1, 15);
             mgr.showMarkers();
-            $scope.enableNavigate = true;
+            if (window.android && window.android.gotoThirdMap) {
+                $scope.enableNavigate = true;
+            }
+
             $scope.$apply();
             apiLocation.start(function (longtitude, latitude) {
                 //如果获取不到用户的定位，则直接显示站点的位置
