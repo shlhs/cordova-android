@@ -19,9 +19,9 @@
             background-repeat: no-repeat;
             background-position: 50%;
         }
-        .icon-32{
-            height: 32px;
-            width: 32px;
+        .icon-20{
+            height: 20px;
+            width: 20px;
         }
         .icon-navigate{
             background-image: url("../img/light/64X64/navigator.png");
@@ -48,10 +48,9 @@
             <div id="map" style="width: 100%;height: 100%;"></div>
         </div>
         <div style="position: fixed;bottom: 0px;width: 100%;text-align: center;" ng-if="enableNavigate">
-            <button type="button" class="mui-btn mui-btn-warning mui-icon mui-btn-block mui-icon-navigate"
-                    style="width: 50%;padding: 6px;background-color: #FF5722;border: #FF5722 1px solid;" ng-click="openThirdMap()">
-                <!--<i class="icon icon-32 icon-navigate"></i>-->
-                导航
+            <button type="button" class="mui-btn mui-btn-primary mui-icon mui-btn-block " style="width: 50%;" ng-click="openThirdMap()">
+                <span style="position: relative;display: inline-block;line-height: 24px;"><i class="icon icon-20 icon-navigate mui-pull-left"></i>导航</span>
+
             </button>
         </div>
     </div>
