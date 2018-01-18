@@ -18,8 +18,16 @@
     width: 42px;
 }
 .icon-32{
-    height: 32px;
-    width: 32px;
+    height: 32px !important;;
+    width: 32px !important;;
+}
+.icon-16{
+    height: 16px !important;;
+    width: 16px !important;;
+}
+.icon-20{
+    height: 20px !important;
+    width: 20px !important;;
 }
 .icon-devices{
     background-image: url("../img/dark/64X64/device.png");
@@ -116,4 +124,13 @@
 }
 .icon-navigate{
     background-image: url("../img/light/64X64/navigator.png");
+}
+.icon-warning{
+    background-image: url("../img/icon/icon-warning.png");
+}
+.icon-all-right{
+    background-image: url("../img/icon/icon-all-right.png");
+}
+.icon-circle-grey{
+    background-image: url("../img/icon/icon-circle-grey.png");
 }

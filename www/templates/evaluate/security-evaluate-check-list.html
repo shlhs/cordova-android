@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>高压室</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <link rel="stylesheet" href="../../components/mui/css/mui.min.css">
+    <link rel="stylesheet" href="../../css/my.css">
+    <link rel="stylesheet" href="../../css/icon.css">
+    <link rel="stylesheet" href="../../css/animate.css">
+    <link rel="stylesheet" href="../../components/mui/css/icons-extra.css">
+    <link rel="stylesheet" href="../../css/setting.css">
+    <script type="text/javascript" src="../../components/libs/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script type="text/javascript" src="../../components/angular-animate/angular-animate.js"></script>
+    <script type="text/javascript" src="../../components/angular-ui-router/release/stateEvents.min.js"></script>
+    <script type="text/javascript" src="../../js/app/utils.js"></script>
+    <script type="text/javascript" src="../../js/app/app.js"></script>
+    <script type="text/javascript" src="../../js/service/router-service.js"></script>
+    <script type="text/javascript" src="../../js/controller/site/security_evaluate.js"></script>
+<body class="box-vertical-center" ng-app="myApp" ng-controller="SecurityEvaluateDetail">
+<header class="mui-bar mui-bar-nav">
+    <a class="mui-icon mui-action-back mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
+    <h1 class="mui-title">高压室</h1>
+</header>
+<div class="mui-content" ng-cloak style="display: -webkit-box;-webkit-box-align: stretch;">
+    <div class="left-panel" style="background-color: #FFFFFF;width: 35%;box-shadow: 0 0 2px #ccc;">
+        <ul class="check-list">
+            <li class="check-item">
+                <a class="mui-navigate-right">
+                    <i class="icon icon-16 icon-all-right"></i>
+                    10kV引接线
+                </a>
+            </li>
+            <li class="check-item">
+                <a class="mui-navigate-right">
+                    <i class="icon icon-16 icon-warning"></i>
+                    高压室
+                </a>
+            </li>
+            <li class="check-item active">
+                <a class="mui-navigate-right">
+                    <i class="icon icon-16 icon-circle-grey"></i>
+                    高压器
+                </a>
+            </li>
+        </ul>
+
+    </div>
+    <div class="right-panel" style="-webkit-box-flex: 2;">
+        <h5 class="mui-text-center" style="color: #444;padding: 4px;">10kV引接线</h5>
+        <div style="padding: 0 8px;">
+            <ul class="check-box-list">
+                <li class="check-box-item">
+                    <div class="name">
+                        <label>通外室外的电缆沟、有关孔洞未密封</label>
+                        <div class="mui-pull-right mui-radio">
+                            <div><input name="radio1" type="radio" checked="">是</div>
+                            <div><input name="radio1" type="radio">否</div>
+                        </div>
+                    </div>
+                    <ul class="info-group" style="font-size: 11px;">
+                        <li><span class="value">缺陷类型：</span><span class="value">重大</span></li>
+                        <li><span class="value">缺陷危害：</span><span class="value">容易造成小动物串入带电设备，引起设备短路事故</span></li>
+                        <li><span class="value">处理建议：</span><span class="value">更换</span></li>
+                    </ul>
+                </li>
+                <li class="check-box-item">
+                    <div class="name">
+                        <label>窗口的防鼠网不符合要求（标准是：网的材料采用热镶锌或不锈钢，网丝直径不小于0.5mm，网孔不大于5x5mm）</label>
+                        <div class="mui-pull-right mui-radio">
+                            <div><input name="radio1" type="radio" checked="">是</div>
+                            <div><input name="radio1" type="radio">否</div>
+                        </div>
+                    </div>
+                    <ul class="info-group" style="font-size: 11px;">
+                        <li><span class="value">缺陷类型：</span><span class="value">重大</span></li>
+                        <li><span class="value">缺陷危害：</span><span class="value">容易造成小动物串入带电设备，引起设备短路事故</span></li>
+                        <li><span class="value">处理建议：</span><span class="value">更换</span></li>
+                    </ul>
+                </li>
+                <li class="check-box-item">
+                    <div class="name">
+                        <label>门口的防鼠板不符合要求（标准时：防鼠板高600mm，两面光滑）</label>
+                        <div class="mui-pull-right mui-radio">
+                            <div><input name="radio1" type="radio" checked="">是</div>
+                            <div><input name="radio1" type="radio">否</div>
+                        </div>
+                    </div>
+                    <ul class="info-group" style="font-size: 11px;">
+                        <li><span class="value">缺陷类型：</span><span class="value">重大</span></li>
+                        <li><span class="value">缺陷危害：</span><span class="value">容易造成小动物串入带电设备，引起设备短路事故</span></li>
+                        <li><span class="value">处理建议：</span><span class="value">更换</span></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<script src="../../components/fastclick-master/lib/fastclick.js"></script>
+<script src="../../js/my/notify.js"></script>
+<script src="../../js/lib/circleChart.min.js"></script>
+<script>
+    function bodyScroll(ele) {
+        if (ele.scrollTop > 20) {
+            $('header').removeClass('bg-transparent');
+        } else {
+            $('header').addClass('bg-transparent');
+        }
+        console.log('scroll');
+    }
+</script>
+</body>
+</html>

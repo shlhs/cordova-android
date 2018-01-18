@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>设备安全技术评测</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <link rel="stylesheet" href="../../components/mui/css/mui.min.css">
+    <link rel="stylesheet" href="../../css/my.css">
+    <link rel="stylesheet" href="../../css/icon.css">
+    <link rel="stylesheet" href="../../css/animate.css">
+    <link rel="stylesheet" href="../../components/mui/css/icons-extra.css">
+    <link rel="stylesheet" href="../../css/setting.css">
+    <script type="text/javascript" src="../../components/libs/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script type="text/javascript" src="../../components/angular-animate/angular-animate.js"></script>
+    <script type="text/javascript" src="../../components/angular-ui-router/release/stateEvents.min.js"></script>
+    <script type="text/javascript" src="../../js/app/utils.js"></script>
+    <script type="text/javascript" src="../../js/app/app.js"></script>
+    <script type="text/javascript" src="../../js/service/router-service.js"></script>
+    <script type="text/javascript" src="../../js/controller/site/security_evaluate.js"></script>
+<body class="box-vertical-center" ng-app="myApp" ng-controller="SecurityEvaluateHome">
+<header class="mui-bar mui-bar-nav bg-warning bg-transparent" style="z-index:1;box-shadow: 0 0 1px rgba(239, 237, 237, 0.85);">
+    <a class="mui-icon mui-action-back mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
+    <h1 class="mui-title" id="header_title">设备安全技术评测</h1>
+</header>
+<div class="mui-content" ng-cloak style="top:0px;" onscroll="bodyScroll(this)">
+    <div class="statics-card bg-warning">
+        <div class="container">
+            <h5>共115个检查项</h5>
+            <div class="chart-container">
+                <div class="chart">
+                    <div id="evaluateChart">
+                        <div style="position: absolute;text-align: center;width: 100%;font-size: 12px;top:18%;">已完成</div>
+                    </div>
+                </div>
+                <a class="mui-icon mui-icon-arrowright"></a>
+            </div>
+            <ul class="footer-list">
+                <li><label class="title">紧急缺陷</label><label class="value">0</label> </li>
+                <li><label class="title">紧急缺陷</label><label class="value">0</label> </li>
+                <li><label class="title">紧急缺陷</label><label class="value">0</label> </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="card">
+        <ul class="info-group" style="font-size: 14px;">
+            <li style="line-height: 28px;"><label>站点名称：</label><span class="value">中大元通</span> </li>
+            <li style="line-height: 28px;"><label>检查人：</label><span class="value">张三</span> </li>
+            <li style="line-height: 28px;"><label>检查时间：</label><span class="value">2018-01-06 10:30</span> </li>
+            <li style="line-height: 28px;"><label>上一次保存时间：</label><span class="value">2018-01-06 16:30</span> </li>
+        </ul>
+    </div>
+    <div class="card" style="padding: 8px 0 0 0;">
+        <div class="card-header border" style="padding-left: 12px;">
+            <i class="icon icon-20 icon-warning"></i>所有缺陷（2）
+        </div>
+        <div class="card-content no-padding">
+            <ul class="mui-table-view mui-table-view-striped mui-table-view-condensed no-border">
+                <li class="mui-table-view-cell">
+                    <div class="mui-table">
+                        <div class="mui-table-cell mui-col-xs-10">
+                                <span class="mui-ellipsis">绝缘子有闪格放电现象
+                                </span>
+                            <h5><span class="title">分类</span> ：开关台架 -> 10kV引接线</h5>
+                            <h5><span class="title">处理建议</span> ：停电清洁或更换7</h5>
+                        </div>
+                        <div class="mui-table-cell mui-col-xs-2 mui-text-right">
+                            <span class="mui-pull-right text-status danger" style="position: absolute;right: 0;">重大</span>
+                        </div>
+                    </div>
+                </li>
+                <li class="mui-table-view-cell">
+                    <div class="mui-table">
+                        <div class="mui-table-cell mui-col-xs-10">
+                                <span class="mui-ellipsis">[2#逆变器电流]越上限，值为743.01A
+                                </span>
+                            <h5><span class="title">设备</span> ：测试设备2</h5>
+                            <h5><span class="title">时间</span> ：01-12 22:20:27</h5>
+                        </div>
+                        <div class="mui-table-cell mui-col-xs-2 mui-text-right">
+                            <span class="mui-pull-right text-status danger" style="position: absolute;right: 0;">重大</span>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<script src="../../components/fastclick-master/lib/fastclick.js"></script>
+<script src="../../js/my/notify.js"></script>
+<script src="../../js/lib/circleChart.min.js"></script>
+<script>
+    function bodyScroll(ele) {
+        if (ele.scrollTop > 20) {
+            $('header').removeClass('bg-transparent');
+        } else {
+            $('header').addClass('bg-transparent');
+        }
+        console.log('scroll');
+    }
+</script>
+</body>
+</html>

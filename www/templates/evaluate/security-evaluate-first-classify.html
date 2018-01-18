@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>设备安全技术评测</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <link rel="stylesheet" href="../../components/mui/css/mui.min.css">
+    <link rel="stylesheet" href="../../css/my.css">
+    <link rel="stylesheet" href="../../css/icon.css">
+    <link rel="stylesheet" href="../../css/animate.css">
+    <link rel="stylesheet" href="../../components/mui/css/icons-extra.css">
+    <link rel="stylesheet" href="../../css/setting.css">
+    <script type="text/javascript" src="../../components/libs/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script type="text/javascript" src="../../components/angular-animate/angular-animate.js"></script>
+    <script type="text/javascript" src="../../components/angular-ui-router/release/stateEvents.min.js"></script>
+    <script type="text/javascript" src="../../js/app/utils.js"></script>
+    <script type="text/javascript" src="../../js/app/app.js"></script>
+    <script type="text/javascript" src="../../js/service/router-service.js"></script>
+    <script type="text/javascript" src="../../js/controller/site/security_evaluate.js"></script>
+<body class="box-vertical-center" ng-app="myApp" ng-controller="SecurityEvaluateDetail">
+    <header class="mui-bar mui-bar-nav">
+        <a class="mui-icon mui-action-back mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
+        <h1 class="mui-title">设备安全技术评测</h1>
+    </header>
+    <div class="mui-content" ng-cloak>
+
+        <div class="scroll-wrapper" id="events">
+            <div class="mui-scroll">
+                <ul class="mui-table-view mui-table-view-striped mui-table-view-condensed" style="margin-top:0px;">
+                    <li class="mui-table-view-cell">
+                        <a class="mui-navigate-right">
+                            <span class="mui-badge no-padding bg-transparent">
+                                <i class="icon icon-16 icon-all-right"></i>
+                            </span>
+                            开关台架
+                        </a>
+                    </li>
+                    <li class="mui-table-view-cell">
+                        <a class="mui-navigate-right">
+                            <span class="mui-badge no-padding bg-transparent">
+                                <i class="icon icon-16 icon-all-right"></i>
+                            </span>
+                            高压室
+                        </a>
+                    </li>
+                    <li class="mui-table-view-cell">
+                        <a class="mui-navigate-right">
+                            <span class="mui-badge no-padding bg-transparent">
+                                <i class="icon icon-16 icon-warning"></i>
+                            </span>
+                            高压柜
+                        </a>
+                    </li>
+                </ul>
+                <div class="page-alert-wrapper" ng-if="eventLoading">
+                    <div class="page-alert">
+                        <span class="mui-spinner"></span>
+                        <div class="alert-text info">正在加载...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<script src="../../components/fastclick-master/lib/fastclick.js"></script>
+<script src="../../js/my/notify.js"></script>
+<script src="../../js/lib/circleChart.min.js"></script>
+<script>
+    function bodyScroll(ele) {
+        if (ele.scrollTop > 20) {
+            $('header').removeClass('bg-transparent');
+        } else {
+            $('header').addClass('bg-transparent');
+        }
+        console.log('scroll');
+    }
+</script>
+</body>
+</html>
