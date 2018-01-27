@@ -1,0 +1,9 @@
+<div ng-controller="PowerOffGalleryCtrl" class="page page-fade">
+    <div id="slides">
+        <div class="img-container" ng-repeat="image in images">
+            <div>
+                <img ng-src="{{image}}" ng-click="hide()">
+            </div>
+        </div>
+    </div>
+</div>

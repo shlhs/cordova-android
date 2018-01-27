@@ -116,6 +116,7 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
                 }
                 return;
             }
+            // platform.url = 'http://127.0.0.1:8099/v1';
             platformService.setLatestPlatform(platform);
             cb && cb();
 

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>停电维护记录</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <link rel="stylesheet" href="../../components/mui/css/mui.min.css">
+    <link rel="stylesheet" href="../../css/my.css">
+    <link rel="stylesheet" href="../../css/icon.css">
+    <link rel="stylesheet" href="../../css/animate.css">
+    <link rel="stylesheet" href="../../components/mui/css/icons-extra.css">
+    <link rel="stylesheet" href="../../css/setting.css">
+    <script type="text/javascript" src="../../components/libs/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script type="text/javascript" src="../../components/angular-animate/angular-animate.js"></script>
+    <script type="text/javascript" src="../../components/angular-ui-router/release/stateEvents.min.js"></script>
+    <script type="text/javascript" src="../../js/app/utils.js"></script>
+    <script type="text/javascript" src="../../js/app/app.js"></script>
+    <script type="text/javascript" src="../../js/service/router-service.js"></script>
+    <script type="text/javascript" src="/js/controller/site/maintenance-checks.js"></script>
+<body class="box-vertical-center" ng-app="myApp" ng-controller="MaintenanceCheckHistoryCtrl">
+<header class="mui-bar mui-bar-nav" style="z-index:1;box-shadow: 0 0 1px rgba(239, 237, 237, 0.85);">
+    <a class="mui-icon mui-action-back mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
+    <h1 class="mui-title">停电维护记录</h1>
+    <a class="mui-action-menu mui-icon mui-pull-right" style="font-size: 16px;line-height: 28px;" ng-click="createOneRecord()">新增</a>
+</header>
+<div class="mui-content" ng-cloak>
+    <ul class="mui-table-view mui-table-view-striped mui-table-view-condensed no-border">
+        <li class="mui-table-view-cell" ng-repeat="item in history">
+            <a class="mui-navigate-right" ng-click="openPage('/templates/maintenance-check/check-one-record-home.html', {id: item.id})">
+                <div class="mui-table">
+                    <div class="mui-table-cell mui-col-xs-10">
+                        <h4 class="mui-ellipsis-2 font-14" style="line-height: 18px;font-weight: normal;">
+                            容量：{{item.power_capacity}} <span style="margin-left:10px">供电线路：{{item.power_circuit}}</span>
+                        </h4>
+                        <h5 style="margin:2px 0;">维护人：{{item.creator_name}}</h5>
+                        <p class="mui-h5 mui-ellipsis">维护日期：{{item.create_time.substring(0, 10)}}</p>
+                    </div>
+                </div>
+            </a>
+        </li>
+    </ul>
+    <div class="page-alert-wrapper" ng-if="!history.length && !isLoading">
+        <div class="page-alert">
+            <i class="alert-icon nodata"></i>
+            <div class="alert-text info">没有维护记录</div>
+        </div>
+    </div>
+    <div class="page-alert-wrapper" ng-if="isLoading">
+        <div class="page-alert">
+            <span class="mui-spinner"></span>
+            <div class="alert-text info">正在加载...</div>
+        </div>
+    </div>
+</div>
+<script src="../../components/fastclick-master/lib/fastclick.js"></script>
+<script src="../../js/my/notify.js"></script>
+<script src="../../components/slides-playing/js/jquery.slides.js"></script>
+</body>
+</html>

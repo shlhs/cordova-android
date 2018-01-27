@@ -150,6 +150,7 @@ app.controller('DeviceAnalogVarCtrl', function ($scope, ajax, $interval) {      
     $scope.has_data = true;
     $scope.isLoading = true;
     $scope.getDeviceVar = function() {
+        analogVars = [];
         var url = "/stations/" + stationSn + "/devices/" + deviceSn + "/devicevars";
         ajax.get({
             url: url,
@@ -217,6 +218,7 @@ app.controller('DeviceDigitalVarCtrl', function ($scope, ajax, $interval) {     
     $scope.has_data = true;
     $scope.isLoading = true;
     $scope.getDeviceVar = function() {
+        digitalVars = [];
         var url = "/stations/" + stationSn + "/devices/" + deviceSn + "/devicevars";
         ajax.get({
             url: url,
@@ -242,7 +244,7 @@ app.controller('DeviceDigitalVarCtrl', function ($scope, ajax, $interval) {     
                 $.notify.error('获取数据异常');
             }
         });
-    }
+    };
 
     function getRealTimeData() {
         var url = "/devicevars/getrealtimevalues";

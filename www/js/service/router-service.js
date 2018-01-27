@@ -1,5 +1,6 @@
 "use strict";
 
+
 app.service('routerService', function ($timeout, $compile) {
     var pages = [], pageLength=0, currentIndex=0;
     var nextPage = {};      // 保存下一个页面的数据
@@ -50,7 +51,7 @@ app.service('routerService', function ($timeout, $compile) {
             element.removeClass('ng-enter');
             if (config.hidePrev)        // 如果配置
             {
-                element.prevAll('div').hide();
+                element.prevAll().hide();
             }
 
             if (toFinishPage){
@@ -65,13 +66,13 @@ app.service('routerService', function ($timeout, $compile) {
     };
 
     this.openPage = function (scope, templateUrl, params, config) {
-        var html = '<route-page template=' + templateUrl;
+        var html = "<route-page template=" + templateUrl;
         this._setNextPage(params, config);
         html += '></route-page>';
         var compileFn = $compile(html);
         var $dom = compileFn(scope);
         // 添加到文档中
-        $dom.appendTo('body');
+        $dom.appendTo($('body'));
     };
 
     this._setNextPage = function (params, config) {
@@ -112,16 +113,16 @@ app.directive('routePage', ['$log', 'routerService', function($log, routerServic
             return attr.template;
         },
         scope: true     // scope隔离
-        /*
-        compile: function(element, attributes) {
-            return {
-                pre: function preLink(scope, element, attributes) {
-                    // scope.sn = attributes.sn;
-                },
-                post: function postLink(scope, element, attributes) {
-                    // element.prevAll().hide();
-                }
-            };
-        }*/
+
+        // compile: function(element, attributes) {
+        //     return {
+        //         pre: function preLink(scope, element, attributes) {
+        //             scope.sn = attributes.sn;
+        //         },
+        //         post: function postLink(scope, element, attributes) {
+        //             element.prevAll().hide();
+        //         }
+        //     };
+        // }
     };
 }]);

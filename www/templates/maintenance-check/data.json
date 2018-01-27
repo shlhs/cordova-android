@@ -1,0 +1,35 @@
+{
+    "siteName": "中大元通",
+    "create_time": "2018-11-22",
+    "response_user": "张三",
+    "power_capacity": "",
+    "power_circuit": "",
+    "items": [
+      {
+        "id": 1,
+        "name": "配电柜",
+        "checklist": [
+          {
+            "id": 1,
+            "name": "检查、紧固各回路一次，二次连接部位的松动螺丝"
+          }, {
+            "id": 2,
+            "name": "对开关操作传动机构加润滑油"
+          }
+        ]
+      }, {
+        "id": 2,
+        "name": "配电房",
+        "checklist": [
+          {
+            "id": 3,
+            "name": "用湿地拖清洁电房地板和绝缘垫"
+          },
+          {
+            "id": 4,
+            "name": "清抹干净电房配置的所有安全工器具"
+          }
+        ]
+      }
+    ]
+}

@@ -21,6 +21,10 @@
     height: 32px !important;;
     width: 32px !important;;
 }
+.icon-24{
+    height: 24px !important;;
+    width: 24px !important;;
+}
 .icon-16{
     height: 16px !important;;
     width: 16px !important;;
@@ -29,7 +33,7 @@
     height: 20px !important;
     width: 20px !important;;
 }
-.icon-devices{
+.icon-device-monitor{
     background-image: url("../img/dark/64X64/device.png");
 }
 .icon-events{
@@ -133,4 +137,16 @@
 }
 .icon-circle-grey{
     background-image: url("../img/icon/icon-circle-grey.png");
+}
+.icon-security{
+    background-image: url("../img/dark/64X64/icon-security.png");
+}
+.icon-checklist{
+    background-image: url("../img/dark/64X64/074-checklist.png");
+}
+.icon-devices{
+    background-image: url("../img/dark/64X64/icon-devices.png");
+}
+.icon-camera{
+    background-image: url("../img/dark/64X64/icon-camera.png");
 }
