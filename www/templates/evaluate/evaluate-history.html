@@ -23,6 +23,7 @@
     <script type="text/javascript" src="../../js/service/router-service.js"></script>
     <script type="text/javascript" src="../../js/controller/site/security_evaluate.js"></script>
 <body class="box-vertical-center" ng-app="myApp" ng-controller="SecurityHistoryCtrl">
+
     <header class="mui-bar mui-bar-nav" style="z-index:1;box-shadow: 0 0 1px rgba(239, 237, 237, 0.85);">
         <a class="mui-icon mui-action-back mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
         <h1 class="mui-title">设备安全技术评测记录</h1>
@@ -38,7 +39,7 @@
                                 共检查(<span>{{item.finish}}</span>)项，完成率{{item.finishRate}}，存在(<span ng-class="{'error': item.unqualifiedCount>0}">{{item.unqualifiedCount}}</span>)项缺陷。
                             </h4>
                             <h5 style="margin:2px 0;">检查人：{{item.creator_name}}</h5>
-                            <p class="mui-h5 mui-ellipsis">检查时间：{{item.create_time}}</p>
+                            <p class="mui-h5 mui-ellipsis">检查时间：{{item.create_time.substring(0, 16)}}</p>
                         </div>
                     </div>
                 </a>
@@ -60,6 +61,5 @@
 <script src="../../components/fastclick-master/lib/fastclick.js"></script>
 <script src="../../js/my/notify.js"></script>
 <script src="../../js/lib/circleChart.min.js"></script>
-
 </body>
 </html>

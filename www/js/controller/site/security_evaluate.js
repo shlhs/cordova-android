@@ -1,42 +1,27 @@
-app.controller('SecurityHistoryCtrl', function ($scope, routerService, ajax, userService) {
-    var sn = GetQueryString('sn');
-    $scope.siteName = GetQueryString("name");
-    $scope.history = [];
-    $scope.isLoading = false;
 
-    $scope.createOneRecord = function () {
-        $scope.openPage('/templates/evaluate/security-evaluate-first-classify.html', {isCreate: true, stationSn: sn});
-    };
-
-    $scope.openPage = function(template, params, config){
-        routerService.openPage($scope, template, params, config);
-    };
-
-    function getHistory() {
-        $scope.isLoading = true;
-        ajax.get({
-            url: '/security_reports?station_sn=' + sn,
-            success: function (data) {
-                $scope.isLoading = false;
-                $scope.history = data;
-                $scope.history.forEach(function (t) {
-                    t.finishRate = Math.round(100*t.finish / t.total) + '%';
-                    t.unqualifiedCount = t.emergency + t.serious + t.normal;
-                });
-                $scope.$apply();
-            },
-            error: function () {
-                $scope.isLoading = false;
-                $scope.$apply();
-            }
-        })
+function bodyScroll(ele) {
+    if (ele.scrollTop > 20) {
+        $('#transparentHeader').removeClass('bg-transparent');
+    } else {
+        $('#transparentHeader').addClass('bg-transparent');
     }
+    console.log('scroll');
+}
 
-    function init() {
-        getHistory();
-    }
+app.controller('SecurityBaseCtrl', function ($scope, $compile, $location) {
+   function load() {
+       var templateUrl = GetQueryString("template");
+       var html = "<root-page template=" + templateUrl + "></root-page>";
+       var compileFn = $compile(html);
+       var $dom = compileFn($scope);
+       // 添加到文档中
+       $dom.appendTo($('body'));
+   }
+   load();
+});
 
-    $scope.parseTemplate = function(template) {
+app.service('SecurityReportService', function (userService, ajax) {
+    function _parseSecurityTemplate(template) {
 
         function evaluateItem(path, item) {
             if (item.items && item.items.length) {
@@ -113,13 +98,18 @@ app.controller('SecurityHistoryCtrl', function ($scope, routerService, ajax, use
         result.normal = normal;
         result.template = template;
         return result;
+    }
+
+    this.parseTemplate = function (template) {
+        return _parseSecurityTemplate(template);
     };
 
-    $scope.saveReport = function (id, template, successCallback) {
-        var requestData = $scope.parseTemplate(template);
+
+    this.saveReport = function (scope, id, template, successCallback) {
+        var requestData = this.parseTemplate(template);
         requestData.template = JSON.stringify(requestData.template);
-        requestData.station_sn = sn;
-        requestData.station_name = $scope.siteName;
+        requestData.station_sn = scope.stationSn;
+        requestData.station_name = scope.siteName;
         $.notify.progressStart();
         if (id) {
             requestData.id = id;
@@ -134,12 +124,6 @@ app.controller('SecurityHistoryCtrl', function ($scope, routerService, ajax, use
                 success: function (data) {
                     $.notify.progressStop();
                     $.notify.info("保存成功");
-                    // 更新
-                    for (var i=0; i<$scope.history.length; i++){
-                        if ($scope.history[i].id === id) {
-                            $scope.history[i] = requestData;
-                        }
-                    }
                     successCallback && successCallback(data);
                 },
                 error: function (xhr, status, error) {
@@ -148,8 +132,12 @@ app.controller('SecurityHistoryCtrl', function ($scope, routerService, ajax, use
                 }
             });
         } else {
-            requestData.creator_id = userService.username;
+            requestData.creator_account = userService.username;
             requestData.creator_name = userService.getUser().name;
+            if (scope.taskId)
+            {
+                requestData.ops_task_id = scope.taskId;
+            }
             ajax.post({
                 url: '/security_reports',
                 data: JSON.stringify(requestData),
@@ -160,7 +148,9 @@ app.controller('SecurityHistoryCtrl', function ($scope, routerService, ajax, use
                 success: function (data) {
                     $.notify.progressStop();
                     $.notify.info("保存成功");
-                    $scope.history.unshift(data);
+
+                    // 调用Android接口
+                    window.android && window.android.onJsCallbackForPrevPage('setTaskReportId', data.id);
                     successCallback && successCallback(data);
                 },
                 error: function (xhr, status, error) {
@@ -170,12 +160,71 @@ app.controller('SecurityHistoryCtrl', function ($scope, routerService, ajax, use
             });
         }
     };
+});
+
+app.controller('SecurityHistoryCtrl', function ($scope, routerService, ajax, userService) {
+    var sn = GetQueryString('sn');
+    $scope.siteName = GetQueryString("name");
+    $scope.history = [];
+    $scope.isLoading = false;
+
+    $scope.createOneRecord = function () {
+        $scope.openPage('/templates/evaluate/security-evaluate-first-classify.html', {isCreate: true, stationSn: sn});
+    };
+
+    $scope.openPage = function(template, params, config){
+        routerService.openPage($scope, template, params, config);
+    };
+
+    function getHistory() {
+        $scope.isLoading = true;
+        ajax.get({
+            url: '/security_reports?station_sn=' + sn,
+            success: function (data) {
+                $scope.isLoading = false;
+                $scope.history = data;
+                $scope.history.forEach(function (t) {
+                    t.finishRate = Math.round(100*t.finish / t.total) + '%';
+                    t.unqualifiedCount = t.emergency + t.serious + t.normal;
+                });
+                $scope.$apply();
+            },
+            error: function () {
+                $scope.isLoading = false;
+                $scope.$apply();
+            }
+        })
+    }
+
+    function init() {
+        getHistory();
+    }
+
+    $scope.refresh = function (data) {
+        if (!data){
+            return;
+        }
+        // 更新
+        data.finishRate = Math.round(100*data.finish/data.total) + '%';
+        data.unqualifiedCount = data.unqualifiedList.length;
+        var existed = false;
+        for (var i=0; i<$scope.history.length; i++){
+            if ($scope.history[i].id === data.id) {
+                $scope.history[i] = data;
+                existed = true;
+                break;
+            }
+        }
+        if (!existed) {
+            $scope.history.unshift(data);
+        }
+    };
 
     init();
 });
 
 
-app.controller('SecurityEvaluateHome', function ($scope, $http, ajax, routerService) {
+app.controller('SecurityEvaluateHome', function ($scope, $http, ajax, routerService, SecurityReportService) {
     var backupData = {};        // 保存原始数据
     $scope.evaluateData = {};
     $scope.total = 0;
@@ -231,7 +280,7 @@ app.controller('SecurityEvaluateHome', function ($scope, $http, ajax, routerServ
             url: '/security_reports/' + $scope.id,
             success: function (data) {
                 data.template = JSON.parse(data.template);
-                var tmp = $scope.$parent.parseTemplate(data.template);
+                var tmp = SecurityReportService.parseTemplate(data.template);
                 $.extend($scope.evaluateData, data, tmp);
                 $scope.refresh();
                 $scope.$apply();
@@ -243,8 +292,12 @@ app.controller('SecurityEvaluateHome', function ($scope, $http, ajax, routerServ
     };
 
     $scope.refresh = function() {       // 刷新数据
-        var tmp = $scope.$parent.parseTemplate($scope.evaluateData.template);
+        var tmp = SecurityReportService.parseTemplate($scope.evaluateData.template);
         $.extend($scope.evaluateData, tmp);
+        if ($scope.$parent && $scope.$parent.refresh)
+        {
+            $scope.$parent.refresh($scope.evaluateData);
+        }
         drawProgress(Math.ceil($scope.evaluateData.finish*100/$scope.evaluateData.total));
     };
 
@@ -256,17 +309,20 @@ app.controller('SecurityEvaluateHome', function ($scope, $http, ajax, routerServ
         getEvaluateData();
     }
 
+
+
     init();
 });
 
-app.controller('SecurityEvaluateDetailCtrl', function ($scope, $http, ajax, routerService) {
+app.controller('SecurityEvaluateDetailCtrl', function ($scope, $http, ajax, userService, routerService, SecurityReportService) {
     $scope.evaluateData = $scope.$parent.evaluateData;
+    $scope.hasPermission = false;
 
     $scope.gotoPrevPage = function () {     // 提示是否保存
         if ($scope.$parent.refresh) {
             $scope.$parent.refresh();
         }
-        pageBack();
+        history.back();
     };
 
     $scope.openPage = function(template, params, config){
@@ -277,26 +333,31 @@ app.controller('SecurityEvaluateDetailCtrl', function ($scope, $http, ajax, rout
         ajax.get({
             url: '/security_reports/template?station_sn=' + $scope.stationSn,
             success: function (data) {
-                $scope.evaluateData = $scope.$parent.parseTemplate(data);
+                $scope.evaluateData = SecurityReportService.parseTemplate(data);
                 $scope.$apply();
             }
         });
     }
 
-    $scope.save = function () {
-
-    };
-
     function init() {
         if ($scope.isCreate) {
             getEvaluateData();
+            $scope.hasPermission = true;
+        } else {
+            if ($scope.evaluateData.creator_account === userService.username) {
+                $scope.hasPermission = true;
+            }
         }
     }
     $scope.save = function() {
-        $scope.$parent.saveReport($scope.evaluateData.id, $scope.evaluateData.template, function (data) {
+        SecurityReportService.saveReport($scope, $scope.evaluateData.id, $scope.evaluateData.template, function (data) {
             if (data && data.id) {
-                $scope.evaluateData = $scope.$parent.parseTemplate(JSON.parse(data.template));
+                $scope.evaluateData = SecurityReportService.parseTemplate(JSON.parse(data.template));
                 $scope.evaluateData.id = data.id;
+                if ($scope.$parent && $scope.$parent.refresh)
+                {
+                    $scope.$parent.refresh($scope.evaluateData);
+                }
             } else {
                 $scope.$parent.refresh();
             }
@@ -367,7 +428,7 @@ app.controller('SecurityEvaluateChecklistCtrl', function ($scope, ajax) {
 
     $scope.gotoPrevPage = function () {
         setGroupStatus($scope.group);
-        pageBack();
+        history.back();
     };
     init();
 });

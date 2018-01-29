@@ -1,3 +1,16 @@
+
+app.controller('MaintenanceBaseCtrl', function ($scope, $compile) {
+    function load() {
+        var templateUrl = GetQueryString("template");
+        var html = "<root-page template=" + templateUrl + "></root-page>";
+        var compileFn = $compile(html);
+        var $dom = compileFn($scope);
+        // 添加到文档中
+        $dom.appendTo($('body'));
+    }
+    load();
+});
+
 app.controller('MaintenanceCheckHistoryCtrl', function ($scope, ajax, routerService) {
     var sn = GetQueryString('sn');
     $scope.siteName = GetQueryString("name");
@@ -29,15 +42,25 @@ app.controller('MaintenanceCheckHistoryCtrl', function ($scope, ajax, routerServ
         });
     }
 
+    $scope.addReport = function (data) {
+        $scope.history.unshift(data);
+    };
+
     getHistory();
 });
 
+
+function importImage(imageData) {    // 从Android读取的图片
+    angular.element("#powerOffHandler").scope().addImagesWithBase64(imageData);
+}
 
 app.controller("MaintenanceCheckRecordItemCtrl", function ($scope, ajax, routerService, userService, $rootScope) {
     var d = new Date(), today=d.year + d.month + d.day;
     $scope.image_before_check = [];
     $scope.image_in_check = [];
     $scope.image_after_check = [];
+    $scope.isPC = IsPC();
+    $scope.canEdit = false;
 
     if ($scope.isCreate) {
         $scope.recordData = {station_sn: $scope.stationSn, station_name: $scope.stationName,
@@ -65,6 +88,7 @@ app.controller("MaintenanceCheckRecordItemCtrl", function ($scope, ajax, routerS
 
     function getData() {
         if ($scope.isCreate) {
+            $scope.canEdit = true;
             ajax.get({
                 url: '/poweroff_reports/template?station_sn=' + $scope.stationSn,
                 success: function (data) {
@@ -83,6 +107,8 @@ app.controller("MaintenanceCheckRecordItemCtrl", function ($scope, ajax, routerS
                     $scope.recordData.image_before_check = splitImagePath(data.image_before_check);
                     $scope.recordData.image_in_check = splitImagePath(data.image_in_check);
                     $scope.recordData.image_after_check = splitImagePath(data.image_after_check);
+                    // 判断当前用户是否有操作权限
+                    checkEditable();
                     $scope.$apply();
                 }
             });
@@ -91,6 +117,12 @@ app.controller("MaintenanceCheckRecordItemCtrl", function ($scope, ajax, routerS
 
     function init() {
         getData();
+    }
+
+    function checkEditable() {
+        if ($scope.recordData.creator_account === userService.username) {
+            $scope.canEdit = true;
+        }
     }
 
     $scope.save = function () {
@@ -104,6 +136,9 @@ app.controller("MaintenanceCheckRecordItemCtrl", function ($scope, ajax, routerS
                     image_in_check: JSON.stringify($scope.image_in_check),
                     image_after_check: JSON.stringify($scope.image_after_check)
                 });
+            if ($scope.taskId) {
+                postData.ops_task_id = $scope.taskId;
+            }
             ajax.post({
                 url: '/poweroff_reports',
                 data: JSON.stringify(postData),
@@ -118,6 +153,12 @@ app.controller("MaintenanceCheckRecordItemCtrl", function ($scope, ajax, routerS
                     $scope.image_before_check = [];
                     $scope.image_in_check = [];
                     $scope.image_after_check = [];
+                    if ($scope.$parent.addReport) {
+                        $scope.$parent.addReport($scope.recordData);
+                    }
+                    $scope.$apply();
+                    // 调用Android接口
+                    window.android && window.android.onJsCallbackForPrevPage('setTaskReportId', data.id);
                 },
                 error: function (xhr, status, error) {
                     $.notify.progressStop();
@@ -178,7 +219,21 @@ app.controller("MaintenanceCheckRecordItemCtrl", function ($scope, ajax, routerS
             };
         }
         obj.files = null;
-    } ;
+    };
+
+    var currentImageModel = '';
+    $scope.setCurrentImageModel = function (model) {
+        currentImageModel = model;
+    };
+
+    $scope.addImagesWithBase64 = function (data) {
+        if ($scope.recordData[currentImageModel] === null) {
+            $scope.recordData[currentImageModel] = [];
+        }
+        $scope[currentImageModel].push(data);
+        $scope.recordData[currentImageModel].push(data);
+        $scope.$apply();
+    };
 
     init();
 });

@@ -676,7 +676,13 @@ function updateTask(strArgs) {  // json格式的参数， {data: taskData}
     scope.updateTask && scope.updateTask(taskData);
 }
 
-app.controller('TaskDetailCtrl', function ($scope, $location, $state, userService, platformService, $http, $timeout, ajax) {
+function setTaskReportId(reportId) {        // 安全检测和停电维护新建后返回到任务详情页时，设置任务的report_id
+
+    var scope = angular.element('#my_tasks').scope();
+    scope.setReportId(reportId);
+}
+
+app.controller('TaskDetailCtrl', function ($scope, $location, $state, userService, platformService, $http, $timeout, $window, ajax) {
     $scope.TaskAction = TaskAction;
     $scope.TaskStatus = TaskStatus;
     $scope.imageScope = [1,2,3,4,5,6,7,8,9];
@@ -873,6 +879,42 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
             }
         });
     }
+
+    $scope.setReportId = function (reportId) {
+        $scope.taskData.report_id = reportId
+    };
+
+    $scope.gotoHandleTask = function () {       // 根据任务类型打开对应的操作界面
+        var reportId = $scope.taskData.report_id;
+        switch ($scope.taskData.task_type_id) {
+            case 1:     // 巡检任务
+                if (reportId) {
+                    var url = '/templates/evaluate/base_home.html?template=/templates/evaluate/security-evaluate-home.html&id=' + reportId;
+                } else {
+                    var url = '/templates/evaluate/base_home.html?template=/templates/evaluate/security-evaluate-first-classify.html&isCreate=1&taskId=' + $scope.taskData.id;
+                    if ($scope.taskData.station_sn){
+                        url += '&stationSn=' + $scope.taskData.station_sn;
+                    }
+                }
+                $window.location.href = url;
+                break;
+            case 6:     // 停电维护任务
+                var url = '/templates/maintenance-check/base_home.html?template=/templates/maintenance-check/check-one-record-home.html';
+                if (reportId) {
+                    url += '&id=' + reportId;
+                } else {
+                    url += '&isCreate=1&taskId=' + $scope.taskData.id;
+                    if ($scope.taskData.station_sn){
+                        url += '&stationSn=' + $scope.taskData.station_sn + "&stationName=" + $scope.taskData.station_name;
+                    }
+                }
+                $window.location.href = url;
+                break;
+            default:
+                $state.to('.update()')
+        }
+    };
+
     $scope.showImageGallery = function (images, index) {        // 点击任务处理历史中的图片显示相册
         var imageList = [];
         for (var i in $scope.imageScope){

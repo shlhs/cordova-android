@@ -126,3 +126,26 @@ app.directive('routePage', ['$log', 'routerService', function($log, routerServic
         // }
     };
 }]);
+
+app.directive('rootPage', ['$log', 'routerService', function($log, routerService){
+    return {
+        restrict: 'E', // E = Element, A = Attribute, C = Class, M = Comment
+        replace: true,
+        templateUrl: function (ele, attr) {
+            return attr.template;
+        },
+        scope: true,     // scope隔离
+        controller: function ($scope, $element) {
+            var search = window.location.search.substring(1), params = search.split('&');
+            var index, param;
+            for (var i=0; i<params.length; i++){
+                param = params[i];
+                index = param.indexOf('=');
+                var key = param.substring(0, index), value = param.substring(index+1);
+                if (key !== 'template') {
+                    $scope[key] = decodeURIComponent(value);
+                }
+            }
+        }
+    };
+}]);
