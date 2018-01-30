@@ -89,6 +89,14 @@ app.service('routerService', function ($timeout, $compile) {
     this.getNextPage = function () {
         return nextPage;
     };
+
+    this.hasNoHistory = function () {       // 当前是否已经是第一集页面
+        if (pageLength === 0) {
+            return true;
+        } else {
+            return false;
+        }
+    };
 });
 
 app.directive('routePage', ['$log', 'routerService', function($log, routerService){

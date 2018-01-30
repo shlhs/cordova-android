@@ -1,7 +1,7 @@
 
 <div ng-controller="MaintenanceCheckRecordItemCtrl" class="page page-left" id="powerOffHandler">
     <header class="mui-bar mui-bar-nav" style="z-index:1;box-shadow: 0 0 1px rgba(239, 237, 237, 0.85);">
-        <a class="mui-icon mui-icon-left-nav mui-pull-left text-white" onclick="history.back()"></a>
+        <a class="mui-icon mui-icon-left-nav mui-pull-left text-white" ng-click="gotoPrevPage()"></a>
         <h1 class="mui-title">电房及设备停电维护作业表</h1>
         <a class="mui-action-menu mui-icon mui-pull-right" style="font-size: 16px;line-height: 28px;" ng-click="save()" ng-if="canEdit">保存</a>
     </header>

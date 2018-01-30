@@ -309,7 +309,13 @@ app.controller('SecurityEvaluateHome', function ($scope, $http, ajax, routerServ
         getEvaluateData();
     }
 
-
+    $scope.gotoPrevPage = function () {
+        if (routerService.hasNoHistory()) {
+            pageBack();
+        } else {
+            history.back();
+        }
+    };
 
     init();
 });
@@ -322,7 +328,11 @@ app.controller('SecurityEvaluateDetailCtrl', function ($scope, $http, ajax, user
         if ($scope.$parent.refresh) {
             $scope.$parent.refresh();
         }
-        history.back();
+        if (routerService.hasNoHistory()) {
+            pageBack();
+        } else {
+            history.back();
+        }
     };
 
     $scope.openPage = function(template, params, config){

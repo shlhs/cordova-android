@@ -1368,6 +1368,9 @@ header.bg-warning{
     position: relative;
     margin-bottom: 2px;
 }
+.check-box-item .name:after{
+    clear: both;
+}
 .check-box-item label{
     padding-right: 50px;
     display: inline-block;
@@ -1377,14 +1380,14 @@ header.bg-warning{
     font-size: 12px;
     position: absolute;
     right: 0;
-    top: 0;
+    top: -3px;
 }
 .check-box-item .mui-checkbox input[type=checkbox], .check-box-item .mui-radio input[type=radio]{
     position: relative;
     width: 20px;
     height: 20px;
     right: 0;
-    top:-2px;
+    top:0px;
 }
 .check-box-item .mui-checkbox input[type=checkbox]:before, .check-box-item .mui-radio input[type=radio]:before {
     font-size: 18px;
