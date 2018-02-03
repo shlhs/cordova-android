@@ -683,6 +683,23 @@ background-image: url("../img/light/64X64/profile.png");
     display: block;
 }
 /*****   notify   ****/
+.dev-status-circle{
+    float: left;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    margin-top: 2px;
+    margin-right: 4px;
+}
+.dev-status-circle.danger{
+    background-color: #e00202;
+}
+.dev-status-circle.normal{
+    background-color: #08b762;
+}
+.dev-status-circle.offline{
+    background-color: darkgrey;
+}
 .dev-status{
     display: inline-block;
     margin-top: 2px;
