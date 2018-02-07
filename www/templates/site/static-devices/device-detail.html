@@ -1,10 +1,11 @@
 <div class="page page-left" ng-controller="StaticDeviceDetailCtrl">
     <header class="mui-bar mui-bar-nav bg-header">
         <a class="mui-icon mui-action-back mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
-        <h1 class="mui-title">{{deviceData.name}}</h1>
+        <h1 class="mui-title">{{device.name}}</h1>
     </header>
     <div class="mui-content" ng-cloak>
-        <div class="card no-padding" ng-repeat="device in deviceData.items">
+        <div></div>
+        <div class="card no-padding" ng-repeat="device in device.items">
             <div class="card-header">{{device.name}}</div>
             <div class="card-content">
                 <ul class="mui-table-view font-14 info-group">

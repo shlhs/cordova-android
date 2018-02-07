@@ -27,26 +27,16 @@
 <body class="box-vertical-center" ng-app="myApp" ng-controller="StaticDevicesHomeCtrl">
     <header class="mui-bar mui-bar-nav bg-header">
         <a class="mui-icon mui-action-back mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
-        <h1 class="mui-title">配电房档案</h1>
+        <h1 class="mui-title">设备档案</h1>
     </header>
     <div class="mui-content" ng-cloak>
-        <div style="font-size: 15px;padding: 8px;">
-            中大元通
-        </div>
-        <div class="card no-padding" ng-repeat="room in allRooms">
-            <div class="card-header" style="padding: 8px 0 8px 12px;font-weight: 500;">
-                {{room.name}}
-            </div>
-            <div class="card-content no-padding">
-                <ul class="mui-table-view" style="font-size: 14px;">
-                    <li class="mui-table-view-cell" ng-repeat="device in room.types">
-                        <a class="mui-navigate-right" ng-click="openPage('/templates/site/static-devices/sub-device-list.html', {deviceData: device})">
-                            {{device.name}}
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
+        <ul class="mui-table-view" style="margin-top: 0;">
+            <li class="mui-table-view-cell" ng-repeat="device in allDevices" ng-click="openPage(device)">
+                <a class="mui-navigate-right">
+                    {{device.name}}
+                </a>
+            </li>
+        </ul>
     </div>
 <script src="/components/fastclick-master/lib/fastclick.js"></script>
 <script src="/js/my/notify.js"></script>

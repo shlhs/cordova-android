@@ -1421,3 +1421,77 @@ color: #a7a7a7;
 .info-group input::-moz-placeholder { // Firefox19+
 color: #a7a7a7;
 }
+
+.device-card{
+    margin:6px 0 0 0;
+    width: 100%;
+    background-color: #fff;
+}
+.device-card .device-name{
+    position: relative;
+    line-height: 24px;
+    padding: 6px 8px;
+    border-bottom: #eee 1px solid;
+}
+.device-card .device-name:before{
+    position: absolute;
+    display: block;
+    content: '';
+    width: 3px;
+    top: 0;
+    height: 100%;
+    left: 0;
+    background-color: #3bb1f5;
+}
+.device-card .device-content{
+    display: none;
+}
+.device-card .device-content.active{
+    display: block;
+}
+.device-content .properties{
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+.device-content .properties>li{
+    padding: 8px;
+    border-bottom: #eee 1px solid;
+    font-size: 14px;
+}
+.properties>li .title{
+    min-width: 110px;
+    display: inline-block;
+    text-align: left;
+    padding-left: 14px;
+    color: #999999;
+}
+.properties>li .value{
+    display: inline-block;
+    text-align: left;
+    color: #444;
+    padding-left: 8px;
+}
+.device-content .device-items{
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 14px;
+}
+.device-items>li h5{
+    background-color: #F0F0F0;
+    padding: 8px;
+    margin: 0;
+    color: #444;
+    line-height: 18px;
+}
+.device-items>li h5 .icon{
+    float: left;
+}
+
+.device-content .empty-alert{
+    color: #f0ad4e;
+    padding: 6px 16px;
+    font-size: 14px;
+    font-weight: normal;
+}

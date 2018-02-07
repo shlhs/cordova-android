@@ -1,15 +1,44 @@
 <div ng-controller="StaticDeviceSubListCtrl" class="page page-left">
     <header class="mui-bar mui-bar-nav bg-header">
         <a class="mui-icon mui-action-back mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
-        <h1 class="mui-title">{{deviceData.name}}</h1>
+        <h1 class="mui-title">{{groupData.name}}</h1>
     </header>
     <div class="mui-content" ng-cloak>
-        <ul class="mui-table-view" style="font-size: 14px;">
-            <li class="mui-table-view-cell" ng-repeat="device in deviceData.types">
+        <ul class="mui-table-view" style="font-size: 14px;" ng-if="groups.length">
+            <li class="mui-table-view-cell" ng-repeat="device in groups">
                 <a class="mui-navigate-right" href="#" ng-click="openPage(device)">
                     {{device.name}}
                 </a>
             </li>
         </ul>
+        <div class="device-card" ng-repeat="device in devices" ng-if="devices.length">
+            <div class="device-name" ng-click="toggleContent(device)">{{device.name}}</div>
+            <div class="device-content" ng-class="{'active': device.visible}">
+                <div ng-if="device.isEmpty" class="empty-alert">
+                    设备信息为空
+                </div>
+                <ul class="properties">
+                    <li class="" ng-repeat="c in device.properties">
+                        <span class="title">{{c.name}}<span ng-if="c.unit">({{c.unit}})</span>:</span><span class="value">{{c.value}}</span>
+                    </li>
+                </ul>
+                <ul class="device-items">
+                    <li ng-repeat="item in device.items">
+                        <h5><i class="icon icon-16 icon-usb"></i> {{item.name}}</h5>
+                        <ul class="properties">
+                            <li class="" ng-repeat="c in item.properties">
+                                <span class="title">{{c.name}}<span ng-if="c.unit">({{c.unit}})</span>:</span><span class="value">{{c.value}}</span>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="page-alert-wrapper" ng-if="noDevice">
+            <div class="page-alert">
+                <i class="alert-icon nodata"></i>
+                <div class="alert-text info">该分类下无设备或分类</div>
+            </div>
+        </div>
     </div>
 </div>
