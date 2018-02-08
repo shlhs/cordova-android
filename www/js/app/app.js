@@ -145,7 +145,11 @@ app.service('platformService', function () {
 
     this.getImageThumbHost = function () {      // 获取图片压缩服务的地址
         // 格式为： http://ip:8888/unsafe
-        return this.host.substring(0, this.host.indexOf(':', 5)) + ":8888/unsafe"
+        if (this.host)
+        {
+            return this.host.substring(0, this.host.indexOf(':', 5)) + ":8888/unsafe"
+        }
+        return null;
     };
 
     this.getImageUrl = function (width, height, imageUrl) {
@@ -230,10 +234,14 @@ app.service('ajax', function ($rootScope, platformService, userService, $http) {
         option.crossDomain = true;
 
 		var newOption = $.extend({}, option, {
-		    error: function () {
-                $rootScope.login(function () {
-                    $.ajax(option);
-                });
+		    error: function (xhr, status, error) {
+		        if (xhr.status === 500){
+		            option.error && option.error(xhr, status, error);
+                } else {
+                    $rootScope.login(function () {
+                        $.ajax(option);
+                    });
+                }
             }
         });
         var r = $.ajax(newOption);
@@ -441,3 +449,37 @@ var imageHandler = {
         return result_image_obj;
     }
 };
+
+/**
+ * 图片缩放控制器
+ */
+app.controller('ImageZoomCtrl', function ($scope, $timeout) {
+    $scope.menuVisible = false;
+    imagesLoaded('#zoomTarget', function () {
+        new RTP.PinchZoom($("#zoomTarget"), {});
+    });
+
+    $scope.hide = function () {
+        history.back();
+    };
+
+    var prevTouchDown = 0, timeoutEvent=null;
+    // 点击时隐藏，双击时保持PinchZoom的事件处理
+    $("#zoomTarget").on({
+        touchstart: function (e) {
+            if (!timeoutEvent)
+            {
+                timeoutEvent = $timeout($scope.hide, 300);
+            } else {
+                $timeout.cancel(timeoutEvent);
+                timeoutEvent = null;
+            }
+        }
+    });
+
+    $scope.hide = function () {
+        timeoutEvent = null;
+        history.back();
+    };
+
+});

@@ -12,7 +12,6 @@
     <link rel="stylesheet" href="../../css/icon.css">
     <link rel="stylesheet" href="../../css/animate.css">
     <link rel="stylesheet" href="../../components/mui/css/icons-extra.css">
-    <link rel="stylesheet" href="../../css/setting.css">
     <!--<script type="text/javascript" src="../../cordova.js"></script>-->
     <!--<script type="text/javascript" src="../../cordova_plugins.js"></script>-->
     <script type="text/javascript" src="../../components/libs/jquery-2.1.4.js"></script>
@@ -23,6 +22,7 @@
     <script type="text/javascript" src="../../components/angular-ui-router/release/stateEvents.min.js"></script>
     <script type="text/javascript" src="../../js/app/utils.js"></script>
     <script type="text/javascript" src="../../js/app/app.js"></script>
+    <script type="text/javascript" src="/js/service/router-service.js"></script>
     <script type="text/javascript" src="../../js/router/site-router.js"></script>
 
     <style>
@@ -134,6 +134,12 @@
                         <div class="mui-media-body no-margin">设备档案</div>
                     </a>
                 </li>
+                <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
+                    <a href="/templates/site/reports.html?sn={{sn}}&name={{name}}">
+                        <span class="mui-icon icon icon-ms icon-reports"></span>
+                        <div class="mui-media-body no-margin">月度报告</div>
+                    </a>
+                </li>
             </ul>
         </div>
         <div class="mui-control-content height-wrap-parent mui-active card" >
@@ -169,8 +175,5 @@
     <script src="../../js/my/notify.js"></script>
     <script src="../../components/dropload-gh-pages/dist/dropload.min.js"></script>
     <script type="text/javascript" src="../../js/controller/sites.js"></script>
-    <script type="text/javascript" src="../../js/controller/device.js"></script>
-    <script src="../../js/controller/monitor.js"></script>
-    <script src="../../js/controller/kanban.js"></script>
 </body>
 </html>

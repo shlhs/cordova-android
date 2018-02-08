@@ -270,40 +270,6 @@ app.controller('MaintenanceChecklistCtrl', function ($scope, $http) {
 });
 
 
-app.controller('PowerOffGalleryCtrl', function ($scope, $stateParams, $timeout) {
-    $scope.canDelete = false;
-    $scope.index = $stateParams.index;
-    $scope.images = $stateParams.images;
-    $scope.show = false;
-
-
-
-    function initSlider() {
-        if ($scope.images.length>1){
-
-            var slide = $("#slides");
-            slide.slidesjs({
-                start: $scope.index,
-                width: window.screen.width,
-                play: {
-                    active: true,
-                    swap: true
-                }
-            });
-        }
-
-        $scope.canDelete = $stateParams.canDelete;
-        $scope.$apply();
-    }
-
-    $timeout(initSlider, 100);
-
-
-    $scope.hide = function () {
-        history.back();
-    };
-});
-
 
 app.controller('PowerOffGalleryCtrl', function ($scope, $stateParams, $timeout) {
     $scope.show = false;

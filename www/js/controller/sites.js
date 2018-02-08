@@ -45,7 +45,7 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, p
     };
 });
 
-app.controller('SiteDetailCtrl', function ($scope, $location, $stateParams) {
+app.controller('SiteDetailCtrl', function ($scope, $location, $stateParams, routerService) {
     $scope.sn = GetQueryString('sn');
     $scope.name = GetQueryString("name");
     $scope.siteData = null;
@@ -281,4 +281,49 @@ app.controller('SiteDocsCtrl', function ($scope, $stateParams, platformService, 
     };
 
     getDocGroups();
+});
+
+
+app.controller('SiteReportsCtrl', function ($scope, ajax, scrollerService, routerService, platformService) {
+    var stationSn = GetQueryString('sn');
+    $scope.reports = [];
+    $scope.isLoading = false;
+
+    function getData() {
+        scrollerService.initScroll('#reports', getData);
+        $scope.isLoading = true;
+        ajax.get({
+            url: '/stations/' + stationSn + '/reports',
+            success: function (data) {
+                $scope.isLoading = false;
+                var outputs = [];
+                data.forEach(function (d) {
+                    if (d.output_src_link) {
+                        d.output_src_link = platformService.host + d.output_src_link;
+                        outputs.push(d);
+                    }
+                });
+                $scope.reports = outputs;
+                $scope.$apply();
+            },
+            error: function () {
+                $scope.isLoading = false;
+                $scope.$apply();
+                $.notify.error('获取报告失败');
+            }
+        })
+    }
+
+    $scope.download = function ($event, link) {
+        $event.stopPropagation();
+        if (window.android && window.android.saveImageToGallery) {
+            window.android.saveImageToGallery($scope.link);
+        }
+    };
+
+    $scope.openReport = function (link) {
+        routerService.openPage($scope, '/templates/base-image-zoom.html', {link: link});
+    };
+
+    getData();
 });
