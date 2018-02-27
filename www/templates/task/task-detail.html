@@ -14,6 +14,8 @@
     <link rel="stylesheet" href="../../css/my.css" />
     <link rel="stylesheet" href="../../css/icon.css" />
     <link rel="stylesheet" href="../../css/task.css" />
+    <link rel="stylesheet" href="../../css/animate.css">
+
     <!--<link rel="stylesheet" href="./components/slides-playing/css/example.css">-->
     <!--<script type="text/javascript" src="../../cordova.js"></script>-->
     <!--<script type="text/javascript" src="../../cordova_plugins.js"></script>-->
@@ -70,7 +72,7 @@
     <a class="mui-icon mui-action-back mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
     <h1 class="mui-title" id="head_title">任务详情</h1>
 </header>
-<div  ng-controller="TaskDetailCtrl" ng-cloak style="margin-top:50px;">
+<div  ng-controller="TaskDetailCtrl" ng-cloak style="margin-top:50px;" id="taskDetail">
 
     <div class="steps" ng-if="taskData.stage_id != TaskStatus.ToAssign">
         <div class="step" ng-class="{'active': taskData.activeIndex==0, 'finished': taskData.finishIndex>=0}">
@@ -207,8 +209,10 @@
             </a>
         </nav>
         <nav class="mui-bar mui-bar-tab" ng-if='canHandle && taskData.stage_id===TaskStatus.Arrived'>
-            <a class="mui-tab-item mui-segmented-control-vertical" ui-sref="task.update()">
-                <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-control-item">上传处理结果</button>
+            <a class="mui-tab-item mui-segmented-control-vertical" ng-click="gotoHandleTask()" ng-switch="taskData.task_type_id">
+                <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-control-item" ng-switch-when="1">安全检测详情</button>
+                <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-control-item" ng-switch-when="6">维护检查项</button>
+                <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-control-item" ng-switch-default>上传处理结果</button>
             </a>
             <a class="mui-tab-item mui-segmented-control-vertical">
                 <button type="button" class="mui-btn mui-btn-warning mui-btn-block mui-control-item task-btn"
@@ -232,23 +236,15 @@
         <div id="updater"></div>
     </div>
 </div>
-<!--<div ng-include="'/templates/task/task-gallery.html'"></div>-->
 
 <script src="../../components/mui/js/mui.min.js"></script>
-<!--<script src="./js/lib/exif.js"></script>-->
 <script src="../../components/fastclick-master/lib/fastclick.js"></script>
 <script src="../../components/slides-playing/js/jquery.slides.js"></script>
 <script src="http://api.map.baidu.com/api?v=2.0&ak=ITbaaCqA7nMWRjEIycEpddoUW1AvZvRq"></script>
 <script src="../../components/baidu/map/MarkerManager-1.2.min.js"></script>
 <script src="../../js/my/notify.js"></script>
 <script>
-    mui.init({
-        swipeBack:true //启用右滑关闭功能
-    });
-//    function initSlider(){
-//
-//        mui("#slider");
-//    }
+    mui.init();
 
 </script>
 <script>

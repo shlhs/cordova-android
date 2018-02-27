@@ -4,7 +4,7 @@
 
 
 app.factory('serviceFactory', function ($rootScope) {
-    let services = {};
+    var services = {};
     services.login = function () {
         return host + '/login/';
     };

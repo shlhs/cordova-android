@@ -1,0 +1,11 @@
+<a class="mui-navigate-right" ng-click="warpCallback('itemClicked', item, $event);" href="#" >
+    <i class="dev-status-circle {{item.status}}" ng-if="item.status"></i>
+    {{item.name}}
+</a>
+<div class="mui-collapse-content" ng-if="!isLeaf(item) && item.children.length">
+    <ul class="mui-table-view">
+        <li class="mui-table-view-cell" ng-repeat="item in item.children" ng-class="{'mui-active': item.$$isExpend, 'mui-collapse': !isLeaf(item), 'is-leaf': isLeaf(item)}"
+            ng-include="'/templates/site/device-monitor/tree-item.html'">
+        </li>
+    </ul>
+</div>

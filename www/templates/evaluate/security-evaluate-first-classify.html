@@ -1,0 +1,32 @@
+
+<div ng-controller="SecurityEvaluateDetailCtrl" class="page page-left">
+    <header class="mui-bar mui-bar-nav">
+        <a class="mui-icon mui-icon-left-nav mui-pull-left text-white" ng-click="gotoPrevPage()"></a>
+        <h1 class="mui-title">设备安全技术评测</h1>
+        <a class="mui-action-menu mui-icon mui-pull-right" style="font-size: 16px;line-height: 28px;" ng-click="save()" ng-if="hasPermission">保存</a>
+    </header>
+    <div class="mui-content" ng-cloak>
+
+        <div class="scroll-wrapper" id="events">
+            <div class="mui-scroll">
+                <ul class="mui-table-view mui-table-view-striped mui-table-view-condensed" style="margin-top:0px;">
+                    <li class="mui-table-view-cell" ng-repeat="item in evaluateData.template">
+                        <a class="mui-navigate-right" href="#" ng-click="openPage('/templates/evaluate/security-evaluate-check-list.html', {group: item})">
+                            <span class="mui-badge no-padding bg-transparent">
+                                <i class="icon icon-16 icon-all-right" ng-if="item.status === 'success'"></i>
+                                <i class="icon icon-16 icon-warning" ng-if="item.status === 'warning'"></i>
+                            </span>
+                            {{item.name}}
+                        </a>
+                    </li>
+                </ul>
+                <div class="page-alert-wrapper" ng-if="eventLoading">
+                    <div class="page-alert">
+                        <span class="mui-spinner"></span>
+                        <div class="alert-text info">正在加载...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

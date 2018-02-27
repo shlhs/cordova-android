@@ -1,0 +1,4 @@
+<ul class="mui-table-view">
+    <li class="mui-table-view-cell" ng-repeat="item in treeData" ng-class="{'mui-active': item.$$isExpend, 'mui-collapse': !isLeaf(item), 'is-leaf': isLeaf(item)}"
+        ng-include="'/templates/site/device-monitor/tree-item.html'" ></li>
+</ul>

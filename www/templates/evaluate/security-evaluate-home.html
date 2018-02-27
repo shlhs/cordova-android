@@ -1,0 +1,60 @@
+
+<div class="page page-left" ng-controller="SecurityEvaluateHome">
+
+        <header class="mui-bar mui-bar-nav bg-{{evaluateData.status}} bg-transparent" style="z-index:1;box-shadow: 0 0 1px rgba(239, 237, 237, 0.85);" id="transparentHeader">
+            <a class="mui-icon mui-icon-left-nav mui-pull-left text-white" ng-click="gotoPrevPage()"></a>
+            <h1 class="mui-title" id="header_title">设备安全技术评测</h1>
+        </header>
+        <div class="mui-content" ng-cloak style="top:0px;" onscroll="bodyScroll(this)">
+            <div class="statics-card bg-{{evaluateData.status}}">
+                <div class="container">
+                    <h5>共{{evaluateData.total}}个检查项</h5>
+                    <div class="chart-container">
+                        <div class="chart">
+                            <div id="evaluateChart">
+                                <div style="position: absolute;text-align: center;width: 100%;font-size: 12px;top:18%;">已完成</div>
+                            </div>
+                        </div>
+                        <a href="#" class="mui-icon mui-icon-arrowright" ng-click="openPage('/templates/evaluate/security-evaluate-first-classify.html')"></a>
+                    </div>
+                    <ul class="footer-list">
+                        <li><label class="title">紧急缺陷</label><label class="value">{{evaluateData.emergency}}</label> </li>
+                        <li><label class="title">重大缺陷</label><label class="value">{{evaluateData.serious}}</label> </li>
+                        <li><label class="title">一般缺陷</label><label class="value">{{evaluateData.normal}}</label> </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <ul class="info-group" style="font-size: 14px;">
+                    <li style="line-height: 28px;"><label>站点名称：</label><span class="value">{{evaluateData.station_name}}</span> </li>
+                    <li style="line-height: 28px;"><label>检查人：</label><span class="value">{{evaluateData.creator_name}}</span> </li>
+                    <li style="line-height: 28px;"><label>检查时间：</label><span class="value">{{evaluateData.create_time}}</span> </li>
+                    <!--<li style="line-height: 28px;"><label>上一次保存时间：</label><span class="value">{{evaluateData.update_time}}</span> </li>-->
+                </ul>
+            </div>
+            <div class="card" style="padding: 8px 0 0 0;" ng-if="evaluateData.unqualifiedList.length">
+                <div class="card-header border" style="padding-left: 12px;">
+                    <i class="icon icon-20 icon-warning"></i>所有缺陷（{{evaluateData.unqualifiedList.length}}）
+                </div>
+                <div class="card-content no-padding">
+                    <ul class="mui-table-view mui-table-view-striped mui-table-view-condensed no-border">
+                        <li class="mui-table-view-cell" ng-repeat="item in evaluateData.unqualifiedList">
+                            <div class="mui-table">
+                                <div class="mui-table-cell mui-col-xs-10">
+                                        <span class="mui-ellipsis">{{item.name}}
+                                        </span>
+                                    <h5><span class="title">分类</span> ：{{item.path}}</h5>
+                                    <h5><span class="title">处理建议</span> ：{{item.resolve}}</h5>
+                                </div>
+                                <div class="mui-table-cell mui-col-xs-2 mui-text-right">
+                                    <span class="mui-pull-right text-status danger" style="position: absolute;right: 0;">{{item.type}}</span>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+</div>

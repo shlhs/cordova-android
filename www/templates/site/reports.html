@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>月度报告</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <link rel="stylesheet" href="/components/mui/css/mui.min.css">
+    <link rel="stylesheet" href="/css/my.css">
+    <link rel="stylesheet" href="/css/icon.css">
+    <link rel="stylesheet" href="/css/animate.css">
+    <!--<script type="text/javascript" src="/cordova.js"></script>-->
+    <!--<script type="text/javascript" src="/cordova_plugins.js"></script>-->
+    <script type="text/javascript" src="/components/libs/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="/components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="/components/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script type="text/javascript" src="/components/angular-animate/angular-animate.js"></script>
+    <script type="text/javascript" src="/components/angular-ui-router/release/stateEvents.min.js"></script>
+    <script type="text/javascript" src="/js/app/utils.js"></script>
+    <script type="text/javascript" src="/js/app/app.js"></script>
+    <script type="text/javascript" src="/js/service/router-service.js"></script>
+    <script type="text/javascript" src="/js/service/common-service.js"></script>
+<body class="box-vertical-center" ng-app="myApp" ng-controller="SiteReportsCtrl">
+<header class="mui-bar mui-bar-nav bg-header">
+    <a class="mui-icon mui-action-back mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
+    <h1 class="mui-title">月度报告</h1>
+</header>
+<div class="mui-content" id="reports">
+    <ul class="mui-table-view" style="margin-top: 0;">
+        <li class="mui-table-view-cell" ng-repeat="r in reports">
+            <a class="" ng-click="openReport(r.name, r.output_src_link)" style="white-space: normal;">
+                {{r.name}}
+                <h5 style="margin: 6px 0 0 0;position: relative;" class="ng-binding">生成日期：{{r.output_created.substring(0,11)}}
+                    <div style="padding:4px 10px;position: absolute;top:-4px;right:0px;">
+                        <i class="icon icon-16 icon-download" ng-click="download($event, r.output_src_link)"></i>
+                    </div>
+                </h5>
+            </a>
+        </li>
+    </ul>
+    <div class="page-alert-wrapper" ng-if="reports.length==0 && !isLoading">
+        <div class="page-alert">
+            <i class="alert-icon nodata"></i>
+            <div class="alert-text info">当前无报告</div>
+        </div>
+    </div>
+    <div class="page-alert-wrapper" ng-if="isLoading">
+        <div class="page-alert">
+            <span class="mui-spinner"></span>
+            <div class="alert-text info">正在加载...</div>
+        </div>
+    </div>
+</div>
+<div id="zoomObj"></div>
+<script src="/components/fastclick-master/lib/fastclick.js"></script>
+<script src="/js/my/notify.js"></script>
+<script src="/components/dropload-gh-pages/dist/dropload.min.js"></script>
+<script src="/components/pinch-zoom-js/dist/underscore.js"></script>
+<script src="/components/pinch-zoom-js/dist/pinch-zoom.js"></script>
+<script src="/js/lib/imagesloaded-master/imagesloaded.pkgd.min.js"></script>
+<script type="text/javascript" src="/js/controller/sites.js"></script>
+</body>
+</html>

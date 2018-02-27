@@ -676,7 +676,12 @@ function updateTask(strArgs) {  // json格式的参数， {data: taskData}
     scope.updateTask && scope.updateTask(taskData);
 }
 
-app.controller('TaskDetailCtrl', function ($scope, $location, $state, userService, platformService, $http, $timeout, ajax) {
+function setTaskReportId(reportId) {        // 安全检测和停电维护新建后返回到任务详情页时，设置任务的report_id
+    var scope = angular.element('#taskDetail').scope();
+    scope.setReportId(reportId);
+}
+
+app.controller('TaskDetailCtrl', function ($scope, $location, $state, userService, platformService, $http, $timeout, $window, ajax) {
     $scope.TaskAction = TaskAction;
     $scope.TaskStatus = TaskStatus;
     $scope.imageScope = [1,2,3,4,5,6,7,8,9];
@@ -873,6 +878,42 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
             }
         });
     }
+
+    $scope.setReportId = function (reportId) {
+        $scope.taskData.report_id = reportId
+    };
+
+    $scope.gotoHandleTask = function () {       // 根据任务类型打开对应的操作界面
+        var reportId = $scope.taskData.report_id;
+        switch ($scope.taskData.task_type_id) {
+            case 1:     // 巡检任务
+                if (reportId) {
+                    var url = '/templates/evaluate/base_home.html?template=/templates/evaluate/security-evaluate-home.html&id=' + reportId;
+                } else {
+                    var url = '/templates/evaluate/base_home.html?template=/templates/evaluate/security-evaluate-first-classify.html&isCreate=1&taskId=' + $scope.taskData.id;
+                    if ($scope.taskData.station_sn){
+                        url += '&stationSn=' + $scope.taskData.station_sn;
+                    }
+                }
+                $window.location.href = url;
+                break;
+            case 6:     // 停电维护任务
+                var url = '/templates/maintenance-check/base_home.html?template=/templates/maintenance-check/check-one-record-home.html';
+                if (reportId) {
+                    url += '&id=' + reportId;
+                } else {
+                    url += '&isCreate=1&taskId=' + $scope.taskData.id;
+                    if ($scope.taskData.station_sn){
+                        url += '&stationSn=' + $scope.taskData.station_sn + "&stationName=" + $scope.taskData.station_name;
+                    }
+                }
+                $window.location.href = url;
+                break;
+            default:
+                $state.to('.update()')
+        }
+    };
+
     $scope.showImageGallery = function (images, index) {        // 点击任务处理历史中的图片显示相册
         var imageList = [];
         for (var i in $scope.imageScope){
@@ -1057,168 +1098,6 @@ app.controller('TaskCloseRejectCtrl', function ($scope) {      //驳回关闭请
         });
     };
 });
-
-var imageHandler = {
-    rotate: function (file, cb) {
-        EXIF.getData(file, function () {
-            var orientation = EXIF.getTag(this, 'Orientation');
-            var rotate='rotate(0deg)';
-            if (orientation && orientation !== 1){  // 增加旋转
-                switch(orientation){
-                    case 6: // 需要顺时针90度旋转
-                        rotate = 'rotate(90deg)';
-                        break;
-                    case 8: // 需要逆时针90度旋转
-                        rotate = 'rotate(-90deg)';
-                        break;
-                    case 3: // 需要180度旋转
-                        rotate = 'rotate(180deg)';
-                        break;
-                }
-            }
-            cb && cb(rotate);
-        });
-    },
-    readFileAsDataURL: function (file, callback) {
-        var a = new FileReader();
-        a.onload = function(e) {
-            callback(e.target.result);
-        };
-        a.readAsDataURL(file);
-    },
-    checkRotate: function(fileDict){
-        var that = this;
-        EXIF.getData(fileDict.file, function () {
-            var orientation = EXIF.getTag(this, 'Orientation');
-            // if(orientation != "" && orientation != 1){
-            if(orientation != ""){
-                var canvas = document.createElement("canvas"), data;
-                that.readFileAsDataURL(this, function(result){
-                    var img = $("<img style='display:none;'>").appendTo($('body'))[0];
-                    img.src = result;
-                    img.onload = function(){
-                        switch(orientation){
-                            case 1://需要顺时针（向左）90度旋转
-                                that._rotateImg(this,'left',canvas);
-                                break;
-                            case 6://需要顺时针（向左）90度旋转
-                                that._rotateImg(this,'left',canvas);
-                                break;
-                            case 8://需要逆时针（向右）90度旋转
-                                that._rotateImg(this,'right',canvas);
-                                break;
-                            case 3://需要180度旋转
-                                that._rotateImg(this,'right',canvas);//转两次
-                                that._rotateImg(this,'right',canvas);
-                                break;
-                        }
-                    }
-                });
-            }
-        });
-    },
-    //对图片旋转处理 added by lzk www.bcty365.com
-
-    _rotateImg: function (img, direction, canvas) {
-        //alert(img);
-        //最小与最大旋转方向，图片旋转4次后回到原方向
-        var min_step = 0, max_step = 3;
-        //var img = document.getElementById(pid);
-        if (img === null)return;
-        //img的高度和宽度不能在img元素隐藏后获取，否则会出错
-        var originHeight = img.height, originWidth = img.width, width=originWidth, height=originHeight;
-        if (originWidth > originHeight){
-            if (originHeight > 2048){
-                height = 2048;
-                width = parseInt((height/originHeight) * originWidth);
-            }
-        }
-        else {
-            if (originWidth > 2048){
-                width = 2048;
-                height = parseInt(width/originWidth*originHeight);
-            }
-        }
-        //var step = img.getAttribute('step');
-        var step = 2;
-        if (step === null) {
-            step = min_step;
-        }
-        if (direction === 'right') {
-            step++;
-            //旋转到原位置，即超过最大值
-            step > max_step && (step = min_step);
-        } else {
-            step--;
-            step < min_step && (step = max_step);
-        }
-        //旋转角度以弧度值为参数
-        var degree = step * 90 * Math.PI / 180, ctx = canvas.getContext('2d');
-        switch (step) {
-            case 0:
-                canvas.width = width;
-                canvas.height = height;
-                ctx.drawImage(img, 0, 0);
-                break;
-            case 1:
-                canvas.width = height;
-                canvas.height = width;
-                ctx.rotate(degree);
-                ctx.drawImage(img, 0, -height);
-                break;
-            case 2:
-                canvas.width = width;
-                canvas.height = height;
-                ctx.rotate(degree);
-                ctx.drawImage(img, -width, -height);
-                break;
-            case 3:
-                canvas.width = height;
-                canvas.height = width;
-                ctx.rotate(degree);
-                ctx.drawImage(img, -width, 0);
-                break;
-        }
-    },
-    compress: function(source_img_obj, quality, orientation){
-        var that = this, mime_type = "image/jpeg", cvs = document.createElement('canvas');
-        //naturalWidth真实图片的宽度
-        var originWidth = source_img_obj.naturalWidth, originHeight = source_img_obj.naturalHeight, width=originWidth, height=originHeight;
-        if (orientation && orientation !== 1){
-            switch (orientation){
-                case 6://需要顺时针（向左）90度旋转
-                    that._rotateImg(source_img_obj,'left',cvs);
-                    break;
-                case 8://需要逆时针（向右）90度旋转
-                    that._rotateImg(source_img_obj,'right',cvs);
-                    break;
-                case 3://需要180度旋转
-                    that._rotateImg(source_img_obj,'right',cvs);//转两次
-                    that._rotateImg(source_img_obj,'right',cvs);
-                    break;
-            }
-        }else{
-            if (originWidth > originHeight){
-                if (originHeight > 2048){
-                    height = 2048;
-                    width = parseInt((height/originHeight) * originWidth);
-                }
-            }
-            else {
-                if (originWidth > 2048){
-                    width = 2048;
-                    height = parseInt(width/originWidth*originHeight);
-                }
-            }
-            cvs.width = width;
-            cvs.height = height;
-            cvs.getContext("2d").drawImage(source_img_obj, 0, 0, originWidth, originHeight, 0, 0, width, height);
-        }
-        var result_image_obj = new Image();
-        result_image_obj.src = cvs.toDataURL(mime_type, quality/100);
-        return result_image_obj;
-    }
-};
 
 
 app.controller('TaskCreateCtrl', function ($scope, $timeout, userService, ajax) {

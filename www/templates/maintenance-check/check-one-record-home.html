@@ -1,0 +1,99 @@
+
+<div ng-controller="MaintenanceCheckRecordItemCtrl" class="page page-left" id="powerOffHandler">
+    <header class="mui-bar mui-bar-nav" style="z-index:1;box-shadow: 0 0 1px rgba(239, 237, 237, 0.85);">
+        <a class="mui-icon mui-icon-left-nav mui-pull-left text-white" ng-click="gotoPrevPage()"></a>
+        <h1 class="mui-title">电房及设备停电维护作业表</h1>
+        <a class="mui-action-menu mui-icon mui-pull-right" style="font-size: 16px;line-height: 28px;" ng-click="save()" ng-if="canEdit">保存</a>
+    </header>
+    <div class="mui-content" ng-cloak style="background-color: #FFFFFF;">
+        <div class="card no-padding">
+            <ul class="mui-table-view info-group mui-input-group" style="font-size: 14px;">
+                <li class="mui-table-view-cell">
+                    <label class="value">站点名称：</label><span class="title">{{recordData.station_name}}</span>
+                </li>
+                <li class=" mui-input-row" ng-if="isCreate">
+                    <label style="padding: 13px 0px 11px 15px;width: auto;" class="value">配变容量：</label>
+                    <input class="font-14" type="text" placeholder="请输入" ng-model="recordData.power_capacity" style="float:none;">
+                </li>
+                <li class="mui-table-view-cell" ng-if="!isCreate">
+                    <label class="value">配变容量：</label>
+                    <span class="name">{{recordData.power_capacity}}</span>
+                </li>
+                <li class=" mui-input-row" ng-if="isCreate">
+                    <label style="padding: 13px 0px 11px 15px;width: auto;" class="value">供电线路：</label>
+                    <input class="font-14" type="text" placeholder="请输入" ng-model="recordData.power_circuit" style="float:none;">
+                </li>
+                <li class="mui-table-view-cell" ng-if="!isCreate">
+                    <label class="value">供电线路：</label>
+                    <span class="name">{{recordData.power_circuit}}</span>
+                </li>
+                <li class="mui-table-view-cell">
+                    <label class="value">维护日期：</label><span class="name">{{recordData.create_time.substring(0, 10)}}</span>
+                </li>
+                <li class="mui-table-view-cell">
+                    <label class="value">责任人：</label><span class="name">{{recordData.creator_name}}</span>
+                </li>
+            </ul>
+            <div class="card" style="text-align: center;">
+                <button class="mui-btn mui-btn-primary" ng-click="gotoCheckListPage()">查看检查项</button>
+            </div>
+        </div>
+        <div class="font-14" style="border-top: #eee 1px solid;margin: 0px 16px;padding: 12px 0 4px 0;">
+            <div class="info-group"><span class="value">维护前照片：</span>
+                <div class="icon icon-20 icon-camera" style="position: absolute;">
+                    <div class="image-uploader">
+                        <input type="file" accept="image/*" name="upload" multiple="" onchange="angular.element(this).scope().chooseImage('image_before_check', this)" ng-if="isPC">
+                        <input type="file" accept="image/*" name="upload" multiple="" ng-if="!isPC" ng-click="setCurrentImageModel('image_before_check')">
+                    </div>
+                </div>
+            </div>
+
+            <ul class="image-list">
+                <li class="image-item" ng-repeat="file in recordData.image_before_check"
+                    ng-click="openPage('/templates/maintenance-check/gallery.html', {index: $index, images:recordData.image_before_check})">
+                    <div class="content">
+                        <a class="img-file" style="background-image: url({{file}})"></a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="card font-14" style="border-top: #eee 1px solid;margin: 0px 16px;padding: 12px 0 4px 0;">
+            <div class="info-group"><span class="value">维护过程照片：</span>
+                <div class="icon icon-20 icon-camera" style="position: absolute;">
+                    <div class="image-uploader">
+                        <input type="file" accept="image/*" name="upload" multiple="" onchange="angular.element(this).scope().chooseImage('image_in_check', this)" ng-if="isPC">
+                        <input type="file" accept="image/*" name="upload" multiple="" ng-if="!isPC" ng-click="setCurrentImageModel('image_in_check')">
+                    </div>
+                </div>
+            </div>
+
+            <ul class="image-list">
+                <li class="image-item" ng-repeat="file in recordData.image_in_check"
+                    ng-click="openPage('/templates/maintenance-check/gallery.html', {index: $index, images:recordData.image_in_check})">
+                    <div class="content">
+                        <a class="img-file" style="background-image: url({{file}})"></a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="card font-14" style="border-top: #eee 1px solid;margin: 0px 16px;padding: 12px 0 4px 0;">
+            <div class="info-group"><span class="value">维护后照片：</span>
+                <div class="icon icon-20 icon-camera" style="position: absolute;">
+                    <div class="image-uploader">
+                        <input type="file" accept="image/*" name="upload" multiple="" onchange="angular.element(this).scope().chooseImage('image_after_check', this)" ng-if="isPC">
+                        <input type="file" accept="image/*" name="upload" multiple="" ng-if="!isPC" ng-click="setCurrentImageModel('image_after_check')">
+                    </div>
+                </div>
+            </div>
+
+            <ul class="image-list">
+                <li class="image-item" ng-repeat="file in recordData.image_after_check"
+                    ng-click="openPage('/templates/maintenance-check/gallery.html', {index: $index, images:recordData.image_after_check})">
+                    <div class="content">
+                        <a class="img-file" style="background-image: url({{file}})"></a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

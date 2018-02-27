@@ -39,7 +39,8 @@ app.controller('DeviceListCtrl', function ($scope, ajax, scrollerService) {
     };
 
     $scope.gotoDevice = function (stationSn, deviceSn, deviceName) {
-        location.href = '/templates/site/device-detail.html?stationSn=' + stationSn + '&deviceSn=' + deviceSn + '&deviceName=' + deviceName;
+        // location.href = '/templates/site/device-detail.html?stationSn=' + stationSn + '&deviceSn=' + deviceSn + '&deviceName=' + deviceName;
+        location.href = '/templates/site/device-monitor.html?stationSn=' + stationSn + '&deviceSn=' + deviceSn + '&deviceName=' + deviceName;
     };
 
     function formatDeviceStatus(device) {
@@ -150,6 +151,7 @@ app.controller('DeviceAnalogVarCtrl', function ($scope, ajax, $interval) {      
     $scope.has_data = true;
     $scope.isLoading = true;
     $scope.getDeviceVar = function() {
+        analogVars = [];
         var url = "/stations/" + stationSn + "/devices/" + deviceSn + "/devicevars";
         ajax.get({
             url: url,
@@ -217,6 +219,7 @@ app.controller('DeviceDigitalVarCtrl', function ($scope, ajax, $interval) {     
     $scope.has_data = true;
     $scope.isLoading = true;
     $scope.getDeviceVar = function() {
+        digitalVars = [];
         var url = "/stations/" + stationSn + "/devices/" + deviceSn + "/devicevars";
         ajax.get({
             url: url,
@@ -242,7 +245,7 @@ app.controller('DeviceDigitalVarCtrl', function ($scope, ajax, $interval) {     
                 $.notify.error('获取数据异常');
             }
         });
-    }
+    };
 
     function getRealTimeData() {
         var url = "/devicevars/getrealtimevalues";
@@ -380,3 +383,480 @@ app.controller('DeviceTaskHistoryCtrl', function ($scope, ajax, scrollerService)
 
     $scope.getDataList();
 });
+
+app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile) {       // 检测设备列表页
+    var stationSn = GetQueryString('sn');
+    $scope.treeData = [];
+    var devices = [];       // 设备
+    $scope.isLoading = false;
+    $scope.ellapseId = null;
+
+    function getDevices() {
+        $scope.isLoading = true;
+        ajax.get({
+            url: '/stations/' + stationSn + '/devicetree',
+            success: function (data) {
+                $scope.isLoading = false;
+                getDeviceVars(data);
+                $scope.treeData = formatToTreeData(data);
+                $scope.$apply();
+            },
+            error: function () {
+                $.notify.error('获取设备列表失败');
+                $scope.isLoading = false;
+                $scope.$apply();
+            }
+        });
+    }
+
+    function getDeviceVars(deviceList) {
+        if (deviceList.length === 0){
+            return;
+        }
+        var deviceSns = [];
+        for (var i in deviceList){
+            if (!deviceList[i].is_group)
+            {
+                deviceSns.push(deviceList[i].sn);
+            }
+        }
+        ajax.get({
+            url: '/devices/details?device_sns=' + deviceSns.join(','),
+            async: false,
+            success: function (data) {
+                var deviceData = null, device=null;
+                // 将实时数据写入设备列表中
+                var j = 0;
+                for (var i in data){
+                    deviceData = data[i];
+                    for (; j < deviceList.length; j++){
+                        if (deviceList[j].id === deviceData.device.id){
+                            break;
+                        }
+                    }
+                    if (j >= deviceList.length){
+                        break;
+                    }
+                    device = deviceList[j];
+                    device.communi_status = deviceData.communi_status;
+                    device.running_status = deviceData.running_status;
+                    device.important_realtime_datas = deviceData.important_realtime_datas;
+                    _formatDeviceStatus(device);
+                }
+            },
+            error: function () {
+            }
+        });
+    }
+
+    function _formatDeviceStatus(device) {
+        if (device.communi_status > 0){
+            device.status = 'offline';
+            device.status_name = '离线';
+
+        }else{
+            if (device.running_status > 0){
+                device.status = 'danger';
+                device.status_name = '故障';
+            }else{
+                device.status = 'normal';
+                device.status_name = '正常';
+            }
+        }
+    }
+
+    $scope.itemClicked = function (item) {
+        if (!item.is_group)
+        {
+            location.href = '/templates/site/device-monitor.html?stationSn=' + stationSn + '&deviceSn=' + item.sn + '&deviceName=' + item.name;
+        }
+    };
+
+    function formatToTreeData(data) {
+
+        function addToGroup(newItem, items) {
+            if (!items || !items.length) {
+                return;
+            }
+            for (var i=0; i<items.length; i++) {
+
+                var item = items[i];
+                if (!item.is_group){
+                    continue;
+                }
+                if (item.id === newItem.parent_id) {
+                    if (newItem.is_group) {
+                        newItem.children = [];
+                    }
+                    newItem.text = newItem.name;
+                    item.children.push(newItem);
+                    return true;
+                }
+                if (item.children) {
+                    if (addToGroup(newItem, item.children)) {
+                        return true;
+                    }
+                }
+            }
+
+        }
+
+        data.sort(function (a, b) {
+            return a.depth > b.depth;
+        });
+
+        var formatted = [];
+
+        // 先按照depth进行排序
+        data.forEach(function (item) {
+            if (!item.is_group) {
+                devices.push(item);
+            }
+            if (item.parent_id) {
+                addToGroup(item, formatted);
+                } else {
+                    item.text = item.name;
+                    item.children = [];
+                    formatted.push(item);
+                }
+            });
+        return formatted;
+    }
+
+    $scope.toggle = function ($event) {
+        $scope.ellapseId = '1';
+    };
+
+    getDevices();
+});
+
+app.controller('DeviceMonitorCtrl', function ($scope, ajax) {
+
+    $scope.stationSn = GetQueryString('stationSn');
+    $scope.deviceSn=GetQueryString('deviceSn');
+    $scope.deviceName = GetQueryString('deviceName');
+    $scope.realtime = [];       // 实时数据
+    $scope.history = [];        // 历史数据
+    $scope.showType = 'realtime';   // 默认显示实时数据标签页
+
+    $scope.changeDeviceType = function ($event, showType) {
+        $scope.showType = showType;
+    };
+
+    function getDeviceVars() {  // 获取设备的所有变量
+        ajax.get({
+            url: '/devices/' + $scope.deviceSn + '/devicevars',
+            success: function (data) {
+                $scope.vars = data;
+                groupVars(data);
+                $scope.$broadcast('loaded', $scope.realtime, $scope.history);
+            }
+        });
+    }
+
+    function groupVars(vars) {      // 将变量按模拟量、状态量进行分组，再将模拟量进行分类
+        var analogs=[], digitals=[], varGroups={};
+        vars.forEach(function (n) {
+           if (n.type === 'Analog') {
+               analogs.push(n.sn);
+               // 如果是模拟量的话，再根据var_define_name进行分类
+               var groupName = n.var_group_name;
+               if (!groupName) {
+                   return;
+               }
+               if (varGroups[groupName]) {
+                   varGroups[groupName].push(n);
+               } else {
+                   varGroups[groupName] = [n];
+               }
+           } else {
+               digitals.push(n.sn);
+           }
+        });
+        if (analogs.length) {
+            $scope.realtime.push({name: '模拟量', type: 'analog', sns: analogs});
+        }
+        if (digitals.length) {
+            $scope.realtime.push({name: '状态量', type: 'digital', sns: digitals});
+        }
+        for (var groupName in varGroups){
+            $scope.history.push({name: groupName, vars: varGroups[groupName], unit: varGroups[groupName][0].unit});
+        }
+        $scope.$apply();
+    }
+
+    $scope.switchRealtimeType = function (type) {
+        $scope.realtimeType = type;
+    };
+
+    function getRealTimeData(type, sns) {        // 获取变量的实时值
+        var url = "/devicevars/getrealtimevalues";
+        ajax.get({
+            url: url,
+            data: "sns=" + sns.join(","),
+            success: function(data) {
+                $scope.digitalValues = data;
+                $scope.isLoading = false;
+                $scope.$apply();
+            },
+            error: function(err) {
+                $.notify.error("获取设备变量实时值失败");
+                $scope.isLoading = false;
+                $scope.$apply();
+                console.log(err);
+            }
+        });
+    }
+
+    getDeviceVars();
+
+});
+
+
+app.controller('VarRealtimeCtrl', function ($scope, ajax) {
+
+    var deviceSn=$scope.$parent.deviceSn;
+    $scope.realtime = [];       // 实时数据
+    $scope.realtimeType = '';
+    $scope.realtimeValues = [];
+    $scope.isLoading = false;
+
+    $scope.switchRealtimeType = function (type) {
+        $scope.realtimeType = type;
+        for (var i=0; i<$scope.realtime.length; i++) {
+            if ($scope.realtime[i].type === type) {
+                getRealTimeData(type, $scope.realtime[i].sns);
+                break;
+            }
+        }
+    };
+
+    function getRealTimeData(type, sns) {        // 获取变量的实时值
+        $scope.isLoading = true;
+        var url = "/devicevars/getrealtimevalues";
+        ajax.get({
+            url: url,
+            data: "sns=" + sns.join(","),
+            success: function(data) {
+                $scope.isLoading = false;
+                $scope.realtimeValues = data;
+                $scope.$apply();
+            },
+            error: function(err) {
+                $.notify.error("获取设备变量实时值失败");
+                $scope.isLoading = false;
+                $scope.$apply();
+                console.log(err);
+            }
+        });
+    }
+
+    $scope.$on('loaded', function (event, realtimeVars, historyVars) {
+        $scope.realtime = realtimeVars;
+        if (realtimeVars && realtimeVars.length)
+        {
+            $scope.realtimeType = realtimeVars[0].type;
+            $scope.switchRealtimeType($scope.realtimeType);
+        }
+    });
+});
+
+app.controller('HistoryVarCtrl', function ($scope, ajax, $timeout) {
+    $scope.currentGroupName = '';
+    var currentGroup = {};
+    $scope.history = [];
+    $scope.timeRange = 'DAY';
+    $scope.isLoading = false;
+
+
+    $scope.switchGroup = function (groupName) {
+        $scope.currentGroupName = groupName;
+        for(var i=0; i<$scope.history.length; i++){
+            if ($scope.history[i].name === groupName) {
+                currentGroup = $scope.history[i];
+                getHistoryData($scope.history[i].vars);
+                break;
+            }
+        }
+    };
+
+    $scope.switchTimeRange = function (timeRange) {
+        $scope.timeRange = timeRange;
+        getHistoryData(currentGroup.vars);
+    };
+
+    function getHistoryData(vars) {
+        $scope.isLoading = true;
+        var sns = [];
+        vars.forEach(function (n) {
+            sns.push(n.sn);
+        });
+        ajax.get({
+            url: '/devicevars/getstatisticalvalues',
+            data: {
+                sns: sns.join(','),
+                type: $scope.timeRange,
+                calcmethod: 'AVG'
+            },
+            success: function (data) {
+                $scope.isLoading = false;
+                $scope.$apply();
+                drawChart(data);
+            },
+            error: function () {
+                $.notify.error("获取历史趋势数据失败");
+                $scope.isLoading = false;
+                $scope.$apply();
+            }
+        });
+    }
+
+    function _generateDayHours() {  // 生成一天内的24个小时
+        var hours = [];
+        for (var i=0; i<24; i++){
+            hours.push(((i<10) ? ('0' + i) : i) + ':00');
+        }
+        return hours;
+    }
+
+    function _generateMonthDays() { // 生成本月的天数据
+        var date = new Date(),
+            firstDay = new Date(date.getFullYear(), date.getMonth(), 1),
+            lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0),
+            month = firstDay.getMonth() + 1,
+            days = [];
+        month = month < 10 ? '0' + month : month;
+        for (var i=firstDay.getDate(); i<=lastDay.getDate(); i++) {
+            days.push(month + '-' +((i<10) ? ('0' + i) : i));
+        }
+        return days;
+    }
+
+    function drawChart(data) {
+        var xAxis = [];
+        // 如果返回的数据为空，那么自动生成时间轴
+        if ($scope.timeRange === 'DAY')
+        {
+            xAxis = _generateDayHours();
+        } else {
+            xAxis = _generateMonthDays();
+        }
+        // 对比data与currentGroup中的变量，如果data中没有返回的，补充上空值
+        var series = [];
+        currentGroup.vars.forEach(function (n) {
+            var exist = false;
+            for (var i=0; i<data.length; i++) {
+                if (data[i].name === n.name) {
+                    exist = true;
+                    series.push({name: n.name, data: data[i].datas});
+                    break;
+                }
+            }
+            var tmpData = [];
+            if (!exist) {
+                xAxis.forEach(function (n) {
+                    tmpData.push(null);
+                });
+                series.push({name: n.name, data: tmpData});
+            }
+        });
+        var config = {
+            chart: {
+                spacingLeft: 0,
+                spacingRight: 0
+            },
+            title: {
+                text: currentGroup.name + '趋势图' + (currentGroup.unit ? ('(' + currentGroup.unit + ')') : ''),
+                style: {
+                    fontSize: '14px'
+                }
+            },
+            credits: {
+                enabled: false
+            },
+            xAxis: {
+                categories: xAxis,
+                tickInterval: 6
+            },
+            yAxis: {
+                title: {
+                    text: currentGroup.unit,
+                    align: 'high',
+                    offset: 0,
+                    rotation: 0,
+                    y:-10
+                }
+            },
+            tooltip: {
+                formatter: function () {
+                    return this.x + '<br/>' + this.series.name + ':' + this.y + currentGroup.unit
+                }
+            },
+            plotOptions: {
+                series: {
+                    marker: {
+                        enabled: false
+                    }
+                }
+            },
+            series: series,
+            colors: ['#369FFF', '#F9CC13', '#F04863', '#12C1C1', '#8442E0', '#2FC15B']
+        };
+        Highcharts.chart('chartContainer', config);
+    }
+
+    $scope.$on('loaded', function (event, realtimeVars, historyVars) {
+        $scope.history = historyVars;
+        if (historyVars && historyVars.length)
+        {
+            $scope.currentGroupName = historyVars[0].name;
+            $timeout(function () {
+                $scope.switchGroup($scope.currentGroupName);
+            }, 500);
+
+        }
+
+    })
+});
+
+app.directive('treeView',[function(){
+    return {
+        restrict: 'E',
+        templateUrl: '/templates/site/device-monitor/tree-view.html',
+        scope: {
+            treeData: '=',
+            canChecked: '=',
+            textField: '@',
+            itemClicked: '&',
+            itemCheckedChanged: '&',
+            itemTemplateUrl: '@'
+        },
+        controller:['$scope', '$attrs', function($scope, $attrs){
+            $scope.itemExpended = function(item, $event){
+                item.$$isExpend = ! item.$$isExpend;
+                ($scope[itemClicked] || angular.noop)({
+                    $item:item,
+                    $event:$event
+                });
+                $event.stopPropagation();
+            };
+            $scope.getItemIcon = function(item){
+                var isLeaf = $scope.isLeaf(item);
+                if(isLeaf){
+                    return 'fa fa-leaf';
+                }
+                return item.$$isExpend ? 'fa fa-minus': 'fa fa-plus';
+            };
+            $scope.isLeaf = function(item){
+                return !item.is_group;
+            };
+            $scope.warpCallback = function(callback, item, $event){
+                item.$$isExpend = !item.$$isExpend;
+                ($scope[callback] || angular.noop)({
+                    $item:item,
+                    $event:$event
+                });
+            };
+        }]
+    };
+}]);

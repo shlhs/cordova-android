@@ -1,0 +1,44 @@
+
+<div ng-controller="SecurityEvaluateChecklistCtrl" class="page page-left">
+    <header class="mui-bar mui-bar-nav">
+        <a class="mui-icon mui-icon-left-nav mui-pull-left text-white" ng-click="gotoPrevPage()"></a>
+        <h1 class="mui-title">{{group.name}}</h1>
+        <a class="mui-action-menu mui-icon mui-pull-right" style="font-size: 16px;line-height: 28px;" ng-click="save()" ng-if="hasPermission">保存</a>
+    </header>
+    <div class="mui-content" ng-cloak style="display: -webkit-box;-webkit-box-align: stretch;">
+        <div class="left-panel" style="background-color: #FFFFFF;width: 35%;box-shadow: 0 0 2px #ccc;">
+            <ul class="check-list">
+                <li class="check-item" ng-repeat="item in items" ng-class="{'active': $index===currentIndex}">
+                    <a class="mui-navigate-right" href="#" ng-click="chooseItem($index)">
+                        <i class="icon icon-16 icon-all-right" ng-if="item.status === 'success'"></i>
+                        <i class="icon icon-16 icon-warning" ng-if="item.status === 'warning'"></i>
+                        <i class="icon icon-16 icon-circle-grey" ng-if="item.status === 'disabled'"></i>
+                        {{item.name}}
+                    </a>
+                </li>
+            </ul>
+
+        </div>
+        <div class="right-panel" style="-webkit-box-flex: 2;">
+            <h5 class="mui-text-center" style="color: #444;padding: 4px;">{{currentItem.name}}</h5>
+            <div style="padding: 0 8px;">
+                <ul class="check-box-list">
+                    <li class="check-box-item" ng-repeat="item in checklist">
+                        <div class="name" style="height: 40px;">
+                            <label>{{item.name}}</label>
+                            <div class="mui-pull-right mui-radio">
+                                <div><input name="radio{{$index}}" type="radio" ng-model="item.value" value="1" ng-click="checkThis(item)">是</div>
+                                <div><input name="radio{{$index}}" type="radio" ng-model="item.value" value="0" ng-click="checkThis(item)">否</div>
+                            </div>
+                        </div>
+                        <ul class="info-group" style="font-size: 11px;">
+                            <li><span class="value">缺陷类型：</span><span class="value">{{item.name}}</span></li>
+                            <li><span class="value">缺陷危害：</span><span class="value">{{item.damage}}</span></li>
+                            <li><span class="value">处理建议：</span><span class="value">{{item.resolve}}</span></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
