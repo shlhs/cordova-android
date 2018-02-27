@@ -317,12 +317,12 @@ app.controller('SiteReportsCtrl', function ($scope, ajax, scrollerService, route
     $scope.download = function ($event, link) {
         $event.stopPropagation();
         if (window.android && window.android.saveImageToGallery) {
-            window.android.saveImageToGallery($scope.link);
+            window.android.saveImageToGallery(link);
         }
     };
 
-    $scope.openReport = function (link) {
-        routerService.openPage($scope, '/templates/base-image-zoom.html', {link: link});
+    $scope.openReport = function (name, link) {
+        routerService.openPage($scope, '/templates/base-image-zoom.html', {link: link, name: name});
     };
 
     getData();

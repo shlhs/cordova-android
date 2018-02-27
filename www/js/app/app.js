@@ -455,7 +455,10 @@ var imageHandler = {
  */
 app.controller('ImageZoomCtrl', function ($scope, $timeout) {
     $scope.menuVisible = false;
-    imagesLoaded('#zoomTarget', function () {
+    $scope.header = null;
+    $scope.headerVisible = false;
+    imagesLoaded('#zoomTarget', function (e) {
+
         new RTP.PinchZoom($("#zoomTarget"), {});
     });
 
@@ -474,12 +477,19 @@ app.controller('ImageZoomCtrl', function ($scope, $timeout) {
                 $timeout.cancel(timeoutEvent);
                 timeoutEvent = null;
             }
+        },
+        touchmove: function (e) {
+            if (timeoutEvent){
+                $timeout.cancel(timeoutEvent);
+                timeoutEvent = null;
+            }
         }
     });
 
     $scope.hide = function () {
         timeoutEvent = null;
-        history.back();
+        // history.back();
+        $scope.headerVisible = !$scope.headerVisible;
     };
 
 });

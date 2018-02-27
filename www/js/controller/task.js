@@ -677,8 +677,7 @@ function updateTask(strArgs) {  // json格式的参数， {data: taskData}
 }
 
 function setTaskReportId(reportId) {        // 安全检测和停电维护新建后返回到任务详情页时，设置任务的report_id
-
-    var scope = angular.element('#my_tasks').scope();
+    var scope = angular.element('#taskDetail').scope();
     scope.setReportId(reportId);
 }
 

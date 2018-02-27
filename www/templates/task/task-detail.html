@@ -72,7 +72,7 @@
     <a class="mui-icon mui-action-back mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
     <h1 class="mui-title" id="head_title">任务详情</h1>
 </header>
-<div  ng-controller="TaskDetailCtrl" ng-cloak style="margin-top:50px;">
+<div  ng-controller="TaskDetailCtrl" ng-cloak style="margin-top:50px;" id="taskDetail">
 
     <div class="steps" ng-if="taskData.stage_id != TaskStatus.ToAssign">
         <div class="step" ng-class="{'active': taskData.activeIndex==0, 'finished': taskData.finishIndex>=0}">
