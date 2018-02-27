@@ -68,7 +68,7 @@ app.controller('SiteBaseInfoCtrl', function ($scope, $timeout, $stateParams, aja
                     data.site_image = platformService.getImageUrl(width, height, platformService.host + data.photo_src_link);
                 }
                 else {
-                    data.site_image = '/img/background/site-default.png';
+                    data.site_image = '/img/background/site-default.jpeg';
                 }
                 $scope.siteData = data;
                 getUnhandledEventCount(data);
