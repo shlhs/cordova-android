@@ -109,7 +109,7 @@ app.service('SecurityReportService', function (userService, ajax) {
         var requestData = this.parseTemplate(template);
         requestData.template = JSON.stringify(requestData.template);
         requestData.station_sn = scope.stationSn;
-        requestData.station_name = scope.siteName;
+        requestData.station_name = scope.stationName;
         $.notify.progressStart();
         if (id) {
             requestData.id = id;
@@ -164,12 +164,13 @@ app.service('SecurityReportService', function (userService, ajax) {
 
 app.controller('SecurityHistoryCtrl', function ($scope, routerService, ajax, userService) {
     var sn = GetQueryString('sn');
-    $scope.siteName = GetQueryString("name");
+    $scope.stationName = GetQueryString("name");
     $scope.history = [];
     $scope.isLoading = false;
 
     $scope.createOneRecord = function () {
-        $scope.openPage('/templates/evaluate/security-evaluate-first-classify.html', {isCreate: true, stationSn: sn});
+        $scope.openPage('/templates/evaluate/security-evaluate-first-classify.html', {isCreate: true, stationSn: sn,
+            stationName: $scope.stationName});
     };
 
     $scope.openPage = function(template, params, config){
@@ -223,7 +224,6 @@ app.controller('SecurityHistoryCtrl', function ($scope, routerService, ajax, use
     init();
 });
 
-
 app.controller('SecurityEvaluateHome', function ($scope, $http, ajax, routerService, SecurityReportService) {
     var backupData = {};        // 保存原始数据
     $scope.evaluateData = {};
@@ -231,6 +231,7 @@ app.controller('SecurityEvaluateHome', function ($scope, $http, ajax, routerServ
     $scope.unqualifiedList = [];
     $scope.unqualified = {};
     $scope.status = 'disabled';
+    $scope.editable = false;
 
     // 画进度
     function drawProgress(progress) {
@@ -282,6 +283,7 @@ app.controller('SecurityEvaluateHome', function ($scope, $http, ajax, routerServ
                 data.template = JSON.parse(data.template);
                 var tmp = SecurityReportService.parseTemplate(data.template);
                 $.extend($scope.evaluateData, data, tmp);
+                $scope.editable = data.editable;
                 $scope.refresh();
                 $scope.$apply();
             }
@@ -323,6 +325,7 @@ app.controller('SecurityEvaluateHome', function ($scope, $http, ajax, routerServ
 app.controller('SecurityEvaluateDetailCtrl', function ($scope, $http, ajax, userService, routerService, SecurityReportService) {
     $scope.evaluateData = $scope.$parent.evaluateData;
     $scope.hasPermission = false;
+    $scope.editable = $scope.evaluateData ? $scope.evaluateData.editable : true;
 
     $scope.gotoPrevPage = function () {     // 提示是否保存
         if ($scope.$parent.refresh) {
@@ -369,7 +372,7 @@ app.controller('SecurityEvaluateDetailCtrl', function ($scope, $http, ajax, user
                     $scope.$parent.refresh($scope.evaluateData);
                 }
             } else {
-                $scope.$parent.refresh();
+                $scope.$parent.refresh && $scope.$parent.refresh();
             }
         });
     };
