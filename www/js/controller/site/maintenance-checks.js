@@ -13,12 +13,12 @@ app.controller('MaintenanceBaseCtrl', function ($scope, $compile) {
 
 app.controller('MaintenanceCheckHistoryCtrl', function ($scope, ajax, routerService) {
     var sn = GetQueryString('sn');
-    $scope.siteName = GetQueryString("name");
+    $scope.stationName = GetQueryString("name");
     $scope.history = [];
     $scope.isLoading = false;
 
     $scope.createOneRecord = function () {
-        $scope.openPage('/templates/maintenance-check/check-one-record-home.html', {isCreate: true, stationSn: sn, stationName: $scope.siteName});
+        $scope.openPage('/templates/maintenance-check/check-one-record-home.html', {isCreate: true, stationSn: sn, stationName: $scope.stationName});
     };
 
     $scope.openPage = function(template, params, config){
@@ -129,7 +129,7 @@ app.controller("MaintenanceCheckRecordItemCtrl", function ($scope, ajax, routerS
     }
 
     function checkEditable() {
-        if ($scope.recordData.creator_account === userService.username) {
+        if ($scope.recordData.creator_account === userService.username && $scope.recordData.editable) {
             $scope.canEdit = true;
         }
     }
@@ -137,13 +137,15 @@ app.controller("MaintenanceCheckRecordItemCtrl", function ($scope, ajax, routerS
     $scope.save = function () {
         $.notify.progressStart();
 
-        if ($scope.isCreate) {
+        if (!$scope.recordData.id) {
             var postData = $.extend({}, $scope.recordData,
                 {
                     template:JSON.stringify($scope.recordData.template),
                     image_before_check: JSON.stringify($scope.image_before_check),
                     image_in_check: JSON.stringify($scope.image_in_check),
-                    image_after_check: JSON.stringify($scope.image_after_check)
+                    image_after_check: JSON.stringify($scope.image_after_check),
+                    stationSn: $scope.stationSn,
+                    stationName: $scope.stationName
                 });
             if ($scope.taskId) {
                 postData.ops_task_id = $scope.taskId;

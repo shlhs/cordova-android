@@ -892,7 +892,7 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
                 } else {
                     var url = '/templates/evaluate/base_home.html?template=/templates/evaluate/security-evaluate-first-classify.html&isCreate=1&taskId=' + $scope.taskData.id;
                     if ($scope.taskData.station_sn){
-                        url += '&stationSn=' + $scope.taskData.station_sn;
+                        url += '&stationSn=' + $scope.taskData.station_sn + "&stationName=" + $scope.taskData.station_name;
                     }
                 }
                 $window.location.href = url;
