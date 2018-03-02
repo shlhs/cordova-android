@@ -1,7 +1,7 @@
 
 <div ng-controller="SecurityEvaluateDetailCtrl" class="page page-left">
     <header class="mui-bar mui-bar-nav">
-        <a class="mui-icon mui-icon-left-nav mui-pull-left text-white" ng-click="gotoPrevPage()"></a>
+        <a class="mui-icon mui-icon-left-nav mui-pull-left text-white" ng-click="goBack()"></a>
         <h1 class="mui-title">设备安全技术评测</h1>
         <a class="mui-action-menu mui-icon mui-pull-right" style="font-size: 16px;line-height: 28px;" ng-click="save()" ng-if="hasPermission && editable">保存</a>
     </header>
@@ -10,7 +10,7 @@
         <div class="scroll-wrapper" id="events">
             <div class="mui-scroll">
                 <ul class="mui-table-view mui-table-view-striped mui-table-view-condensed" style="margin-top:0px;">
-                    <li class="mui-table-view-cell" ng-repeat="item in evaluateData.template">
+                    <li class="mui-table-view-cell" ng-repeat="item in template">
                         <a class="mui-navigate-right" href="#" ng-click="openPage('/templates/evaluate/security-evaluate-check-list.html', {group: item})">
                             <span class="mui-badge no-padding bg-transparent">
                                 <i class="icon icon-16 icon-all-right" ng-if="item.status === 'success'"></i>

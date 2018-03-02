@@ -249,14 +249,18 @@ app.controller("MaintenanceCheckRecordItemCtrl", function ($scope, ajax, routerS
 });
 
 
-app.controller('MaintenanceChecklistCtrl', function ($scope, $http) {
-    $scope.template = $scope.recordData.template;
+app.controller('MaintenanceChecklistCtrl', function ($scope, ajax) {
+    var byWeb = GetQueryString("by") === 'web' ? true : false;      // 是否是从web请求的
+    $scope.template = byWeb ? '' : $scope.recordData.template;
     $scope.currentData = {};
     $scope.currentIndex = 0;
 
     $scope.chooseItem = function (index) {
         $scope.currentIndex = index;
-        $scope.currentItem = $scope.template[index];
+        if ($scope.template)
+        {
+            $scope.currentItem = $scope.template[index];
+        }
     };
 
     $scope.checkThis = function (item, value) {
@@ -264,8 +268,35 @@ app.controller('MaintenanceChecklistCtrl', function ($scope, $http) {
     };
 
     function init() {
-        $scope.chooseItem(0);
+        if (byWeb)
+        {
+            getTemplate();
+        }
+        else {
+            $scope.chooseItem(0);
+        }
     }
+
+    function getTemplate() {
+        var templateName = GetQueryString("name"), apiHost=GetQueryString("apiHost");
+        ajax.get({
+            url: apiHost+'/poweroff_reports/template?name=' + templateName,
+            success: function (data) {
+                $scope.template=data;
+                $scope.chooseItem(0);
+                $scope.$apply();
+            },
+            error: function (xhr, status, error) {
+                $scope.$apply();
+            }
+        });
+    }
+
+    $scope.pageBack = function () {
+        if (!byWeb) {
+            history.back();
+        }
+    };
 
     init();
 });

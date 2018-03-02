@@ -224,9 +224,7 @@ app.service('ajax', function ($rootScope, platformService, userService, $http) {
     };
 
     function request(option) {
-        if (option.url.indexOf("http://") === 0){
-            option.url = "http://114.215.90.83:8099/v1" + option.url;
-        }else{
+        if (option.url.indexOf("http://") !== 0){
             option.url = platformService.host + option.url;
         }
         option.timeout = 5000;

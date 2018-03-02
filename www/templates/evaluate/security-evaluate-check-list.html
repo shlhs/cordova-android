@@ -24,7 +24,7 @@
             <div style="padding: 0 8px;">
                 <ul class="check-box-list">
                     <li class="check-box-item" ng-repeat="item in checklist">
-                        <div class="name" style="height: 40px;">
+                        <div class="name" style="min-height: 40px;">
                             <label>{{item.name}}</label>
                             <div class="mui-pull-right mui-radio">
                                 <div><input name="radio{{$index}}" type="radio" ng-model="item.value" value="1" ng-click="checkThis(item)">是</div>
