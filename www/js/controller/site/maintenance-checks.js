@@ -99,7 +99,7 @@ app.controller("MaintenanceCheckRecordItemCtrl", function ($scope, ajax, routerS
         if ($scope.isCreate) {
             $scope.canEdit = true;
             ajax.get({
-                url: '/poweroff_reports/template?station_sn=' + $scope.stationSn,
+                url: '/poweroff_reports/template',
                 success: function (data) {
                     $scope.recordData.template = data;
                     $scope.$apply();
@@ -207,6 +207,7 @@ app.controller("MaintenanceCheckRecordItemCtrl", function ($scope, ajax, routerS
 
 
     $scope.chooseImage = function (model, obj) {     // 选择图片
+        $scope.setCurrentImageModel(model);
         var files = obj.files;
         for (var i = 0; i < files.length; i++) {
             var reader = new FileReader(), file=files[i];
@@ -220,12 +221,7 @@ app.controller("MaintenanceCheckRecordItemCtrl", function ($scope, ajax, routerS
                 img.onload = function(){
                     var quality =  75;
                     var dataUrl = imageHandler.compress(this, 75, file.orientation).src;
-                    $scope[model].push(dataUrl);
-                    if ($scope.recordData[model] === null) {
-                        $scope.recordData[model] = [];
-                    }
-                    $scope.recordData[model].push(dataUrl);
-                    $scope.$apply();
+                    $scope.addImagesWithBase64(dataUrl);
                 };
             };
         }
@@ -238,8 +234,11 @@ app.controller("MaintenanceCheckRecordItemCtrl", function ($scope, ajax, routerS
     };
 
     $scope.addImagesWithBase64 = function (data) {
-        if ($scope.recordData[currentImageModel] === null) {
+        if ($scope.recordData[currentImageModel] === undefined) {
             $scope.recordData[currentImageModel] = [];
+        }
+        if ($scope[currentImageModel] === undefined){   // 用于保存新上传的图片，保存时只保存新上传的图片
+            $scope[currentImageModel] = [];
         }
         $scope[currentImageModel].push(data);
         $scope.recordData[currentImageModel].push(data);
