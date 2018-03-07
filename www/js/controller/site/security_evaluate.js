@@ -323,9 +323,18 @@ app.controller('SecurityEvaluateHome', function ($scope, $http, ajax, routerServ
 });
 
 app.controller('SecurityEvaluateDetailCtrl', function ($scope, $http, ajax, userService, routerService, SecurityReportService) {
+    var byWeb = GetQueryString("by") === 'web' ? true : false;      // 是否是从web请求的
     $scope.evaluateData = $scope.$parent.evaluateData;
+    $scope.template = byWeb ? '' : $scope.evaluateData.template;
     $scope.hasPermission = false;
     $scope.editable = $scope.evaluateData ? $scope.evaluateData.editable : true;
+
+    $scope.goBack = function () {
+        if (byWeb) {
+            return;
+        }
+        $scope.gotoPrevPage();
+    };
 
     $scope.gotoPrevPage = function () {     // 提示是否保存
         if ($scope.$parent.refresh) {
@@ -344,7 +353,7 @@ app.controller('SecurityEvaluateDetailCtrl', function ($scope, $http, ajax, user
 
     function getEvaluateData() {        // 获取评估数据
         ajax.get({
-            url: '/security_reports/template?station_sn=' + $scope.stationSn,
+            url: '/security_reports/template',
             success: function (data) {
                 $scope.evaluateData = SecurityReportService.parseTemplate(data);
                 $scope.$apply();
@@ -352,13 +361,31 @@ app.controller('SecurityEvaluateDetailCtrl', function ($scope, $http, ajax, user
         });
     }
 
+    function getDefaultTemplate() {
+        var templateName = GetQueryString("name"), apiHost=GetQueryString("apiHost");
+        ajax.get({
+            url: apiHost + '/security_reports/template?name=' + (templateName ? templateName : ''),
+            success: function (data) {
+                $scope.template=data;
+                $scope.$apply();
+            },
+            error: function (xhr, status, error) {
+                $scope.$apply();
+            }
+        });
+    }
+
     function init() {
-        if ($scope.isCreate) {
-            getEvaluateData();
-            $scope.hasPermission = true;
+        if (byWeb) {
+            getDefaultTemplate();
         } else {
-            if ($scope.evaluateData.creator_account === userService.username) {
+            if ($scope.isCreate) {
+                getEvaluateData();
                 $scope.hasPermission = true;
+            } else {
+                if ($scope.evaluateData.creator_account === userService.username) {
+                    $scope.hasPermission = true;
+                }
             }
         }
     }
@@ -393,11 +420,16 @@ app.controller('SecurityEvaluateChecklistCtrl', function ($scope, ajax) {
     };
 
     function init() {
-        $scope.chooseItem(0);
+        if ($scope.items && $scope.items.length) {
+            $scope.chooseItem(0);
+        }
     }
 
 
     function setGroupStatus(groupData) {
+        if (!groupData || !groupData.items) {
+            return;
+        }
         // 设置大类的状态
         var status = 'success';
         groupData.items.forEach(function (n) {
