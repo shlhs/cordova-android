@@ -620,18 +620,32 @@ app.controller('VarRealtimeCtrl', function ($scope, ajax) {
     $scope.realtimeType = '';
     $scope.realtimeValues = [];
     $scope.isLoading = false;
+    var interval = null;
 
     $scope.switchRealtimeType = function (type) {
         $scope.realtimeType = type;
+        getRealTimeData();
+    };
+
+    function finishInterval() {
+        if (interval) {
+            clearInterval(interval);
+            interval = null;
+        }
+    }
+
+    function getRealTimeData() {        // 获取变量的实时值
+        var type = $scope.realtimeType, sns=[];
         for (var i=0; i<$scope.realtime.length; i++) {
             if ($scope.realtime[i].type === type) {
-                getRealTimeData(type, $scope.realtime[i].sns);
+                sns = $scope.realtime[i].sns;
                 break;
             }
         }
-    };
-
-    function getRealTimeData(type, sns) {        // 获取变量的实时值
+        if (!sns || !sns.length) {
+            $scope.realtimeValues = [];
+            return;
+        }
         $scope.isLoading = true;
         var url = "/devicevars/getrealtimevalues";
         ajax.get({
@@ -639,6 +653,17 @@ app.controller('VarRealtimeCtrl', function ($scope, ajax) {
             data: "sns=" + sns.join(","),
             success: function(data) {
                 $scope.isLoading = false;
+                if (type === 'digital') {   // 状态量
+                    data.forEach(function (n) {
+                        if (n.data > 0) {
+                            n.value = n.var.one_meaning ? n.var.one_meaning : 'OFF';
+                            n.status = 'danger';
+                        } else {
+                            n.value = n.var.zero_meaning ? n.var.zero_meaning : 'ON';
+                            n.status = 'normal';
+                        }
+                    });
+                }
                 $scope.realtimeValues = data;
                 $scope.$apply();
             },
@@ -657,6 +682,7 @@ app.controller('VarRealtimeCtrl', function ($scope, ajax) {
         {
             $scope.realtimeType = realtimeVars[0].type;
             $scope.switchRealtimeType($scope.realtimeType);
+            interval = setInterval(getRealTimeData, 5000);
         }
     });
 });

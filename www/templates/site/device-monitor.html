@@ -94,7 +94,7 @@
                     <tbody>
                     <tr ng-repeat="item in realtimeValues">
                         <td>{{item.name}}</td>
-                        <td><i class="dev-status" ng-class="{'normal': item.data < 1, 'danger': item.data > 0}">{{item.data===0?'OFF' : 'ON'}}</i></td>
+                        <td style="padding: 4px 24px 6px 0;text-align: right;"><i class="dev-status {{item.status}}">{{item.value}}</i></td>
                     </tr>
                     </tbody>
                 </table>
