@@ -178,6 +178,8 @@ app.controller("MaintenanceCheckRecordItemCtrl", function ($scope, ajax, routerS
             })
         } else {
             var postData = {
+                power_capacity: $scope.recordData.power_capacity,
+                power_circuit: $scope.recordData.power_circuit,
                 template: JSON.stringify($scope.recordData.template),
                 image_before_check: JSON.stringify($scope.image_before_check),
                 image_in_check: JSON.stringify($scope.image_in_check),

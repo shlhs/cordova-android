@@ -231,17 +231,18 @@ app.service('ajax', function ($rootScope, platformService, userService, $http) {
         option.xhrFields = {withCredentials: true};
         option.crossDomain = true;
 
-		var newOption = $.extend({}, option, {
-		    error: function (xhr, status, error) {
-		        if (xhr.status === 500){
-		            option.error && option.error(xhr, status, error);
-                } else {
-                    $rootScope.login(function () {
-                        $.ajax(option);
-                    });
-                }
-            }
-        });
+		var newOption = $.extend({}, option
+            // {
+            // error: function (xhr, status, error) {
+		     //    if (xhr.status === 500){
+		     //        option.error && option.error(xhr, status, error);
+            //     } else {
+            //         $rootScope.login(function () {
+            //             $.ajax(option);
+            //         });
+            //     }
+            // }}
+        );
         var r = $.ajax(newOption);
         return r;
     }
