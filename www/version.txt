@@ -1,0 +1,11 @@
+{
+	"versionCode": 120,
+	"versionName": "1.2.0",
+	"description": "",
+	"downloadUrl": "http://120.78.216.252:8123/version/mingyang-manager-1.2.0.apk",
+	"isLaunched": true,
+	"isGatedLaunch": true,
+	"forceUpdate": false,
+	"whiteList": ["zoujian"],
+	"webVersion": "20180307 09:34"
+}

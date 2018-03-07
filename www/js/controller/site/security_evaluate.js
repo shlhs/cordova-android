@@ -325,7 +325,7 @@ app.controller('SecurityEvaluateHome', function ($scope, $http, ajax, routerServ
 app.controller('SecurityEvaluateDetailCtrl', function ($scope, $http, ajax, userService, routerService, SecurityReportService) {
     var byWeb = GetQueryString("by") === 'web' ? true : false;      // 是否是从web请求的
     $scope.evaluateData = $scope.$parent.evaluateData;
-    $scope.template = byWeb ? '' : $scope.evaluateData.template;
+    $scope.template = (byWeb || !$scope.evaluateData ) ? '' : $scope.evaluateData.template;
     $scope.hasPermission = false;
     $scope.editable = $scope.evaluateData ? $scope.evaluateData.editable : true;
 
@@ -356,6 +356,7 @@ app.controller('SecurityEvaluateDetailCtrl', function ($scope, $http, ajax, user
             url: '/security_reports/template',
             success: function (data) {
                 $scope.evaluateData = SecurityReportService.parseTemplate(data);
+                $scope.template = $scope.evaluateData.template;
                 $scope.$apply();
             }
         });
