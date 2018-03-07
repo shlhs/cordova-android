@@ -21,7 +21,6 @@ html,body{
     top: 0;
     height: 100%;
     width: 100%;
-    box-shadow: 0 0 2px #ccc;
 }
 .page-left.ng-leave {
     -webkit-animation: slideOutRight 0.5s;
@@ -33,7 +32,6 @@ html,body{
     top: 0;
     height: 100%;
     width: 100%;
-    box-shadow: 0 0 2px #ccc;
 }
 .page-fade.ng-enter {
     -webkit-animation: fadeIn 0.5s;
@@ -713,7 +711,7 @@ background-image: url("../img/light/64X64/profile.png");
     background-color: #e00202;
 }
 .dev-status.normal{
-    background-color: rgb(96, 181, 255);
+    background-color: #08b762;
 }
 .dev-status.offline{
     background-color: darkgrey;
