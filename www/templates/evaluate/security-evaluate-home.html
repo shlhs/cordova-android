@@ -29,7 +29,7 @@
                 <ul class="info-group" style="font-size: 14px;">
                     <li style="line-height: 28px;"><label>站点名称：</label><span class="value">{{evaluateData.station_name}}</span> </li>
                     <li style="line-height: 28px;"><label>检查人：</label><span class="value">{{evaluateData.creator_name}}</span> </li>
-                    <li style="line-height: 28px;"><label>检查时间：</label><span class="value">{{evaluateData.create_time}}</span> </li>
+                    <li style="line-height: 28px;"><label>检查时间：</label><span class="value">{{evaluateData.create_time.substring(0, 16)}}</span> </li>
                     <!--<li style="line-height: 28px;"><label>上一次保存时间：</label><span class="value">{{evaluateData.update_time}}</span> </li>-->
                 </ul>
             </div>
