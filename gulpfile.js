@@ -36,7 +36,7 @@ gulp.task('webserver', function(){
     gulp.src(['www', 'node_modules'])
         .pipe(webserver({
             port: 8000,//端口
-            //host: '172.20.0.235',//域名
+            host: '0.0.0.0',//域名
             //liveload: true,//实时刷新代码。不用f5刷新
             directoryListing: {
                 path: 'index.html',
