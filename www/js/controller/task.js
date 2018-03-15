@@ -910,7 +910,7 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
                 $window.location.href = url;
                 break;
             default:
-                $state.to('.update()')
+                $state.go('.update')
         }
     };
 
