@@ -211,7 +211,7 @@ app.service('ajax', function ($rootScope, platformService, userService, $http) {
                 {
                     userService.saveCompany(data[0]);
                 }else{
-                    userService.saveCompany(data);
+                    userService.saveCompany(data[0]);
                 }
                 callback && callback();
             },

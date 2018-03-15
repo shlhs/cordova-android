@@ -40,7 +40,7 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
                 {
                     userService.saveCompany(data[0]);
                 }else{
-                    userService.saveCompany(data);
+                    userService.saveCompany(data[0]);
                 }
                 $state.go('index');
             },
