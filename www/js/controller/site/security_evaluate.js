@@ -277,8 +277,9 @@ app.controller('SecurityEvaluateHome', function ($scope, $http, ajax, routerServ
     }
 
     function getEvaluateData() {        // 获取评估数据
+        var apiHost=GetQueryString("apiHost");
         ajax.get({
-            url: '/security_reports/' + $scope.id,
+            url: apiHost+'/security_reports/' + $scope.id,
             success: function (data) {
                 data.template = JSON.parse(data.template);
                 var tmp = SecurityReportService.parseTemplate(data.template);
