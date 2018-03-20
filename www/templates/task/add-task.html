@@ -123,6 +123,10 @@
                 <span>责任人不能为空</span>
             </label>
         </div>
+        <div class="mui-input-row" ng-if="linkEventInfo">
+            <label>关联事件</label>
+            <span style="position: absolute;">{{linkEventInfo}}</span>
+        </div>
         <div class="mui-input-row" style="margin: 10px 5px;height: auto;">
             <textarea rows="3" placeholder="任务描述，必填" name="desp" ng-model="taskData.desp" required></textarea>
             <label class="error" style="margin-left: 0;" ng-show="myForm.desp.$invalid && (myForm.desp.$dirty || myForm.$submitted)">

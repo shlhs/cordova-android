@@ -1107,6 +1107,8 @@ app.controller('TaskCreateCtrl', function ($scope, $timeout, userService, ajax) 
     $scope.handlerName = null;
     $scope.deviceName = null;
     $scope.user = null;
+    $scope.linkEventId = GetQueryString("eventId");
+    $scope.linkEventInfo = null;
     var isGrabTask = false;
 
     $scope.taskData = {
@@ -1116,7 +1118,11 @@ app.controller('TaskCreateCtrl', function ($scope, $timeout, userService, ajax) 
     var devicePicker = null;
     var userPicker = null;
     function init() {
-        initStations();
+        if($scope.linkEventId && $scope.linkEventId != '') {
+            initLinkEvent();;
+        } else {
+            initStations();
+        }   
         initTaskTypeList();
         initDatePicker();
         initMembers();
@@ -1135,6 +1141,24 @@ app.controller('TaskCreateCtrl', function ($scope, $timeout, userService, ajax) 
             d['value'] = d[idKey];
             d['text'] = d[nameKey];
         }
+    }
+
+    function initLinkEvent() {
+        ajax.get({
+            url: '/events/' + $scope.linkEventId,
+            success: function (data) {
+                $scope.linkEventInfo  = data.info;
+                $scope.stationName = data.station_name;
+                $scope.deviceName = data.device_name;
+                $scope.taskData.station_sn = data.station_sn;
+                $scope.taskData.events.push({"id": $scope.linkEventId });
+                $scope.taskData.devices.push({"id": data.device_id });
+                $scope.$apply();
+            },
+            error: function(){
+                console.log('获取事件信息失败: '+$scope.linkEventId);
+            }
+        });
     }
     
     function initStations() {
