@@ -501,9 +501,6 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile) {     
 
         }
 
-        data.sort(function (a, b) {
-            return a.depth > b.depth;
-        });
 
         var formatted = [];
 
