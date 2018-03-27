@@ -40,8 +40,15 @@ app.controller('StaticDevicesHomeCtrl', function ($scope, ajax, routerService) {
 
         }
 
-        data.sort(function (a, b) {
-            return a.depth > b.depth;
+        // 先按照depth进行排序
+        data = data.sort(function (a, b) {
+            if (a.depth !== b.depth) {
+                return a.depth - b.depth;
+            }
+            if (a.is_group !== b.is_group) {  // 分组排在前
+                return b.is_group - a.is_group;
+            }
+            return a.name.localeCompare(b.name, 'zh-CN');
         });
 
         var formatted = [];
