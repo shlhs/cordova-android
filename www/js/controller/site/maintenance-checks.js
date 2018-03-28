@@ -109,8 +109,9 @@ app.controller("MaintenanceCheckRecordItemCtrl", function ($scope, ajax, routerS
                 }
             });
         } else {
+            var apiHost = GetQueryString("apiHost") || '';
             ajax.get({
-                url: '/poweroff_reports/' + $scope.id,
+                url: apiHost + '/poweroff_reports/' + $scope.id,
                 success: function (data) {
                     $scope.recordData = $.extend({}, data, {template: JSON.parse(data.template)});
                     $scope.recordData.image_before_check = splitImagePath(data.image_before_check);
