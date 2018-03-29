@@ -277,7 +277,7 @@ app.controller('SecurityEvaluateHome', function ($scope, $http, ajax, routerServ
     }
 
     function getEvaluateData() {        // 获取评估数据
-        var apiHost=GetQueryString("apiHost");
+        var apiHost=GetQueryString("apiHost") || "";
         ajax.get({
             url: apiHost+'/security_reports/' + $scope.id,
             success: function (data) {
@@ -364,7 +364,7 @@ app.controller('SecurityEvaluateDetailCtrl', function ($scope, $http, ajax, user
     }
 
     function getDefaultTemplate() {
-        var templateName = GetQueryString("name"), apiHost=GetQueryString("apiHost");
+        var templateName = GetQueryString("name") || "", apiHost=GetQueryString("apiHost") || "";
         ajax.get({
             url: apiHost + '/security_reports/template?name=' + (templateName ? templateName : ''),
             success: function (data) {
