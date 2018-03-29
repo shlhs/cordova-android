@@ -501,13 +501,20 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile) {     
 
         }
 
-        data.sort(function (a, b) {
-            return a.depth > b.depth;
-        });
 
         var formatted = [];
 
         // 先按照depth进行排序
+        data = data.sort(function (a, b) {
+            if (a.depth !== b.depth) {
+                return a.depth - b.depth;
+            }
+            if (a.is_group !== b.is_group) {  // 分组排在前
+                return b.is_group - a.is_group;
+            }
+            return a.name.localeCompare(b.name, 'zh-CN');
+        });
+
         data.forEach(function (item) {
             if (!item.is_group) {
                 devices.push(item);
@@ -522,6 +529,8 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile) {     
             });
         return formatted;
     }
+
+
 
     $scope.toggle = function ($event) {
         $scope.ellapseId = '1';

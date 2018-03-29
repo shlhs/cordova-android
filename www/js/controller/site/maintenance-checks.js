@@ -61,6 +61,7 @@ app.controller("MaintenanceCheckRecordItemCtrl", function ($scope, ajax, routerS
     $scope.image_after_check = [];
     $scope.isPC = IsPC();
     $scope.canEdit = false;
+    var apiHost = GetQueryString("apiHost") || '';      // 适配网页
 
     if ($scope.isCreate) {
         $scope.recordData = {station_sn: $scope.stationSn, station_name: $scope.stationName,
@@ -88,9 +89,9 @@ app.controller("MaintenanceCheckRecordItemCtrl", function ($scope, ajax, routerS
         if (images.lastIndexOf(';') === (images.length-1)) {
             images = images.substring(0, images.length-1);
         }
-        var paths = [];
+        var paths = [], urlHost = $rootScope.host || apiHost;
         images.split(';').forEach(function (n) {
-            paths.push($rootScope.host + '/' + n);
+            paths.push(urlHost+ '/' + n);
         });
         return paths;
     }
@@ -110,7 +111,7 @@ app.controller("MaintenanceCheckRecordItemCtrl", function ($scope, ajax, routerS
             });
         } else {
             ajax.get({
-                url: '/poweroff_reports/' + $scope.id,
+                url: apiHost + '/poweroff_reports/' + $scope.id,
                 success: function (data) {
                     $scope.recordData = $.extend({}, data, {template: JSON.parse(data.template)});
                     $scope.recordData.image_before_check = splitImagePath(data.image_before_check);

@@ -172,6 +172,34 @@ app.controller('EventListCtrl', function ($scope, $stateParams, scrollerService,
     };
 
     $scope.getDataList();
+
+    $scope.postCheckEventAction = function($event, eventId) {
+        console.log("To check event: " + eventId);
+        var data = {"status": 0};
+        var url = "/events/" + eventId;
+        ajax.put({
+            url: url,
+            data: JSON.stringify(data),
+            contentType:"application/json",
+            headers: {
+                Accept: "application/json"
+            },
+            success: function (data) {
+                $.notify.progressStop();
+                $.notify.info("事件已确认");
+                window.location.reload();
+            },
+            error: function (data) {
+                $.notify.progressStop();
+                console.log('post action fail');
+                $.notify.error('确认时发生异常');
+            }
+        });
+    };
+
+    $scope.goToCreateTaskHtml = function($event, eventId, eventInfo) {
+        window.location.href = '/templates/task/add-task.html?eventId=' + eventId + '&eventInfo=' + eventInfo;
+    };
 });
 
 
