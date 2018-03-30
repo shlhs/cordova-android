@@ -137,10 +137,10 @@
         <div id="realtime" class=" height-wrap-parent">
             <div ng-show="!isLoading">
                 <ul class="mui-row summary-list" style="padding-top:6px;">
-                    <li ng-repeat="v in varGroups.keyVarGroupName.data" class="mui-col-xs-6 mui-col-sm-6 summary-item"
+                    <li ng-repeat="v in keyVarDatas" class="mui-col-xs-6 mui-col-sm-6 summary-item"
                     ng-style="{'background-color': getRandomColor($index)}">
                         <span class="title">{{v.name}}</span>
-                        <h4 class="value">{{v.data}}<span class="unit">{{v.unit}}</span></h4>
+                        <h4 class="value">{{v.value}}</h4>
                     </li>
                 </ul>
                 <div class="card" id="chartCard" style="padding-top: 0;">
@@ -153,7 +153,7 @@
                     <ul class="slidesjs-pagination" style="bottom: -8px;" id="chartSlidesPagination">
                     </ul>
                 </div>
-                <div class="card" ng-controller="EventListCtrl">
+                <div class="card" ng-if="havaEventList" ng-controller="EventListCtrl">
                     <div class="card-header border">
                         <i class="icon icon-ms icon-card-event"></i>
                         事件与告警
@@ -186,5 +186,7 @@
     <script src="../../components/fastclick-master/lib/fastclick.js"></script>
     <script src="../../js/my/notify.js"></script>
     <script src="../../components/highcharts/highcharts.js"></script>
+    <script src="../../components/echart/echarts.common.min.js"></script>
+    <script src="../../components/moment.min.js"></script>
 </body>
 </html>
