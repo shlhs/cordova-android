@@ -687,15 +687,19 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
                     var tempCharge = tempPfvSettings[i].charge;          
                     var tempName = '';
                     var tempColor = 'gray';
+                    var tempLabelColor = 'gray';
                     if(tempPfv == 'p') {
                         tempName = '峰';
                         tempColor = 'rgba(193,35,35,0.2)';
+                        tempLabelColor = 'rgba(193,35,35)';
                     } else if(tempPfv == 'f') {
                         tempName = '平';
                         tempColor = 'rgba(0,152,217,0.2)';
+                        tempLabelColor = 'rgba(0,152,217)';
                     } else if(tempPfv == 'v') {
                         tempName = '谷';
                         tempColor = 'rgba(46,165,1,0.2)';
+                        tempLabelColor = 'rgba(46,165,1)';  
                     } 
             
                     var tempAreaData = [{
@@ -728,6 +732,11 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
                         itemStyle: {
                             normal: {
                             color: tempColor
+                            }
+                        },
+                        label: {
+                            normal: {
+                                color: tempLabelColor
                             }
                         }
                         }
