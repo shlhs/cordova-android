@@ -50,7 +50,7 @@
 
             <ul class="image-list">
                 <li class="image-item" ng-repeat="file in recordData.image_before_check"
-                    ng-click="openPage('/templates/maintenance-check/gallery.html', {index: $index, images:recordData.image_before_check})">
+                    ng-click="openGallery($index, recordData.image_before_check)">
                     <div class="content">
                         <a class="img-file" style="background-image: url({{file}})"></a>
                     </div>
@@ -69,7 +69,7 @@
 
             <ul class="image-list">
                 <li class="image-item" ng-repeat="file in recordData.image_in_check"
-                    ng-click="openPage('/templates/maintenance-check/gallery.html', {index: $index, images:recordData.image_in_check})">
+                    ng-click="openGallery($index, recordData.image_in_check)">
                     <div class="content">
                         <a class="img-file" style="background-image: url({{file}})"></a>
                     </div>
@@ -88,7 +88,7 @@
 
             <ul class="image-list">
                 <li class="image-item" ng-repeat="file in recordData.image_after_check"
-                    ng-click="openPage('/templates/maintenance-check/gallery.html', {index: $index, images:recordData.image_after_check})">
+                    ng-click="openGallery($index, recordData.image_after_check)">
                     <div class="content">
                         <a class="img-file" style="background-image: url({{file}})"></a>
                     </div>

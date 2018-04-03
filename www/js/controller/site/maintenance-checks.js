@@ -74,6 +74,14 @@ app.controller("MaintenanceCheckRecordItemCtrl", function ($scope, ajax, routerS
         routerService.openPage($scope, '/templates/maintenance-check/check-one-record-items.html', {recordData: $scope.recordData});
     };
 
+    $scope.openGallery = function(startIndex, images) {
+
+        routerService.openPage($scope, '/templates/maintenance-check/gallery.html', {
+            index: startIndex,
+            images: images
+        });
+    };
+
     $scope.gotoPrevPage = function () {
         if (routerService.hasNoHistory()) {
             pageBack();
