@@ -493,7 +493,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
                 querytime: queryTime.substr(0,10) + 'T' + queryTime.substr(11,8) + '.000Z'
             },
             success: function (data) {
-                if (!data || !data.length){
+                if (!data){
                     return;
                 }
                 var p = 0;
