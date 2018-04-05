@@ -64,6 +64,24 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
                         }
                         haveChart = true;
                         getTrendAnalysis(contentsResult[i].title, deviceVarSns, contentsResult[i].period, $scope.queryTime, contentsResult[i].pfvSettings);
+                    }else if(contentsResult[i].type === 'ratio-pie'){
+                        var ratioPieData = [];
+                        for(var j in contentsResult[i].content) {
+                            var tempVarSn = contentsResult[i].content[j].varInfo.deviceVarSn;
+                            if(!tempVarSn || tempVarSn == '') {
+                                continue;
+                            }
+                            var tempData = {};
+                            var tempName = contentsResult[i].content[j].varInfo.deviceVarName;
+                            if(tempName.length > 8) {
+                                var pos = parseInt(tempName.length/2);
+                                tempName = tempName.substring(0, pos) + "\n" + tempName.substring(pos)
+                            }
+                            tempData.name = tempName;
+                            tempData.value = getDeviceVarData(tempVarSn, $scope.queryTime, contentsResult[i].period, contentsResult[i].calcMethod);
+                            ratioPieData.push(tempData);
+                        }
+                        getRatioPie(contentsResult[i].title, ratioPieData);
                     }else if(contentsResult[i].type === 'device-statics'){
                         continue;
                     }else if(contentsResult[i].type === 'alarm-list'){
@@ -553,7 +571,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
                     series: [{
                       name: '用电量',
                       type: 'pie',
-                      radius: ['30%', '55%'],
+                      radius: ['30%', '65%'],
                       label: {
                         normal: {
                             formatter: '{b}: {c}'+unit+'\n{d}%'
@@ -798,13 +816,69 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
               }
             },
             error: function(err) {
-              console.log('获取站点信息失败 '+this.props.stationSn+err);
+              console.log('获取站点信息失败 '+$scope.sn+err);
             }
           })
     }
 
+    function getRatioPie(title, data) {
+        console.log(data);
+        var echartOptions = {
+            title: [{
+                text: ''
+            }],
+            color: ['#F04863', '#F9CC13', '#369FFF', '#12C1C1', '#8442E0', '#2FC15B'],
+            series: [{
+                name: '1',
+                type: 'pie',
+                label: {
+                    normal: {
+                        "position": "inner",
+                        formatter: function(param) {
+                            return (param.percent) + "%";
+                        },
+                        "textStyle": {
+                            "fontSize": 12,
+                            "color": "#ffffff"
+                        }
+                    }
+                },
+                "radius": "80%",
+                data: data
+            }, {
+                name: '2',
+                type: 'pie',
+                hoverAnimation: false,
+                "label": {
+                    "normal": {
+                        "position": "inner",
+                        formatter: function(param) {
+                            return param.name
+                        },
+                        "textStyle": {
+                            "fontSize": 12,
+                            "color" : "#666666"
+                        }
+                    }
+                },
+                "radius": ["90%", "110%"],
+                "itemStyle": {
+                    "normal": {
+                        "color": "rgba(0,0,0,0)"
+                    },
+                    "emphasis": {
+                        "color": "rgba(0,0,0,0)"
+                    }
+                },
+                data: data
+            }]
+        };
+
+        drawEchart(title, echartOptions);
+    }
+
     function drawEchart(name, config) {
-        var id = 'chart' + chartCount;
+        var id = 'chart__' + chartCount;
         if (chartCount === 1){
             $("#chartGroup").empty();
         }
@@ -831,7 +905,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
             $('<li class="slidesjs-pagination-item"><a href="#">1</a></li>').prependTo($("#chartSlidesPagination"));
         }
 
-        echarts.init(document.getElementById(id)).setOption(config);
+        setTimeout(function(){echarts.init(document.getElementById(id)).setOption(config);}, 500);
         chartCount += 1;
     }
 
