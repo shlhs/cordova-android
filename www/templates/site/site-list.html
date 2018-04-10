@@ -4,38 +4,14 @@
         <div class="card-header">{{site.station.name}}</div>
         <div class="card-content">
             <div class="mui-media" style="display: -webkit-box;-webkit-box-align: center;">
-                <img class="mui-media-object media-lg" ng-src="{{site.site_image}}" style="display: block;">
-                <div class="mui-media-body box-vertical-center" style="position: relative;-webkit-box-flex:1;">
-                    <h5 class=" site-var" ng-if="site.important_realtime_datas.length">
-                        <span style="display: block">
-                            <span class="mui-ellipsis" style="display: inline-block;width:calc(100% - 90px);">{{site.important_realtime_datas[0].name}}</span>
-                            <label>
-                                <span class="value">{{site.important_realtime_datas[0].data}}</span>
-                                <span class="unit">{{site.important_realtime_datas[0].unit && site.important_realtime_datas[0].unit}}</span>
-                            </label>
-                        </span>
-                        <span style="display: block;margin-top: 6px;" ng-if="site.important_realtime_datas[1]">
-                            <span class="mui-ellipsis" style="display: inline-block;width:calc(100% - 90px);">{{site.important_realtime_datas[1].name}}</span>
-                            <label>
-                                <span class="value">{{site.important_realtime_datas[1].data}}</span>
-                                <span class="unit">{{site.important_realtime_datas[1] && site.important_realtime_datas[1].unit}}</span>
-                            </label>
-                        </span>
-                        <span style="display: block;margin-top: 6px;" ng-if="site.important_realtime_datas[2]">
-                            <span class="mui-ellipsis" style="display: inline-block;width:calc(100% - 90px);">{{site.important_realtime_datas[2].name}}</span>
-                            <label>
-                                <span class="value">{{site.important_realtime_datas[2].data}}</span>
-                                <span class="unit">{{site.important_realtime_datas[2] && site.important_realtime_datas[2].unit}}</span>
-                            </label>
-                        </span>
-                    </h5>
-                    <h5 class="site-var" ng-if="!site.important_realtime_datas || site.important_realtime_datas.length === 0">
-                        <span></span>
-                    </h5>
-                    <div style="position: absolute;right: 0;top: 50%;margin-top: -10px;font-size: 12px;">
-                        <i class="icon icon-xs task-history"></i>{{site.unclosed_task_amount}}
-                        <i class="icon icon-xs icon-events"></i>{{site.unclosed_envet_amount}}
+                <img class="mui-media-object media-lg" style="width: 100px; height: 75px;" ng-src="{{site.site_image}}" style="display: block;">
+                <div class="mui-media-body box-vertical-center" style="position: relative;-webkit-box-flex:1;padding-left: 14px">
+                    <div><span>额定负载</span><span style="padding-left: 14px; color: rgb(153, 153, 153)">100KW</span></div>
+                    <div style="padding-top: 5px">
+                        <span style="padding-left: 0px; color: rgb(153, 153, 153); font-size: 14px;"><i class="icon icon-28 icon-history-1" ></i><span style="padding-left: 8px;">{{site.unclosed_task_amount}}</span></span>
+                        <span style="padding-left: 20px; color: rgb(153, 153, 153); font-size: 14px;"><i class="icon icon-28 icon-events-1"></i><span style="padding-left: 8px;">{{site.unclosed_envet_amount}}</span></span>
                     </div>
+                    <div style="padding-top: 5px"><span style="color: rgb(153, 153, 153); font-size: 14px;">{{site.station.address}}</span></div>
                 </div>
             </div>
         </div>

@@ -132,8 +132,16 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, ajax, $state
 
     function initMenu() {
         $scope.navMenus = [];
+        $scope.navMenus.push(
+            {
+                id: 'sites',
+                name: '站点监控',
+                templateUrl: '/templates/site/site-list.html',
+                icon: 'nav-sites'
+            }
+        );
         if (role === UserRole.OpsOperator || role === UserRole.OpsAdmin){
-            $scope.navMenus = [
+            $scope.navMenus.push(
                 {
                     id: 'competition_tasks',
                     name: '抢单',
@@ -146,7 +154,7 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, ajax, $state
                     templateUrl: '/templates/task/task-list.html',
                     icon: 'nav-all-tasks'
                 }
-            ];
+            );
         }
         else if (role === UserRole.SuperUser){
             $scope.navMenus.push(
@@ -158,15 +166,6 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, ajax, $state
                 }
             );
         }
-
-        $scope.navMenus.push(
-            {
-                id: 'sites',
-                name: '站点监控',
-                templateUrl: '/templates/site/site-list.html',
-                icon: 'nav-sites'
-            }
-        );
     }
     initMenu();
     $rootScope.login(function () {
