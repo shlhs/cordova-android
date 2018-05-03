@@ -114,7 +114,7 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, ajax, $state
     var map = null;
     var role = userService.getUserRole();
     $scope.viewName = '';
-    $scope.tabName = 'competition_tasks';
+    $scope.tabName = 'sites';
     $scope.title = '';
     $scope.navMenus = [];
 
@@ -131,15 +131,7 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, ajax, $state
 
 
     function initMenu() {
-        $scope.navMenus = [];
-        $scope.navMenus.push(
-            {
-                id: 'sites',
-                name: '站点监控',
-                templateUrl: '/templates/site/site-list.html',
-                icon: 'nav-sites'
-            }
-        );
+        /*
         if (role === UserRole.OpsOperator || role === UserRole.OpsAdmin){
             $scope.navMenus.push(
                 {
@@ -165,13 +157,18 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, ajax, $state
                     icon: 'nav-all-tasks'
                 }
             );
-        }
+        }*/
+        var activeMenu = $scope.navMenus[0];
+        $timeout(function () {
+            $scope.chooseNav('sites', '站点监控');
+
+        }, 500);
     }
     initMenu();
-    $rootScope.login(function () {
-        var menu = $scope.navMenus[0];
-        $scope.chooseNav(menu.id, menu.name);
-    });
+    // $rootScope.login(function () {
+    //     var menu = $scope.navMenus[0];
+    //     $scope.chooseNav(menu.id, menu.name);
+    // });
 });
 
 app.controller('TaskBaseCtrl', function ($scope, ajax, userService) {
@@ -565,7 +562,7 @@ app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, us
             return;
         }
         if (null === company){
-            $rootScope.login($scope.getDataList);
+            // $rootScope.login($scope.getDataList);
             return;
         }
 

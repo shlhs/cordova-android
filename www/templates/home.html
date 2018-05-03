@@ -27,13 +27,6 @@
     <link rel="stylesheet" href="../css/animate.css">
     <link rel="stylesheet" href="../css/task.css">
     <style>
-        html,
-        body {
-            background-color: #efeff4;
-        }
-        /*p {*/
-            /*text-indent: 22px;*/
-        /*}*/
         .site-value .mui-icon {
             font-size: 14px;
             color: #007aff;
@@ -126,23 +119,28 @@
     </style>
 
 <body class="box-vertical-center" ng-app="myApp" ng-controller="HomeCtrl">
-    <header class="mui-bar mui-bar-nav bg-header" style="z-index:0;">
-        <h1 class="mui-title" id="header_title">{{title}}</h1>
-        <a onclick="showTopMenu()" class="mui-action-menu mui-icon mui-pull-right" ><i class="header-icon white icon-add"></i></a>
-    </header>
 <div ng-include="'/templates/top-menu.html'"></div>
-    <div class="mui-content no-padding" style="height: auto;">
+    <div class="mui-content no-padding" style="height: auto;top: 0;">
             <div class="scroll" style="height: 100%;overflow-y: hidden;" ng-controller="TaskBaseCtrl">
+
+                <div id='sites' class="no-padding mui-control-content scroll-wrapper"
+                     ng-class="{'mui-active': tabName === 'sites'}" ng-include="'/templates/site/site-home.html'" style="bottom:54px;">
+                </div>
                 <div ng-repeat="menu in navMenus" id={{menu.id}} class=" no-padding mui-control-content scroll-wrapper"
                      ng-class="{'mui-active': tabName === menu.id}" ng-include="menu.templateUrl" style="bottom:54px;">
                 </div>
                 <div ng-controller="SettingCtrl" id="setting" class=" no-padding mui-control-content"
-                     ng-class="{'mui-active': tabName === 'setting'}">
+                     ng-class="{'mui-active': tabName === 'setting'}" style="height: 100%;">
                     <div ng-include="'/templates/setting/setting.html'"></div>
                 </div>
             </div>
     </div>
 <nav id="menu" class="mui-bar mui-bar-tab bg-footer nav-horizontal" style="box-shadow: none !important;z-index:0;">
+    <a class="mui-tab-item" href="javascript:void(0)" ng-click="chooseNav('sites', '站点监控')"
+       ng-class="{'mui-active': tabName==='sites'}">
+        <span class="mui-icon nav-icon nav-sites"></span>
+        <span class="mui-tab-label">站点监控</span>
+    </a>
     <a class="mui-tab-item" href="javascript:void(0)" ng-repeat="menu in navMenus"
        ng-click="chooseNav(menu.id, menu.name)" ng-class="{'mui-active': tabName===menu.id}">
         <span class="mui-icon nav-icon {{menu.icon}}"></span>
@@ -150,7 +148,7 @@
     </a>
     <a class="mui-tab-item" href="javascript:void(0)" ng-click="chooseNav('setting', '我')" ng-class="{'mui-active': tabName==='setting'}">
         <span class="mui-icon nav-icon nav-setting"></span>
-        <span class="mui-tab-label">我</span>
+        <span class="mui-tab-label">我的</span>
     </a>
 </nav>
 <div ui-view></div>
@@ -182,6 +180,6 @@
         </div>
         <div class="mui-popup-backdrop mui-active" style="display: block;"></div>
     </script>
-    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=ITbaaCqA7nMWRjEIycEpddoUW1AvZvRq"></script>
+    <!--<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=ITbaaCqA7nMWRjEIycEpddoUW1AvZvRq"></script>-->
     </body>
 </html>

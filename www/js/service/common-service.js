@@ -1,6 +1,6 @@
 "use strict";
 
-app.service('scrollerService', function () {
+app.service('scrollerService', function ($timeout) {
 
 
     this.initScroll = function(elementQuery, upFn) {
@@ -22,5 +22,5 @@ app.service('scrollerService', function () {
             element.data('scrollInited', true);
         }
     };
-});
 
+});

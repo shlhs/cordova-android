@@ -7,24 +7,26 @@
 
 app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, platformService) {
     $scope.sites = [];
+    $scope.currentSite = {};
     $scope.isLoading = true;
 
     $scope.getDataList = function () {
         scrollerService.initScroll('#sites', $scope.getDataList);
         ajax.get({
-            url: "/stations/details",
+            url: "/stations",
             success: function(result) {
                 $scope.isLoading = false;
-                result.forEach(function (d) {
-
-                    if (d.station.photo_src_link) {
-                        d.site_image = platformService.getImageUrl(180, 180, platformService.host + d.station.photo_src_link);
-                    }
-                    else {
-                        d.site_image = '/img/site-default.png';
-                    }
-                });
+                // result.forEach(function (d) {
+                //
+                //     if (d.station.photo_src_link) {
+                //         d.site_image = platformService.getImageUrl(180, 180, platformService.host + d.station.photo_src_link);
+                //     }
+                //     else {
+                //         d.site_image = '/img/site-default.png';
+                //     }
+                // });
                 $scope.sites = result;
+                getCurrentSite();
                 $scope.$apply();
             },
             error: function (a,b,c) {
@@ -36,9 +38,21 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, p
         });
     };
 
-    // if (!$scope.permission.taskView){
-    //     $scope.getDataList();
-    // }
+    function getCurrentSite() {
+        var siteStr = localStorage.getItem("currentSite");
+        if (siteStr){
+            // 检查站点是否在当前站点中
+            var site = JSON.parse(siteStr);
+            for (var i=0; i<$scope.sites.length; i++) {
+                if ($scope.sites[i].id === site.id) {
+                    $scope.currentSite = site;
+                    return;
+                }
+            }
+        }
+        $scope.currentSite = $scope.sites[0];
+        localStorage.setItem("currentSite", JSON.stringify($scope.currentSite));
+    }
 
     $scope.gotoSite = function (sn, name) {
         location.href = '/templates/site/site-detail.html?sn=' + sn + '&name=' + name;

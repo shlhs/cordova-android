@@ -25,6 +25,10 @@
     height: 32px !important;;
     width: 32px !important;;
 }
+.icon-36{
+    height: 36px !important;;
+    width: 36px !important;;
+}
 .icon-24{
     height: 24px !important;;
     width: 24px !important;;
@@ -41,10 +45,11 @@
     background-image: url("../img/dark/64X64/device.png");
 }
 .icon-events{
-    background-image: url("../img/dark/64X64/ring.png");
+    background-image: url("../img/light/icon-events@2x.png");
+    position: relative;
 }
 .icon-docs{
-    background-image: url("../img/dark/64X64/docs.png");
+    background-image: url("../img/dark/64X64/icon-documents@2x.png");
 }
 .icon-more{
     background-image: url("../img/light/64X64/more.png");
@@ -92,7 +97,7 @@
     background-image: url("../img/icon/monitor-list.png");
 }
 .icon-monitor{
-    background-image: url("../img/dark/64X64/monitor.png");
+    background-image: url("../img/dark/64X64/icon-monitor@2x.png");
 }
 .icon-clock{
     background-image: url("../img/dark/64X64/clock.png");
@@ -143,7 +148,7 @@
     background-image: url("../img/icon/icon-circle-grey.png");
 }
 .icon-security{
-    background-image: url("../img/dark/64X64/icon-security.png");
+    background-image: url("../img/dark/64X64/icon-security@2x.png");
 }
 .icon-poweroff{
     background-image: url("../img/dark/64X64/icon-poweroff.png");
@@ -164,7 +169,7 @@
     background-image: url("../img/dark/64X64/icon-archives.png");
 }
 .icon-reports{
-    background-image: url("../img/dark/64X64/icon-reports.png");
+    background-image: url("../img/dark/64X64/icon-report@2x.png");
 }
 .icon-events-1{
     background-image: url("../img/dark/64X64/event.png");

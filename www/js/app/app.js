@@ -27,6 +27,15 @@ var UserRole = {SuperUser: 'SUPERUSER', OpsAdmin: 'OPS_ADMIN', OpsOperator: 'OPS
 
 
 app.service('userService', function ($rootScope) {
+
+    this.setAccountToken = function (token) {
+        setStorageItem('accountToken', token);
+    };
+
+    this.getAccountToken = function () {
+        return 'Bearer' + (getStorageItem('accountToken') || '');
+    };
+
     this.saveLoginUser = function (user, password) {
         setStorageItem('user', JSON.stringify(user));
         setStorageItem('username', user.account);
@@ -166,37 +175,6 @@ app.service('ajax', function ($rootScope, platformService, userService, $http) {
     var username = userService.getUsername(), password = userService.getPassword();
 
     $rootScope.user = null;
-    $rootScope.login = function(callback) {
-        console.log('login: username=' + username + ', password='+password);
-        var url = host + '/login';
-        var option = {
-            url: url,
-            type:'post',
-            data: {
-                username: username,
-                password: password
-            },
-            dataType:"json",
-            xhrFields: {
-                withCredentials: true
-            },
-            crossDomain: true,
-            complete: function (a,b,c) {
-                console.log();
-            },
-            success: function (data) {
-                console.log('login success');
-                userService.saveLoginUser(data, password);
-                $rootScope.getCompany(callback);
-            },
-            error: function (a, b, c) {
-                $.notify.error('登录失败');
-                console.log('login fail');
-            }
-        };
-        $.ajax(option);
-
-    };
 
     $rootScope.getCompany = function(callback) {
         console.log(platformService.host + '/user/' + username + '/opscompany');
@@ -227,21 +205,19 @@ app.service('ajax', function ($rootScope, platformService, userService, $http) {
         if (option.url.indexOf("http://") !== 0){
             option.url = platformService.host + option.url;
         }
-        option.timeout = 5000;
-        option.xhrFields = {withCredentials: true};
-        option.crossDomain = true;
+        $.extend(option, {
+            timeout: 5000,
+            xhrFields: {withCredentials: true},
+            crossDomain: true,
+            headers: {
+                Authorization: userService.getAccountToken(),
+                credentials: 'include',
+                mode: 'cors'
+            }
+        });
+
 
 		var newOption = $.extend({}, option
-            // {
-            // error: function (xhr, status, error) {
-		     //    if (xhr.status === 500){
-		     //        option.error && option.error(xhr, status, error);
-            //     } else {
-            //         $rootScope.login(function () {
-            //             $.ajax(option);
-            //         });
-            //     }
-            // }}
         );
         var r = $.ajax(newOption);
         return r;
