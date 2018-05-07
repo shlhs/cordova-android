@@ -525,7 +525,7 @@ background-image: url("../img/light/64X64/profile.png");
 }
 .mui-bar-tab.nav-horizontal .mui-tab-item .mui-icon~.mui-tab-label{
     display: inline-block;
-    padding-top: 8px;
+    padding-top: 6px;
     color: rgb(141,140,143);
     font-size: 12px;
 }
@@ -533,7 +533,7 @@ background-image: url("../img/light/64X64/profile.png");
     color: rgb(253,96,10) !important;
 }
 .mui-bar-tab.nav-horizontal .mui-tab-item .mui-icon{
-    height: 21px;
+    height: 22px;
     margin-top: 2px;
     display: block;
 }
@@ -1660,8 +1660,20 @@ color: #a7a7a7;
     bottom: 1px;
     padding-left: 6px;
 }
-.status-line .status.status-normal {
+.status-line .status.normal {
     color: rgb(41,202,147);
+    font-size: 10px;
+}
+.status-line .status.abnormal {
+    color: rgb(210,77,88);
+    font-size: 10px;
+}
+.status-line .status.offline {
+    color: rgb(202, 202, 202);
+    font-size: 10px;
+}
+.status-line .status.unknown {
+    color: rgb(202, 202, 202);
     font-size: 10px;
 }
 .status:before {
@@ -1680,4 +1692,77 @@ color: #a7a7a7;
 }
 .status.status-normal:before {
     background-color: rgb(41,202,147);
+}
+.mui-popover.dark-popover .mui-popover-arrow:after {
+    background-color: #323234;
+}
+.mui-popover.dark-popover .mui-table-view {
+    background-color: #323234;
+}
+.dark-popover .mui-table-view-cell {
+    color: #FFFEFF;
+    font-weight: 100;
+}
+.dark-popover .mui-table-view-cell:after {
+    background-color: rgb(73,72,75);
+}
+.site-status {
+    width: 4px;
+    height: 4px;
+    border-radius: 2px;
+    background-color: #ffffff;
+    display: inline-block;
+    margin-right: 6px;
+    float: left;
+    margin-top: 8px;
+}
+.site-status.normal {
+    background-color: rgb(94,206,77);
+}
+.site-status.abnormal {
+    background-color: rgb(210,77,88);
+}
+.site-status.offline {
+    background-color: rgb(202, 202, 202);
+}
+.site-status.unknown {
+    background-color: rgb(202, 202, 202);
+}
+.mui-popover .site-event {
+    background-color: rgb(255, 255, 254);
+    color: rgb(51,51,51);
+    font-size: 12px;
+    border-radius: 2px;
+    min-width: 20px;
+    display: inline-block;
+    text-align: center;
+    padding: 0 4px;
+    float: right;
+    height: 16px;
+    line-height: 16px;
+    margin-top: 2px;
+    margin-left: 6px;
+}
+.popover-mask {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    background-color: transparent;
+    width: 100%;
+    height: 100%;
+}
+.card-title.big-card-title {
+    font-size: 14px;
+    color: rgb(68,79,100);
+    position: relative;
+}
+.big-card-title:after {
+    content: '';
+    display: block;
+    width: 15px;
+    height: 2px;
+    background-color: rgb(212,164,101);
+    position: absolute;
+    bottom: 0px;
+    left: 0;
 }

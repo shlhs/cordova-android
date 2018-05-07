@@ -9,24 +9,40 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, p
     $scope.sites = [];
     $scope.currentSite = {};
     $scope.isLoading = true;
+    $scope.popup_visible = false;
 
     $scope.getDataList = function () {
         scrollerService.initScroll('#sites', $scope.getDataList);
         ajax.get({
-            url: "/stations",
+            url: "/stations/details",
             success: function(result) {
                 $scope.isLoading = false;
-                // result.forEach(function (d) {
-                //
-                //     if (d.station.photo_src_link) {
-                //         d.site_image = platformService.getImageUrl(180, 180, platformService.host + d.station.photo_src_link);
-                //     }
-                //     else {
-                //         d.site_image = '/img/site-default.png';
-                //     }
-                // });
+                result.forEach(function (s) {
+                    if (s.status === '') {
+                        s.status = 'unknown';
+                        s.status_name = '未知';
+                    } else if (s.status === '1') {
+                        if (s.unclosed_envet_amount > 0) {
+                            s.status = 'abnormal';
+                            s.status_name = '异常';
+                        } else {
+                            s.status = 'normal';
+                            s.status_name = '正常';
+                        }
+                    } else {
+                        s.status = 'offline';
+                        s.status_name = '离线';
+                    }
+                    if (s.station.photo_src_link) {
+                        s.site_image = platformService.getImageUrl(180, 180, platformService.host + s.station.photo_src_link);
+                    }
+                    else {
+                        s.site_image = '/img/site-default.png';
+                    }
+                });
                 $scope.sites = result;
                 getCurrentSite();
+                $scope.isLoading = false;
                 $scope.$apply();
             },
             error: function (a,b,c) {
@@ -37,6 +53,12 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, p
             }
         });
     };
+    
+    $scope.chooseSite = function (site) {
+        $scope.currentSite = site;
+        $scope.popup_visible = false;
+        localStorage.setItem("currentSite", JSON.stringify(site));
+    };
 
     function getCurrentSite() {
         var siteStr = localStorage.getItem("currentSite");
@@ -44,8 +66,8 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, p
             // 检查站点是否在当前站点中
             var site = JSON.parse(siteStr);
             for (var i=0; i<$scope.sites.length; i++) {
-                if ($scope.sites[i].id === site.id) {
-                    $scope.currentSite = site;
+                if ($scope.sites[i].station.sn === site.station.sn) {
+                    $scope.currentSite = $scope.sites[i];
                     return;
                 }
             }

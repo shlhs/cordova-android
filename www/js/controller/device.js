@@ -398,7 +398,7 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile) {     
             success: function (data) {
                 $scope.isLoading = false;
                 getDeviceVars(data);
-                $scope.treeData = formatToTreeData(data);
+                $scope.treeData = formatToTreeData(data)[0].children;
                 $scope.$apply();
             },
             error: function () {
@@ -501,6 +501,30 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile) {     
 
         }
 
+        function _indexs_sort(item) {
+
+            if (!item.is_group) {
+                return;
+            }
+            if (item.indexs) {
+                const newChildren = [];
+                const childrenMap = {};
+                item.children.forEach(function (n, i) {
+                    childrenMap[n.id] = n;
+                });
+                item.indexs.split(',').forEach(function (i) {
+
+                    if (childrenMap[i]) {
+                        newChildren.push(childrenMap[i]);
+                    }
+                });
+                item.children = newChildren;
+            }
+            item.children.forEach(function (child, i) {
+                _indexs_sort(child);
+            });
+        }
+
 
         var formatted = [];
 
@@ -516,17 +540,23 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile) {     
         });
 
         data.forEach(function (item) {
-            if (!item.is_group) {
-                devices.push(item);
-            }
             if (item.parent_id) {
                 addToGroup(item, formatted);
-                } else {
-                    item.text = item.name;
-                    item.children = [];
-                    formatted.push(item);
-                }
-            });
+            } else if (item.depth < 0) {
+                // 根节点
+                item.text = item.name;
+                item.is_group = true;
+                item.children = [];
+                formatted.push(item);
+            } else {
+                item.text = item.name;
+                item.children = [];
+                formatted.push(item);
+            }
+        });
+
+        // 根据父节点的indexs对树再次进行排序
+        _indexs_sort(formatted[0]);
         return formatted;
     }
 
