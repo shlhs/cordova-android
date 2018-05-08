@@ -53,11 +53,16 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, p
             }
         });
     };
-    
+    $scope.showPopover = function () {
+        $scope.popup_visible=true;
+    };
+    $scope.closePopover = function () {
+        $scope.popup_visible=false;
+    };
     $scope.chooseSite = function (site) {
         $scope.currentSite = site;
-        $scope.popup_visible = false;
         localStorage.setItem("currentSite", JSON.stringify(site));
+        $scope.closePopover();d
     };
 
     function getCurrentSite() {

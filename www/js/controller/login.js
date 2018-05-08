@@ -119,7 +119,7 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
             success: function (data) {
                 userService.saveLoginUser(data, $scope.password);
                 if (window.android){
-                    window.android.loginSuccess(platform.url, $scope.username, $scope.password);
+                    window.android.loginSuccess();
                 }else{
                     location.href = '/templates/home.html?finishPage=1';
                 }
@@ -190,7 +190,7 @@ app.controller('AutoLoginCtrl', function ($scope, $timeout, $state) {
         }else{
             $timeout(function () {
                 // $state.go('login');
-                location.href = '/templates/login.html';
+                location.href = '/templates/login.html?finishPage=1';
             }, 1500);
         }
     };

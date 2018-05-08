@@ -88,13 +88,13 @@
     background-image: url("../img/dark/64X64/csv.png");
 }
 .icon-download{
-    background-image: url("../img/dark/64X64/down_load.png");
+    background-image: url("../img/icon/icon-report-download@2x.png");
 }
 .icon-kanban{
     background-image: url("../img/dark/64X64/kanban.png");
 }
 .icon-monitor-list{
-    background-image: url("../img/icon/monitor-list.png");
+    background-image: url("../img/icon/monitor-list@2x.png");
 }
 .icon-monitor{
     background-image: url("../img/dark/64X64/icon-monitor@2x.png");

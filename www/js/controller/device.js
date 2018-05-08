@@ -574,6 +574,13 @@ app.controller('DeviceMonitorCtrl', function ($scope, ajax) {
     $scope.stationSn = GetQueryString('stationSn');
     $scope.deviceSn=GetQueryString('deviceSn');
     $scope.deviceName = GetQueryString('deviceName');
+    $scope.options = [{
+        name: '实时数据',
+        options: []
+    }, {
+        name: '历史数据',
+        options: []
+    }];
     $scope.realtime = [];       // 实时数据
     $scope.history = [];        // 历史数据
     $scope.showType = 'realtime';   // 默认显示实时数据标签页

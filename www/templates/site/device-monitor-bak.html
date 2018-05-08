@@ -58,22 +58,21 @@
     <h1 class="mui-title">{{deviceName}}</h1>
 </header>
 <div class="mui-content" ng-cloak>
-
-    <div class="cascade-selector">
-        <div class="selector separator" style="width: 50%"><label>实时数据</label></div>
-        <div class="selector " style="width: 50%"><label>模拟量</label></div>
-        <div class="options">
-
-        </div>
+    <div id="task_types" class="mui-slider-indicator mui-segmented-control mui-segmented-control-inverted" style="margin-left: 0;position: fixed;top:60px;background-color: #fff;box-shadow: 0 0 1px #ccc;z-index:100;">
+        <a class="mui-control-item mui-active" ng-click="changeDeviceType('$event', 'realtime')" ng-class="{'mui-active': showType=='realtime'}">
+            实时数据
+        </a>
+        <a class="mui-control-item" ng-click="changeDeviceType($event, 'history')" ng-class="{'mui-active': showType=='history'}">
+            历史数据
+        </a>
     </div>
-    <div class="data-type-options"></div>
     <div class="scroll-wrapper" ng-show="showType==='realtime'" style="top:32px;" ng-controller="VarRealtimeCtrl">
         <div style="padding: 6px 16px;">
             <button type="button" class="mui-btn" ng-repeat="item in realtime" ng-click="switchRealtimeType(item.type)" ng-class="{'mui-btn-primary': item.type===realtimeType}">
                 {{item.name}}
             </button>
         </div>
-        <div class="mui-scroll" style="background-color: #ffffff;display: none;" ng-if="realtime.length && !isLoading">
+        <div class="mui-scroll" style="background-color: #ffffff;" ng-if="realtime.length && !isLoading">
             <div ng-if="realtimeType==='analog'">
                 <table>
                     <thead>

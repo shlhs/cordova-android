@@ -47,7 +47,13 @@ app.service('userService', function ($rootScope) {
     };
 
     this.getUser = function () {
-        return JSON.parse(getStorageItem('user'));
+        var userStr = getStorageItem('user');
+        if (userStr)
+        {
+            return JSON.parse(userStr);
+        } else {
+            return null;
+        }
     };
 
     /* 获取用户角色：

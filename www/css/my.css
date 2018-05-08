@@ -569,6 +569,12 @@ background-image: url("../img/light/64X64/profile.png");
     position: relative;
     background-color: #fff;
 }
+@media screen and (max-width: 600px){
+
+    .top-base {
+        height: 44%;
+    }
+}
 .top-base .portrait {
     width: 82px;
     height: 82px;
@@ -1151,6 +1157,7 @@ a:hover.slidesjs-stop {
     box-shadow: none;
     padding: 8px 16px;
     position: relative;
+    display: block;
 }
 .round-card {
     margin: 10px 10px 0 10px;
@@ -1261,6 +1268,13 @@ a:hover.slidesjs-stop {
     position:absolute;
     top:0px;
     bottom:0px;
+    width: 100%;
+    overflow-y: auto;
+}
+.content-wrapper {
+    position: fixed;
+    top: 0px;
+    bottom: 0px;
     width: 100%;
     overflow-y: auto;
 }
@@ -1615,7 +1629,7 @@ color: #a7a7a7;
     margin-top:10px;
 }
 .site-header {
-    height: 35%;
+    /*height: 35%;*/
     background: url(../img/site-title-bg@2x.png) no-repeat top left;
     background-size: contain;
 }
@@ -1765,4 +1779,125 @@ color: #a7a7a7;
     position: absolute;
     bottom: 0px;
     left: 0;
+}
+.mui-table-view-cell:after {
+    background-color: rgb(245, 245, 245);
+}
+.event-list {
+    background-color: transparent;
+    position: relative;
+}
+.event-list>li {
+    margin: 6px 0;
+    background-color: rgb(247,247,247);
+}
+.event-list>li .event-title {
+    background-color: rgb(255,255,255);
+    color: rgb(35,35,35);
+    margin: -11px -15px 0 -15px;
+    min-height: 36px;
+    line-height: 24px;
+    padding-left: 20px;
+    font-weight: 400;
+    font-size: 16px;
+    position: relative;
+    padding-right: 30px;
+    padding-top: 6px;
+}
+.event-title:before {
+    position: absolute;
+    content: '';
+    display: block;
+    left: 12px;
+    width: 2px;
+    top: 10px;
+    bottom: 10px;
+    background-color: rgb(87,164,247);
+}
+.event-list .title {
+    color: rgb(35,35,35);
+    font-weight: 300;
+    font-size: 15px;
+}
+.event-list h5 {
+    color: rgb(149,149,149);
+    font-weight: 300;
+    font-size: 15px;
+}
+.event-list .event-task {
+    position: absolute;
+    bottom: 16px;
+    right: 14px;
+    width: 70px;
+    height: 26px;
+    border-radius: 13px;
+    border: rgb(244,118,48) 1px solid;
+    color: rgb(244,118,48);
+    text-align: center;
+    line-height: 26px;
+    font-size: 14px;
+}
+.event-list .close {float: right;
+    width: 28px;
+    height: 28px;
+    background: url(../img/icon/icon-event-close@2x.png) 50% no-repeat;
+    background-size: contain;
+    border: transparent 6px solid;
+    position: absolute;
+    right: 8px;
+    top: 4px;
+}
+.icon-report-download {
+    position: absolute;
+    top: 50%;
+    right: 18px;
+    margin-top: -16px;
+    padding: 0;
+    border: transparent 6px solid;
+    width: 32px;
+    height: 32px;
+}
+.margin-table-view {
+    background-color: transparent;
+}
+.margin-table-view .mui-table-view-cell {
+    margin: 6px 0;
+    background-color: #ffffff;
+}
+.cascade-selector {
+    height: 44px;
+    line-height: 44px;
+    background-color: #fff;
+    border-bottom: rgb(220,220,220) 1px solid;
+    font-size: 15px;
+    color: rgb(51,51,51);
+    display: -webkit-box;
+}
+.cascade-selector .selector {
+    position: relative;
+    text-align: center;
+}
+.cascade-selector .separator:after {
+    content: '';
+    position: absolute;
+    display: block;
+    background-color: rgb(220,220,220);
+    width: 1px;
+    height: 16px;
+    top: 50%;
+    margin-top: -8px;
+    right: 0;
+}
+.cascade-selector .selector label {
+    position: relative;
+    display: inline-block;
+}
+.selector label:after {
+    position: absolute;
+    display: block;
+    content: '\e581';
+    font-family: Muiicons;
+    font-size: inherit;
+    top: 0px;
+    right: -20px;
 }
