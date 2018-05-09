@@ -389,10 +389,12 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile) {     
     $scope.treeData = [];
     var devices = [];       // 设备
     $scope.isLoading = false;
+    $scope.loadingFailed = false;
     $scope.ellapseId = null;
 
-    function getDevices() {
+    $scope.getDataList = function () {
         $scope.isLoading = true;
+        $scope.loadingFailed = false;
         ajax.get({
             url: '/stations/' + stationSn + '/devicetree',
             success: function (data) {
@@ -402,12 +404,12 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile) {     
                 $scope.$apply();
             },
             error: function () {
-                $.notify.error('获取设备列表失败');
                 $scope.isLoading = false;
+                $scope.loadingFailed = true;
                 $scope.$apply();
             }
         });
-    }
+    };
 
     function getDeviceVars(deviceList) {
         if (deviceList.length === 0){
@@ -566,7 +568,7 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile) {     
         $scope.ellapseId = '1';
     };
 
-    getDevices();
+    $scope.getDataList();
 });
 
 app.controller('DeviceMonitorCtrl', function ($scope, ajax) {

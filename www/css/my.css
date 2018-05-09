@@ -3,7 +3,7 @@ html,body{
     height: 100%;
     padding: 0;
     margin: 0;
-    background-color: rgb(245,245,245);
+    background-color: #efeff4;
 }
 * {
     padding: 0;
@@ -59,6 +59,7 @@ html,body{
 }
 header.bg-header{
     background-image: url(../img/background/bg-header.png);
+    background-size: cover;
 }
 header.mui-bar{
     z-index: 0;
@@ -638,14 +639,17 @@ background-image: url("../img/light/64X64/profile.png");
 .page-alert-wrapper .page-alert{
     padding-top: 35%;
     text-align: center;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-box-align: center;
 }
 .page-alert .mui-spinner{
     width: 36px;
     height: 36px;
 }
 .page-alert .alert-icon{
-    width: 100px;
-    height: 100px;
+    width: 64px;
+    height: 64px;
     display: inline-block;
     background-size: cover;
     background-repeat: no-repeat;
@@ -657,15 +661,35 @@ background-image: url("../img/light/64X64/profile.png");
 .page-alert .alert-icon.nodata {
     background-image: url(../img/nodata.png);
 }
+.page-alert .alert-icon.warning {
+    background-image: url(../img/loading-error.png);
+}
+.page-alert .loading-img{
+    width: 25px;
+    height: 25px;
+}
 .page-alert .alert-text{
     display: block;
     /*margin-top: 24px;*/
     width: 100%;
     text-align: center;
+    margin-top: 10px;
+}
+.page-alert .alert-reload {
+    width: 114px;
+    height: 29px;
+    text-align: center;
+    line-height: 29px;
+    border: rgba(153, 153, 153, 0.66) 1px solid;
+    border-radius: 2px;
+    color: rgb(153,153,153);
+    margin-top: 10px;
+    font-weight: 300;
 }
 .alert-text.info{
-    color: #666;
+    color: rgb(153,153,153);
     font-size: 16px;
+    font-weight: 300;
 }
 .height-wrap-parent{
     height: 100%;

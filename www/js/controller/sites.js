@@ -166,46 +166,44 @@ app.controller('EventListCtrl', function ($scope, $stateParams, scrollerService,
     }
 
     $scope.events = [];
-    $scope.eventLoading = true;
+    $scope.eventLoading = false;
+    $scope.loadingFailed = false;
     $scope.unhandledEventCount = 0;
 
     $scope.getDataList = function(cb) {
         function formatTime(d) {
-            return d.substring(5, 10) + ' ' + d.substring(11, 19);
+            return d.substring(0, 10) + ' ' + d.substring(11, 19);
         }
         var url = "/stations/" + $scope.sn + "/events";
         if ($scope.isDevice){
             url = "/stations/events?deviceSn=" + $scope.sn;
         }
-        scrollerService.initScroll("#events", $scope.getDataList);
+        $scope.loadingFailed = false;
+        $scope.eventLoading = true;
         ajax.get({
             url: url,
             cache: false,
             success: function(result) {
                 $scope.eventLoading = false;
                 var cleared = [], newReports=[];
-                for (var i in result){
-                    result[i].update_time = formatTime(result[i].report_time);
-                    if (result[i].status_name !== 'CLEARED'){
+                for (var i in result) {
+                    result[i].report_time = formatTime(result[i].report_time);
+                    if (result[i].status_name !== 'CLEARED') {
                         $scope.unhandledEventCount += 1;
+                        newReports.push(result[i]);
+                    } else {
+                        cleared.push(result[i]);
                     }
                 }
-                result.sort(function (e1, e2) {
-                    if (e1.status_name > e2.status_name){
-                        return -1;
-                    }
-                    else if (e1.status_name < e2.status_name){
-                        return 1;
-                    }
-                    return e1.report_time < e2.report_time;
-                });
-                $scope.events = result;
+                $scope.events = newReports.concat(cleared);
                 cb && cb($scope.events);
+                scrollerService.initScroll("#events", $scope.getDataList);
                 $scope.$apply();
             },
             error: function (a,b,c) {
                 $scope.eventLoading = false;
-                $.notify.error('获取事件列表失败');
+                $scope.loadingFailed = true;
+                // $.notify.error('获取事件列表失败');
                 $scope.$apply();
                 console.log('get var VarRealtimeDatas fail');
             }
@@ -228,7 +226,28 @@ app.controller('EventListCtrl', function ($scope, $stateParams, scrollerService,
             success: function (data) {
                 $.notify.progressStop();
                 $.notify.info("事件已确认");
-                window.location.reload();
+                // 将已确认的事件移至后面
+                var oldIndex = 0;
+                for (var i=0; i<$scope.events.length; i++) {
+                    if ($scope.events[i].id === data.id) {
+                        $scope.events.splice(i, 1);
+                        oldIndex = i > 0 ? i-1 :0;
+                        break;
+                    }
+                }
+                var inserted = false;
+                for (var i=oldIndex; i<$scope.events.length; i++) {
+                    if ($scope.events[i].status_name === 'CLEARED') {
+                        // 插到前面
+                        $scope.events.splice(i, 0, data);
+                        inserted = true;
+                        break;
+                    }
+                }
+                if (!inserted) {
+                    $scope.events.push(data);
+                }
+                $scope.$apply();
             },
             error: function (data) {
                 $.notify.progressStop();
@@ -247,11 +266,14 @@ app.controller('EventListCtrl', function ($scope, $stateParams, scrollerService,
 app.controller('SiteDocsCtrl', function ($scope, $stateParams, platformService, ajax) {
     var sn = GetQueryString('sn'), host = platformService.getHost();
     $scope.docList = [];
-    $scope.docLoading = true;
+    $scope.docLoading = false;
+    $scope.loadingFailed = false;
     $scope.groups = [];
     $scope.currentImage = null;
 
-    function getDocGroups() {
+    $scope.getDataList = function () {
+        $scope.docLoading = true;
+        $scope.loadingFailed = false;
         ajax.get({
             url: "/stations/" + sn + "/electronic_file_groups",
             cache: false,
@@ -264,7 +286,7 @@ app.controller('SiteDocsCtrl', function ($scope, $stateParams, platformService, 
             },
             error: function (a,b,c) {
                 $scope.docLoading = false;
-                $.notify.error('获取电子档案失败');
+                $scope.loadingFailed = true;
                 $scope.$apply();
                 console.log('get electric files fail');
             }
@@ -349,7 +371,7 @@ app.controller('SiteDocsCtrl', function ($scope, $stateParams, platformService, 
         }
     };
 
-    getDocGroups();
+    $scope.getDataList();
 });
 
 
@@ -357,12 +379,13 @@ app.controller('SiteReportsCtrl', function ($scope, ajax, scrollerService, route
     var stationSn = GetQueryString('sn');
     $scope.reports = [];
     $scope.isLoading = false;
+    $scope.loadingFailed = false;
 
-    function getData() {
-        scrollerService.initScroll('#reports', getData);
+    $scope.getDataList = function () {
         $scope.isLoading = true;
+        $scope.loadingFailed = false;
         ajax.get({
-            url: '/stations/' + stationSn + '/reports',
+            url: '/stations/' + stationSn + '/reports1',
             success: function (data) {
                 $scope.isLoading = false;
                 var outputs = [];
@@ -377,11 +400,11 @@ app.controller('SiteReportsCtrl', function ($scope, ajax, scrollerService, route
             },
             error: function () {
                 $scope.isLoading = false;
+                $scope.loadingFailed = true;
                 $scope.$apply();
-                $.notify.error('获取报告失败');
             }
         })
-    }
+    };
 
     $scope.download = function ($event, link) {
         $event.stopPropagation();
@@ -394,5 +417,5 @@ app.controller('SiteReportsCtrl', function ($scope, ajax, scrollerService, route
         routerService.openPage($scope, '/templates/base-image-zoom.html', {link: link, name: name});
     };
 
-    getData();
+    $scope.getDataList();
 });

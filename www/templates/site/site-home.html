@@ -57,10 +57,10 @@
                 </a>
             </div>
             <div class="card round-card" style="width: 45%;-webkit-box-flex: 1;margin-left: 0;">
-                <a href="/templates/site/kanban.html?sn={{currentSite.station.sn}}">
+                <a href="/templates/site/device-monitor-list.html?sn={{currentSite.station.sn}}">
 
                     <div class="card-title big-card-title">设备监测</div>
-                    <div class="card-content" href="/templates/site/device-monitor-list.html?sn={{currentSite.station.sn}}">
+                    <div class="card-content">
                         <img src="/img/device-monitor-big-icon@2x.png" style="width: 70%; float: right;margin: 4px -12px -6px 0;">
                     </div>
                 </a>
@@ -103,7 +103,7 @@
 
     <div class="page-alert-wrapper" ng-if="isLoading">
         <div class="page-alert">
-            <span class="mui-spinner"></span>
+            <img src="../../img/page-loading.gif" class="loading-img">
             <div class="alert-text info">正在加载...</div>
         </div>
     </div>
