@@ -13,10 +13,10 @@
     height: 100%;
     background-color: rgb(245,245,245);
 }
-.mui-table-view.no-border:before {
+.mui-table-view.no-out-border:before {
     display: none;
 }
-.mui-table-view.no-border:after {
+.mui-table-view.no-out-border:after {
     display: none;
 }
 .mui-table-view-cell.light-border:after {

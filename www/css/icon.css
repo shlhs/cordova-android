@@ -100,7 +100,10 @@
     background-image: url("../img/dark/64X64/icon-monitor@2x.png");
 }
 .icon-clock{
-    background-image: url("../img/dark/64X64/clock.png");
+    background-image: url("../img/icon/icon-clock@2x.png");
+}
+.icon-station{
+    background-image: url("../img/icon/icon-station@2x.png");
 }
 .icon-device-grey{
     background-image: url("../img/icon/device-grey.png");

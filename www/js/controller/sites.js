@@ -156,9 +156,10 @@ app.controller('SiteBaseInfoCtrl', function ($scope, $timeout, $stateParams, aja
 });
 
 
-app.controller('EventListCtrl', function ($scope, $stateParams, scrollerService, ajax) {
+app.controller('EventListCtrl', function ($scope, $stateParams, scrollerService, userService, ajax) {
     $scope.sn = GetQueryString('sn');
     $scope.isDevice = false;   // 是设备还是站点
+    $scope.canCreateTask = userService.getUserRole() === UserRole.Normal ? false : true;
     var deviceSn = GetQueryString("deviceSn");
     if (deviceSn){
         $scope.isDevice = true;

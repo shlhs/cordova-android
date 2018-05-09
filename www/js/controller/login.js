@@ -35,28 +35,6 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
         $scope.isAutoLogin = isAutoLogin;
     };
 
-    function getCompany(callback) {
-        $.ajax({
-            url: platform.url + '/user/' + $scope.username + '/opscompany',
-            xhrFields: {
-                withCredentials: true
-            },
-            crossDomain: true,
-            success: function (data) {
-                if (data && data.length === 1)
-                {
-                    userService.saveCompany(data[0]);
-                }else{
-                    userService.saveCompany(data[0]);
-                }
-                $state.go('index');
-            },
-            error: function (xhr, status, error) {
-                console.log('get company info fail:' + xhr.status);
-            }
-        });
-    }
-
     function toast(message) {
         var div = $('<div class="toast"><div class="msg">' + message + '</div></div>').appendTo($('body'));
         $timeout(function () {
@@ -72,6 +50,7 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
             username: $scope.username,
             password: $scope.password
         };
+        $scope.isLogin = true;
         $.ajax({
             url: loginUrl + '/auth',
             method:'POST',
@@ -100,8 +79,7 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
             },
             error :function () {
                 $scope.enable = true;
-                // $scope.error = '用户名或密码错误';
-                // $scope.isLogin = false;
+                $scope.isLogin = false;
                 $scope.$apply();
                 toast('用户名或密码错误');
                 if ($scope.isAutoLogin) {
@@ -118,18 +96,43 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
             url: '/user/' + $scope.username,
             success: function (data) {
                 userService.saveLoginUser(data, $scope.password);
+                getCompany();
+            },
+            error: function () {
+                $scope.enable = true;
+                $scope.isLogin = false;
+                toast('用户名或密码错误');
+                $scope.$apply();
+            }
+        })
+    }
+
+    function getCompany() {
+        ajax.get({
+            url: platform.url + '/user/' + $scope.username + '/opscompany',
+            xhrFields: {
+                withCredentials: true
+            },
+            crossDomain: true,
+            success: function (data) {
+                if (data && data.length >= 1)
+                {
+                    userService.saveCompany(data[0]);
+                } else{
+                    userService.saveCompany([]);
+                }
                 if (window.android){
                     window.android.loginSuccess();
                 }else{
                     location.href = '/templates/home.html?finishPage=1';
                 }
             },
-            error: function () {
-                $scope.enable = true;
-                toast('用户名或密码错误');
-                $scope.$apply();
+            error: function (xhr, status, error) {
+                $scope.isLogin = false;
+                userService.saveCompany([]);
+                console.log('get company info fail:' + xhr.status);
             }
-        })
+        });
     }
 
     // 平台查询start

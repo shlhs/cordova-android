@@ -37,17 +37,15 @@ function formatTaskStatusName(task) {   // 根据任务状态转换任务描述
     switch (task.stage_id){
         case TaskStatus.Closed:
             stage = '已关闭';
-            status = 'text-grey';
             break;
         case TaskStatus.ToClose:
-            stage = '审批';
-            break;
-        case TaskStatus.Arrived:
-            stage = '正在维修';
+            stage = '待审批';
             break;
         case TaskStatus.ToAccept:
-            status = 'text-red';
+            stage = '待接单';
             break;
+        default:
+            stage = '待处理';
     }
     task.stage = stage;
     task.status = status;
@@ -131,7 +129,7 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, ajax, $state
 
 
     function initMenu() {
-        /*
+
         if (role === UserRole.OpsOperator || role === UserRole.OpsAdmin){
             $scope.navMenus.push(
                 {
@@ -157,7 +155,7 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, ajax, $state
                     icon: 'nav-all-tasks'
                 }
             );
-        }*/
+        }
         var activeMenu = $scope.navMenus[0];
         $timeout(function () {
             $scope.chooseNav('sites', '站点监控');
@@ -350,7 +348,7 @@ app.controller('CompetitionTaskListCtrl', function ($scope, $rootScope, scroller
             $scope.$apply();
             return;
         }
-        if (null === company){
+        if (null === company) {
             $rootScope.login($scope.getDataList);
             // $rootScope.getCompany($scope.getDataList);
             return;

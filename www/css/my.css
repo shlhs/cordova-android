@@ -64,6 +64,11 @@ header.bg-header{
 header.mui-bar{
     z-index: 0;
 }
+header .mui-action-menu.add-task {
+    line-height: 24px;
+    color: #ffffff;
+    font-size: 14px;
+}
 nav.bg-footer{
     background-color: #fff;
 }

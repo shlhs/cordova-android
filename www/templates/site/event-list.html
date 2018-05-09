@@ -57,7 +57,7 @@
                                 <h5 style="margin-top: 10px;"><span class="title">设备</span> ：{{ e.device_name }}</h5>
                                 <h5 style="margin: 10px 0 -2px 0;"><span class="title">时间</span> ：{{e.report_time}}</h5>
                             </div>
-                            <div class="event-task" ng-if="e.status != 0"
+                            <div class="event-task" ng-if="e.status != 0 && canCreateTask"
                                  ng-click="goToCreateTaskHtml($event, e.id, e.info)"><label>创建任务</label></div>
                         </div>
                     </li>

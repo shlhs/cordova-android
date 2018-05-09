@@ -117,9 +117,10 @@
                 <input type="password" ng-model="password" ng-change="inputChange('password')" placeholder="请输入密码">
             </div>
             <!--<div class="error">{{error}}</div>-->
-            <div class="login-btn" ng-class="{'enable': enable}" ng-click="login()">登录</div>
-            <!--<div class="login-inp" style="background-color: #88c1e3;border: #1f6377;" ng-if="!isLogin"><a href="javascript:void(0)" ng-click="login()">立即登录</a></div>-->
-            <!--<div class="login-inp" style="background-color: #88c1e3;border: #1f6377;" ng-if="isLogin" disabled><a href="javascript:void(0)" >正在登录...</a></a></div>-->
+            <div class="login-btn" ng-class="{'enable': enable}" ng-click="login()">
+                <span ng-if="!isLogin">登录</span>
+                <span ng-if="isLogin">正在登录...</span>
+            </div>
         </div>
     </div>
     <script src="../components/fastclick-master/lib/fastclick.js"></script>
