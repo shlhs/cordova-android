@@ -48,23 +48,20 @@
             </ul>
         </div>
         <div class="layout-center">
-            <div class="card round-card" style="width: 45%;-webkit-box-flex: 1;">
-                <a href="/templates/site/kanban.html?sn={{currentSite.station.sn}}">
-                    <div class="card-title big-card-title">站点看板</div>
-                    <div class="card-content">
-                        <img src="/img/site-kanban-big-icon@2x.png" style="width: 70%; float: right;margin: 4px -12px -6px 0;">
-                    </div>
-                </a>
-            </div>
-            <div class="card round-card" style="width: 45%;-webkit-box-flex: 1;margin-left: 0;">
-                <a href="/templates/site/device-monitor-list.html?sn={{currentSite.station.sn}}">
-
-                    <div class="card-title big-card-title">设备监测</div>
-                    <div class="card-content">
-                        <img src="/img/device-monitor-big-icon@2x.png" style="width: 70%; float: right;margin: 4px -12px -6px 0;">
-                    </div>
-                </a>
-            </div>
+            <a class="card round-card" style="width: 45%;-webkit-box-flex: 1;"
+                 href="/templates/site/kanban.html?sn={{currentSite.station.sn}}">
+                <div class="card-title big-card-title">站点看板</div>
+                <div class="card-content">
+                    <img src="/img/site-kanban-big-icon@2x.png" style="width: 70%; float: right;margin: 4px -12px -6px 0;">
+                </div>
+            </a>
+            <a class="card round-card" style="width: 45%;-webkit-box-flex: 1;margin-left: 0;"
+               href="/templates/site/device-monitor-list.html?sn={{currentSite.station.sn}}">
+                <div class="card-title big-card-title">设备监测</div>
+                <div class="card-content">
+                    <img src="/img/device-monitor-big-icon@2x.png" style="width: 70%; float: right;margin: 4px -12px -6px 0;">
+                </div>
+            </a>
             <div style="clear: both"></div>
         </div>
         <div class="card round-card">
