@@ -38,7 +38,6 @@ app.controller('DeviceListCtrl', function ($scope, ajax, scrollerService) {
     };
 
     $scope.gotoDevice = function (stationSn, deviceSn, deviceName) {
-        // location.href = '/templates/site/device-detail.html?stationSn=' + stationSn + '&deviceSn=' + deviceSn + '&deviceName=' + deviceName;
         location.href = '/templates/site/device-monitor.html?stationSn=' + stationSn + '&deviceSn=' + deviceSn + '&deviceName=' + deviceName;
     };
 
@@ -383,106 +382,14 @@ app.controller('DeviceTaskHistoryCtrl', function ($scope, ajax, scrollerService)
     $scope.getDataList();
 });
 
-app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile) {       // 检测设备列表页
-    var stationSn = GetQueryString('sn');
+app.controller('DeviceTreeCommonCtrl', function ($scope, ajax) {
     $scope.treeData = [];
-    var devices = [];       // 设备
-    $scope.isLoading = false;
-    $scope.loadingFailed = false;
-    $scope.ellapseId = null;
     $scope.selectOptions = [
         {name: '分组1',children: [{name: '分组2'}]},
         {name: '分组2', children: [{name: '分组3'}]}, null, null, null];       // select内容按5级显示
     $scope.deviceSelected = [null, null, null, null, null];
     $scope.collapse = [false, false, 0];        // 表示选择器是否展开，一级、二级用true/false表示是否展开，三级用数据id表示
     $scope.maxDepth = -1;
-
-    $scope.getDataList = function () {
-        $scope.isLoading = true;
-        $scope.loadingFailed = false;
-        ajax.get({
-            url: '/stations/' + stationSn + '/devicetree',
-            success: function (data) {
-                getDeviceVars(data, function () {
-                    $scope.treeData = formatToTreeData(data)[0].children;
-                    setDefaultData();
-                    $scope.$apply();
-                });
-            },
-            error: function () {
-                $scope.isLoading = false;
-                $scope.loadingFailed = true;
-                $scope.$apply();
-            }
-        });
-    };
-
-    function getDeviceVars(deviceList, cb) {
-        if (deviceList.length === 0){
-            cb([]);
-            return;
-        }
-        var deviceSns = [];
-        for (var i in deviceList){
-            if (!deviceList[i].is_group)
-            {
-                deviceSns.push(deviceList[i].sn);
-            }
-        }
-        ajax.get({
-            url: '/devices/details?device_sns=' + deviceSns.join(','),
-            success: function (data) {
-                $scope.isLoading = false;
-                var deviceData = null, device=null;
-                // 将实时数据写入设备列表中
-                var j = 0;
-                for (var i in data){
-                    deviceData = data[i];
-                    for (; j < deviceList.length; j++){
-                        if (deviceList[j].id === deviceData.device.id){
-                            break;
-                        }
-                    }
-                    if (j >= deviceList.length){
-                        break;
-                    }
-                    device = deviceList[j];
-                    device.communi_status = deviceData.communi_status;
-                    device.running_status = deviceData.running_status;
-                    device.important_realtime_datas = deviceData.important_realtime_datas;
-                    _formatDeviceStatus(device);
-                }
-                cb(data);
-            },
-            error: function () {
-                $scope.isLoading = false;
-                cb([]);
-            }
-        });
-    }
-
-    function _formatDeviceStatus(device) {
-        if (device.communi_status > 0){
-            device.status = 'offline';
-            device.status_name = '离线';
-
-        }else{
-            if (device.running_status > 0){
-                device.status = 'abnormal';
-                device.status_name = '故障';
-            }else{
-                device.status = 'normal';
-                device.status_name = '正常';
-            }
-        }
-    }
-
-    $scope.itemClicked = function (item) {
-        if (!item.is_group)
-        {
-            location.href = '/templates/site/device-monitor.html?stationSn=' + stationSn + '&deviceSn=' + item.sn + '&deviceName=' + item.name;
-        }
-    };
 
     function formatToTreeData(data) {
 
@@ -604,10 +511,6 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile) {     
         }
     }
 
-    $scope.toggle = function ($event) {
-        $scope.ellapseId = '1';
-    };
-
     $scope.toggleCollapse = function (index) {
         // 点击下拉选择，显示或隐藏下拉选择框
         if (index < 0) {
@@ -653,7 +556,7 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile) {     
                     $scope.collapse[2] = itemData.id;
                 }
                 thirdSelectorCurrentCollapse = itemData;
-            } 
+            }
         } else if (selectorIndex === 3) {
             $scope.deviceSelected[selectorIndex] = itemData;
             // 设置上一级为父节点
@@ -661,6 +564,89 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile) {     
             setDefaultData(selectorIndex+1);
         }
         return false;
+    };
+});
+
+app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile) {       // 检测设备列表页
+    var stationSn = GetQueryString('sn');
+    $scope.deviceDatas = [];
+    $scope.treeData = [];
+    var devices = [];       // 设备
+    $scope.isLoading = false;
+    $scope.loadingFailed = false;
+    $scope.ellapseId = null;
+    $scope.selectOptions = [
+        {name: '分组1',children: [{name: '分组2'}]},
+        {name: '分组2', children: [{name: '分组3'}]}, null, null, null];       // select内容按5级显示
+    $scope.deviceSelected = [null, null, null, null, null];
+    $scope.collapse = [false, false, 0];        // 表示选择器是否展开，一级、二级用true/false表示是否展开，三级用数据id表示
+    $scope.maxDepth = -1;
+
+    $scope.getDataList = function () {
+        $scope.isLoading = true;
+        $scope.loadingFailed = false;
+        ajax.get({
+            url: '/stations/' + stationSn + '/devicetree',
+            success: function (data) {
+                getDeviceVars(data, function () {
+                    $scope.isLoading = false;
+                    $scope.deviceDatas = data;
+                    $scope.$apply();
+                });
+            },
+            error: function () {
+                $scope.isLoading = false;
+                $scope.loadingFailed = true;
+                $scope.$apply();
+            }
+        });
+    };
+
+    function getDeviceVars(deviceList, cb) {
+        if (deviceList.length === 0){
+            cb([]);
+            return;
+        }
+        var deviceSns = [];
+        for (var i in deviceList){
+            if (!deviceList[i].is_group)
+            {
+                deviceSns.push(deviceList[i].sn);
+            }
+        }
+        ajax.get({
+            url: '/devices/details?device_sns=' + deviceSns.join(','),
+            success: function (data) {
+                var deviceData = null, device=null;
+                // 将实时数据写入设备列表中
+                var j = 0;
+                for (var i in data){
+                    deviceData = data[i];
+                    for (; j < deviceList.length; j++){
+                        if (deviceList[j].id === deviceData.device.id){
+                            break;
+                        }
+                    }
+                    if (j >= deviceList.length){
+                        break;
+                    }
+                    device = deviceList[j];
+                    device.communi_status = deviceData.communi_status;
+                    device.running_status = deviceData.running_status;
+                    device.important_realtime_datas = deviceData.important_realtime_datas;
+                    _formatDeviceStatus(device);
+                }
+                cb(data);
+            },
+            error: function () {
+                cb([]);
+            }
+        });
+    }
+
+    $scope.gotoDevice = function (deviceData) {
+        location.href = '/templates/site/device-monitor.html?stationSn=' + stationSn + '&deviceSn=' + deviceData.sn + '&deviceName=' + deviceData.name;
+
     };
 
     $scope.getDataList();
@@ -1067,3 +1053,4 @@ app.directive('treeView',[function(){
         }]
     };
 }]);
+
