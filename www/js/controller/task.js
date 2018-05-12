@@ -534,6 +534,7 @@ app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, us
     $scope.tasks = [];
     $scope.showType = 'todo';    // all, open, closed, todo
     $scope.isLoading = true;
+    $scope.loadingFailed = false;
     $scope.todoCount = 0;
 
     $scope.updateTask = function (taskData) {       // 用于在任务详情页修改后，更新首页上的任务
@@ -563,6 +564,8 @@ app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, us
             // $rootScope.login($scope.getDataList);
             return;
         }
+        $scope.isLoading = true;
+        $scope.loadingFailed = false;
 
         ajax.get({
             url: "/opstasks/history/" + company.id,
@@ -586,7 +589,7 @@ app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, us
             },
             error: function (a,b,c) {
                 $scope.isLoading = false;
-                $.notify.error("获取任务历史失败");
+                $scope.loadingFailed = true;
                 $scope.$apply();
             }
         });

@@ -33,7 +33,7 @@
 </header>
 <div class="mui-content" ng-cloak>
     <div class="height-wrap-parent">
-        <div class="scroll-wrapper" id="monitors" ng-if="!loadingFailed">
+        <div class="scroll-wrapper" id="monitors" ng-if="!loadingFailed && !monitorLoading">
             <div class="mui-scroll">
                 <ul class="mui-table-view no-margin" style="background-color: #fff;" ng-if="monitorScreens.length">
                     <li class="mui-table-view-cell mui-media" ng-repeat="screen in monitorScreens" >

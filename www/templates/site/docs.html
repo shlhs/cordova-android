@@ -59,7 +59,7 @@
 <div ng-include="'../../templates/top-menu.html'"></div>
 <div class="mui-content" ng-cloak>
     <div style="height: 8px;"></div>
-    <div ng-repeat="group in groups">
+    <div ng-repeat="group in groups" ng-if="!docLoading && !loadingFailed">
         <div class="title">
             {{group.name}}
         </div>

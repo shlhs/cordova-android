@@ -474,30 +474,32 @@
     left: 4px;
     font-size: 10px;
 }
-.task-create-rows .mui-input-row {
+.task-create-rows .mui-input-row>.label {
+    width: 160px;
+}
+.mui-input-group .mui-input-row {
     height: 50px;
 }
-.task-create-rows .mui-input-row>.label {
+.mui-input-group .mui-input-row>.label {
     line-height: 28px;
     font-size: 18px;
     color: rgb(51,51,51);
-    width: 160px;
 }
-.task-create-rows .mui-input-row input {
+.mui-input-group .mui-input-row input {
     height: 50px;
 }
-.task-create-rows .mui-input-row input::-webkit-input-placeholder { /* WebKit browsers */
+.mui-input-group .mui-input-row input::-webkit-input-placeholder { /* WebKit browsers */
     color:rgb(153,153,153);
 }
-.task-create-rows .mui-input-row input:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+.mui-input-group .mui-input-row input:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
     color:rgb(153,153,153);
 }
-.task-create-rows .mui-input-row input::-moz-placeholder { /* Mozilla Firefox 19+ */
+.mui-input-group .mui-input-row input::-moz-placeholder { /* Mozilla Firefox 19+ */
     color:rgb(153,153,153);
 }
-.task-create-rows .mui-input-row input:-ms-input-placeholder { /* Internet Explorer 10+ */
+.mui-input-group .mui-input-row input:-ms-input-placeholder { /* Internet Explorer 10+ */
     color:rgb(153,153,153);
 }
-.task-create-rows .mui-input-row:after {
+.mui-input-group .mui-input-row:after {
     background-color: rgb(226, 224, 224);
 }

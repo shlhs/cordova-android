@@ -211,7 +211,7 @@ app.controller('StaticDevicesHomeCtrl', function ($scope, ajax, routerService) {
             }, error: function () {
                 $scope.isLoading = false;
                 $scope.loadingFailed = true;
-
+                $scope.$apply();
             }
         })
     };

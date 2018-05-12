@@ -91,21 +91,20 @@
                 </div>
             </div>
         </div>
+        <div class="page-alert-wrapper" ng-if="isLoading">
+            <div class="page-alert">
+                <img src="../../../img/page-loading.gif" class="loading-img">
+                <div class="alert-text info">正在加载...</div>
+            </div>
+        </div>
+        <div class="page-alert-wrapper" ng-if="loadingFailed">
+            <div class="page-alert">
+                <i class="alert-icon warning"></i>
+                <div class="alert-text info">加载失败，请检查网络</div>
+                <div class="alert-reload" ng-click="getDataList()">重新加载</div>
+            </div>
+        </div>
 
-    </div>
-    <div class="page-alert-wrapper" ng-if="isLoading">
-        <div class="page-alert">
-            <img src="../../../img/page-loading.gif" class="loading-img">
-            <div class="alert-text info">正在加载...</div>
-        </div>
-    </div>
-    <div class="page-alert-wrapper" ng-if="loadingFailed">
-        <div class="page-alert">
-            <i class="alert-icon warning"></i>
-            <div class="alert-text info">加载失败，请检查网络</div>
-            <div class="alert-reload" ng-click="getDataList()">重新加载</div>
-        </div>
-    </div>
     </div>
 <script src="/components/fastclick-master/lib/fastclick.js"></script>
 <script src="/js/my/notify.js"></script>
