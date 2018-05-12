@@ -42,14 +42,14 @@
     width: 20px !important;;
 }
 .icon-device-monitor{
-    background-image: url("../img/dark/64X64/device.png");
+    background-image: url("../img/dashboard/icon-device-monitor@2x.png");
 }
 .icon-events{
     background-image: url("../img/light/icon-events@2x.png");
     position: relative;
 }
 .icon-docs{
-    background-image: url("../img/dark/64X64/icon-documents@2x.png");
+    background-image: url("../img/dashboard/icon-documents@2x.png");
 }
 .icon-more{
     background-image: url("../img/light/64X64/more.png");
@@ -91,13 +91,13 @@
     background-image: url("../img/icon/icon-report-download@2x.png");
 }
 .icon-kanban{
-    background-image: url("../img/dark/64X64/kanban.png");
+    background-image: url("../img/dashboard/icon-kanban@2x.png");
 }
 .icon-monitor-list{
     background-image: url("../img/icon/monitor-list@2x.png");
 }
 .icon-monitor{
-    background-image: url("../img/dark/64X64/icon-monitor@2x.png");
+    background-image: url("../img/dashboard/icon-monitor@2x.png");
 }
 .icon-clock{
     background-image: url("../img/icon/icon-clock@2x.png");
@@ -151,10 +151,10 @@
     background-image: url("../img/icon/icon-circle-grey.png");
 }
 .icon-security{
-    background-image: url("../img/dark/64X64/icon-security@2x.png");
+    background-image: url("../img/dashboard/icon-security@2x.png");
 }
 .icon-poweroff{
-    background-image: url("../img/dark/64X64/icon-poweroff.png");
+    background-image: url("../img/dashboard/icon-poweroff@2x.png");
 }
 .icon-checklist{
     background-image: url("../img/dark/64X64/074-checklist.png");
@@ -169,10 +169,10 @@
     background-image: url("../img/dark/64X64/icon-usb.png");
 }
 .icon-archives{
-    background-image: url("../img/dark/64X64/icon-archives.png");
+    background-image: url("../img/dashboard/icon-archives@2x.png");
 }
 .icon-reports{
-    background-image: url("../img/dark/64X64/icon-report@2x.png");
+    background-image: url("../img/dashboard/icon-report@2x.png");
 }
 .icon-events-1{
     background-image: url("../img/dark/64X64/event.png");

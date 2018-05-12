@@ -50,29 +50,45 @@
     </header>
     <div ng-include="'../../templates/top-menu.html'"></div>
     <div class="mui-content" ng-cloak>
+        <div id="task_types" class="mui-slider-indicator mui-segmented-control mui-segmented-control-inverted" style="margin-left: 0;position: fixed;top:60px;background-color: #fff;box-shadow: 0 0 1px #ccc;z-index:100;">
+            <a class="mui-control-item mui-active" ng-click="changeDeviceType('$event', 'all')" ng-class="{'mui-active': showType=='all'}">
+                所有设备({{deviceList.length}})
+            </a>
+            <a class="mui-control-item" ng-click="changeDeviceType($event, 'fault')" ng-class="{'mui-active': showType=='fault'}">
+                故障设备({{faultDeviceList.length}})
+            </a>
+        </div>
         <div class="scroll-wrapper" id="devices" style="top:32px;">
             <div class="mui-scroll">
-                <div class="cascade-selector">
-                    <div class="selector-mask" ng-click="toggleCollapse(-1)"></div>
-                    <div class="selector separator" style="width: 50%" ng-if="selectOptions[0]">
-                        <div ng-click="toggleCollapse(0)"><label>{{showType}}</label></div>
-                        <ul class="option-wrapper option-vertical">
-                            <li ng-click="selectShowType('实时数据')" ng-class="{'selected': showType==='实时数据'}">
-                                实时数据
-                            </li>
-                            <li ng-click="selectShowType('历史数据')" ng-class="{'selected': showType==='历史数据'}">
-                                历史数据
-                            </li>
-                        </ul>
+                <div class="card" ng-repeat="device in currentDevices" style="margin-top:6px;" id="deviceList" ng-click="gotoDevice(deviceevice.station_sn, device.sn, device.name)">
+                    <div class="card-header">{{device.name}}</div>
+                    <div class="card-content" style="padding-top: 0;">
+                        <div class="mui-media">
+                            <img class="mui-media-object mui-pull-left" ng-src="{{device.product.photo_src_link ? device.product.photo_src_link : '../../img/icon/icon-device-default.png'}}">
+                            <div class="mui-media-body box-vertical-center" style="position: relative;">
+                                <h5 class=" site-var" ng-if="device.important_realtime_datas.length">
+                                    <span style="display: block">
+                                        <span class="mui-ellipsis" style="display: inline-block;width:calc(100% - 90px);">{{device.important_realtime_datas[0].name}}</span>
+                                        <label>
+                                            <span class="value">{{device.important_realtime_datas[0].data}}</span>
+                                            <span class="unit">{{device.important_realtime_datas[0].unit && device.important_realtime_datas[0].unit}}</span>
+                                        </label>
+                                    </span>
+                                    <span style="display: block;margin-top: 6px;">
+                                        <span class="mui-ellipsis" style="display: inline-block;width:calc(100% - 90px);">{{device.important_realtime_datas[1].name}}</span>
+                                        <label>
+                                            <span class="value">{{device.important_realtime_datas[1].data}}</span>
+                                            <span class="unit">{{device.important_realtime_datas[1] && device.important_realtime_datas[1].unit}}</span>
+                                        </label>
+                                    </span>
+                                </h5>
+                                <h5 class="site-var" ng-if="device.important_realtime_datas.length === 0">
+                                    <span></span>
+                                </h5>
+                            </div>
+                        </div>
                     </div>
-                    <div class="selector" style="width: 50%" ng-if="selectOptions[1]">
-                        <div ng-click="toggleCollapse(1)"><label ng-class="{'nodata': !dataName}">{{dataName ? dataName : '无数据'}}</label></div>
-
-                        <ul class="option-wrapper option-horizontal">
-                            <li ng-repeat="item in secondOptions[showType]" ng-class="{'selected': dataName===item.name}"
-                                ng-click="selectDataType(item)">{{item.name}}</li>
-                        </ul>
-                    </div>
+                    <div class="bg-status status-top-right {{device.status}}">{{device.status_name}}</div>
                 </div>
                 <div class="page-alert-wrapper" ng-if="!deviceList.length && !deviceLoading">
                     <div class="page-alert">
