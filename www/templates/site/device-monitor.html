@@ -110,12 +110,6 @@
         <div class="mui-scroll" style="background-color: #ffffff;" ng-if="realtime && !isLoading">
             <div ng-if="realtimeType==='模拟量'">
                 <table>
-                    <thead>
-                    <tr>
-                        <th style="width: 65%;">名称</th>
-                        <th style="width: 35%;">实际值</th>
-                    </tr>
-                    </thead>
                     <tbody>
                     <tr ng-repeat="item in realtimeValues">
                         <td>{{item.name}}</td>
