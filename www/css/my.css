@@ -480,7 +480,10 @@ aside.light .mui-table-view-cell>a:not(.mui-btn){
     background-image: url("../img/icon/icon-home-grab.png");
 }
 .nav-all-tasks{
-    background-image: url('../img/icon/icon-home-tasks.png');
+    background-image: url('../img/dashboard/icon-home-task@2x.png');
+}
+.mui-active.nav-all-tasks{
+    background-image: url('../img/dashboard/icon-home-task-active@2x.png');
 }
 .nav-sites{
     background-image: url('../img/icon/icon-home-sites@2x.png');
@@ -2107,7 +2110,7 @@ color: #a7a7a7;
     padding-left: 18px;
 }
 .first-list>li>label {
-    padding-right: 12px;
+    padding-right: 24px;
     height: 48px;
     line-height: 48px;
     position: relative;
@@ -2116,8 +2119,9 @@ color: #a7a7a7;
 .first-list>li.group>label:after {
     content: '\e581';
     display: block;
-    float: right;
-    margin-right: 12px;
+    right: 8px;
+    position: absolute;
+    top: 0px;
 }
 .first-list>li.selected>label {
     color: rgb(88,107,243);
@@ -2126,6 +2130,7 @@ color: #a7a7a7;
     content: '\e580';
 }
 .second-list {
+    border-top: #e1e1e1 1px solid;
     list-style: none;
     margin-left: -16px;
     display: none;
@@ -2147,6 +2152,7 @@ color: #a7a7a7;
     color: rgb(88,107,243);
     margin-top: -1px;
 }
+/*
 .second-list .selected label:before {
     content: '';
     display: block;
@@ -2160,6 +2166,7 @@ color: #a7a7a7;
     top: 50%;
     margin-top: -8px;
 }
+*/
 .device-list li {
     list-style: none;
     height: 50px;
@@ -2195,4 +2202,20 @@ color: #a7a7a7;
 }
 .device-tree label {
     position: relative;
+}
+.properties-group {
+    background-color: #ffffff;
+    margin-bottom: 8px;
+    padding-left: 20px;
+}
+.entrance-list>li {
+    margin: 16px 0 !important;
+}
+.card .card-header.device-detail-title {
+    height: 44px;
+    line-height: 44px;
+    padding-left: 12px;
+    font-size: 18px;
+    color: rgb(51,51,51);
+    border-bottom: rgba(220, 220, 220, 0.51) 1px solid;
 }

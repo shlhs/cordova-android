@@ -20,49 +20,56 @@
             </div>
         </div>
         <div class="card round-card" >
-            <ul class="mui-table-view mui-grid-view mui-grid-9 no-border">
+            <ul class="mui-table-view mui-grid-view mui-grid-9 no-border entrance-list">
+                <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
+                    <a href="/templates/site/kanban.html?sn={{currentSite.station.sn}}" style="padding: 6px 0 0 0;">
+                        <span class="mui-icon icon icon-36 icon-kanban"></span>
+                        <div class="mui-media-body">看板</div>
+                    </a>
+                </li>
                 <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
                     <a href="/templates/site/monitor-list.html?sn={{currentSite.station.sn}}" style="padding: 6px 0 0 0;">
                         <span class="mui-icon icon icon-36 icon-monitor"></span>
-                        <div class="mui-media-body no-margin">画面</div>
+                        <div class="mui-media-body">画面</div>
+                    </a>
+                </li>
+                <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
+                    <a href="/templates/site/device-monitor-list.html?sn={{currentSite.station.sn}}" style="padding: 6px 0 0 0;">
+                        <span class="mui-icon icon icon-36 icon-device-monitor"></span>
+                        <div class="mui-media-body">设备监测</div>
+                    </a>
+                </li>
+                <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
+                    <a href="/templates/site/static-devices/device-home.html?sn={{currentSite.station.sn}}&name={{currentSite.station.name}}" style="padding: 6px 0 0 0;">
+                        <span class="mui-icon icon icon-36 icon-archives"></span>
+                        <div class="mui-media-body">设备档案</div>
                     </a>
                 </li>
                 <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
                     <a href="/templates/site/docs.html?sn={{currentSite.station.sn}}" style="padding: 6px 0 0 0;">
                         <span class="mui-icon icon icon-36 icon-docs"></span>
-                        <div class="mui-media-body no-margin">电子档案</div>
-                    </a>
-                </li>
-                <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
-                    <a href="/templates/evaluate/evaluate-history.html?sn={{currentSite.station.sn}}&name={{currentSite.station.name}}" style="padding: 6px 0 0 0;">
-                        <span class="mui-icon icon icon-36 icon-security"></span>
-                        <div class="mui-media-body no-margin">安全评测</div>
+                        <div class="mui-media-body">电子档案</div>
                     </a>
                 </li>
                 <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
                     <a href="/templates/site/reports.html?sn={{currentSite.station.sn}}&name={{currentSite.station.name}}" style="padding: 6px 0 0 0;">
                         <span class="mui-icon icon icon-36 icon-reports"></span>
-                        <div class="mui-media-body no-margin">月度报告</div>
+                        <div class="mui-media-body">月度报告</div>
+                    </a>
+                </li>
+                <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
+                    <a href="/templates/evaluate/evaluate-history.html?sn={{currentSite.station.sn}}&name={{currentSite.station.name}}" style="padding: 6px 0 0 0;">
+                        <span class="mui-icon icon icon-36 icon-security"></span>
+                        <div class="mui-media-body">安全评测</div>
+                    </a>
+                </li>
+                <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
+                    <a href="/templates/maintenance-check/check-history.html?sn={{currentSite.station.sn}}&name={{currentSite.station.name}}" style="padding: 6px 0 0 0;">
+                        <span class="mui-icon icon icon-36 icon-poweroff"></span>
+                        <div class="mui-media-body">停电维护</div>
                     </a>
                 </li>
             </ul>
-        </div>
-        <div class="layout-center">
-            <a class="card round-card" style="width: 45%;-webkit-box-flex: 1;"
-                 href="/templates/site/kanban.html?sn={{currentSite.station.sn}}">
-                <div class="card-title big-card-title">站点看板</div>
-                <div class="card-content">
-                    <img src="/img/site-kanban-big-icon@2x.png" style="width: 70%; float: right;margin: 4px -12px -6px 0;">
-                </div>
-            </a>
-            <a class="card round-card" style="width: 45%;-webkit-box-flex: 1;margin-left: 0;"
-               href="/templates/site/device-monitor-list.html?sn={{currentSite.station.sn}}">
-                <div class="card-title big-card-title">设备监测</div>
-                <div class="card-content">
-                    <img src="/img/device-monitor-big-icon@2x.png" style="width: 70%; float: right;margin: 4px -12px -6px 0;">
-                </div>
-            </a>
-            <div style="clear: both"></div>
         </div>
         <div class="card round-card">
             <div class="card-header" style="margin: 0 -4px; border-bottom: rgb(239,238,238) 1px solid; color: rgb(253,96,10);">

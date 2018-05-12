@@ -90,7 +90,7 @@
                          ng-style="{width: maxDepth===4 ? '100%' : '50%'}">
                         <div ng-click="toggleCollapse(1)">
                             <label class="result-label" ng-class="{'nodata': !deviceSelected[1]}">
-                                {{deviceSelected[1] ? deviceSelected[1].name : '空'}}
+                                {{deviceSelected[1] ? deviceSelected[1].name : '(空)'}}
                             </label>
                         </div>
                         <ul class="option-wrapper option-vertical">
@@ -104,7 +104,7 @@
 
                 <div class="device-tree-container device-tree" ng-style="{top: maxDepth<=3 ? '0px' : '45px'}">
                     <div class="tree-left-sider">
-                        <ul class="first-list">
+                        <ul class="first-list" ng-if="selectOptions[2]">
                             <li ng-repeat="item in selectOptions[2]"
                                 ng-class="{'group': item.is_group, 'collapse': item.id === collapse[2], 'selected': deviceSelected[2].id===item.id}">
                                 <label ng-click="chooseDeviceOrGraph(2, item)"><i class="device-status {{item.status}}"></i>{{item.name}}</label>
@@ -116,14 +116,16 @@
                                 </ul>
                             </li>
                         </ul>
+                        <div class="nodata" ng-if="!selectOptions[2]" style="text-align: center;color: #7d8491;padding: 16px;">(空)</div>
                     </div>
                     <div class="tree-right-sider">
-                        <ul class="device-list">
+                        <ul class="device-list" ng-if="selectOptions[4]">
                             <li ng-repeat="item in selectOptions[4]"
                                 ng-click="chooseDeviceOrGraph(4, item)">
                                 <label><i class="device-status {{item.status}}"></i> {{item.name}}</label>
                             </li>
                         </ul>
+                        <div class="nodata" ng-if="!selectOptions[4]" style="text-align: center;color: #7d8491;padding: 16px;">(空)</div>
                     </div>
                 </div>
 

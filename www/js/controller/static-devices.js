@@ -1,21 +1,32 @@
 app.controller('StaticDevicesHomeCtrl', function ($scope, ajax, routerService) {
     var stationSn = GetQueryString("sn");
     var devices = [];       // 设备
-    $scope.allDevices = [];
+    $scope.treeData = [];
+    $scope.isLoading = false;
+    $scope.loadingFailed = false;
+    $scope.ellapseId = null;
+    $scope.selectOptions = [null, null, null, null, null];       // select内容按5级显示
+    $scope.deviceSelected = [null, null, null, null, null];
+    $scope.collapse = [false, false, 0];        // 表示选择器是否展开，一级、二级用true/false表示是否展开，三级用数据id表示
+    $scope.maxDepth = -1;
 
     $scope.openPage = function(deviceData){
         if (deviceData.is_group) {
             routerService.openPage($scope, '/templates/site/static-devices/sub-device-list.html', {groupData: deviceData});
         } else {
-            routerService.openPage($scope, '/templates/site/static-devices/device-detail.html', {device: deviceData});
+            routerService.openPage($scope, '/templates/site/static-devices/device-detail.html', {id: deviceData.id});
         }
     };
 
+
     function formatToTreeData(data) {
 
-        function addToGroup(newItem, items) {
+        function addToGroup(newItem, items, depth) {
             if (!items || !items.length) {
                 return;
+            }
+            if (depth > maxDepth) {
+                maxDepth = depth;
             }
             for (var i=0; i<items.length; i++) {
 
@@ -29,16 +40,47 @@ app.controller('StaticDevicesHomeCtrl', function ($scope, ajax, routerService) {
                     }
                     newItem.text = newItem.name;
                     item.children.push(newItem);
+                    if (maxDepth < depth + 1) {
+                        maxDepth = depth + 1;
+                    }
                     return true;
                 }
                 if (item.children) {
-                    if (addToGroup(newItem, item.children)) {
+                    if (addToGroup(newItem, item.children, depth+1)) {
                         return true;
                     }
                 }
             }
 
         }
+
+        function _indexs_sort(item) {
+
+            if (!item.is_group) {
+                return;
+            }
+            if (item.indexs) {
+                const newChildren = [];
+                const childrenMap = {};
+                item.children.forEach(function (n, i) {
+                    childrenMap[n.id] = n;
+                });
+                item.indexs.split(',').forEach(function (i) {
+
+                    if (childrenMap[i]) {
+                        newChildren.push(childrenMap[i]);
+                    }
+                });
+                item.children = newChildren;
+            }
+            item.children.forEach(function (child, i) {
+                _indexs_sort(child);
+            });
+        }
+
+
+        var formatted = [];
+        var maxDepth = -1;
 
         // 先按照depth进行排序
         data = data.sort(function (a, b) {
@@ -51,35 +93,130 @@ app.controller('StaticDevicesHomeCtrl', function ($scope, ajax, routerService) {
             return a.name.localeCompare(b.name, 'zh-CN');
         });
 
-        var formatted = [];
-
-        // 先按照depth进行排序
         data.forEach(function (item) {
-            if (!item.is_group) {
-                devices.push(item);
-            }
             if (item.parent_id) {
-                addToGroup(item, formatted);
+                addToGroup(item, formatted, 1);
+            } else if (item.depth < 0) {
+                // 根节点
+                item.text = item.name;
+                item.is_group = true;
+                item.children = [];
+                formatted.push(item);
             } else {
                 item.text = item.name;
                 item.children = [];
                 formatted.push(item);
             }
         });
+
+        // 根据父节点的indexs对树再次进行排序
+        _indexs_sort(formatted[0]);
+        $scope.maxDepth = maxDepth - 1;
         return formatted;
     }
 
-    function getDevices() {
+    function setDefaultData(startDepth) {       //
+        if (!startDepth) {
+            var range = $scope.treeData[0].children, start=5-$scope.maxDepth;
+        } else {
+            var range = $scope.deviceSelected[startDepth-1].children, start=startDepth;
+        }
+        for (var i=0; i<$scope.maxDepth; i++) {
+            if (range && range.length) {
+                $scope.selectOptions[start+i] = range;
+                if (range[0].group) {
+                    $scope.deviceSelected[start+i] = range[0];
+                }
+                if (start+i===2 && range[0].group) {
+                    // 默认展开被选中的group
+                    $scope.collapse[2] = range[0].id;
+                }
+                range = range[0].children;
+            } else {
+                $scope.selectOptions[start+i] = null;
+                $scope.deviceSelected[start+i] = null;
+            }
+        }
+    }
+
+    $scope.toggle = function ($event) {
+        $scope.ellapseId = '1';
+    };
+
+    $scope.toggleCollapse = function (index) {
+        // 点击下拉选择，显示或隐藏下拉选择框
+        if (index < 0) {
+            for (var i=0; i<2; i++) {
+                $scope.collapse[i] = false;
+            }
+        } else {
+            if (index === 1) {
+                // 如果第二个选择框没有数据，则无法弹出
+                if (!$scope.deviceSelected[1]) {
+                    return;
+                }
+            }
+            if ($scope.collapse[index]) {
+                $scope.collapse[index] = false;
+            } else {
+                $scope.collapse[index] = true;
+                $scope.collapse[1-index] = false;
+            }
+        }
+    };
+
+    var thirdSelectorCurrentCollapse = null;
+    // 点击选中某一个设备或分组
+    $scope.chooseDeviceOrGraph = function (selectorIndex, itemData) {   // selectorIndex: 是第几个选择器
+
+        if (!itemData.group) {
+            // 跳转到设备监测详情
+            $scope.openPage(itemData);
+            return;
+        }
+        if (selectorIndex === 0 || selectorIndex === 1)
+        {
+            $scope.deviceSelected[selectorIndex] = itemData;
+            setDefaultData(selectorIndex+1);
+            $scope.toggleCollapse(selectorIndex);
+        }
+        else if (selectorIndex === 2) {
+            if (itemData.group) {
+                if ($scope.collapse[2] === itemData.id) {
+                    $scope.collapse[2] = -1;
+                } else {
+                    $scope.collapse[2] = itemData.id;
+                }
+                thirdSelectorCurrentCollapse = itemData;
+            }
+        } else if (selectorIndex === 3) {
+            $scope.deviceSelected[selectorIndex] = itemData;
+            // 设置上一级为父节点
+            $scope.deviceSelected[selectorIndex-1] = thirdSelectorCurrentCollapse;
+            setDefaultData(selectorIndex+1);
+        }
+        return false;
+    };
+
+    $scope.getDataList = function() {
+        $scope.isLoading = true;
+        $scope.loadingFailed = false;
         ajax.get({
             url: '/stations/' + stationSn + '/staticdevices',
             success: function (data) {
-                $scope.allDevices = formatToTreeData(data);
+                $scope.isLoading = false;
+                $scope.treeData = formatToTreeData(data);
+                setDefaultData();
                 $scope.$apply();
+            }, error: function () {
+                $scope.isLoading = false;
+                $scope.loadingFailed = true;
+
             }
         })
-    }
+    };
 
-    getDevices();
+    $scope.getDataList();
 });
 
 app.controller('StaticDeviceSubListCtrl', function ($scope, ajax) {
@@ -159,6 +296,29 @@ app.controller('StaticDeviceSubListCtrl', function ($scope, ajax) {
     init();
 });
 
-app.controller('StaticDeviceDetailCtrl', function ($scope) {
+app.controller('StaticDeviceDetailCtrl', function ($scope, ajax) {
+    $scope.device = {};
 
+    $scope.getDataList = function () {
+        ajax.get({
+            url: '/staticdevices/' + $scope.id,
+            success: function (data) {
+                if (data.properties) {
+                    data.properties = JSON.parse(data.properties);
+                    if (data.items) {
+                        data.items.forEach(function (n, i) {
+                            if (n.properties) {
+                                n.properties = JSON.parse(n.properties);
+                            }
+
+                        })
+                    }
+                }
+                $scope.device = data;
+                $scope.$apply();
+            }
+        })
+    };
+
+    $scope.getDataList();
 });
