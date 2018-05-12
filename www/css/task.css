@@ -121,9 +121,32 @@
 .task-type-control {
     line-height: 20px!important;
 }
+.task-type-control.active {
+    color: rgb(88,107,243) !important;
+    position: relative;
+}
+.task-type-control.active:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    height: 2px;
+    background-color: rgb(88,107,243);
+    left: 25%;
+    width: 50%;
+}
 .task-type-name {
-    margin: 8px 0;
-    border-right: 1px solid #dbdbdb;
+    line-height: 44px;
+    position: relative;
+}
+.task-type-name:after {
+    content: '';
+    position: absolute;
+    right: 0;
+    display: block;
+    background-color: rgb(219,219,219);
+    width: 1px;
+    top: 12px;
+    bottom: 12px;
 }
 .task-type-name.last{
     border-right: none;
@@ -450,4 +473,31 @@
     top: -32px;
     left: 4px;
     font-size: 10px;
+}
+.task-create-rows .mui-input-row {
+    height: 50px;
+}
+.task-create-rows .mui-input-row>.label {
+    line-height: 28px;
+    font-size: 18px;
+    color: rgb(51,51,51);
+    width: 160px;
+}
+.task-create-rows .mui-input-row input {
+    height: 50px;
+}
+.task-create-rows .mui-input-row input::-webkit-input-placeholder { /* WebKit browsers */
+    color:rgb(153,153,153);
+}
+.task-create-rows .mui-input-row input:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color:rgb(153,153,153);
+}
+.task-create-rows .mui-input-row input::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color:rgb(153,153,153);
+}
+.task-create-rows .mui-input-row input:-ms-input-placeholder { /* Internet Explorer 10+ */
+    color:rgb(153,153,153);
+}
+.task-create-rows .mui-input-row:after {
+    background-color: rgb(226, 224, 224);
 }

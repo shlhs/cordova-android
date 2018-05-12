@@ -4,17 +4,18 @@
         <a onclick="showTopMenu()" class="mui-action-menu mui-icon mui-pull-right" ><i class="header-icon white icon-add"></i></a>
     </header>
     <div id="task_types" class="mui-slider-indicator mui-segmented-control mui-segmented-control-inverted" style="margin-left: 0;position: fixed;top:60px;background-color: #fff;box-shadow: 0 0 1px #ccc; height: 36px;">
-        <a class="task-type-control mui-control-item mui-active" ng-click="changeTaskType('$event', 'todo')" ng-class="{'mui-active': showType=='todo'}">
+        <a class="task-type-control mui-control-item active" ng-click="changeTaskType('$event', 'todo')"
+           ng-class="{'active': showType=='todo'}">
             <div class="task-type-name">待办({{todoCount}})</div>
         </a>
-        <a class="task-type-control mui-control-item" ng-click="changeTaskType($event, 'all')" ng-class="{'mui-active': showType=='all'}">
+        <a class="task-type-control mui-control-item" ng-click="changeTaskType($event, 'all')" ng-class="{'active': showType=='all'}">
             <div class="task-type-name">所有</div>
         </a>
-        <a class="task-type-control mui-control-item" ng-click="changeTaskType($event, 'closed')" ng-class="{'mui-active': showType=='closed'}">
+        <a class="task-type-control mui-control-item" ng-click="changeTaskType($event, 'closed')" ng-class="{'active': showType=='closed'}">
             <div class="task-type-name last">已关闭</div>
         </a>
     </div>
-    <div id="taskList" style="top:106px;" class="scroll-wrapper">
+    <div id="taskList" style="top:112px;" class="scroll-wrapper">
         <div class="mui-scroll1">
             <ul class="mui-table-view mui-table-view-striped mui-table-view-condensed task-list no-out-border" ng-if="tasks.length">
                 <li class="mui-table-view-cell mui-media task-item" ng-repeat="task in tasks"

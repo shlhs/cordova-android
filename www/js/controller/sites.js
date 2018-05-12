@@ -386,7 +386,7 @@ app.controller('SiteReportsCtrl', function ($scope, ajax, scrollerService, route
         $scope.isLoading = true;
         $scope.loadingFailed = false;
         ajax.get({
-            url: '/stations/' + stationSn + '/reports1',
+            url: '/stations/' + stationSn + '/reports',
             success: function (data) {
                 $scope.isLoading = false;
                 var outputs = [];

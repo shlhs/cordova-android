@@ -211,15 +211,16 @@ app.service('ajax', function ($rootScope, platformService, userService, $http) {
         if (option.url.indexOf("http://") !== 0){
             option.url = platformService.host + option.url;
         }
+        var headers = $.extend({
+            Authorization: userService.getAccountToken(),
+            credentials: 'include',
+            mode: 'cors'
+        }, option.headers);
         $.extend(option, {
             timeout: 5000,
             xhrFields: {withCredentials: true},
             crossDomain: true,
-            headers: {
-                Authorization: userService.getAccountToken(),
-                credentials: 'include',
-                mode: 'cors'
-            }
+            headers: headers
         });
 
 
