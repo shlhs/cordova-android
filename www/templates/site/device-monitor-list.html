@@ -103,7 +103,7 @@
                 </div>
 
                 <div class="device-tree-container device-tree" ng-style="{top: maxDepth<=3 ? '0px' : '45px'}">
-                    <div class="tree-left-sider">
+                    <div class="tree-left-sider" ng-if="maxDepth>1">
                         <ul class="first-list" ng-if="selectOptions[2]">
                             <li ng-repeat="item in selectOptions[2]"
                                 ng-class="{'group': item.is_group, 'collapse': item.id === collapse[2], 'selected': deviceSelected[2].id===item.id}">
@@ -116,9 +116,15 @@
                                 </ul>
                             </li>
                         </ul>
-                        <div class="nodata" ng-if="!selectOptions[2]" style="text-align: center;color: #7d8491;padding: 16px;">(空)</div>
+                        <ul class="second-list" ng-if="maxDepth===2" style="display: block;">
+                            <li ng-repeat="child in selectOptions[3]" ng-class="{'selected': child.id === deviceSelected[3].id}"
+                                ng-click="chooseDeviceOrGraph(3, child)">
+                                <label class="mui-ellipsis"><i class="device-status {{child.status}}"></i>{{child.name}}</label>
+                            </li>
+                        </ul>
+                        <div class="nodata" ng-if="!selectOptions[2] && !selectOptions[3]" style="text-align: center;color: #7d8491;padding: 16px;">(空)</div>
                     </div>
-                    <div class="tree-right-sider">
+                    <div class="tree-right-sider" ng-style="{width: maxDepth===1 ? '100%': '52%'}">
                         <ul class="device-list" ng-if="selectOptions[4]">
                             <li ng-repeat="item in selectOptions[4]"
                                 ng-click="chooseDeviceOrGraph(4, item)">

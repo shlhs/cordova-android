@@ -80,7 +80,7 @@
                     </ul>
                     <div class="nodata" ng-if="!selectOptions[2] && !selectOptions[3]" style="text-align: center;color: #7d8491;padding: 16px;">(空)</div>
                 </div>
-                <div class="tree-right-sider">
+                <div class="tree-right-sider" ng-style="{width: maxDepth===1 ? '100%': '52%'}">
                     <ul class="device-list" ng-if="selectOptions[4]">
                         <li ng-repeat="item in selectOptions[4]"
                             ng-click="chooseDeviceOrGraph(4, item)">

@@ -403,7 +403,7 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile) {     
         ajax.get({
             url: '/stations/' + stationSn + '/devicetree',
             success: function (data) {
-                getDeviceVars(data, function (deviceDetails) {
+                getDeviceVars(data, function () {
                     $scope.treeData = formatToTreeData(data)[0].children;
                     setDefaultData();
                     $scope.$apply();
@@ -505,6 +505,9 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile) {     
                     }
                     newItem.text = newItem.name;
                     item.children.push(newItem);
+                    if (maxDepth < depth + 1) {
+                        maxDepth = depth + 1;
+                    }
                     return true;
                 }
                 if (item.children) {
@@ -627,6 +630,7 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile) {     
         }
     };
 
+    var thirdSelectorCurrentCollapse = null;
     // 点击选中某一个设备或分组
     $scope.chooseDeviceOrGraph = function (selectorIndex, itemData) {   // selectorIndex: 是第几个选择器
 
@@ -648,11 +652,12 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile) {     
                 } else {
                     $scope.collapse[2] = itemData.id;
                 }
-            } else {
-                // 跳转到设备页
-            }
+                thirdSelectorCurrentCollapse = itemData;
+            } 
         } else if (selectorIndex === 3) {
             $scope.deviceSelected[selectorIndex] = itemData;
+            // 设置上一级为父节点
+            $scope.deviceSelected[selectorIndex-1] = thirdSelectorCurrentCollapse;
             setDefaultData(selectorIndex+1);
         }
         return false;
