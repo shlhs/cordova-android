@@ -85,6 +85,9 @@
 .task-item.closed .main-body{
     background-color: rgba(143, 143, 143, 0.3);
 }
+.task-item.closed .task-status{
+    color: #8f8f94;
+} 
 .closed.task-status{
     color: #8f8f94 !important;
 }
