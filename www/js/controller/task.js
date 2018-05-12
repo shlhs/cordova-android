@@ -4,6 +4,7 @@
  * Created by liucaiyun on 2017/7/20.
  */
 
+
 var TaskAction = {Create: 0, Accept: 1, Refuse: 2, Assign: 3, Go: 4, Apply: 5, Reject: 6, Close: 7, Comment: 8, Grab: 9, Arrive: 10, Update: 11};
 var TaskStatus = {ToAccept: 1, ToAssign: 2, Accepted: 3, ToClose: 4, Closed: 5, Competition: 6, Coming: 7, Arrived: 8};
 function formatTaskHistoryDesp(taskHistory) {     // 根据任务的action_id处理任务描述
@@ -288,8 +289,27 @@ app.controller('CompetitionTaskListCtrl', function ($scope, $rootScope, scroller
     $scope.isLoading = true;
     var selectedTaskIndex = -1, company=userService.getCompany();
     var stationDistances = {};
-    function formatTime(task) {
 
+    moment.locale('en', {
+        relativeTime : {
+            future: "in %s",
+            past:   "%s前",
+            s:  "秒",
+            m:  "1分钟",
+            mm: "%d分钟",
+            h:  "1小时",
+            hh: "%d小时",
+            d:  "1天",
+            dd: "%d天",
+            M:  "1个月",
+            MM: "%d个月",
+            y:  "1年",
+            yy: "%d年"
+        }
+    });
+
+    function formatTime(task) {
+        task.create_time_desp = moment(task.create_time).fromNow();
         task.create_time = formatUpdateTime(task.create_time);
         task.expect_complete_time = task.expect_complete_time.substring(0, 16);
         return task;
