@@ -489,16 +489,16 @@ aside.light .mui-table-view-cell>a:not(.mui-btn){
     background-image: url("../img/dashboard/icon-home-grab-active@2x.png");
 }
 .nav-sites{
-    background-image: url('../img/icon/icon-home-sites@2x.png');
+    background-image: url('../img/dashboard/icon-home-sites@2x.png');
 }
 .mui-active>.nav-sites {
-    background-image: url('../img/icon/icon-home-sites-active@2x.png');
+    background-image: url('../img/dashboard/icon-home-sites-active@2x.png');
 }
 .mui-active>.nav-setting{
-    background-image: url('../img/icon/icon-home-profile-active@2x.png');
+    background-image: url('../img/dashboard/icon-home-profile-active@2x.png');
 }
 .nav-setting{
-    background-image: url('../img/icon/icon-home-profile@2x.png');
+    background-image: url('../img/dashboard/icon-home-profile@2x.png');
 }
 .mui-active>.nav-icon.todo{
     background-image: url("../img/dark/64X64/todo_active.png");
@@ -542,7 +542,7 @@ background-image: url("../img/light/64X64/profile.png");
     font-size: 12px;
 }
 .mui-active>.mui-tab-label {
-    color: rgb(253,96,10) !important;
+    color: rgb(88,107,243) !important;
 }
 .mui-bar-tab.nav-horizontal .mui-tab-item .mui-icon{
     height: 22px;
