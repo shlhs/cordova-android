@@ -17,6 +17,7 @@
     <!--<script type="text/javascript" src="../components/ui-router-extras/release/ct-ui-router-extras.js"></script>-->
     <script type="text/javascript" src="../components/angular-animate/angular-animate.js"></script>
     <script type="text/javascript" src="../components/angular-ui-router/release/stateEvents.min.js"></script>
+    <script type="text/javascript" src="../js/lib/jwt/jsrsasign-all-min.js"></script>
     <script type="text/javascript" src="../js/app/utils.js"></script>
     <script type="text/javascript" src="../js/app/app.js"></script>
     <script type="text/javascript" src="../js/service/common-service.js"></script>
@@ -78,7 +79,7 @@
         }
    </style>
 
-<body class="box-vertical-center" ng-app="myApp" >
+<body class="box-vertical-center" ng-app="myApp" ng-controller="LoginCtrl">
     <!--<div class="background">-->
         <!--<img src="../img/bj.jpg">-->
     <!--</div>-->
@@ -89,7 +90,7 @@
     </div>
     <div class="bottom">便捷监控 高效运维</div>
     <img class="bottom-img" src="../img/login/login-bottom-@2x.png">
-    <div ng-controller=""></div>
+    <div ng-controller="AutoLoginCtrl"></div>
 
     <script src="../components/fastclick-master/lib/fastclick.js"></script>
     <script src="../js/my/notify.js"></script>
@@ -99,7 +100,7 @@
     <script>
         $(function () {
             var height = parseInt($('.background').css('height'));
-            var width = height / 800 * 1200
+            var width = height / 800 * 1200;
             $('img').css('margin-left', 'calc(50% - ' + width/2 + 'px');
 
         });

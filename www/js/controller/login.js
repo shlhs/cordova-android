@@ -180,7 +180,7 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
 
 });
 
-app.controller('AutoLoginCtrl', function ($scope, $timeout, $state) {
+app.controller('AutoLoginCtrl', function ($scope, $timeout, userService, platformService) {
 
     $scope.autoLogin = function () {
         //先等1.5s
