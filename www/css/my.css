@@ -171,6 +171,7 @@ header.mui-bar{
     top: 60px;
     bottom: 0px;
     width: 100%;
+    background-color: #f5f5f5;
 }
 .unit{
     font-size: 14px;
@@ -1251,7 +1252,7 @@ a:hover.slidesjs-stop {
 .info-group>li{
     list-style: none;
     line-height: 1.6em;
-    padding: 6px 2px;
+    padding: 5px 2px;
 }
 .info-group .title{
     color: rgb(141,140,143);
@@ -2212,7 +2213,10 @@ color: #a7a7a7;
     padding-left: 20px;
 }
 .entrance-list>li {
-    margin: 16px 0 !important;
+    margin: 9px 0 !important;
+}
+.entrance-list .mui-media-body {
+    margin-top: 0px !important;
 }
 .card .card-header.device-detail-title {
     height: 44px;
