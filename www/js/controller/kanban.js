@@ -13,7 +13,6 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
     var chartCount = 1;
     var pfvSettingsF = null;
     var pfvSettingsR = null;
-    var g_devicevar_unit_map = {};
 
     var colors = ['#f6d365', '#fda085', '#a1c4fd', '#c2e9fb', '#cfd9df', '#accbee', 'rgb(200, 221, 253)', 'rgb(84, 185, 253)', 'rgb(250, 137, 143)'];
 
@@ -43,8 +42,23 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
                             if(contentsResult[i].content[j].type === 'device-data') {
                                 var tempVarData = {};
                                 var processedValue = getProcessedValue($scope.sn, contentsResult[i].content[j], $scope.queryTime);
-                                tempVarData.name = processedValue.name;
-                                tempVarData.value = processedValue.processed_value;
+                                // 如果name中含有单位，将单位去除
+                                if (processedValue.name.indexOf("（") > 0) {
+                                    tempVarData.name = processedValue.name.substring(0, processedValue.name.indexOf('（'));
+                                } else {
+                                    tempVarData.name = processedValue.name;
+                                }
+                                // 将processed_value分解除值和单位
+                                if (processedValue.processed_value) {
+                                    var value = parseFloat(processedValue.processed_value);
+                                    tempVarData.value = value;
+                                    if (processedValue.processed_value.length > String(value).length) {
+                                        tempVarData.unit = processedValue.processed_value.substring(String(value).length);
+                                    }
+                                }
+                                else {
+                                    tempVarData.value = processedValue.processed_value;
+                                }
                                 keyVarDatas.push(tempVarData);
                             }
                         }
@@ -386,14 +400,14 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
                 }
             });
         } else if(tempType == 'device-data') {
-            tempValue = getDeviceVarData(tempContent.varInfo.deviceVarSn, queryTime, tempContent.period, tempContent.calcMethod, tempContent.valueFixNum ? tempContent.valueFixNum : 3);
+            tempValue = getDeviceVarData(tempContent.varInfo.deviceVarSn, queryTime, tempContent.period, tempContent.calcMethod);
         }
         processedValue.processed_value = tempValue;
     
         return processedValue;
     }
 
-    function getDeviceVarData(deviceSn, queryTime, queryPeriod, calcMethod, valueFixNum=3){
+    function getDeviceVarData(deviceSn, queryTime, queryPeriod, calcMethod){
         if(deviceSn == null || deviceSn == '') {
         console.warn('no deviceSn for getDeviceVarData')
         return '';
@@ -420,10 +434,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
             if(!data || data.length == 0) {
                 return;
             }
-            let tempValue = data[0].data;
-            tempValue = tempValue == 0 ? tempValue:tempValue.toFixed(valueFixNum);
-            resultValue = tempValue+data[0].unit;
-            g_devicevar_unit_map[deviceSn] = data[0].unit;
+            resultValue = data[0].data+data[0].unit;
             },
             error: function () {
             console.warn('获取设备变量实时值失败 '+deviceSn);
@@ -454,10 +465,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
                 let index = parseInt(tempQueryTime.substr(5,2)) - 1;
                 if(varData.datas != null && varData.datas.length > index) {
                 if(varData.datas[index] != null) {
-                    let tempValue = varData.datas[index];
-                    tempValue = tempValue == 0 ? tempValue:tempValue.toFixed(valueFixNum);
-                    resultValue = tempValue+varData.unit;
-                    g_devicevar_unit_map[deviceSn] = data[0].unit;
+                    resultValue = varData.datas[index]+varData.unit;
                 }
                 }
             },
@@ -471,70 +479,32 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
         
         if(calcMethod == 'diff'){
         if(queryPeriod == 'current_month') {
-            let diffValue = "";
-
-            let startQueryTime = queryTime.substr(0,7) + '-01T00:00:00.000Z';
-            let endQueryTime = queryTime.substr(0,10) + 'T' + queryTime.substr(11,8) + '.000Z';
-
-            let queryData = "&sns=" + [deviceSn].join(",");
-            queryData += '&querytimes=' + startQueryTime + ',' + endQueryTime;
-        
+            let resultValue = '';
             ajax.get({
-                url: '/devicevars/getOneTimeDatas',
-                async: false,
-                data: queryData,
-                dataType: 'json',
-                xhrFields: {
-                    withCredentials: true
-                },
-                crossDomain: true,
-                success: function(values) {
-                let startValues, endValues = null;
-                for(var i=0; i<values.length; i++) {
-                    if(values[i].time == startQueryTime) {
-                    startValues = values[i].values;
-                    continue;
-                    }
-                    if(values[i].time == endQueryTime) {
-                    endValues = values[i].values;
-                    continue;
-                    }
+            url: '/devicevars/getaccumulatedvalues?type=MONTH&sns=' + deviceSn + '&starttime=' + tempQueryTime + '&endtime=' + tempQueryTime,
+            async: false,
+            dataType: 'json',
+            xhrFields: {
+                withCredentials: true
+            },
+            crossDomain: true,
+            success: function(data) {
+                if(data.length == 0) {
+                return;
                 }
-                if(startValues == null || endValues == null){
-                    if(startValues == null) {
-                    console.warn('获取时间点的值失败: '+startQueryTime+deviceSn);
-                    }
-                    if(endValues == null) {
-                    console.warn('获取时间点的值失败: '+endQueryTime+deviceSn);
-                    }
-                } else {
-                    //resultValue = endValues[deviceSn] - startValues[deviceSn];
-                    if(!g_devicevar_unit_map[deviceSn]) {
-                    //待后台
-                    ajax.get({
-                        url: `/devicevars/getbysn/${deviceSn}`,
-                        async: false,
-                        success: function (data) {
-                        if(!data) {
-                            return;
-                        }
-                        g_devicevar_unit_map[deviceSn] = data.unit;
-                        },
-                        error: function () {
-                        console.warn('获取设备变量信息 '+deviceSn);
-                        }
-                    });
-                    }
-                    let tempValue = endValues[deviceSn] - startValues[deviceSn];
-                    tempValue = tempValue == 0 ? tempValue:tempValue.toFixed(valueFixNum);
-                    diffValue = tempValue + g_devicevar_unit_map[deviceSn];
+                let varData = data[0];
+                //查询的开始时间 与 结束时间 相同，因此直接去第一个结果值 即可
+                if(varData.datas != null && varData.datas.length > 0) {
+                if(varData.datas[0] != null) {
+                    resultValue = varData.datas[0]+varData.unit;
                 }
-                },
-                error: function(){
-                    console.log('获取设备变量值失败 '+deviceSn);
                 }
+            },
+            error: function(){
+                console.log('获取设备变量值失败 '+deviceSn);
+            }
             });
-            return diffValue;
+            return resultValue;
         }
         }
         return '暂不支持：'+queryPeriod+'/'+calcMethod;

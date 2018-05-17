@@ -1258,9 +1258,12 @@ a:hover.slidesjs-stop {
     color: rgb(141,140,143);
     width: 98px;
     display: inline-block;
+    float: left;
 }
 .info-group .value{
     color: rgb(51,51,51);
+    display: block;
+    margin-left: 100px;
 }
 .info-group .icon{
     margin-right: 4px;

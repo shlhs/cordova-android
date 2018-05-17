@@ -62,7 +62,7 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, p
     $scope.chooseSite = function (site) {
         $scope.currentSite = site;
         localStorage.setItem("currentSite", JSON.stringify(site));
-        $scope.closePopover();d
+        $scope.closePopover();
     };
 
     function getCurrentSite() {

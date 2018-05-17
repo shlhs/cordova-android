@@ -48,6 +48,12 @@
             color: #fff;
             width: calc(33.33% - 6px);
             margin-bottom: 6px;
+            height: 68px;
+        }
+        @media screen and (max-width: 350px){
+            .summary-item{
+                width: calc(50% - 6px);
+            }
         }
         .summary-item:last-child{
             border-right: none;
@@ -61,6 +67,7 @@
         }
         .summary-item .value{
             font-weight: normal;
+            font-size: 16px;
         }
         .summary-item .unit{
             margin-left: 2px;
@@ -140,7 +147,7 @@
                     <li ng-repeat="v in keyVarDatas" class="mui-col-xs-6 mui-col-sm-6 summary-item"
                     ng-style="{'background-color': getRandomColor($index)}">
                         <span class="title">{{v.name}}</span>
-                        <h4 class="value">{{v.value}}</h4>
+                        <h4 class="value">{{v.value}}<span class="unit">{{v.unit}}</span> </h4>
                     </li>
                 </ul>
                 <div class="card" id="chartCard" style="padding-top: 0;">
