@@ -1254,6 +1254,11 @@ a:hover.slidesjs-stop {
     line-height: 1.6em;
     padding: 5px 2px;
 }
+.info-group>li:after {
+    display: block;
+    content: '';
+    clear: both;
+}
 .info-group .title{
     color: rgb(141,140,143);
     width: 98px;
@@ -2115,6 +2120,7 @@ color: #a7a7a7;
     border-bottom: rgb(230,230,230) 1px solid;
     font-family: Muiicons;
     padding-left: 18px;
+    line-height: 0px;
 }
 .first-list>li>label {
     padding-right: 24px;
