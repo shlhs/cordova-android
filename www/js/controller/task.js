@@ -246,12 +246,14 @@ app.controller('TaskBaseCtrl', function ($scope, ajax, userService) {
     };
 
     $scope.checkActuallyArrived = function (taskId, siteLongitude, siteLatitude, cb) {
-
-        //  如果站点的坐标为空，则直接提交操作
-        if (!siteLongitude || !siteLatitude || !window.android){
-            cb && cb(taskId, TaskAction.Arrive);
-            return;
-        }
+        // 不检查，直接返回
+        cb && cb(taskId, TaskAction.Arrive);
+        // //  如果站点的坐标为空，则直接提交操作
+        // if (!siteLongitude || !siteLatitude || !window.android){
+        //     cb && cb(taskId, TaskAction.Arrive);
+        //     return;
+        // }
+        /*
         $.notify.progressStart();
         apiLocation.start(function (longtitude, latitude) {     // 获取用户的当前位置
             // 判断位置是否一致
@@ -281,6 +283,7 @@ app.controller('TaskBaseCtrl', function ($scope, ajax, userService) {
                 $.notify.error('无法获取当前位置');
             }
         });
+        */
     };
 });
 
