@@ -2528,3 +2528,11 @@ table.monitor-table {
 .no-shadow {
     box-shadow: none !important;
 }
+.switch-open {
+    transition-duration: 0.2s;
+    transform: translate(16px, 0px);
+}
+.switch-close {
+    transition-duration: 0.2s;
+    transform: translate(0px, 0px);
+}

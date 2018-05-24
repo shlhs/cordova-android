@@ -50,8 +50,8 @@
     <a class="mui-icon mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
     <h1 class="mui-title">派单</h1>
 </header>
-<div class="mui-content bg-white" ng-controller="TaskCreateCtrl" ng-cloak="" ng-submit="submitForm()" id="main">
-    <form class="mui-input-group task-create-rows" name="myForm" novalidate >
+<div class="mui-content bg-white" ng-controller="TaskCreateCtrl" ng-cloak="" ng-submit="submitForm()">
+    <form class="mui-input-group task-create-rows info-group" name="myForm" novalidate >
         <div class="mui-input-row">
             <label class="label">任务名称<span style="color:red">*</span></label>
             <input type="text" name="name" ng-model="taskData.name" placeholder="请输入任务名称" required>
@@ -87,21 +87,22 @@
         </div>
         <div class="mui-input-row">
             <label class="label">是否抢单任务</label>
-            <div class="mui-switch mui-switch-blue mui-switch-mini" style="float: none;left:160px;margin-top: 10px;">
-                <div class="mui-switch-handle"></div>
+            <div class="mui-switch mui-switch-blue mui-switch-mini" style="float: none;left:160px;margin-top: 10px;"
+                 ng-click="toggleTaskType()" ng-class="{'mui-active': isGrabTask}">
+                <div class="mui-switch-handle" ng-class="{'switch-open': isGrabTask, 'switch-close': !isGrabTask}"></div>
             </div>
         </div>
-        <div class="mui-input-row">
-            <label>责任人</label>
-            <input type="text" style="position: absolute;" ng-model="handlerName" placeholder="选择任务责任人">
-            <button type="button" id='handlerPicker' data-options='{}' class="btn mui-btn mui-btn-block">&nbsp;</button>
-            <label class="error" ng-show="handlerIsInvalid(myForm)">
+        <div class="mui-input-row" ng-class="{'disabled': isGrabTask}">
+            <label style="line-height: 28px;font-size: 18px;">责任人</label>
+            <input type="text" style="position: absolute;" ng-model="handlerName" placeholder="选择任务责任人" ng-disabled="isGrabTask">
+            <button type="button" id='handlerPicker' data-options='{}' class="btn mui-btn mui-btn-block" ng-show="!isGrabTask">&nbsp</button>
+            <label class="error" ng-show="myForm.$submitted && !isGrabTask && !taskData.current_handler">
                 <span>责任人不能为空</span>
             </label>
         </div>
         <div class="mui-input-row" ng-if="linkEventInfo">
             <label class="label">关联事件</label>
-            <span style="position: absolute;">{{linkEventInfo}}</span>
+            <span class="value" style="margin-left: 160px;padding: 14px 6px 14px 0;">{{linkEventInfo}}</span>
         </div>
         <div class="mui-input-row" style="margin: 10px 5px;height: auto;">
             <textarea rows="3" placeholder="任务描述，必填" name="desp" ng-model="taskData.desp" required></textarea>

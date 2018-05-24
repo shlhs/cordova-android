@@ -46,9 +46,9 @@
     <header class="mui-bar bg-header">
         <a class="mui-icon mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
         <h1 class="mui-title">所有设备</h1>
-        <a onclick="showTopMenu()" class="mui-action-menu mui-icon mui-pull-right" ><i class="header-icon white icon-add"></i></a>
+        <a ng-click="openTaskCreatePage()" class="mui-action-menu mui-icon mui-pull-right" ><i class="header-icon white icon-add"></i></a>
     </header>
-    <div ng-include="'../../templates/top-menu.html'"></div>
+    <!--<div ng-include="'../../templates/top-menu.html'"></div>-->
     <div class="mui-content" ng-cloak>
         <div class="scroll-wrapper" id="devices" style="top:32px;">
             <div class="mui-scroll">

@@ -32,6 +32,8 @@ app.service('routerService', function ($timeout, $compile) {
     this.finishPage = function () {
         pages[currentIndex].ele.remove();
         pages.splice(currentIndex, 1);
+        pageLength -= 1;
+        currentIndex = pageLength - 1;
     };
 
     this.addHistory = function (scope, element) {
@@ -42,16 +44,18 @@ app.service('routerService', function ($timeout, $compile) {
             scope: scope,
             config: config
         };
-        var toFinishPage = null, addNewHistory=true;
+        var toFinishPage = null, addNewHistory=config.addNewHistory;
         element.addClass('ng-enter');
 
         function _animationEnd(event) {
 
-            if (config && config.finish){   // 打开这个页面时，需要关闭前一个页面
-                toFinishPage = pages[currentIndex].ele;
+            if (config && config.finishPage){   // 打开这个页面时，需要关闭前一个页面
+                if (pageLength > 0) {
+                    toFinishPage = pages[currentIndex].ele;
+                }
                 pages[currentIndex] = data;
                 addNewHistory = false;
-            }else{
+            } else{
                 pages.push(data);
                 pageLength += 1;
                 currentIndex = pageLength - 1;
@@ -87,7 +91,8 @@ app.service('routerService', function ($timeout, $compile) {
         config = $.extend({}, {
             hidePrev: true,      // 默认打开新页面时会隐藏前一页
             addHistory: true,    // 是否加到history中
-            finishPage: false    // 是否结束前一个页面
+            finishPage: false,    // 是否结束前一个页面
+            addNewHistory: true
         }, config);
         nextPage = {
             params: params,
@@ -121,11 +126,7 @@ app.directive('routePage', ['$log', 'routerService', function($log, routerServic
                     $scope[key] = params[key];
                 }
             }
-            if (config.finishPage) {
-                // 如果设置结束前一个页面，那么打开新页面后，前一个页面会被删除
-                routerService.finishPage();
-            }
-            else if (config.addHistory)
+            if (config.addHistory)
             {
                 routerService.addHistory($scope, $element);
             }

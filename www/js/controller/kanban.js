@@ -410,19 +410,19 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
 
     function getDeviceVarData(deviceSn, queryTime, queryPeriod, calcMethod){
         if(deviceSn == null || deviceSn == '') {
-        console.warn('no deviceSn for getDeviceVarData')
+        console.warn('no deviceSn for getDeviceVarData');
         return '';
         }
         if(queryTime == null || queryTime == '') {
-        console.warn('no queryTime for getDeviceVarData')
+        console.warn('no queryTime for getDeviceVarData');
         return '';
         }
         if(queryPeriod == null || queryPeriod == '') {
-        console.warn('no queryPeriod for getDeviceVarData')
+        console.warn('no queryPeriod for getDeviceVarData');
         return '';
         }
         if(calcMethod == null || calcMethod == '') {
-        console.warn('no calcMethod for getDeviceVarData')
+        console.warn('no calcMethod for getDeviceVarData');
         return '';
         }
     

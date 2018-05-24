@@ -365,7 +365,7 @@ app.controller('CompetitionTaskListCtrl', function ($scope, $rootScope, scroller
     }
 
     $scope.getDataList = function() {
-        scrollerService.initScroll('#competition_tasks', $scope.getDataList);
+        scrollerService.initScroll('#competition_tasks_scroll', $scope.getDataList);
         var company = userService.company;
         if (company && (company.length > 1 || company.length === 0)){    // 有两种情况，一种是该用户没有公司，一种是该用户为平台人员
             $scope.isLoading = false;
@@ -909,27 +909,10 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
         var reportId = $scope.taskData.report_id;
         switch ($scope.taskData.task_type_id) {
             case 1:     // 巡检任务
-                if (reportId) {
-                    var url = '/templates/evaluate/base_home.html?template=/templates/evaluate/security-evaluate-home.html&id=' + reportId;
-                } else {
-                    var url = '/templates/evaluate/base_home.html?template=/templates/evaluate/security-evaluate-first-classify.html&isCreate=1&taskId=' + $scope.taskData.id;
-                    if ($scope.taskData.station_sn){
-                        url += '&stationSn=' + $scope.taskData.station_sn + "&stationName=" + $scope.taskData.station_name;
-                    }
-                }
-                $window.location.href = url;
+                $scope.openPage($scope, '/templates/evaluate/security-evaluate-home.html', {id: reportId});
                 break;
             case 6:     // 停电维护任务
-                var url = '/templates/maintenance-check/base_home.html?template=/templates/maintenance-check/check-one-record-home.html';
-                if (reportId) {
-                    url += '&id=' + reportId;
-                } else {
-                    url += '&isCreate=1&taskId=' + $scope.taskData.id;
-                    if ($scope.taskData.station_sn){
-                        url += '&stationSn=' + $scope.taskData.station_sn + "&stationName=" + $scope.taskData.station_name;
-                    }
-                }
-                $window.location.href = url;
+                $scope.openPage($scope, '/templates/maintenance-check/check-one-record-home.html', {id: reportId});
                 break;
             default:
                 $state.go('.update')
@@ -1126,7 +1109,7 @@ app.controller('TaskCloseRejectCtrl', function ($scope) {      //驳回关闭请
 });
 
 
-app.controller('TaskCreateCtrl', function ($scope, $stateParams, $timeout, userService, ajax) {
+app.controller('TaskCreateCtrl', function ($scope, $stateParams, $timeout, routerService, userService, ajax) {
     var company = userService.company;
     $scope.stationName = null;
     $scope.taskTypeName = null;
@@ -1135,7 +1118,7 @@ app.controller('TaskCreateCtrl', function ($scope, $stateParams, $timeout, userS
     $scope.user = null;
     // $scope.linkEventId = $stateParams.eventId;
     // $scope.linkEventInfo = $stateParams.linkEventInfo;
-    var isGrabTask = false;
+    $scope.isGrabTask = false;
 
     $scope.taskData = {
         events: [],
@@ -1144,12 +1127,6 @@ app.controller('TaskCreateCtrl', function ($scope, $stateParams, $timeout, userS
     var devicePicker = null;
     var userPicker = null;
     function init() {
-        // mui.init({
-        //     keyEventBind: {
-        //         backbutton: true,  //Boolean(默认true)关闭back按键监听
-        //         menubutton: true   //Boolean(默认true)关闭menu按键监听
-        //     }
-        // });
         if($scope.linkEventId && $scope.linkEventId != '') {
             initLinkEvent();;
         } else {
@@ -1159,6 +1136,25 @@ app.controller('TaskCreateCtrl', function ($scope, $stateParams, $timeout, userS
         initDatePicker();
         initMembers();
     }
+
+    var normalToggleActive = false;
+    $scope.toggleNormalTask = function () {
+        normalToggleActive = !normalToggleActive;
+        //event.detail.isActive 可直接获取当前状态
+        if (normalToggleActive){ //开关打开，为抢单任务
+            var handlerBtn = document.getElementById('handlerPicker');
+            handlerBtn.disabled = true;
+            $(handlerBtn.parentNode).addClass('disabled');
+            $scope.toggleTaskType();
+            // 抢单任务没有责任人
+
+        }else{
+            var handlerBtn = document.getElementById('handlerPicker');
+            handlerBtn.disabled = false;
+            $(handlerBtn.parentNode).removeClass('disabled');
+            $scope.toggleTaskType();
+        }
+    };
 
     function _format(data, idKey, nameKey) {
         var d = null;
@@ -1338,11 +1334,10 @@ app.controller('TaskCreateCtrl', function ($scope, $stateParams, $timeout, userS
     }
     
     $scope.handlerIsInvalid = function (form) {
-        if (form.$submitted && !isGrabTask && !$scope.taskData.current_handler){
+        if (form.$submitted && !$scope.isGrabTask && !$scope.taskData.current_handler){
             return true;
         }
         return false;
-
     };
 
     $scope.createTask = function () {
@@ -1359,7 +1354,8 @@ app.controller('TaskCreateCtrl', function ($scope, $stateParams, $timeout, userS
                 $.notify.progressStop();
                 $.notify.info('创建成功');
                 $timeout(function () {
-                    window.location.href = 'task-detail.html?finishPage=1&id=' + data.id;       // 设置finish=1，这样在Android端在打开新页面时，会将当前页finish掉
+                    // window.location.href = 'task-detail.html?finishPage=1&id=' + data.id;       // 设置finish=1，这样在Android端在打开新页面时，会将当前页finish掉
+                    routerService.openPage($scope, '/templates/task/task-detail.html', {id: data.id}, {finishPage: true});
 
                 }, 800);
             },error: function () {
@@ -1370,16 +1366,19 @@ app.controller('TaskCreateCtrl', function ($scope, $stateParams, $timeout, userS
         });
     };
 
+
     $scope.toggleTaskType = function () {
-        isGrabTask = !isGrabTask;
-        if (isGrabTask){
+        $scope.isGrabTask = !$scope.isGrabTask;
+        if ($scope.isGrabTask){
             $scope.handlerName = null;
             $scope.taskData.current_handler = null;
-            $scope.$apply();
         }
     };
 
     $scope.submitForm = function() {
+        if ($scope.handlerIsInvalid($scope.myForm)) {
+            return;
+        }
         if($scope.myForm.$invalid){
             console.log('form invalid');
         }else {
