@@ -7,71 +7,35 @@
 app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider){
 
     $stateProvider
-        // .state('base', {
-        //     url: '/'
-        // })
-        // .state('welcome', {
-        //     url:'/welcome',
-        //     // template: '<div>alskdjf</div>'
-        //     templateUrl: '/templates/welcome.html'
-        // })
-        // .state('login', {
-        //     url: '/login',
-        //     templateUrl: '/templates/login.html'
-        // })
+        .state('base', {
+            url: '/'
+        })
+        .state('welcome', {
+            url:'/welcome',
+            // template: '<div>alskdjf</div>'
+            templateUrl: '/templates/welcome.html'
+        })
+        .state('login', {
+            url: '/login',
+            templateUrl: '/templates/login.html'
+        })
         .state('index', {
-            url: '/',
-            // templateUrl: '/templates/home.html'
-            // controller: 'HomeCtrl'
+            url: '/index',
+            templateUrl: '/templates/home.html',
+            controller: 'HomeCtrl'
         })
     ;
-/*
+
     // 战点相关
     $stateProvider
-        // .state('index.sites', {
-        //     url: '/sites',
-        //     views: {
-        //         'sites': {
-        //             templateUrl: '/templates/site/site-list.html',
-        //             controller: 'SiteListCtrl'
-        //         }
-        //     }
-        // })
-        .state('index.siteDetail', {
-            url: '/siteDetail',
-            params: {
-                name: null,
-                sn: null
-            },
-            templateUrl: '/templates/site/site-detail.html',
-            controller: 'SiteDetailCtrl'
-        })
-
-        .state('index.siteDetail.docs', {
-            url: '/siteDocs',
-            params: {
-                sn: null
-            },
-            templateUrl: '/templates/site/docs.html',
-            controller: 'SiteDocsCtrl'
-        })
-        .state('index.siteDetail.deviceList', {
-            url: '/siteDevices',
-            params:{
-                sn: null
-            },
-            templateUrl: '/templates/site/device-list.html',
-            controller: "DeviceListCtrl"
-        })
-        .state('index.siteDetail.eventList', {
+        .state('index.eventList', {
             url: '/siteEvents',
             params: {
                 sn: null
             },
-            templateUrl: '/templates/site/event-list.html',
-            controller: 'EventListCtrl'
+            templateUrl: '/templates/site/event-list.html'
         })
-        .state('index.siteDetail.kanban', {
+        .state('index.kanban', {
             url: '/kanban',
             params: {
                 sn: null
@@ -79,7 +43,14 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
             templateUrl: '/templates/site/kanban.html',
             controller: 'KanbanCtrl'
         })
-        .state('index.siteDetail.monitorList', {
+        .state('index.kanban.eventList', {
+            url: '/siteEvents',
+            params: {
+                sn: null
+            },
+            templateUrl: '/templates/site/event-list.html'
+        })
+        .state('index.monitorList', {
             url: '/monitors',
             params: {
                 sn: null
@@ -87,26 +58,83 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
             templateUrl: '/templates/site/monitor-list.html',
             controller: 'MonitorListCtrl'
         })
-        .state('index.siteDetail.monitorList.detail', {
+        .state('index.monitorList.detail', {
             url: '/detail',
             params: {
                 url: null
             },
             templateUrl: '/templates/site/monitor-detail.html',
-            controller: 'MonitorDetailCtrl'
         })
-        .state('index.siteDetail.deviceList.deviceDetail', {
-            url: '/deviceDetail',
+        .state('index.monitorDevices', {
+            url: '/monitordevices',
+            params: {
+                sn: null
+            },
+            templateUrl: '/templates/site/device-monitor-list.html'
+        })
+        .state('index.monitorDevices.detail', {
+            url: '/detail',
             params: {
                 sn: null,
                 deviceSn: null,
                 deviceName: null
             },
-            templateUrl: '/templates/site/device-detail.html',
-            controller: 'DeviceDetailCtrl'
+            templateUrl: '/templates/site/device-monitor.html'
+        })
+        .state('index.devicedocs', {
+            url: '/devicedocs',
+            params: {
+                sn: null
+            },
+            templateUrl: '/templates/site/static-devices/device-home.html'
+        })
+        .state('index.devicedocs.detail', {
+            url: '/detail',
+            params: {
+                id: null
+            },
+            templateUrl: '/templates/site/static-devices/device-detail.html'
+        })
+        .state('index.docs', {
+            url: '/docs',
+            params: {
+                sn: null
+            },
+            templateUrl: '/templates/site/docs.html'
+        })
+        .state('index.reports', {
+            url: '/reports',
+            params: {
+                sn: null,
+                name: null
+            },
+            templateUrl: '/templates/site/reports.html'
+        })
+        .state('index.reports.detail', {
+            url: '/detail',
+            params: {
+                link: null,
+                name: null
+            },
+            templateUrl: '/templates/base-image-zoom.html'
+        })
+        .state('index.securityReports', {
+            url: '/security',
+            params: {
+                sn: null
+            },
+            templateUrl: '/templates/evaluate/evaluate-history.html'
+        })
+        .state('index.poweroffReports', {
+            url: '/poweroff-reports',
+            params: {
+                sn: null,
+                name: null
+            },
+            templateUrl: '/templates/maintenance-check/check-history.html'
         })
         ;
-        */
+
     // 设置相关
     $stateProvider
         // .state('index.setting', {
@@ -137,8 +165,8 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
         })
     ;
 
-    $urlRouterProvider.when('', '/');
-    $urlRouterProvider.otherwise('/');
+    $urlRouterProvider.when('/', '/welcome');
+    $urlRouterProvider.when('', '/welcome');
 }]);
 
 /*

@@ -2,6 +2,9 @@
     /*padding: 0 8px;*/
 /*}*/
 
+.task-control .mui-bar-tab>a{
+    padding: 8px;
+}
 .task-list{
     background-color: transparent;
 }
@@ -459,6 +462,10 @@
 .timeline-vertical .timeline-comment{
     font-size: 14px;
     color: #717171;
+}
+.mui-bar .mui-btn-block.task-btn {
+
+    margin-bottom: 6px;
 }
 .task-btn.mui-btn-primary{
     background-color: #03a9f4;

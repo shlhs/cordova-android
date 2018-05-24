@@ -1,35 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>站点看板</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta http-equiv="Access-Control-Allow-Origin" content="*">
-    <link rel="stylesheet" href="../../components/mui/css/mui.min.css">
-    <link rel="stylesheet" href="../../css/my.css">
-    <link rel="stylesheet" href="../../css/icon.css">
-    <link rel="stylesheet" href="../../css/animate.css">
-    <link rel="stylesheet" href="../../components/mui/css/icons-extra.css">
-    <link rel="stylesheet" href="../../css/setting.css">
-    <!--<script type="text/javascript" src="../../cordova.js"></script>-->
-    <!--<script type="text/javascript" src="../../cordova_plugins.js"></script>-->
-    <script type="text/javascript" src="../../components/libs/jquery-2.1.4.js"></script>
-    <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
-    <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
-    <!--<script type="text/javascript" src="components/ui-router-extras/release/ct-ui-router-extras.js"></script>-->
-    <script type="text/javascript" src="../../components/angular-animate/angular-animate.js"></script>
-    <script type="text/javascript" src="../../components/angular-ui-router/release/stateEvents.min.js"></script>
-    <script type="text/javascript" src="../../js/app/utils.js"></script>
-    <script type="text/javascript" src="../../js/app/app.js"></script>
-    <script type="text/javascript" src="../../js/controller/sites.js"></script>
-    <script type="text/javascript" src="../../js/service/common-service.js"></script>
-    <script src="../../js/controller/kanban.js"></script>
-    <!--<script src="../../components/libs/echarts-all.js"></script>-->
+<div ng-controller="KanbanCtrl">
 
     <style>
-
         .summary-list{
             list-style: none;
             padding: 0px;
@@ -74,9 +45,6 @@
             font-size: 12px;
             font-weight: normal;
         }
-        .arrow-header{
-            position: relative;
-        }
         .arrow-header a.left{
             display: none;
             position: absolute;
@@ -89,10 +57,6 @@
             right: 0px;
             top:0px;
         }
-        .mui-card-header{
-            font-size:15px;
-            color: #1f1f1f;
-        }
         .info-group .mui-table-view-cell{
             color: #8f8f94;
         }
@@ -100,26 +64,11 @@
             padding-right: 8px;
             font-size: 14px;
         }
-        .text-value{
-            color: #242424;
-        }
-        .icon-ms{
-            height: 18px;
-            width: 18px;
-        }
-        .mui-grid-view.mui-grid-9{
-            border: 0;
-        }
         .mui-grid-view.mui-grid-9 li{
             border: 0 !important;
         }
         .mui-grid-view.mui-grid-9 .mui-table-view-cell{
             padding: 0 15px;
-        }
-        .mui-table-view.mui-grid-view .mui-table-view-cell .mui-media-body{
-            margin-top: 0px;
-            color: #808080;
-            font-size: 14px;
         }
         #baseInfo .icon-ms{
             width: 20px;
@@ -132,15 +81,11 @@
             display: none;
         }
     </style>
-</head>
-<body class="box-vertical-center" ng-app="myApp">
     <header class="mui-bar bg-header mui-segmented-control-vertical">
-        <a class="mui-icon mui-action-back mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
+        <a class="mui-icon mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
         <h1 class="mui-title">看板</h1>
-        <!--<a onclick="showTopMenu()" class="mui-action-menu mui-icon mui-pull-right" ><i class="header-icon white icon-add"></i></a>-->
     </header>
-    <!--<div ng-include="'../../templates/top-menu.html'"></div>-->
-    <div class="mui-content" ng-cloak ng-controller="KanbanCtrl">
+    <div class="mui-content" ng-cloak>
         <div id="realtime" class=" height-wrap-parent">
             <div ng-show="!isLoading">
                 <ul class="mui-row summary-list" style="padding-top:6px;">
@@ -164,7 +109,7 @@
                     <div class="card-header border">
                         <i class="icon icon-ms icon-card-event"></i>
                         事件与告警
-                        <a class="mui-pull-right" href="/templates/site/event-list.html?sn={{sn}}" style="font-size: 14px;">更多</a>
+                        <a class="mui-pull-right" ui-sref=".eventList({sn: sn})" style="font-size: 14px;" ng-if="events.length">更多</a>
                     </div>
                     <div class="card-content">
                         <div ng-if="events.length === 0">站点无事件</div>
@@ -178,22 +123,11 @@
             </div>
             <div class="page-alert-wrapper" ng-if="isLoading">
                 <div class="page-alert">
-                    <img src="../../img/page-loading.gif" class="loading-img">
+                    <img src="/img/page-loading.gif" class="loading-img">
                     <div class="alert-text info">正在加载...</div>
                 </div>
             </div>
         </div>
     </div>
-    <div ui-view class="page page-left"></div>
-    <script src="../../components/mui/js/mui.min.js"></script>
-    <script>
-        mui.init();
-    </script>
     <div class="page page-left" ui-view=""></div>
-    <script src="../../components/fastclick-master/lib/fastclick.js"></script>
-    <script src="../../js/my/notify.js"></script>
-    <script src="../../components/highcharts/highcharts.js"></script>
-    <script src="../../components/echart/echarts.common.min.js"></script>
-    <script src="../../components/moment.min.js"></script>
-</body>
-</html>
+</div>

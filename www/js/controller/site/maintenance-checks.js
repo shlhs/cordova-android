@@ -11,9 +11,9 @@ app.controller('MaintenanceBaseCtrl', function ($scope, $compile) {
     load();
 });
 
-app.controller('MaintenanceCheckHistoryCtrl', function ($scope, ajax, routerService) {
-    var sn = GetQueryString('sn');
-    $scope.stationName = GetQueryString("name");
+app.controller('MaintenanceCheckHistoryCtrl', function ($scope, $stateParams, ajax, routerService) {
+    var sn = $stateParams.sn;
+    $scope.stationName = $stateParams.name;
     $scope.history = [];
     $scope.isLoading = false;
     $scope.loadingFailed = false;

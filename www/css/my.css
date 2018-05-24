@@ -12,6 +12,128 @@ html,body{
 .font-14{
     font-size: 14px;
 }
+.login-page {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #ffffff;
+}
+.login-page .main-icon {
+    margin-top: 31%;
+    width: 57%;
+    margin-left: 21.5%;
+}
+.login-page .middle {
+    position: absolute;
+    width: 100%;
+    bottom: 25%;
+    left: 0;
+    text-align: center;
+}
+.login-page .sub-title {
+    width: 72px;
+    height: 19px;
+    line-height: 19px;
+    border-radius: 9px;
+    border: rgba(77,129,239,0.5) 1px solid;
+    text-align: center;
+    font-size: 14px;
+    color: rgb(127,186,255);
+    display: inline-block;
+}
+.login-page .title {
+    color: rgb(22,102,255);
+    font-size: 28px;
+    word-spacing: 2px;
+    margin-top: 12px;
+}
+.login-page .bottom {
+    position: absolute;
+    width: 100%;
+    bottom: 15%;
+    left: 0;
+    text-align: center;
+    color: rgb(118,167,246);
+    font-size: 18px;
+}
+.login-page .bottom-img {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+}
+.login-icon {
+    margin-top: 20%;
+    width: 57%;
+    margin-left: 21.5%;
+}
+.login-area {
+    padding: 0px;
+    overflow: hidden;
+    left: 0;
+    width: 100%;
+    bottom: 40px;
+    margin-top: 15%;
+}
+.login-area .form-item {
+    border-bottom: rgb(232,232,232) 1px solid;
+    padding: 12px 0;
+    box-sizing: border-box;
+    margin: 0 44px;
+    position: relative;
+}
+.login-area .form-item label {
+    color: rgb(1,1,1);
+    font-size: 18px;
+    position: absolute;
+    left: 0;
+    top: 15px;
+}
+.login-area .form-item input {
+    outline: none;
+    border: none;
+    margin: 0;
+    width: 100%;
+    font-size: 18px;
+    padding: 0 0 0 84px;
+    line-height: 22px;
+    height: 24px;
+}
+.login-area input::-webkit-input-placeholder {
+    /* placeholder颜色  */
+    color: rgb(187,187,187);
+}
+.login-area input::-moz-placeholder {
+    /* placeholder颜色  */
+    color: rgb(187,187,187);
+}
+.login-btn {
+    background-color: rgb(195,227,249);
+    border-radius: 4px;
+    margin: 42px 4% 0 4%;
+    box-sizing: border-box;
+    height: 48px;
+    line-height: 48px;
+    text-align: center;
+    font-size: 18px;
+    color: #fff;
+}
+.login-btn.enable {
+    background-color: #108ee9;
+}
+@media screen and (max-height: 600px) {
+    .login-icon {
+        margin-top: 15%;
+    }
+    .login-area .login-area {
+        margin-top: 10%;
+    }
+    .login-area .login-btn {
+        margin-top: 30px;
+        height: 40px;
+        line-height: 40px;
+    }
+}
 .page{
     height: 100%;
     z-index: 1;
@@ -1273,6 +1395,11 @@ a:hover.slidesjs-stop {
 .info-group .icon{
     margin-right: 4px;
 }
+.info-group input {
+    width: calc(100% - 110px);
+    padding: 0px;
+    height: 21px;
+}
 .media-lg{
     width: 60px;
     height:60px;
@@ -2234,4 +2361,170 @@ color: #a7a7a7;
     font-size: 18px;
     color: rgb(51,51,51);
     border-bottom: rgba(220, 220, 220, 0.51) 1px solid;
+}
+
+
+
+
+
+
+
+.site-value .mui-icon {
+    font-size: 14px;
+    color: #007aff;
+    margin-left: -15px;
+    padding-right: 10px;
+}
+input {
+    color: #000;
+}
+.mui-grid-view.mui-grid-9 .mui-media .mui-icon {
+    font-size: 1.6em;
+    position: relative;
+    padding: 0;
+    margin: 0;
+}
+.mui-grid-view.mui-grid-9 {
+    border: 0;
+}
+.mui-grid-view.mui-grid-9 .mui-media {
+    border: 0;
+}
+.mui-table-view.mui-grid-view .mui-table-view-cell .mui-media-body {
+    font-size: 12px;
+}
+.red{
+    color: red !important;
+}
+.mui-grid-view.mui-grid-9 {
+    background-color: transparent;
+    border-radius: 0;
+}
+.site-list .mui-card:nth-child(odd){
+    background: -webkit-gradient(linear, 0 0, 0 bottom, from(#CFD9DF), to(#E2EBF0));
+}
+.site-list .mui-card:nth-child(even){
+    /*background: -webkit-gradient(linear, 0 0, 0 bottom, from(#FDFBFB), to(#EBEDEE));*/
+    /*background: -webkit-gradient(linear, 0 0, 0 bottom, from(#FDFCFB), to(#E2D1C3));*/
+    background: -webkit-gradient(linear, 0 0, 0 bottom, from(#CFD9DF), to(#E2EBF0));
+}
+.mui-table-view-cell.mui-media{
+    border-radius: 0 !important;
+}
+.text-red{
+    color: red !important;
+}
+.text-grey{
+    color: #6d6d6d !important;
+}
+header.bg-header{
+    background-color: #2856b6;
+}
+.bg-header h1{
+    color: #fff;
+}
+.bg-header .mui-action-back{
+    color: #fff;
+}
+.info-list span{
+    display: inline-block;
+}
+.info-list{
+    margin-bottom: 0;
+}
+.task-title .time{
+    position: absolute;
+    right: 0;
+    top:0;
+}
+.info-list .status{
+    float: right;
+    color: #007aff;
+}
+.cell-body{
+    padding: 11px 16px;
+}
+.cell-footer{
+    border-top: #eee 1px solid;
+    padding: 6px 16px;
+    line-height: 26px;
+}
+.task-list .mui-table-view .mui-media-object{
+    line-height: 32px;
+    max-width: 32px;
+    height: 32px;
+    margin-top: 5px;
+}
+.mui-center.mui-title{
+    margin-left: 0 !important;
+}
+
+.tree .mui-table-view-cell:after{
+    background-color: #eee;
+}
+.tree .mui-table-view-cell.mui-collapse .mui-table-view .mui-table-view-cell:after{
+    background-color: #eee;
+}
+.tree .mui-table-view-cell.mui-active{
+    background-color: #fff;
+}
+.tree .mui-table-view-cell.mui-collapse.mui-active .mui-collapse-content {
+    display: none;
+}
+.tree .mui-active>.mui-collapse-content{
+    display: block !important;
+}
+.tree .mui-table-view-cell>a:not(.mui-btn){
+    border-bottom: #eee 1px solid;
+}
+.tree .mui-table-view-cell.mui-collapse.mui-active{
+    margin-top:0px;
+}
+.tree .mui-table-view-cell.mui-collapse .mui-collapse-content{
+    margin: 11px -15px 0px;
+    padding: 0px 15px;
+}
+.tree .mui-table-view-cell.mui-collapse .mui-table-view{
+    margin-top: 0px;
+}
+.tree .mui-navigate-right:after{
+    color: #444;
+}
+.tree .is-leaf>.mui-navigate-right:after{
+    right: 24px;
+    font-size: 14px;
+    color: #bbb;
+}
+.tree .mui-table-view-cell.is-leaf>a{
+    font-size: 14px;
+    color: #8a8a8a;
+}
+
+table.monitor-table {
+    width: 100%;
+}
+.monitor-table th,td{
+    text-align: left;
+    height: 40px;
+    border-bottom: #eee 1px solid;
+    font-size: 14px;
+}
+.mui-table-view.mui-grid-view .mui-table-view-cell .mui-media-body{
+    font-size: 0.8em;
+}
+.monitor-table tbody tr:nth-child(odd) {background: rgba(246, 246, 246, 0.6)}
+.monitor-table tbody tr:nth-child(even) {background: #FFF}
+.monitor-table td, th{
+    padding-left: 16px;
+}
+@media screen and (max-width: 360px) {
+    .monitor-table th, td {
+        font-size: 12px;
+    }
+}
+.task-type-control.mui-active {
+    border-bottom: none !important;
+}
+.no-shadow {
+    box-shadow: none !important;
 }

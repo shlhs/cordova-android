@@ -567,8 +567,9 @@ app.controller('DeviceTreeCommonCtrl', function ($scope, ajax) {
     };
 });
 
-app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile) {       // 检测设备列表页
-    var stationSn = GetQueryString('sn');
+app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile, $stateParams, $state) {       // 检测设备列表页
+    // var stationSn = GetQueryString('sn');
+    var stationSn = $stateParams.sn;
     $scope.deviceDatas = [];
     $scope.treeData = [];
     var devices = [];       // 设备
@@ -645,18 +646,22 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile) {     
     }
 
     $scope.gotoDevice = function (deviceData) {
-        location.href = '/templates/site/device-monitor.html?stationSn=' + stationSn + '&deviceSn=' + deviceData.sn + '&deviceName=' + deviceData.name;
-
+        // location.href = '/templates/site/device-monitor.html?stationSn=' + stationSn + '&deviceSn=' + deviceData.sn + '&deviceName=' + deviceData.name;
+        $state.go('.detail', {sn: stationSn, deviceSn: deviceData.sn, deviceName: deviceData.name});
+        // $scope.openPage($scope, 'templates/site/device-monitor.html', {sn: deviceData.stationSn, deviceSn: deviceData.sn, deviceName: deviceData.name})
     };
 
     $scope.getDataList();
 });
 
-app.controller('DeviceMonitorCtrl', function ($scope, ajax) {
+app.controller('DeviceMonitorCtrl', function ($scope, ajax, $stateParams) {
     $scope.isLoading = true;
-    $scope.stationSn = GetQueryString('stationSn');
-    $scope.deviceSn=GetQueryString('deviceSn');
-    $scope.deviceName = GetQueryString('deviceName');
+    // $scope.stationSn = GetQueryString('stationSn');
+    // $scope.deviceSn=GetQueryString('deviceSn');
+    // $scope.deviceName = GetQueryString('deviceName');
+    $scope.stationSn = $stateParams.sn;
+    $scope.deviceSn = $stateParams.deviceSn;
+    $scope.deviceName = $stateParams.deviceName;
     $scope.secondOptions = {
         '实时数据': [],
         '历史数据': []

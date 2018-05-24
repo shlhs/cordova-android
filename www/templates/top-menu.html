@@ -4,7 +4,9 @@
         <div class="mui-scroll" style="transform: translate3d(0px, 0px, 0px) translateZ(0px);position: static;">
             <ul class="mui-table-view">
                 <li class="mui-table-view-cell" ng-if="permission.canEditTask">
-                    <a href="/templates/task/add-task.html" style="margin-bottom:-6px;"><i class="icon icon-ms icon-add" style="float: left;width:18px;height:18px;margin-right:6px;"></i>派单</a>
+                    <!--<a href="/templates/task/add-task.html" style="margin-bottom:-6px;"><i class="icon icon-ms icon-add" style="float: left;width:18px;height:18px;margin-right:6px;"></i>派单</a>-->
+                    <a href="javascript:void(0)" ng-click="openTaskCreatePage()" style="margin-bottom:-6px;"><i class="icon icon-ms icon-add" style="float: left;width:18px;height:18px;margin-right:6px;"></i>派单</a>
+
                 </li>
                 <li class="mui-table-view-cell">
                     <a onclick="startCaptureQR()" style="margin-top:-6px;"><i class="icon icon-ms icon-scan" style="float: left;width:18px;height:18px;margin-right:6px;"></i>扫描</a>

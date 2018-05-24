@@ -10,6 +10,7 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, p
     $scope.currentSite = {};
     $scope.isLoading = true;
     $scope.popup_visible = false;
+    $scope.scope = $scope;
 
     $scope.getDataList = function () {
         scrollerService.initScroll('#sites', $scope.getDataList);
@@ -156,8 +157,8 @@ app.controller('SiteBaseInfoCtrl', function ($scope, $timeout, $stateParams, aja
 });
 
 
-app.controller('EventListCtrl', function ($scope, $stateParams, scrollerService, userService, ajax) {
-    $scope.sn = GetQueryString('sn');
+app.controller('EventListCtrl', function ($scope, $stateParams, scrollerService, userService, ajax, routerService) {
+    $scope.sn = $stateParams.sn;
     $scope.isDevice = false;   // 是设备还是站点
     $scope.canCreateTask = userService.getUserRole() === UserRole.Normal ? false : true;
     var deviceSn = GetQueryString("deviceSn");
@@ -259,13 +260,14 @@ app.controller('EventListCtrl', function ($scope, $stateParams, scrollerService,
     };
 
     $scope.goToCreateTaskHtml = function($event, eventId, eventInfo) {
-        window.location.href = '/templates/task/add-task.html?eventId=' + eventId + '&eventInfo=' + eventInfo;
+        // window.location.href = '/templates/task/add-task.html?eventId=' + eventId + '&eventInfo=' + eventInfo;
+        routerService.openPage($scope, '/templates/task/add-task.html', {linkEventId: eventId, linkEventInfo: eventInfo});
     };
 });
 
 
 app.controller('SiteDocsCtrl', function ($scope, $stateParams, platformService, ajax) {
-    var sn = GetQueryString('sn'), host = platformService.getHost();
+    var sn = $stateParams.sn, host = platformService.getHost();
     $scope.docList = [];
     $scope.docLoading = false;
     $scope.loadingFailed = false;
@@ -367,7 +369,8 @@ app.controller('SiteDocsCtrl', function ($scope, $stateParams, platformService, 
                 window.android.openFile(host + doc.src_link);
             }else
             {
-                window.location.href = host + doc.src_link;
+                var host = platformService.host;
+                window.open(host+doc.src_link, '_blank', 'location=no,enableViewportScale=yes,zoom=yes');
             }
         }
     };
@@ -376,8 +379,8 @@ app.controller('SiteDocsCtrl', function ($scope, $stateParams, platformService, 
 });
 
 
-app.controller('SiteReportsCtrl', function ($scope, ajax, scrollerService, routerService, platformService) {
-    var stationSn = GetQueryString('sn');
+app.controller('SiteReportsCtrl', function ($scope, $stateParams, $state,ajax, scrollerService, routerService, platformService) {
+    var stationSn = $stateParams.sn;
     $scope.reports = [];
     $scope.isLoading = false;
     $scope.loadingFailed = false;
@@ -415,7 +418,8 @@ app.controller('SiteReportsCtrl', function ($scope, ajax, scrollerService, route
     };
 
     $scope.openReport = function (name, link) {
-        routerService.openPage($scope, '/templates/base-image-zoom.html', {link: link, name: name});
+        // routerService.openPage($scope, '/templates/base-image-zoom.html', {link: link, name: name});
+        $state.go('.detail', {link: link, name: name});
     };
 
     $scope.getDataList();

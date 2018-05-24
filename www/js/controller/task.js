@@ -170,10 +170,11 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, ajax, $state
     // });
 });
 
-app.controller('TaskBaseCtrl', function ($scope, ajax, userService) {
+app.controller('TaskBaseCtrl', function ($scope, ajax, userService, routerService) {
     var map = null;
     $scope.openTask = function (taskId) {
-        location.href = '/templates/task/task-detail.html?id=' + taskId;
+        // location.href = '/templates/task/task-detail.html?id=' + taskId;
+        $scope.openPage($scope, '/templates/task/task-detail.html', {id: taskId});
     };
 
     $scope.taskTimeout = function (task) {
@@ -707,8 +708,9 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
     $scope.imageScope = [1,2,3,4,5,6,7,8,9];
     $scope.history = [];
     $scope.lastHistory = null;
+    $scope.scope = $scope;
 
-    var id = GetQueryString('id'), company=userService.company, username=userService.username;
+    var id = $scope.id, company=userService.company, username=userService.username;
     $scope.taskData = {};
     var commentActionIndex = -1;     //
     $scope.description = null;
@@ -941,7 +943,11 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
                 imageList.push(platformService.host + images['picture' + i]);
             }
         }
-        $state.go('task.gallery', {index: index, images: imageList});
+        // $state.go('task.gallery', {index: index, images: imageList});
+        $scope.openPage($scope, '/templates/task/task-gallery.html', {
+            index: index,
+            images: imageList
+        });
     };
 
     $scope.taskHandler = {
@@ -1072,8 +1078,8 @@ app.controller('TaskHandlerUpload', function ($scope, $timeout) {
 
 app.controller('GalleryCtrl', function ($scope, $stateParams, $timeout) {
     $scope.canDelete = false;
-    $scope.index = $stateParams.index;
-    $scope.images = $stateParams.images;
+    // $scope.index = $stateParams.index;
+    // $scope.images = $stateParams.images;
     $scope.show = false;
 
     $scope.deleteImage = function() {       // 删除图片
@@ -1120,15 +1126,15 @@ app.controller('TaskCloseRejectCtrl', function ($scope) {      //驳回关闭请
 });
 
 
-app.controller('TaskCreateCtrl', function ($scope, $timeout, userService, ajax) {
+app.controller('TaskCreateCtrl', function ($scope, $stateParams, $timeout, userService, ajax) {
     var company = userService.company;
     $scope.stationName = null;
     $scope.taskTypeName = null;
     $scope.handlerName = null;
     $scope.deviceName = null;
     $scope.user = null;
-    $scope.linkEventId = GetQueryString("eventId");
-    $scope.linkEventInfo = null;
+    // $scope.linkEventId = $stateParams.eventId;
+    // $scope.linkEventInfo = $stateParams.linkEventInfo;
     var isGrabTask = false;
 
     $scope.taskData = {
@@ -1138,6 +1144,12 @@ app.controller('TaskCreateCtrl', function ($scope, $timeout, userService, ajax) 
     var devicePicker = null;
     var userPicker = null;
     function init() {
+        // mui.init({
+        //     keyEventBind: {
+        //         backbutton: true,  //Boolean(默认true)关闭back按键监听
+        //         menubutton: true   //Boolean(默认true)关闭menu按键监听
+        //     }
+        // });
         if($scope.linkEventId && $scope.linkEventId != '') {
             initLinkEvent();;
         } else {
@@ -1348,6 +1360,7 @@ app.controller('TaskCreateCtrl', function ($scope, $timeout, userService, ajax) 
                 $.notify.info('创建成功');
                 $timeout(function () {
                     window.location.href = 'task-detail.html?finishPage=1&id=' + data.id;       // 设置finish=1，这样在Android端在打开新页面时，会将当前页finish掉
+
                 }, 800);
             },error: function () {
                 $.notify.progressStop();

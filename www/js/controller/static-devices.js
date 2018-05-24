@@ -1,12 +1,13 @@
-app.controller('StaticDevicesHomeCtrl', function ($scope, ajax, routerService) {
-    var stationSn = GetQueryString("sn");
+app.controller('StaticDevicesHomeCtrl', function ($scope, ajax, $stateParams, $state, routerService) {
+    var stationSn = $stateParams.sn;
     var devices = [];       // 设备
     $scope.deviceDatas = [];
     $scope.isLoading = false;
     $scope.loadingFailed = false;
 
     $scope.gotoDevice = function(deviceData){
-        routerService.openPage($scope, '/templates/site/static-devices/device-detail.html', {id: deviceData.id});
+        // routerService.openPage($scope, '/templates/site/static-devices/device-detail.html', {id: deviceData.id});
+        $state.go('.detail', {id: deviceData.id});
     };
 
     $scope.getDataList = function() {
@@ -16,8 +17,6 @@ app.controller('StaticDevicesHomeCtrl', function ($scope, ajax, routerService) {
             url: '/stations/' + stationSn + '/staticdevices',
             success: function (data) {
                 $scope.isLoading = false;
-                // $scope.treeData = formatToTreeData(data);
-                // setDefaultData();
                 $scope.deviceDatas = data;
                 $scope.$apply();
             }, error: function () {
@@ -108,8 +107,9 @@ app.controller('StaticDeviceSubListCtrl', function ($scope, ajax) {
     init();
 });
 
-app.controller('StaticDeviceDetailCtrl', function ($scope, ajax) {
+app.controller('StaticDeviceDetailCtrl', function ($scope, $stateParams, ajax) {
     $scope.device = {};
+    $scope.id = $stateParams.id;
 
     $scope.getDataList = function () {
         ajax.get({

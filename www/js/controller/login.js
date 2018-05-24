@@ -4,7 +4,7 @@
  * Created by liucaiyun on 2017/7/23.
  */
 
-var gPublicApiHost = 'http://114.215.90.83:8090';
+var gPublicApiHost = 'http://47.104.75.86:8090';
 
 
 app.controller('LoginCtrl', function ($scope, $timeout, platformService, userService, $state, $http, ajax) {
@@ -124,7 +124,8 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
                 if (window.android){
                     window.android.loginSuccess();
                 }else{
-                    location.href = '/templates/home.html?finishPage=1';
+                    // location.href = '/templates/home.html?finishPage=1';
+                    $state.go('index');
                 }
             },
             error: function (xhr, status, error) {
@@ -180,7 +181,7 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
 
 });
 
-app.controller('AutoLoginCtrl', function ($scope, $timeout, userService, platformService) {
+app.controller('AutoLoginCtrl', function ($scope, $timeout, $state, userService, platformService) {
 
     $scope.autoLogin = function () {
         //先等1.5s
@@ -192,8 +193,7 @@ app.controller('AutoLoginCtrl', function ($scope, $timeout, userService, platfor
             }, 500);
         }else{
             $timeout(function () {
-                // $state.go('login');
-                location.href = '/templates/login.html?finishPage=1';
+                $state.go('login');
             }, 1500);
         }
     };

@@ -2,7 +2,9 @@
 
 
 app.service('routerService', function ($timeout, $compile) {
-    var pages = [], pageLength=0, currentIndex=0;
+    var pages = [],         // 当前的所有页面
+        pageLength=0,       // 当前页面的个数
+        currentIndex=0;     // 当前页面索引值
     var nextPage = {};      // 保存下一个页面的数据
     window.addEventListener('popstate', function () {
         if (!pageLength){
@@ -22,9 +24,15 @@ app.service('routerService', function ($timeout, $compile) {
         currentIndex = pageLength - 1;
         element[0].addEventListener('webkitAnimationEnd', _animateEnd);
         function _animateEnd() {
+            element.nextAll('.mui-poppicker,.mui-dtpicker').remove();  // 创建任务页面会在所有元素后面默认生成几个mui-poppicker元素，需要一起删除
             element.remove();
         }
     });
+
+    this.finishPage = function () {
+        pages[currentIndex].ele.remove();
+        pages.splice(currentIndex, 1);
+    };
 
     this.addHistory = function (scope, element) {
         var pageData = this.getNextPage();
@@ -58,7 +66,7 @@ app.service('routerService', function ($timeout, $compile) {
                 toFinishPage.remove();
             }
             if (addNewHistory){
-                history.pushState(null, null, null);
+                history.pushState('routerpage', null, null);
             }
             element[0].removeEventListener('webkitAnimationEnd', _animationEnd);
         }
@@ -78,7 +86,8 @@ app.service('routerService', function ($timeout, $compile) {
     this._setNextPage = function (params, config) {
         config = $.extend({}, {
             hidePrev: true,      // 默认打开新页面时会隐藏前一页
-            addHistory: true    // 是否加到history中
+            addHistory: true,    // 是否加到history中
+            finishPage: false    // 是否结束前一个页面
         }, config);
         nextPage = {
             params: params,
@@ -112,7 +121,11 @@ app.directive('routePage', ['$log', 'routerService', function($log, routerServic
                     $scope[key] = params[key];
                 }
             }
-            if (config.addHistory)
+            if (config.finishPage) {
+                // 如果设置结束前一个页面，那么打开新页面后，前一个页面会被删除
+                routerService.finishPage();
+            }
+            else if (config.addHistory)
             {
                 routerService.addHistory($scope, $element);
             }

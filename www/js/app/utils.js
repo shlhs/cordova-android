@@ -28,6 +28,7 @@ function pageBack() {
         location.href = '/app/home';
     }else{
         history.back();
+        return false;
     }
 }
 

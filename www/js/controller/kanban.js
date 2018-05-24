@@ -1,8 +1,9 @@
 "use strict";
 
 
-app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
-    $scope.sn = GetQueryString('sn');
+app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
+    // $scope.sn = GetQueryString('sn');
+    $scope.sn = $stateParams.sn;
     $scope.hasData = true;
     $scope.isLoading = true;
     $scope.havaEventList = false;
@@ -371,13 +372,13 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
 
 
     function getProcessedValue(stationSn, keyVaule, queryTime) {
-        let processedValue = {};
-        let tempContent = keyVaule;
+        var processedValue = {};
+        var tempContent = keyVaule;
         processedValue.name = tempContent.name;
-        let tempType = tempContent.type;
+        var tempType = tempContent.type;
         processedValue.type = tempType;
   
-        let tempValue = '请进行配置';
+        var tempValue = '请进行配置';
         if(tempType == 'normal-text') {
             tempValue = tempContent.value;
         } else if(tempType == 'station-manage-info') {
@@ -390,7 +391,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
                 },
                 crossDomain: true,
                 success: function(data) {
-                let stationInfo = data;
+                var stationInfo = data;
                 stationInfo.capacity = stationInfo.capacity + 'KVA';
                 stationInfo.safe_operation_days='' +  parseInt((Math.abs(new Date() - Date.parse(stationInfo.init_time)))/1000/60/60/24) + '天';
                 tempValue = stationInfo[tempContent.value];
@@ -426,9 +427,9 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
         }
     
         if(queryPeriod == 'real_time') {
-        let resultValue = '';
+        var resultValue = '';
         ajax.get({
-            url: `/devicevars/getrealtimevalues?sns=${deviceSn}`,
+            url: '/devicevars/getrealtimevalues?sns=' + deviceSn,
             async: false,
             success: function (data) {
             if(!data || data.length == 0) {
@@ -444,11 +445,11 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
         }
     
     
-        let tempQueryTime = queryTime.substr(0,10) + 'T' + queryTime.substr(11,8) + '.000Z';
+        var tempQueryTime = queryTime.substr(0,10) + 'T' + queryTime.substr(11,8) + '.000Z';
     
         if(calcMethod == 'average') {
         if(queryPeriod == 'current_month') {
-            let resultValue = '';
+            var resultValue = '';
             ajax.get({
             url: '/devicevars/getstatisticalvalues?type=YEAR&calcmethod=AVG&sns=' + deviceSn + '&querytime=' + tempQueryTime,
             async: false,
@@ -461,8 +462,8 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
                 if(data.length == 0) {
                 return;
                 }
-                let varData = data[0];
-                let index = parseInt(tempQueryTime.substr(5,2)) - 1;
+                var varData = data[0];
+                var index = parseInt(tempQueryTime.substr(5,2)) - 1;
                 if(varData.datas != null && varData.datas.length > index) {
                 if(varData.datas[index] != null) {
                     resultValue = varData.datas[index]+varData.unit;
@@ -479,7 +480,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
         
         if(calcMethod == 'diff'){
         if(queryPeriod == 'current_month') {
-            let resultValue = '';
+            var resultValue = '';
             ajax.get({
             url: '/devicevars/getaccumulatedvalues?type=MONTH&sns=' + deviceSn + '&starttime=' + tempQueryTime + '&endtime=' + tempQueryTime,
             async: false,
@@ -492,7 +493,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
                 if(data.length == 0) {
                 return;
                 }
-                let varData = data[0];
+                var varData = data[0];
                 //查询的开始时间 与 结束时间 相同，因此直接去第一个结果值 即可
                 if(varData.datas != null && varData.datas.length > 0) {
                 if(varData.datas[0] != null) {
@@ -606,7 +607,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
     }
 
     function getTrendAnalysis(name, deviceVarSns, period, queryTime, pfvSettings) {
-        let queryType = 'MONTH';
+        var queryType = 'MONTH';
         if(period == 'current_day') {
         queryType = 'DAY';
         } else if(period == 'current_year') {
@@ -664,7 +665,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
             }];
       
         if(showPfvSetting) {
-            let tempPfvSettings = pfvSettings == 'pfv-settings-f' ? pfvSettingsF : pfvSettingsR;
+            var tempPfvSettings = pfvSettings == 'pfv-settings-f' ? pfvSettingsF : pfvSettingsR;
             if(tempPfvSettings != null) {
                 yAxis[1]={
                     type: 'value'
@@ -747,7 +748,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
                     chargeData.push(tempPfvSettings[i].charge*1.2);
                     markAreaData.push(tempAreaData);
             
-                    let newDate = {
+                    var newDate = {
                         name: i,
                         yAxisIndex: 1, 
                         type:'line', 
@@ -925,7 +926,15 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
     }
 
     //getDataList();
-    getStationPfvSettings();
-    getKanbanData();
+    $timeout(function () {
+        getStationPfvSettings();
+        getKanbanData();
+    }, 500);
 
+    // mui.init({
+    //     keyEventBind: {
+    //         backbutton: true,  //Boolean(默认true)关闭back按键监听
+    //         menubutton: true   //Boolean(默认true)关闭menu按键监听
+    //     }
+    // });
 });

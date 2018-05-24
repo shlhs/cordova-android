@@ -11,7 +11,7 @@
             <div class="mui-scroll">
                 <ul class="mui-table-view mui-table-view-striped mui-table-view-condensed" style="margin-top:0px;">
                     <li class="mui-table-view-cell" ng-repeat="item in template">
-                        <a class="mui-navigate-right" href="#" ng-click="openPage('/templates/evaluate/security-evaluate-check-list.html', {group: item})">
+                        <a class="mui-navigate-right" href="javascript:void(0)" ng-click="openPage('/templates/evaluate/security-evaluate-check-list.html', {group: item})">
                             <span class="mui-badge no-padding bg-transparent">
                                 <i class="icon icon-16 icon-all-right" ng-if="item.status === 'success'"></i>
                                 <i class="icon icon-16 icon-warning" ng-if="item.status === 'warning'"></i>

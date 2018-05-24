@@ -7,9 +7,9 @@
 # to you under the Apache License, Version 2.0 (the
 # "License"); you may not use this file except in compliance
 # with the License.  You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing,
 # software distributed under the License is distributed on an
 # "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -19,6 +19,22 @@
 #
 -->
 # Release Notes
+
+### 4.0.3 (Apr 12, 2018)
+* [CB-12593](https://issues.apache.org/jira/browse/CB-12593) **Android** Fix potential `FileProvider` conflicts
+* Fix a mistake in the examples of usage descriptions (#313)
+* CB-13854(ios): fix Camera opens in portrait orientation on iphones
+* [CB-13415](https://issues.apache.org/jira/browse/CB-13415) **Android** Importing corrupt images using the Camera plugin crashes the app
+
+### 4.0.2 (Jan 24, 2018)
+* [CB-13781](https://issues.apache.org/jira/browse/CB-13781) (android) Fixed permissions request on **Android** 8 to save a photo into the photo album
+* [CB-13747](https://issues.apache.org/jira/browse/CB-13747) Add build-tools-26.0.2 to travis
+
+### 4.0.1 (Dec 27, 2017)
+* CB-13701Fix to allow 4.0.0 version install
+
+### 4.0.0 (Dec 15, 2017)
+* [CB-13661](https://issues.apache.org/jira/browse/CB-13661) Remove deprecated platforms
 
 ### 3.0.0 (Nov 06, 2017)
 * Added `cordova-OSX` support

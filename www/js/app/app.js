@@ -19,8 +19,15 @@ app.run(function ($animate) {
 // }]);
 
 
-app.controller('MainCtrl', function ($scope, $rootScope, userService) {
+app.controller('MainCtrl', function ($scope, $rootScope, userService, routerService) {
 
+    $scope.openPage = function(scope, template, params, config){
+        routerService.openPage(scope, template, params, config);
+    };
+
+    $scope.openTaskCreatePage = function () {
+        routerService.openPage($scope, '/templates/task/add-task.html');
+    };
 });
 
 var UserRole = {SuperUser: 'SUPERUSER', OpsAdmin: 'OPS_ADMIN', OpsOperator: 'OPS_OPERATOR', Normal: 'USER'};
@@ -435,10 +442,12 @@ var imageHandler = {
 /**
  * 图片缩放控制器
  */
-app.controller('ImageZoomCtrl', function ($scope, $timeout) {
+app.controller('ImageZoomCtrl', function ($scope, $timeout, $stateParams) {
     $scope.menuVisible = false;
     $scope.header = null;
     $scope.headerVisible = false;
+    $scope.link = $stateParams.link;
+    $scope.name = $stateParams.name;
     imagesLoaded('#zoomTarget', function (e) {
 
         new RTP.PinchZoom($("#zoomTarget"), {});

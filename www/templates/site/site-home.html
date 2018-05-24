@@ -4,7 +4,8 @@
             <header class="mui-bar bg-header bg-transparent" style="box-shadow: none;position: static;">
                 <a class=" mui-pull-left" ng-click="showPopover()" ng-show="sites.length > 1">站点切换</a>
                 <h1 class="mui-title" style="font-size: 18px;left: 70px;right: 70px;">{{currentSite.station.name}}</h1>
-                <a class="mui-pull-right" href="/templates/site/event-list.html?sn={{currentSite.station.sn}}">
+                <!--<a class="mui-pull-right" href="/templates/site/event-list.html?sn={{currentSite.station.sn}}">-->
+                <a class="mui-pull-right" ui-sref=".eventList({sn: currentSite.station.sn})">
                     <i class="icon white icon-events" style="width: 18px;height: 18px;">
                         <i class="mark" ng-if="currentSite.unclosed_envet_amount"></i>
                     </i>
@@ -22,49 +23,51 @@
         <div class="card round-card" style="padding: 4px 0 8px 0;">
             <ul class="mui-table-view mui-grid-view mui-grid-9 no-border entrance-list">
                 <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
-                    <a href="/templates/site/kanban.html?sn={{currentSite.station.sn}}" style="padding: 6px 0 0 0;">
+                    <!--<a href="javascript:void(0)" ng-click="openPage(scope, '/templates/site/kanban.html', {sn: currentSite.station.sn})" style="padding: 6px 0 0 0;">-->
+                    <a ui-sref=".kanban({sn: currentSite.station.sn})" style="padding: 6px 0 0 0;">
                         <span class="mui-icon icon icon-36 icon-kanban"></span>
                         <div class="mui-media-body">看板</div>
                     </a>
                 </li>
                 <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
-                    <a href="/templates/site/monitor-list.html?sn={{currentSite.station.sn}}" style="padding: 6px 0 0 0;">
+                    <!--<a href="/templates/site/monitor-list.html?sn={{currentSite.station.sn}}" style="padding: 6px 0 0 0;">-->
+                    <a ui-sref=".monitorList({sn: currentSite.station.sn})" style="padding: 6px 0 0 0;">
                         <span class="mui-icon icon icon-36 icon-monitor"></span>
                         <div class="mui-media-body">画面</div>
                     </a>
                 </li>
                 <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
-                    <a href="/templates/site/device-monitor-list.html?sn={{currentSite.station.sn}}" style="padding: 6px 0 0 0;">
+                    <a ui-sref=".monitorDevices({sn: currentSite.station.sn})" style="padding: 6px 0 0 0;">
                         <span class="mui-icon icon icon-36 icon-device-monitor"></span>
                         <div class="mui-media-body">设备监测</div>
                     </a>
                 </li>
                 <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
-                    <a href="/templates/site/static-devices/device-home.html?sn={{currentSite.station.sn}}&name={{currentSite.station.name}}" style="padding: 6px 0 0 0;">
+                    <a ui-sref=".devicedocs({sn: currentSite.station.sn})" style="padding: 6px 0 0 0;">
                         <span class="mui-icon icon icon-36 icon-archives"></span>
                         <div class="mui-media-body">设备档案</div>
                     </a>
                 </li>
                 <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
-                    <a href="/templates/site/docs.html?sn={{currentSite.station.sn}}" style="padding: 6px 0 0 0;">
+                    <a ui-sref=".docs({sn: currentSite.station.sn})" style="padding: 6px 0 0 0;">
                         <span class="mui-icon icon icon-36 icon-docs"></span>
                         <div class="mui-media-body">电子档案</div>
                     </a>
                 </li>
                 <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
-                    <a href="/templates/site/reports.html?sn={{currentSite.station.sn}}&name={{currentSite.station.name}}" style="padding: 6px 0 0 0;">
+                    <a ui-sref=".reports({sn: currentSite.station.sn, name: currentSite.station.name})" style="padding: 6px 0 0 0;">
                         <span class="mui-icon icon icon-36 icon-reports"></span>
                         <div class="mui-media-body">月度报告</div>
                     </a>
                 </li>
                 <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
-                    <a href="/templates/evaluate/evaluate-history.html?sn={{currentSite.station.sn}}&name={{currentSite.station.name}}" style="padding: 6px 0 0 0;">
+                    <a ui-sref=".securityReports({sn: currentSite.station.sn, name: currentSite.station.name})" style="padding: 6px 0 0 0;">
                         <span class="mui-icon icon icon-36 icon-security"></span>
                         <div class="mui-media-body">安全评测</div>
                     </a>
                 </li>
                 <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
-                    <a href="/templates/maintenance-check/check-history.html?sn={{currentSite.station.sn}}&name={{currentSite.station.name}}" style="padding: 6px 0 0 0;">
+                    <a ui-sref=".poweroffReports({sn: currentSite.station.sn, name: currentSite.station.name})" style="padding: 6px 0 0 0;">
                         <span class="mui-icon icon icon-36 icon-poweroff"></span>
                         <div class="mui-media-body">停电维护</div>
                     </a>
@@ -128,4 +131,3 @@
         </ul>
     </div>
 </div>
-<div ui-view="" class="page-left"></div>

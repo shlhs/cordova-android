@@ -1,7 +1,7 @@
 
 <div class="cascade-selector" ng-class="{'collapse': collapse[0] || collapse[1]}" ng-if="maxDepth>=4">
     <div class="selector-mask" ng-if="collapse[0] || collapse[1]" ng-click="toggleCollapse(-1)"></div>
-    <div class="selector separator" style="width: 50%" ng-class="{'collapse': collapse[0]}" ng-if="maxDepth===5">
+    <div class="selector separator" style="width: 50%" ng-class="{'collapse': collapse[0]}" ng-if="maxDepth>=5">
         <div ng-click="toggleCollapse(0)"><label class="result-label">{{deviceSelected[0].name}}</label></div>
         <ul class="option-wrapper option-vertical">
             <li ng-repeat="item in selectOptions[0]" ng-class="{'selected': deviceSelected[0].id === item.id}"
@@ -11,7 +11,7 @@
         </ul>
     </div>
     <div class="selector" style="width: 50%" ng-class="{'collapse': collapse[1]}"
-         ng-style="{width: maxDepth===4 ? '100%' : '50%'}">
+         ng-style="{width: maxDepth<=4 ? '100%' : '50%'}">
         <div ng-click="toggleCollapse(1)">
             <label class="result-label" ng-class="{'nodata': !deviceSelected[1]}">
                 {{deviceSelected[1] ? deviceSelected[1].name : '(空)'}}

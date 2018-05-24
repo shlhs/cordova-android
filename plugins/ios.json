@@ -7,42 +7,38 @@
     "files": {}
   },
   "installed_plugins": {
-    "cordova-plugin-splashscreen": {
-      "PACKAGE_NAME": "com.luohusi.kuaikong"
-    },
-    "cordova-plugin-whitelist": {
-      "PACKAGE_NAME": "com.luohusi.kuaikong"
-    },
-    "cordova-plugin-geolocation": {
-      "PACKAGE_NAME": "com.luohusi.kuaikong"
-    },
-    "cordova-plugin-network-information": {
-      "PACKAGE_NAME": "com.luohusi.kuaikong"
+    "cordova-hot-code-push-plugin": {
+      "PACKAGE_NAME": "com.example.hello"
     },
     "cordova-plugin-camera": {
-      "PACKAGE_NAME": "com.luohusi.kuaikong"
-    },
-    "cordova-plugin-file": {
-      "PACKAGE_NAME": "com.luohusi.kuaikong"
-    },
-    "cordova-plugin-file-transfer": {
-      "PACKAGE_NAME": "com.luohusi.kuaikong"
-    },
-    "cordova-plugin-inappbrowser": {
-      "PACKAGE_NAME": "com.luohusi.kuaikong"
-    },
-    "phonegap-plugin-barcodescanner": {
-      "CAMERA_USAGE_DESCRIPTION": " ",
-      "PACKAGE_NAME": "com.luohusi.kuaikong"
-    },
-    "cordova-plugin-device-motion": {
-      "PACKAGE_NAME": "com.luohusi.kuaikong"
+      "PACKAGE_NAME": "com.example.hello"
     },
     "cordova-plugin-device": {
-      "PACKAGE_NAME": "com.luohusi.kuaikong"
+      "PACKAGE_NAME": "com.example.hello"
     },
-    "cordova-hot-code-push-plugin": {
-      "PACKAGE_NAME": "com.luohusi.kuaikong"
+    "cordova-plugin-device-motion": {
+      "PACKAGE_NAME": "com.example.hello"
+    },
+    "cordova-plugin-file": {
+      "PACKAGE_NAME": "com.example.hello"
+    },
+    "cordova-plugin-file-transfer": {
+      "PACKAGE_NAME": "com.example.hello"
+    },
+    "cordova-plugin-geolocation": {
+      "PACKAGE_NAME": "com.example.hello"
+    },
+    "cordova-plugin-inappbrowser": {
+      "PACKAGE_NAME": "com.example.hello"
+    },
+    "cordova-plugin-network-information": {
+      "PACKAGE_NAME": "com.example.hello"
+    },
+    "cordova-plugin-splashscreen": {
+      "PACKAGE_NAME": "com.example.hello"
+    },
+    "cordova-plugin-whitelist": {
+      "PACKAGE_NAME": "com.example.hello"
     }
   },
   "dependent_plugins": {}

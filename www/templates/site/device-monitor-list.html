@@ -1,75 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>所有设备</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta http-equiv="Access-Control-Allow-Origin" content="*">
-    <link rel="stylesheet" href="../../components/mui/css/mui.min.css">
-    <link rel="stylesheet" href="../../css/my.css">
-    <link rel="stylesheet" href="../../css/icon.css">
-    <link rel="stylesheet" href="../../css/animate.css">
-    <link rel="stylesheet" href="../../components/mui/css/icons-extra.css">
-    <link rel="stylesheet" href="../../css/setting.css">
-    <!--<script type="text/javascript" src="../../cordova.js"></script>-->
-    <!--<script type="text/javascript" src="../../cordova_plugins.js"></script>-->
-    <script type="text/javascript" src="../../components/libs/jquery-2.1.4.js"></script>
-    <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
-    <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
-    <!--<script type="text/javascript" src="components/ui-router-extras/release/ct-ui-router-extras.js"></script>-->
-    <script type="text/javascript" src="../../components/angular-animate/angular-animate.js"></script>
-    <script type="text/javascript" src="../../components/angular-ui-router/release/stateEvents.min.js"></script>
-    <script type="text/javascript" src="../../js/app/utils.js"></script>
-    <script type="text/javascript" src="../../js/app/app.js"></script>
-    <script type="text/javascript" src="../../js/service/common-service.js"></script>
-    <style>
-        .tree .mui-table-view-cell:after{
-            background-color: #eee;
-        }
-        .tree .mui-table-view-cell.mui-collapse .mui-table-view .mui-table-view-cell:after{
-            background-color: #eee;
-        }
-        .tree .mui-table-view-cell.mui-active{
-            background-color: #fff;
-        }
-        .tree .mui-table-view-cell.mui-collapse.mui-active .mui-collapse-content {
-            display: none;
-        }
-        .tree .mui-active>.mui-collapse-content{
-            display: block !important;
-        }
-        .tree .mui-table-view-cell>a:not(.mui-btn){
-            border-bottom: #eee 1px solid;
-        }
-        .tree .mui-table-view-cell.mui-collapse.mui-active{
-            margin-top:0px;
-        }
-        .tree .mui-table-view-cell.mui-collapse .mui-collapse-content{
-            margin: 11px -15px 0px;
-            padding: 0px 15px;
-        }
-        .tree .mui-table-view-cell.mui-collapse .mui-table-view{
-            margin-top: 0px;
-        }
-        .tree .mui-navigate-right:after{
-            color: #444;
-        }
-        .tree .is-leaf>.mui-navigate-right:after{
-            right: 24px;
-            font-size: 14px;
-            color: #bbb;
-        }
-        .tree .mui-table-view-cell.is-leaf>a{
-            font-size: 14px;
-            color: #8a8a8a;
-        }
-    </style>
-</head>
-<body class="box-vertical-center" ng-app="myApp" ng-controller="DeviceMonitorListCtrl">
+
+<div ng-controller="DeviceMonitorListCtrl">
     <header class="mui-bar bg-header">
-        <a class="mui-icon mui-action-back mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
+        <a class="mui-icon mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
         <h1 class="mui-title">设备监测</h1>
     </header>
     <div class="mui-content" ng-cloak>
@@ -92,10 +24,5 @@
             </div>
         </div>
     </div>
-<div class="page page-left" ui-view></div>
-<script src="../../components/fastclick-master/lib/fastclick.js"></script>
-<script src="../../js/my/notify.js"></script>
-<script src="../../components/dropload-gh-pages/dist/dropload.min.js"></script>
-<script type="text/javascript" src="../../js/controller/device.js"></script>
-</body>
-</html>
+    <div ui-view class="page page-left"></div>
+</div>

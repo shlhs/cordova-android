@@ -22,7 +22,7 @@
   "_resolved": "https://registry.npmjs.org/cordova-hot-code-push-plugin/-/cordova-hot-code-push-plugin-1.5.3.tgz",
   "_shasum": "b38ee063ef24a14dec40c123f2bef900a887c342",
   "_spec": "cordova-hot-code-push-plugin",
-  "_where": "/Users/luohusi/workspace/cordova/cordovaTest",
+  "_where": "/Users/luohusi/workspace/lhs/cordova-android",
   "author": {
     "name": "Nikolay Demyankov for Nordnet Bank AB"
   },

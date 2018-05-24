@@ -1,33 +1,33 @@
 {
-  "_from": "cordova-plugin-device-motion@1.2.5",
-  "_id": "cordova-plugin-device-motion@1.2.5",
+  "_from": "cordova-plugin-device-motion",
+  "_id": "cordova-plugin-device-motion@2.0.1",
   "_inBundle": false,
-  "_integrity": "sha1-e1jt2dVQ3wpvua76tVuW1UkLGlY=",
+  "_integrity": "sha1-f22XTE64/Frljpqt1j2fpQLt7G0=",
   "_location": "/cordova-plugin-device-motion",
   "_phantomChildren": {},
   "_requested": {
-    "type": "version",
+    "type": "tag",
     "registry": true,
-    "raw": "cordova-plugin-device-motion@1.2.5",
+    "raw": "cordova-plugin-device-motion",
     "name": "cordova-plugin-device-motion",
     "escapedName": "cordova-plugin-device-motion",
-    "rawSpec": "1.2.5",
+    "rawSpec": "",
     "saveSpec": null,
-    "fetchSpec": "1.2.5"
+    "fetchSpec": "latest"
   },
   "_requiredBy": [
     "#USER",
     "/"
   ],
-  "_resolved": "https://registry.npmjs.org/cordova-plugin-device-motion/-/cordova-plugin-device-motion-1.2.5.tgz",
-  "_shasum": "7b58edd9d550df0a6fb9aefab55b96d5490b1a56",
-  "_spec": "cordova-plugin-device-motion@1.2.5",
-  "_where": "/Users/luohusi/workspace/cordova/cordovaTest",
+  "_resolved": "https://registry.npmjs.org/cordova-plugin-device-motion/-/cordova-plugin-device-motion-2.0.1.tgz",
+  "_shasum": "7f6d974c4eb8fc5ae58e9aadd63d9fa502edec6d",
+  "_spec": "cordova-plugin-device-motion",
+  "_where": "/Users/luohusi/workspace/lhs/cordova-android",
   "author": {
     "name": "Apache Software Foundation"
   },
   "bugs": {
-    "url": "https://github.com/apache/cordova-plugin-device-motion/issues"
+    "url": "https://issues.apache.org/jira/browse/CB"
   },
   "bundleDependencies": false,
   "cordova": {
@@ -48,13 +48,13 @@
     ]
   },
   "deprecated": false,
-  "description": "Cordova Device Motion Plugin",
+  "description": "[DEPRECATED] Cordova Device Motion Plugin",
   "devDependencies": {
     "jshint": "^2.6.0"
   },
   "engines": {
     "cordovaDependencies": {
-      "2.0.0": {
+      "3.0.0": {
         "cordova": ">100"
       }
     }
@@ -89,5 +89,5 @@
     "test": "npm run jshint"
   },
   "types": "./types/index.d.ts",
-  "version": "1.2.5"
+  "version": "2.0.1"
 }

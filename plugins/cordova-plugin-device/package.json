@@ -1,8 +1,8 @@
 {
   "_from": "cordova-plugin-device",
-  "_id": "cordova-plugin-device@1.1.7",
+  "_id": "cordova-plugin-device@2.0.2",
   "_inBundle": false,
-  "_integrity": "sha1-/JQRG+aTJijGaGiTjd89yCyfv+Y=",
+  "_integrity": "sha1-/Ajzci5n7ve2xnv8mag99q3Quro=",
   "_location": "/cordova-plugin-device",
   "_phantomChildren": {},
   "_requested": {
@@ -19,10 +19,10 @@
     "#USER",
     "/"
   ],
-  "_resolved": "https://registry.npmjs.org/cordova-plugin-device/-/cordova-plugin-device-1.1.7.tgz",
-  "_shasum": "fc94111be6932628c66868938ddf3dc82c9fbfe6",
+  "_resolved": "https://registry.npmjs.org/cordova-plugin-device/-/cordova-plugin-device-2.0.2.tgz",
+  "_shasum": "fc08f3722e67eef7b6c67bfc99a83df6add0baba",
   "_spec": "cordova-plugin-device",
-  "_where": "/Users/luohusi/workspace/cordova/cordovaTest",
+  "_where": "/Users/luohusi/workspace/lhs/cordova-android",
   "author": {
     "name": "Apache Software Foundation"
   },
@@ -33,16 +33,8 @@
   "cordova": {
     "id": "cordova-plugin-device",
     "platforms": [
-      "firefoxos",
-      "tizen",
       "android",
-      "amazon-fireos",
-      "ubuntu",
       "ios",
-      "blackberry10",
-      "wp7",
-      "wp8",
-      "windows8",
       "windows",
       "browser",
       "osx"
@@ -61,7 +53,7 @@
   },
   "engines": {
     "cordovaDependencies": {
-      "2.0.0": {
+      "3.0.0": {
         "cordova": ">100"
       }
     }
@@ -71,16 +63,8 @@
     "cordova",
     "device",
     "ecosystem:cordova",
-    "cordova-firefoxos",
-    "cordova-tizen",
     "cordova-android",
-    "cordova-amazon-fireos",
-    "cordova-ubuntu",
     "cordova-ios",
-    "cordova-blackberry10",
-    "cordova-wp7",
-    "cordova-wp8",
-    "cordova-windows8",
     "cordova-windows",
     "cordova-browser",
     "cordova-osx"
@@ -96,5 +80,5 @@
     "test": "npm run eslint"
   },
   "types": "./types/index.d.ts",
-  "version": "1.1.7"
+  "version": "2.0.2"
 }

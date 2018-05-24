@@ -162,9 +162,9 @@ app.service('SecurityReportService', function (userService, ajax) {
     };
 });
 
-app.controller('SecurityHistoryCtrl', function ($scope, routerService, ajax, userService) {
-    var sn = GetQueryString('sn');
-    $scope.stationName = GetQueryString("name");
+app.controller('SecurityHistoryCtrl', function ($scope, $stateParams, routerService, ajax, userService) {
+    var sn = $stateParams.sn;
+    $scope.stationName = $stateParams.name;
     $scope.history = [];
     $scope.isLoading = false;
     $scope.loadingFailed = false;

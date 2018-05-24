@@ -1,28 +1,28 @@
 {
-  "_from": "cordova-plugin-inappbrowser@1.7.2",
-  "_id": "cordova-plugin-inappbrowser@1.7.2",
+  "_from": "cordova-plugin-inappbrowser@3.0.0",
+  "_id": "cordova-plugin-inappbrowser@3.0.0",
   "_inBundle": false,
-  "_integrity": "sha1-ZHY0lb6H6y562xoI8CCblupc7uA=",
+  "_integrity": "sha1-1K4A02Z2IQdRBXrSWK5K1KkWGto=",
   "_location": "/cordova-plugin-inappbrowser",
   "_phantomChildren": {},
   "_requested": {
     "type": "version",
     "registry": true,
-    "raw": "cordova-plugin-inappbrowser@1.7.2",
+    "raw": "cordova-plugin-inappbrowser@3.0.0",
     "name": "cordova-plugin-inappbrowser",
     "escapedName": "cordova-plugin-inappbrowser",
-    "rawSpec": "1.7.2",
+    "rawSpec": "3.0.0",
     "saveSpec": null,
-    "fetchSpec": "1.7.2"
+    "fetchSpec": "3.0.0"
   },
   "_requiredBy": [
     "#USER",
     "/"
   ],
-  "_resolved": "https://registry.npmjs.org/cordova-plugin-inappbrowser/-/cordova-plugin-inappbrowser-1.7.2.tgz",
-  "_shasum": "64763495be87eb2e7adb1a08f0209b96ea5ceee0",
-  "_spec": "cordova-plugin-inappbrowser@1.7.2",
-  "_where": "/Users/luohusi/workspace/cordova/cordovaTest",
+  "_resolved": "https://registry.npmjs.org/cordova-plugin-inappbrowser/-/cordova-plugin-inappbrowser-3.0.0.tgz",
+  "_shasum": "d4ae00d36676210751057ad258ae4ad4a9161ada",
+  "_spec": "cordova-plugin-inappbrowser@3.0.0",
+  "_where": "/Users/luohusi/workspace/lhs/cordova-android",
   "author": {
     "name": "Apache Software Foundation"
   },
@@ -34,15 +34,10 @@
     "id": "cordova-plugin-inappbrowser",
     "platforms": [
       "android",
-      "amazon-fireos",
-      "ubuntu",
+      "browser",
       "ios",
       "osx",
-      "wp7",
-      "wp8",
-      "windows8",
-      "windows",
-      "firefoxos"
+      "windows"
     ]
   },
   "deprecated": false,
@@ -61,7 +56,7 @@
       "0.2.3": {
         "cordova": ">=3.1.0"
       },
-      "2.0.0": {
+      "4.0.0": {
         "cordova": ">100"
       }
     }
@@ -75,15 +70,10 @@
     "inappbrowser",
     "ecosystem:cordova",
     "cordova-android",
-    "cordova-amazon-fireos",
-    "cordova-ubuntu",
+    "cordova-browser",
     "cordova-ios",
     "cordova-osx",
-    "cordova-wp7",
-    "cordova-wp8",
-    "cordova-windows8",
-    "cordova-windows",
-    "cordova-firefoxos"
+    "cordova-windows"
   ],
   "license": "Apache-2.0",
   "name": "cordova-plugin-inappbrowser",
@@ -96,5 +86,5 @@
     "test": "npm run eslint"
   },
   "types": "./types/index.d.ts",
-  "version": "1.7.2"
+  "version": "3.0.0"
 }
