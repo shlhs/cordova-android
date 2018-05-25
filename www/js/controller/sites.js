@@ -38,7 +38,7 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, p
                         s.site_image = platformService.getImageUrl(180, 180, platformService.host + s.station.photo_src_link);
                     }
                     else {
-                        s.site_image = '/img/site-default.png';
+                        s.site_image = 'img/site-default.png';
                     }
                 });
                 $scope.sites = result;
@@ -364,7 +364,7 @@ app.controller('SiteDocsCtrl', function ($scope, $stateParams, platformService, 
             });
             history.pushState('dialog', 'dialog', null);
             window.addEventListener("popstate", hide);
-        }else {
+        } else {
             if (window.android){
                 window.android.openFile(host + doc.src_link);
             }else

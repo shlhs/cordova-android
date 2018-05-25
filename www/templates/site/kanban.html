@@ -39,6 +39,7 @@
         .summary-item .value{
             font-weight: normal;
             font-size: 16px;
+            margin-top: 0;
         }
         .summary-item .unit{
             margin-left: 2px;
@@ -91,7 +92,7 @@
                 <ul class="mui-row summary-list" style="padding-top:6px;">
                     <li ng-repeat="v in keyVarDatas" class="mui-col-xs-6 mui-col-sm-6 summary-item"
                     ng-style="{'background-color': getRandomColor($index)}">
-                        <span class="title">{{v.name}}</span>
+                        <span class="title mui-ellipsis">{{v.name}}</span>
                         <h4 class="value">{{v.value}}<span class="unit">{{v.unit}}</span> </h4>
                     </li>
                 </ul>
@@ -106,9 +107,9 @@
                         <a class="mui-pull-right" ui-sref=".eventList({sn: sn})" style="font-size: 14px;" ng-if="events.length">更多</a>
                     </div>
                     <div class="card-content">
-                        <div ng-if="events.length === 0">站点无事件</div>
+                        <div ng-if="events.length === 0" style="height: 30px;padding-left: 16px;color: #717171;">站点无事件</div>
                         <ul class="mui-table-view info-group" style="font-size: 14px;margin:-7px 0 -8px -15px;">
-                            <li class="mui-table-view-cell" ng-repeat="event in events | limitTo:3">
+                            <li class="mui-table-view-cell" ng-repeat="event in events | limitTo:3" style="padding: 8px 2px;">
                                 {{event.update_time}}&nbsp;&nbsp;&nbsp;<span style="color: #444;">{{event.info}}</span>
                             </li>
                         </ul>

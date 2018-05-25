@@ -7,38 +7,38 @@
     "files": {}
   },
   "installed_plugins": {
-    "cordova-hot-code-push-plugin": {
-      "PACKAGE_NAME": "com.example.hello"
-    },
     "cordova-plugin-camera": {
-      "PACKAGE_NAME": "com.example.hello"
+      "PACKAGE_NAME": "com.dianguanjia.mingyang"
     },
     "cordova-plugin-device": {
-      "PACKAGE_NAME": "com.example.hello"
+      "PACKAGE_NAME": "com.dianguanjia.mingyang"
     },
     "cordova-plugin-device-motion": {
-      "PACKAGE_NAME": "com.example.hello"
+      "PACKAGE_NAME": "com.dianguanjia.mingyang"
     },
     "cordova-plugin-file": {
-      "PACKAGE_NAME": "com.example.hello"
+      "PACKAGE_NAME": "com.dianguanjia.mingyang"
     },
     "cordova-plugin-file-transfer": {
-      "PACKAGE_NAME": "com.example.hello"
+      "PACKAGE_NAME": "com.dianguanjia.mingyang"
     },
     "cordova-plugin-geolocation": {
-      "PACKAGE_NAME": "com.example.hello"
+      "PACKAGE_NAME": "com.dianguanjia.mingyang"
     },
     "cordova-plugin-inappbrowser": {
-      "PACKAGE_NAME": "com.example.hello"
+      "PACKAGE_NAME": "com.dianguanjia.mingyang"
     },
     "cordova-plugin-network-information": {
-      "PACKAGE_NAME": "com.example.hello"
+      "PACKAGE_NAME": "com.dianguanjia.mingyang"
     },
     "cordova-plugin-splashscreen": {
-      "PACKAGE_NAME": "com.example.hello"
+      "PACKAGE_NAME": "com.dianguanjia.mingyang"
     },
     "cordova-plugin-whitelist": {
-      "PACKAGE_NAME": "com.example.hello"
+      "PACKAGE_NAME": "com.dianguanjia.mingyang"
+    },
+    "cordova-plugin-settings-hook": {
+      "PACKAGE_NAME": "com.dianguanjia.mingyang"
     }
   },
   "dependent_plugins": {}

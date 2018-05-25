@@ -18,7 +18,11 @@
     });
     /*
     
-        Copyright (c) Manuel Stofer 2013 - today, PinchZoom.js
+        PinchZoom.js
+        Copyright (c) Manuel Stofer 2013 - today
+    
+        Author: Manuel Stofer (mst@rtp.ch)
+        Version: 2.2.0
     
         Permission is hereby granted, free of charge, to any person obtaining a copy
         of this software and associated documentation files (the "Software"), to deal
@@ -97,8 +101,6 @@
 
         /**
          * Pinch zoom
-         * @version 2.0.0
-         * @author Manuel Stofer <mst@rtp.ch>
          * @param el
          * @param options
          * @constructor
@@ -111,11 +113,22 @@
                 x: 0,
                 y: 0
             };
+            this.initialOffset = {
+                x: 0,
+                y: 0
+            };
             this.options = Object.assign({}, this.defaults, options);
             this.setupMarkup();
             this.bindEvents();
             this.update();
-            // default enable.
+
+            // The image may already be loaded when PinchZoom is initialized,
+            // and then the load event (which trigger update) will never fire.
+            if (this.isImageLoaded(this.el)) {
+                this.updateAspectRatio();
+                this.setupInitialOffset();
+            }
+
             this.enable();
         },
             sum = function sum(a, b) {
@@ -133,13 +146,18 @@
                 animationDuration: 300,
                 maxZoom: 4,
                 minZoom: 0.5,
+                draggableUnzoomed: true,
                 lockDragAxis: false,
                 use2d: true,
                 zoomStartEventName: 'pz_zoomstart',
+                zoomUpdateEventName: 'pz_zoomupdate',
                 zoomEndEventName: 'pz_zoomend',
                 dragStartEventName: 'pz_dragstart',
+                dragUpdateEventName: 'pz_dragupdate',
                 dragEndEventName: 'pz_dragend',
-                doubleTapEventName: 'pz_doubletap'
+                doubleTapEventName: 'pz_doubletap',
+                verticalPadding: 0,
+                horizontalPadding: 0
             },
 
             /**
@@ -159,12 +177,10 @@
              * @param event
              */
             handleDrag: function handleDrag(event) {
-                if (this.zoomFactor > 1.0) {
-                    var touch = this.getTouches(event)[0];
-                    this.drag(touch, this.lastDragPosition);
-                    this.offset = this.sanitizeOffset(this.offset);
-                    this.lastDragPosition = touch;
-                }
+                var touch = this.getTouches(event)[0];
+                this.drag(touch, this.lastDragPosition);
+                this.offset = this.sanitizeOffset(this.offset);
+                this.lastDragPosition = touch;
             },
 
             handleDragEnd: function handleDragEnd() {
@@ -225,6 +241,9 @@
                 if (this.hasInteraction) {
                     return;
                 }
+
+                this.isDoubleTap = true;
+
                 if (startZoomFactor > zoomFactor) {
                     center = this.getCurrentZoomCenter();
                 }
@@ -234,17 +253,54 @@
             },
 
             /**
+             * Compute the initial offset
+             *
+             * the element should be centered in the container upon initialization
+             */
+            computeInitialOffset: function computeInitialOffset() {
+                this.initialOffset = {
+                    x: -Math.abs(this.el.offsetWidth * this.getInitialZoomFactor() - this.container.offsetWidth) / 2,
+                    y: -Math.abs(this.el.offsetHeight * this.getInitialZoomFactor() - this.container.offsetHeight) / 2
+                };
+            },
+
+            /**
+             * Determine if image is loaded
+             */
+            isImageLoaded: function isImageLoaded(el) {
+                if (el.nodeName === 'IMG') {
+                    return el.complete && el.naturalHeight !== 0;
+                } else {
+                    return Array.from(el.querySelectorAll('img')).every(this.isImageLoaded);
+                }
+            },
+
+            setupInitialOffset: function setupInitialOffset() {
+                if (this._initialOffsetSetup) {
+                    return;
+                }
+
+                this._initialOffsetSetup = true;
+
+                this.computeInitialOffset();
+                this.offset.x = this.initialOffset.x;
+                this.offset.y = this.initialOffset.y;
+            },
+
+            /**
              * Max / min values for the offset
              * @param offset
              * @return {Object} the sanitized offset
              */
             sanitizeOffset: function sanitizeOffset(offset) {
-                var maxX = (this.zoomFactor - 1) * this.getContainerX(),
-                    maxY = (this.zoomFactor - 1) * this.getContainerY(),
+                var elWidth = this.el.offsetWidth * this.getInitialZoomFactor() * this.zoomFactor;
+                var elHeight = this.el.offsetHeight * this.getInitialZoomFactor() * this.zoomFactor;
+                var maxX = elWidth - this.getContainerX() + this.options.horizontalPadding,
+                    maxY = elHeight - this.getContainerY() + this.options.verticalPadding,
                     maxOffsetX = Math.max(maxX, 0),
                     maxOffsetY = Math.max(maxY, 0),
-                    minOffsetX = Math.min(maxX, 0),
-                    minOffsetY = Math.min(maxY, 0);
+                    minOffsetX = Math.min(maxX, 0) - this.options.horizontalPadding,
+                    minOffsetY = Math.min(maxY, 0) - this.options.verticalPadding;
 
                 return {
                     x: Math.min(Math.max(offset.x, minOffsetX), maxOffsetX),
@@ -272,6 +328,7 @@
                     x: (_scale - 1) * (center.x + this.offset.x),
                     y: (_scale - 1) * (center.y + this.offset.y)
                 });
+                triggerEvent(this.el, this.options.zoomUpdateEventName);
             },
 
             /**
@@ -284,6 +341,18 @@
                 this.zoomFactor *= scale;
                 this.zoomFactor = Math.min(this.options.maxZoom, Math.max(this.zoomFactor, this.options.minZoom));
                 return this.zoomFactor / originalZoomFactor;
+            },
+
+            /**
+             * Determine if the image is in a draggable state
+             *
+             * When the image can be dragged, the drag event is acted upon and cancelled.
+             * When not draggable, the drag event bubbles through this component.
+             *
+             * @return {Boolean}
+             */
+            canDrag: function canDrag() {
+                return this.options.draggableUnzoomed || !isCloseTo(this.zoomFactor, 1);
             },
 
             /**
@@ -312,6 +381,7 @@
                             x: -(center.x - lastCenter.x)
                         });
                     }
+                    triggerEvent(this.el, this.options.dragUpdateEventName);
                 }
             },
 
@@ -391,6 +461,10 @@
              * (no offset and zoom factor 1)
              */
             zoomOutAnimation: function zoomOutAnimation() {
+                if (this.zoomFactor === 1) {
+                    return;
+                }
+
                 var startZoomFactor = this.zoomFactor,
                     zoomFactor = 1,
                     center = this.getCurrentZoomCenter(),
@@ -405,15 +479,18 @@
              * Updates the aspect ratio
              */
             updateAspectRatio: function updateAspectRatio() {
-                this.setContainerY(this.getContainerX() / this.getAspectRatio());
+                this.setContainerY(this.container.parentElement.offsetHeight);
             },
 
             /**
              * Calculates the initial zoom factor (for the element to fit into the container)
-             * @return the initial zoom factor
+             * @return {number} the initial zoom factor
              */
             getInitialZoomFactor: function getInitialZoomFactor() {
-                return this.container.offsetWidth / this.el.offsetWidth;
+                var xZoomFactor = this.container.offsetWidth / this.el.offsetWidth;
+                var yZoomFactor = this.container.offsetHeight / this.el.offsetHeight;
+
+                return Math.min(xZoomFactor, yZoomFactor);
             },
 
             /**
@@ -430,39 +507,16 @@
              * @return {Object} the current zoom center
              */
             getCurrentZoomCenter: function getCurrentZoomCenter() {
+                var offsetLeft = this.offset.x - this.initialOffset.x;
+                var centerX = -1 * this.offset.x - offsetLeft / (1 / this.zoomFactor - 1);
 
-                // uses following formula to calculate the zoom center x value
-                // offset_left / offset_right = zoomcenter_x / (container_x - zoomcenter_x)
-                var length = this.container.offsetWidth * this.zoomFactor,
-                    offsetLeft = this.offset.x,
-                    offsetRight = length - offsetLeft - this.container.offsetWidth,
-                    widthOffsetRatio = offsetLeft / offsetRight,
-                    centerX = widthOffsetRatio * this.container.offsetWidth / (widthOffsetRatio + 1),
-
-
-                // the same for the zoomcenter y
-                height = this.container.offsetHeight * this.zoomFactor,
-                    offsetTop = this.offset.y,
-                    offsetBottom = height - offsetTop - this.container.offsetHeight,
-                    heightOffsetRatio = offsetTop / offsetBottom,
-                    centerY = heightOffsetRatio * this.container.offsetHeight / (heightOffsetRatio + 1);
-
-                // prevents division by zero
-                if (offsetRight === 0) {
-                    centerX = this.container.offsetWidth;
-                }
-                if (offsetBottom === 0) {
-                    centerY = this.container.offsetHeight;
-                }
+                var offsetTop = this.offset.y - this.initialOffset.y;
+                var centerY = -1 * this.offset.y - offsetTop / (1 / this.zoomFactor - 1);
 
                 return {
                     x: centerX,
                     y: centerY
                 };
-            },
-
-            canDrag: function canDrag() {
-                return !isCloseTo(this.zoomFactor, 1);
             },
 
             /**
@@ -472,8 +526,10 @@
              */
             getTouches: function getTouches(event) {
                 var rect = this.container.getBoundingClientRect();
-                var posTop = rect.top + document.body.scrollTop;
-                var posLeft = rect.left + document.body.scrollLeft;
+                var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+                var scrollLeft = document.documentElement.scrollLeft || document.body.scrollLeft;
+                var posTop = rect.top + scrollTop;
+                var posLeft = rect.left + scrollLeft;
 
                 return Array.prototype.slice.call(event.touches).map(function (touch) {
                     return {
@@ -594,7 +650,7 @@
             /**
              * Updates the css values according to the current zoom factor and offset
              */
-            update: function update() {
+            update: function update(event) {
                 if (this.updatePlaned) {
                     return;
                 }
@@ -603,6 +659,14 @@
                 window.setTimeout(function () {
                     this.updatePlaned = false;
                     this.updateAspectRatio();
+
+                    if (event && event.type === 'resize') {
+                        this.computeInitialOffset();
+                    }
+
+                    if (event && event.type === 'load') {
+                        this.setupInitialOffset();
+                    }
 
                     var zoomFactor = this.getInitialZoomFactor() * this.zoomFactor,
                         offsetX = -this.offset.x / zoomFactor,
@@ -747,6 +811,8 @@
                             target.handleDragEnd(event);
                             break;
                     }
+                } else {
+                    target.isDoubleTap = false;
                 }
 
                 if (fingers === 1) {
@@ -764,7 +830,7 @@
             });
 
             el.addEventListener('touchmove', function (event) {
-                if (target.enabled) {
+                if (target.enabled && !target.isDoubleTap) {
                     if (firstMove) {
                         updateInteraction(event);
                         if (interaction) {

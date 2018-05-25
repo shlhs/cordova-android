@@ -49,7 +49,6 @@ app.controller('MonitorDetailCtrl', function ($scope, $stateParams) {
         iframe.onload = function(){
             iframe.onload = null;
             $.notify.progressStop();
-            // $timeout(enableZoom, 1000);
             setLandscape();
             enableZoom();
         };
@@ -73,9 +72,6 @@ app.controller('MonitorDetailCtrl', function ($scope, $stateParams) {
     }
 
     function enableZoom() {
-        // var el = document.querySelector('#targetObj');
-        var pz = new RTP.PinchZoom($("#iframeTargetObj"), {});
-
-
+        new window.PinchZoom.default(document.querySelector('#iframeTargetObj'), {});
     }
 });

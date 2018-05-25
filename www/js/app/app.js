@@ -19,7 +19,7 @@ app.run(function ($animate) {
 // }]);
 
 
-app.controller('MainCtrl', function ($scope, $rootScope, userService, routerService) {
+app.controller('MainCtrl', function ($scope, $rootScope, userService, routerService, cordovaService) {
 
     $scope.openPage = function(scope, template, params, config){
         routerService.openPage(scope, template, params, config);
@@ -182,7 +182,7 @@ app.service('platformService', function () {
     this.thumbHost = this.getImageThumbHost();
 });
 
-app.service('ajax', function ($rootScope, platformService, userService, $http) {
+app.service('ajax', function ($rootScope, platformService, userService, $http, cordovaService) {
     var host = platformService.host;
     $rootScope.host = host;
     var username = userService.getUsername(), password = userService.getPassword();

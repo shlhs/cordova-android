@@ -5,33 +5,41 @@ app.service('cordovaService', function (fileService, $timeout) {
     var self=this, deviceReady = false, networkValid=true;
 
     function init() {
+        // alert('listen for device ready');
         document.addEventListener("deviceready", onDeviceReady,false);
     }
 
     function onDeviceReady() {
+        // alert('deviceready');
         deviceReady = true;
-        window.open = cordova.InAppBrowser.open;
+        if (cordova && cordova.InAppBrowser)
+        {
+            console.log("window.open works well");
+            window.open = cordova.InAppBrowser.open;
+        }
         onNetworkState();
 
         // document.addEventListener("pause", appOnPause, false);       // 监听app是否进入后台
         // document.addEventListener("resume", appOnResume, false);     // 监听app是否重新打开
         document.addEventListener("offline", onNetworkState, false);
         document.addEventListener("online", onNetworkState, false);
-        if (device)
-        {
-            fileService.log('device ready: ' + JSON.stringify(self.getDeviceInfo()));
-        }else{
-            fileService.log('device ready');
-        }
+        // if (device)
+        // {
+        //     fileService.log('device ready: ' + JSON.stringify(self.getDeviceInfo()));
+        // }else{
+        //     fileService.log('device ready');
+        // }
     }
 
     function onNetworkState() {
-        var networkState = navigator.connection.type;
-        if (networkState !== Connection.NONE){
-            networkValid = true;
-        }else{
-            networkValid = false;
-            mui.toast('网络异常，请检查网络', {duration:'long'});
+        if (deviceReady && typeof (Connection) !== 'undefined') {
+            var networkState = navigator.connection.type;
+            if (networkState !== Connection.NONE){
+                networkValid = true;
+            }else{
+                networkValid = false;
+                mui.toast('网络异常，请检查网络', {duration:'long'});
+            }
         }
     }
 
@@ -50,7 +58,7 @@ app.service('cordovaService', function (fileService, $timeout) {
         };
     };
 
-    // init();
+    init();
 });
 
 

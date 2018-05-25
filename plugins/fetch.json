@@ -79,10 +79,10 @@
     "is_top_level": true,
     "variables": {}
   },
-  "cordova-hot-code-push-plugin": {
+  "cordova-plugin-settings-hook": {
     "source": {
       "type": "registry",
-      "id": "cordova-hot-code-push-plugin"
+      "id": "cordova-plugin-settings-hook@~0.2.7"
     },
     "is_top_level": true,
     "variables": {}

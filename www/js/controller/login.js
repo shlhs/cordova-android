@@ -7,7 +7,7 @@
 var gPublicApiHost = 'http://47.104.75.86:8090';
 
 
-app.controller('LoginCtrl', function ($scope, $timeout, platformService, userService, $state, $http, ajax) {
+app.controller('LoginCtrl', function ($scope, $timeout, platformService, userService, $state, $http, ajax, cordovaService) {
     $scope.error = '';
     var platform = null;
     $scope.enable = false;
@@ -27,6 +27,13 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
     $scope.inputChange();
 
     $scope.login = function () {
+        if (!cordovaService.networkIsValid()){
+            mui.toast('网络异常，登录失败');
+            if ($scope.isAutoLogin){
+                $state.go('login');
+            }
+            return false;
+        }
         $scope.enable = false;
         queryPlatform(login);
     };
