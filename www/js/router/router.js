@@ -40,8 +40,7 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
             params: {
                 sn: null
             },
-            templateUrl: '/templates/site/kanban.html',
-            controller: 'KanbanCtrl'
+            templateUrl: '/templates/site/kanban.html'
         })
         .state('index.kanban.eventList', {
             url: '/siteEvents',

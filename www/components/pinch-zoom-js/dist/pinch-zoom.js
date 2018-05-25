@@ -324,6 +324,7 @@
              * @return the aspect ratio
              */
             getAspectRatio: function () {
+                console.log('width:' + this.el.width() + ', height:' +this.el.height());
                 return this.el.width() / this.el.height();
             },
 
@@ -439,6 +440,7 @@
             },
 
             setContainerY: function (y) {
+                console.log(y);
                 return this.container.height(y);
             },
 

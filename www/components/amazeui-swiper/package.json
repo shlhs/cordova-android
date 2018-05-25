@@ -1,0 +1,74 @@
+{
+  "_from": "amazeui-swiper",
+  "_id": "amazeui-swiper@0.0.5",
+  "_inBundle": false,
+  "_integrity": "sha1-0NCrPEidfNJkipau52FDP+YnBuw=",
+  "_location": "/amazeui-swiper",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "amazeui-swiper",
+    "name": "amazeui-swiper",
+    "escapedName": "amazeui-swiper",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/amazeui-swiper/-/amazeui-swiper-0.0.5.tgz",
+  "_shasum": "d0d0ab3c489d7cd2648a96aee761433fe62706ec",
+  "_spec": "amazeui-swiper",
+  "_where": "/Users/luohusi/workspace/cordova/cordovaTest",
+  "author": {
+    "name": "minwe",
+    "email": "minwe@yunshipei.com"
+  },
+  "browserify-shim": {
+    "jquery": "global:jQuery"
+  },
+  "bugs": {
+    "url": "https://github.com/amazeui/swiper/issues"
+  },
+  "bundleDependencies": false,
+  "dependencies": {
+    "jquery": "^2.1.4",
+    "swiper": "^3.3.1"
+  },
+  "deprecated": false,
+  "description": "Swiper 轮播插件 Amaze UI 风格",
+  "devDependencies": {
+    "amazeui": "^2.7.0",
+    "amazeui-doc-util": "latest",
+    "amazeui-gulp-tasks": "latest",
+    "browserify": "^13.0.1",
+    "browserify-shim": "^3.8.12",
+    "gulp": "^3.9.1",
+    "gulp-load-plugins": "^1.2.4",
+    "run-sequence": "^1.2.2"
+  },
+  "homepage": "https://github.com/amazeui/swiper",
+  "keywords": [
+    "amazeui-plugin",
+    "amaze-ui",
+    "AMUI",
+    "swiper",
+    "jquery-swiper",
+    "jquery-plugin"
+  ],
+  "license": "MIT",
+  "main": "lib/amazeui.swiper.js",
+  "name": "amazeui-swiper",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/amazeui/swiper.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "style": "dist/amazeui.swiper.css",
+  "version": "0.0.5"
+}

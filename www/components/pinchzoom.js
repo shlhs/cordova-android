@@ -439,6 +439,7 @@
             },
 
             setContainerY: function (y) {
+                console.log(y);
                 return this.container.height(y);
             },
 

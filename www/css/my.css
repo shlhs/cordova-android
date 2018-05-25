@@ -1091,7 +1091,12 @@ a:hover.slidesjs-stop {
 .slidesjs-pagination li a:hover.active {
     background-color: #fff;
 }
-
+.kanban-slider .slidesjs-pagination {
+    bottom: 0;
+}
+.kanban-slider .chart {
+    margin-top: 10px;
+}
 #slides a:hover,
 #slides a:active {
     color: #9e2020
@@ -2535,4 +2540,7 @@ table.monitor-table {
 .switch-close {
     transition-duration: 0.2s;
     transform: translate(0px, 0px);
+}
+div.pinch-zoom, div.pinch-zoom-container{
+    height: 100%;
 }

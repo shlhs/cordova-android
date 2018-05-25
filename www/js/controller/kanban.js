@@ -24,8 +24,44 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
         }
         return colors[index];
     };
+    var needChartCount = 0, paintedChartCount=0, paintFailedCount=0;
+
+    function paintFailed() {        // 检测图表绘制是否已完成
+        paintFailedCount += 1;
+        if (paintedChartCount + paintFailedCount == needChartCount) {
+
+            var slide = $("#chartSlider");
+            slide.slidesjs({
+                start: $scope.index,
+                width: window.screen.width,
+                play: {
+                    active: true,
+                    swap: true
+                }
+            });
+        }
+    }
+
+    function paintSuccess() {
+        paintedChartCount += 1;
+        if (paintedChartCount + paintFailedCount == needChartCount) {
+
+            var slide = $("#chartSlider");
+            slide.slidesjs({
+                start: $scope.index,
+                width: window.screen.width,
+                play: {
+                    active: true,
+                    swap: true
+                }
+            });
+        }
+    }
 
     function getKanbanData() {
+        needChartCount = 0;
+        paintedChartCount = 0;
+        paintFailedCount = 0;
         ajax.get({
             url: "/station/" + $scope.sn + "/dashboardsetting/",
             cache: false,
@@ -34,8 +70,9 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                     return;
                 }
                 var contentsResult = JSON.parse(result.data).widgets.contents;
-                var keyVarDatas = []
+                var keyVarDatas = [];
                 var haveChart = false;
+                var chartCount = 0;
                 for(var i in contentsResult){
                     if(contentsResult[i].type === 'singlestate' || contentsResult[i].type === 'multistate'){
                         for(var j in contentsResult[i].content) {
@@ -65,10 +102,11 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                         }
                     }else if(contentsResult[i].type === 'pfv-electric-consumption-pie'){
                         var deviceVarSn = contentsResult[i].content[0].varInfo.deviceVarSn;
-                        if(!deviceVarSn || deviceVarSn == '') {
+                        if(!deviceVarSn) {
                             continue;
                         }
                         haveChart = true;
+                        needChartCount += 1;
                         getElectricalDegreeandCharge(contentsResult[i].title, deviceVarSn, contentsResult[i].period, $scope.queryTime, contentsResult[i].degreeOrCharge);
                     }else if(contentsResult[i].type === 'trend-analysis'){
                         var deviceVarSns = [];
@@ -79,6 +117,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                             continue;
                         }
                         haveChart = true;
+                        needChartCount += 1;
                         getTrendAnalysis(contentsResult[i].title, deviceVarSns, contentsResult[i].period, $scope.queryTime, contentsResult[i].pfvSettings);
                     }else if(contentsResult[i].type === 'ratio-pie'){
                         var ratioPieData = [];
@@ -97,6 +136,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                             tempData.value = getDeviceVarData(tempVarSn, $scope.queryTime, contentsResult[i].period, contentsResult[i].calcMethod);
                             ratioPieData.push(tempData);
                         }
+                        needChartCount += 1;
                         getRatioPie(contentsResult[i].title, ratioPieData);
                     }else if(contentsResult[i].type === 'device-statics'){
                         continue;
@@ -154,6 +194,9 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                 if ($("#realtime .mui-card:visible").length === 0){
                     $scope.hasData = false;
                 }
+                $('#chartSlider').swiper({
+                    pagination: '.swiper-pagination'
+                });
                 $scope.$apply();
             },
             error: function (a,b,c) {
@@ -191,185 +234,6 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
             }
         });
     }
-  
-    function drawPieVarGroupName(name, data) {
-        if (!data || !data.length){
-            return;
-        }
-        var valueList = [], names=[];
-        for (var i in data){
-            data[i].name = data[i].name;
-            data[i].y = data[i].data;
-            names.push(data[i].name);
-        }
-        Highcharts.getOptions().colors = Highcharts.map(['#90CAF9'], function (color) {
-            return {
-                radialGradient: { cx: 0.2, cy: 0.3, r: 0.7 },
-                stops: [
-                    [0, color],
-                    [1, Highcharts.Color(color).brighten(0.1).get('rgb')] // darken
-                ]
-            };
-        });
-        var config = {
-            chart: {
-                plotBackgroundColor: null,
-                plotBorderWidth: null,
-                plotShadow: false,
-                type: 'pie',
-                height:250,
-                margin: 10
-            },
-            credits: {
-                enabled: false
-            },
-            title: {
-                text: name
-            },
-            tooltip: {
-                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-            },
-            plotOptions: {
-                pie: {
-                    // allowPointSelect: true,
-                    cursor: 'pointer',
-                    colors: ['#BBDEFB', '#FFE0B2', '#D1C4E9', '#F8BBD0', '#C8E6C9', '#FFF59D'],
-                    dataLabels: {
-                        enabled: true,
-                        format: '<span>{point.name}</span><br>{point.options.data}{point.options.unit}<br>{point.percentage:.1f}%',
-                        distance: 0,
-                        style: {
-                            color: '#444',
-                            fontWeight: 'normal'
-                        },
-                        filter: {
-                            property: 'percentage',
-                            operator: '>',
-                            value: 4
-                        }
-                    }
-                }
-            },
-            series: [{
-                name: 'Brands',
-                data: data
-            }]
-        };
-        // 动态增加一个图标
-        drawChart(name, config);
-    }
-
-    function drawTopVarGroupName(name, data) {
-        if (!data || !data.length){
-            return;
-        }
-        data = data[0];
-        if (data.unit){
-            name += '/' + data.unit;
-        }
-        var timeList = [], values = [];
-        for (var i in data.time_keys){
-            if (varTrendType === 'DAY') {
-                timeList.push(data.time_keys[i].substring(11, 16));
-            }else{
-                timeList.push(data.time_keys[i].substring(5, 10));
-            }
-            values.push(data.datas[i] ? data.datas[i] : 0);
-        }
-        var config = {
-            chart: {
-                type: 'area',
-                height: 230
-            },
-            title: {
-                text: '能耗实时趋势'
-            },
-            subtitle:{
-                text: data.name + "/日"
-            },
-            credits: {
-                enabled: false
-            },
-            legend:{
-                enabled: false
-            },
-            xAxis: {
-                allowDecimals: false,
-                categories: timeList,
-                label: {
-                    step: 4
-                },
-                tickAmount: 4,
-                tickInterval: 5
-            },
-            yAxis: {
-                title: {
-                    enabled: false
-                },
-                labels: {
-                    formatter: function () {
-                        return this.value / 1000 + 'k';
-                    }
-                }
-            },
-            tooltip: {
-                pointFormat: '{series.name} 制造 <b>{point.y:,.0f}</b>枚弹头'
-            },
-            plotOptions: {
-                area: {
-                    // pointStart: 1940,
-                    marker: {
-                        enabled: false,
-                        symbol: 'circle',
-                        radius: 2,
-                        states: {
-                            hover: {
-                                enabled: true
-                            }
-                        }
-                    }
-                }
-            },
-            series: [{
-                name: '美国',
-                data: values
-            }]
-        };
-        // 动态增加一个图标
-        drawChart(name, config);
-    }
-
-    function drawChart(name, config) {
-        var id = 'chart' + chartCount;
-        if (chartCount === 1){
-            $("#chartGroup").empty();
-        }
-        /*jshint multistr: true */
-        $('<div class="mui-slider-item">\
-            <div class="card-content">\
-            <div class="mui-content-padded no-margin">\
-            <div class="chart" id="' + id + '"></div>\
-            <div style="position: absolute;left:0;top:0;width:100%;height:100%;"></div>\
-            </div>\
-            </div>\
-            </div>').prependTo($("#chartGroup"));
-
-        if (chartCount === 1)
-        {
-            $('<li class="slidesjs-pagination-item"><a href="#" class="active">1</a></li>').prependTo($("#chartSlidesPagination"));
-            document.querySelector("#chartSlider").addEventListener('slide', function (event) {
-               var slideNumber = event.detail.slideNumber;
-               $("#chartSlidesPagination li a").removeClass('active');
-                $("#chartSlidesPagination li:eq(" + (slideNumber-1) + ") a").addClass('active');
-            });
-        }else{
-            $('<li class="slidesjs-pagination-item"><a href="#">1</a></li>').prependTo($("#chartSlidesPagination"));
-        }
-
-        Highcharts.chart(id, config);
-        chartCount += 1;
-    }
-
 
     function getProcessedValue(stationSn, keyVaule, queryTime) {
         var processedValue = {};
@@ -528,6 +392,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
             },
             success: function (data) {
                 if (!data){
+                    paintFailed();
                     return;
                 }
                 var p = 0;
@@ -601,6 +466,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
 
             },
             error: function () {
+                paintFailed();
                 console.warn('获取数据失败');
             }
           });
@@ -626,7 +492,8 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
             },
             success: function (data) {
                 if (!data || !data.length){
-                return;
+                    paintFailed();
+                    return;
                 }
                 var times = [];
                 for(var i in data[0].time_keys) {
@@ -651,6 +518,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                 drawEchart(name, getTrendAnalysisEchartOption(showPfvSetting, pfvSettings, times, chartDatas));
             },
             error: function () {
+                paintFailed();
                 console.warn('获取数据失败');
             }
         });
@@ -843,6 +711,9 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
             title: [{
                 text: ''
             }],
+            chart: {
+              top: 15
+            },
             color: ['#F04863', '#F9CC13', '#369FFF', '#12C1C1', '#8442E0', '#2FC15B'],
             series: [{
                 name: '1',
@@ -898,31 +769,17 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
         if (chartCount === 1){
             $("#chartGroup").empty();
         }
-        /*jshint multistr: true */
-        $('<div class="mui-slider-item">\
-            <div class="card-content">\
+
+        $('<div class="card-content">\
             <div class="mui-content-padded no-margin">\
-            <span> '+ name +'</span>\
+            <span>'+ name +'</span>\
             <div class="chart" id="' + id + '"></div>\
             <div style="position: absolute;left:0;top:0;width:100%;height:100%;"></div>\
             </div>\
-            </div>\
-            </div>').prependTo($("#chartGroup"));
-
-        if (chartCount === 1)
-        {
-            $('<li class="slidesjs-pagination-item"><a href="#" class="active">1</a></li>').prependTo($("#chartSlidesPagination"));
-            document.querySelector("#chartSlider").addEventListener('slide', function (event) {
-               var slideNumber = event.detail.slideNumber;
-               $("#chartSlidesPagination li a").removeClass('active');
-                $("#chartSlidesPagination li:eq(" + (slideNumber-1) + ") a").addClass('active');
-            });
-        }else{
-            $('<li class="slidesjs-pagination-item"><a href="#">1</a></li>').prependTo($("#chartSlidesPagination"));
-        }
-
-        setTimeout(function(){echarts.init(document.getElementById(id)).setOption(config);}, 500);
+            </div>').prependTo($("#chartSlider"));
+        echarts.init(document.getElementById(id)).setOption(config);
         chartCount += 1;
+        paintSuccess();
     }
 
     //getDataList();
@@ -931,10 +788,4 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
         getKanbanData();
     }, 500);
 
-    // mui.init({
-    //     keyEventBind: {
-    //         backbutton: true,  //Boolean(默认true)关闭back按键监听
-    //         menubutton: true   //Boolean(默认true)关闭menu按键监听
-    //     }
-    // });
 });
