@@ -1,5 +1,59 @@
 "use strict";
 
+app.service('cordovaService', function (fileService, $timeout) {
+
+    var self=this, deviceReady = false, networkValid=true;
+
+    function init() {
+        document.addEventListener("deviceready", onDeviceReady,false);
+    }
+
+    function onDeviceReady() {
+        deviceReady = true;
+        window.open = cordova.InAppBrowser.open;
+        onNetworkState();
+
+        // document.addEventListener("pause", appOnPause, false);       // 监听app是否进入后台
+        // document.addEventListener("resume", appOnResume, false);     // 监听app是否重新打开
+        document.addEventListener("offline", onNetworkState, false);
+        document.addEventListener("online", onNetworkState, false);
+        if (device)
+        {
+            fileService.log('device ready: ' + JSON.stringify(self.getDeviceInfo()));
+        }else{
+            fileService.log('device ready');
+        }
+    }
+
+    function onNetworkState() {
+        var networkState = navigator.connection.type;
+        if (networkState !== Connection.NONE){
+            networkValid = true;
+        }else{
+            networkValid = false;
+            mui.toast('网络异常，请检查网络', {duration:'long'});
+        }
+    }
+
+    this.networkIsValid = function () {
+        return networkValid;
+    };
+
+    this.getDeviceInfo = function () {      // 获取设备信息
+        if (!deviceReady){
+            return null;
+        }
+        return {
+            platform: device.platform,
+            version: device.version,
+            model: device.model
+        };
+    };
+
+    // init();
+});
+
+
 app.service('scrollerService', function ($timeout) {
 
 
@@ -29,7 +83,7 @@ app.service('scrollerService', function ($timeout) {
 app.directive('deviceTreeView',[function(){
     return {
         restrict: 'E',
-        templateUrl: '/templates/site/common-device-tree.html',
+        templateUrl: 'templates/site/common-device-tree.html',
         scope: {
             deviceList: '=',
             gotoDevice: '='

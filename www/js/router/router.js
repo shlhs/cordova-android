@@ -13,15 +13,15 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
         .state('welcome', {
             url:'/welcome',
             // template: '<div>alskdjf</div>'
-            templateUrl: '/templates/welcome.html'
+            templateUrl: 'templates/welcome.html'
         })
         .state('login', {
             url: '/login',
-            templateUrl: '/templates/login.html'
+            templateUrl: 'templates/login.html'
         })
         .state('index', {
             url: '/index',
-            templateUrl: '/templates/home.html',
+            templateUrl: 'templates/home.html',
             controller: 'HomeCtrl'
         })
     ;
@@ -33,28 +33,28 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
             params: {
                 sn: null
             },
-            templateUrl: '/templates/site/event-list.html'
+            templateUrl: 'templates/site/event-list.html'
         })
         .state('index.kanban', {
             url: '/kanban',
             params: {
                 sn: null
             },
-            templateUrl: '/templates/site/kanban.html'
+            templateUrl: 'templates/site/kanban.html'
         })
         .state('index.kanban.eventList', {
             url: '/siteEvents',
             params: {
                 sn: null
             },
-            templateUrl: '/templates/site/event-list.html'
+            templateUrl: 'templates/site/event-list.html'
         })
         .state('index.monitorList', {
             url: '/monitors',
             params: {
                 sn: null
             },
-            templateUrl: '/templates/site/monitor-list.html',
+            templateUrl: 'templates/site/monitor-list.html',
             controller: 'MonitorListCtrl'
         })
         .state('index.monitorList.detail', {
@@ -62,14 +62,14 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
             params: {
                 url: null
             },
-            templateUrl: '/templates/site/monitor-detail.html',
+            templateUrl: 'templates/site/monitor-detail.html',
         })
         .state('index.monitorDevices', {
             url: '/monitordevices',
             params: {
                 sn: null
             },
-            templateUrl: '/templates/site/device-monitor-list.html'
+            templateUrl: 'templates/site/device-monitor-list.html'
         })
         .state('index.monitorDevices.detail', {
             url: '/detail',
@@ -78,28 +78,28 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                 deviceSn: null,
                 deviceName: null
             },
-            templateUrl: '/templates/site/device-monitor.html'
+            templateUrl: 'templates/site/device-monitor.html'
         })
         .state('index.devicedocs', {
             url: '/devicedocs',
             params: {
                 sn: null
             },
-            templateUrl: '/templates/site/static-devices/device-home.html'
+            templateUrl: 'templates/site/static-devices/device-home.html'
         })
         .state('index.devicedocs.detail', {
             url: '/detail',
             params: {
                 id: null
             },
-            templateUrl: '/templates/site/static-devices/device-detail.html'
+            templateUrl: 'templates/site/static-devices/device-detail.html'
         })
         .state('index.docs', {
             url: '/docs',
             params: {
                 sn: null
             },
-            templateUrl: '/templates/site/docs.html'
+            templateUrl: 'templates/site/docs.html'
         })
         .state('index.reports', {
             url: '/reports',
@@ -107,7 +107,7 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                 sn: null,
                 name: null
             },
-            templateUrl: '/templates/site/reports.html'
+            templateUrl: 'templates/site/reports.html'
         })
         .state('index.reports.detail', {
             url: '/detail',
@@ -115,14 +115,14 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                 link: null,
                 name: null
             },
-            templateUrl: '/templates/base-image-zoom.html'
+            templateUrl: 'templates/base-image-zoom.html'
         })
         .state('index.securityReports', {
             url: '/security',
             params: {
                 sn: null
             },
-            templateUrl: '/templates/evaluate/evaluate-history.html'
+            templateUrl: 'templates/evaluate/evaluate-history.html'
         })
         .state('index.poweroffReports', {
             url: '/poweroff-reports',
@@ -130,7 +130,7 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
                 sn: null,
                 name: null
             },
-            templateUrl: '/templates/maintenance-check/check-history.html'
+            templateUrl: 'templates/maintenance-check/check-history.html'
         })
         ;
 
@@ -140,26 +140,26 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
         //     url: '/setting',
         //     views: {
         //         'setting': {
-        //             templateUrl: '/templates/setting/setting.html',
+        //             templateUrl: 'templates/setting/setting.html',
         //             controller: 'SettingCtrl'
         //         }
         //     }
         // })
         .state('index.account', {
             url: 'account/',
-            templateUrl: '/templates/setting/account.html'
+            templateUrl: 'templates/setting/account.html'
         })
         .state('index.company', {
             url: 'company',
-            templateUrl: '/templates/setting/company.html'
+            templateUrl: 'templates/setting/company.html'
         })
         .state('index.share', {
             url: 'share',
-            templateUrl: '/templates/setting/share.html'
+            templateUrl: 'templates/setting/share.html'
         })
         .state('index.account.password', {
             url: 'password',
-            templateUrl: '/templates/setting/password_setter.html',
+            templateUrl: 'templates/setting/password_setter.html',
             controller: 'PasswordCtrl'
         })
     ;

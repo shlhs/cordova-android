@@ -1289,6 +1289,7 @@ a:hover.slidesjs-stop {
 .page{
     height: 100%;
     z-index: 1;
+    overflow: hidden;
 }
 
 .page-left.ng-enter {
@@ -1388,6 +1389,12 @@ a:hover.slidesjs-stop {
 }
 .info-group .title{
     color: rgb(141,140,143);
+    width: 98px;
+    display: inline-block;
+    float: left;
+}
+.info-group .title.dark{
+    color: rgb(51,51,51);
     width: 98px;
     display: inline-block;
     float: left;

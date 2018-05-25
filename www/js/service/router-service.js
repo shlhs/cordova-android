@@ -78,6 +78,9 @@ app.service('routerService', function ($timeout, $compile) {
     };
 
     this.openPage = function (scope, templateUrl, params, config) {
+        if (templateUrl.indexOf('/') ==0 ) {
+            templateUrl = templateUrl.substring(1);
+        }
         var html = "<route-page template=" + templateUrl;
         this._setNextPage(params, config);
         html += '></route-page>';

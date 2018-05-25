@@ -3,14 +3,14 @@
     <div style="height: 100%;overflow-y: hidden;" ng-controller="TaskBaseCtrl">
 
         <div id='sites' class="no-padding mui-control-content content-wrapper"
-             ng-class="{'mui-active': tabName === 'sites'}" ng-include="'/templates/site/site-home.html'" style="bottom:54px;">
+             ng-class="{'mui-active': tabName === 'sites'}" ng-include="'templates/site/site-home.html'" style="bottom:54px;">
         </div>
         <div ng-repeat="menu in navMenus" id={{menu.id}} class="no-padding mui-control-content content-wrapper"
              ng-class="{'mui-active': tabName === menu.id}" ng-include="menu.templateUrl" style="bottom:54px;">
         </div>
         <div ng-controller="SettingCtrl" id="setting" class=" no-padding mui-control-content"
              ng-class="{'mui-active': tabName === 'setting'}" style="height: 100%;">
-            <div ng-include="'/templates/setting/setting.html'"></div>
+            <div ng-include="'templates/setting/setting.html'"></div>
         </div>
     </div>
 </div>
