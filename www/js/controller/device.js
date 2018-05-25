@@ -603,6 +603,24 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile, $state
         });
     };
 
+    function _formatDeviceStatus(device) {
+        if (device.communi_status > 0){
+            device.status = 'offline';
+            device.status_name = '离线';
+            $scope.faultDeviceList.push(device);
+
+        }else{
+            if (device.running_status > 0){
+                device.status = 'danger';
+                device.status_name = '故障';
+                $scope.faultDeviceList.push(device);
+            }else{
+                device.status = 'normal';
+                device.status_name = '正常';
+            }
+        }
+    }
+
     function getDeviceVars(deviceList, cb) {
         if (deviceList.length === 0){
             cb([]);

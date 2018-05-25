@@ -77,7 +77,6 @@ html,body{
 }
 .login-area .form-item {
     border-bottom: rgb(232,232,232) 1px solid;
-    padding: 12px 0;
     box-sizing: border-box;
     margin: 0 44px;
     position: relative;
@@ -97,7 +96,7 @@ html,body{
     font-size: 18px;
     padding: 0 0 0 84px;
     line-height: 22px;
-    height: 24px;
+    height: 48px;
 }
 .login-area input::-webkit-input-placeholder {
     /* placeholder颜色  */
@@ -494,7 +493,7 @@ header.mui-bar{
     left: 0;
     background-color: #0d0d0d;
     color: #fff;
-    line-height: 60px;
+    line-height: 48px;
     text-align: center;
 }
 .weui-gallery__del {
@@ -1805,10 +1804,10 @@ color: #a7a7a7;
     right: 0px;
 }
 .site-header .mui-pull-left {
-    color: rgb(255,255,255);
+    color: #fff;
     font-size: 14px;
     border-bottom: rgb(232,232,232) 1px dashed;
-    font-weight: 100;
+    /*font-weight: 100;*/
     margin-top:10px;
 }
 .site-header {
@@ -1897,8 +1896,8 @@ color: #a7a7a7;
     background-color: #323234;
 }
 .dark-popover .mui-table-view-cell {
-    color: #FFFEFF;
-    font-weight: 100;
+    color: #fff;
+    /*font-weight: 100;*/
 }
 .dark-popover .mui-table-view-cell:after {
     background-color: rgb(73,72,75);

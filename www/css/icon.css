@@ -199,3 +199,11 @@
 .icon-history-1:before { 
     content: '\3000'; 
 }
+.loading-spinner {
+    background-image: url(../img/page-loading.gif);
+    width: 28px !important;
+    height: 28px !important;
+}
+.icon-delete {
+    background-image: url("../img/light/64X64/delete.png");
+}

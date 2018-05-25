@@ -1057,10 +1057,14 @@ app.controller('TaskHandlerUpload', function ($scope, $timeout) {
        $scope.$apply();
    };
 
+   $scope.openGallery = function (data) {
+       $scope.openPage($scope, 'templates/task/task-gallery.html', data);
+   }
+
 });
 
 app.controller('GalleryCtrl', function ($scope, $stateParams, $timeout) {
-    $scope.canDelete = false;
+    // $scope.canDelete = false;
     // $scope.index = $stateParams.index;
     // $scope.images = $stateParams.images;
     $scope.show = false;
@@ -1086,7 +1090,7 @@ app.controller('GalleryCtrl', function ($scope, $stateParams, $timeout) {
             });
         }
 
-        $scope.canDelete = $stateParams.canDelete;
+        // $scope.canDelete = $stateParams.canDelete;
         $scope.$apply();
     }
 

@@ -1,19 +1,17 @@
 <div ng-controller="GalleryCtrl" class="inner-page page page-fade">
-    <div id="slides" class="slides">
+    <div id="slides" class="slides" style="bottom: 40px;z-index: 0;">
         <div class="img-container" ng-repeat="image in images">
-            <div>
-                <img ng-src="{{image}}"  ng-click="hide()">
+            <div onclick="history.back()">
+                <img ng-src="{{image}}">
             </div>
         </div>
         <!--<div class="mui-slider-indicator">-->
             <!--<div class="mui-indicator" ng-repeat="image in images" ng-class="{'mui-active': $index==index}"></div>-->
         <!--</div>-->
-
-        <div class="weui-gallery__opr" ng-if="canDelete">
-            <a href="javascript:" class="weui-gallery__del" ng-click="deleteImage()">
-                <i class="weui-icon-delete weui-icon_gallery-delete fa fa-trash-o"></i>
-            </a>
-        </div>
-
+    </div>
+    <div class="weui-gallery__opr" ng-if="canDelete">
+        <a href="javascript:void(0)" class="weui-gallery__del" ng-click="deleteImage()">
+            <i class="icon icon-28 icon-delete"></i>
+        </a>
     </div>
 </div>
