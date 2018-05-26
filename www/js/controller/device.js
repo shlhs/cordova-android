@@ -726,6 +726,9 @@ app.controller('DeviceMonitorCtrl', function ($scope, ajax) {
             success: function (data) {
                 $scope.isLoading = false;
                 $scope.vars = data;
+                if(data.length > 0) {
+                    $scope.deviceName = data[0].device_name;
+                }
                 groupVars(data);
             }, error: function () {
                 $scope.isLoading = false;
