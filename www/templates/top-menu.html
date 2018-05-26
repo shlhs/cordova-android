@@ -34,6 +34,7 @@
 
     function openDeviceFromQR(data) {   //根据扫码结果打开设备详情
         console.log(data);
-        window.location.href = '/templates/site/device-monitor.html?stationSn=ZsRkxny&deviceSn=' + data.sn;
+        var stationSn = data.sn.substring(0, data.sn.indexOf("_"));
+        window.location.href = '/templates/site/device-monitor.html?stationSn=' + stationSn + '&deviceSn=' + data.sn;
     }
 </script>
