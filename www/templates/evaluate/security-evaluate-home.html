@@ -2,8 +2,8 @@
 <div class="page page-left" ng-controller="SecurityEvaluateHome">
 
         <header class="mui-bar bg-{{evaluateData.status}} bg-transparent" style="z-index:1;box-shadow: 0 0 1px rgba(239, 237, 237, 0.85);" id="transparentHeader">
-            <a class="mui-icon mui-icon-left-nav mui-pull-left text-white" ng-click="gotoPrevPage()"></a>
-            <h1 class="mui-title" id="header_title">设备安全技术评测</h1>
+            <a class="mui-icon mui-icon-left-nav mui-pull-left text-white" ng-click="gotoPrevPage()" style="color: #fff;"></a>
+            <h1 class="mui-title" id="header_title" style="color: #fff;">设备安全技术评测</h1>
         </header>
         <div class="mui-content" ng-cloak style="top:0px;" onscroll="bodyScroll(this)">
             <div class="statics-card bg-{{evaluateData.status}}">
@@ -27,9 +27,9 @@
 
             <div class="card">
                 <ul class="info-group" style="font-size: 14px;">
-                    <li style="line-height: 28px;"><label>站点名称：</label><span class="value">{{evaluateData.station_name}}</span> </li>
-                    <li style="line-height: 28px;"><label>检查人：</label><span class="value">{{evaluateData.creator_name}}</span> </li>
-                    <li style="line-height: 28px;"><label>检查时间：</label><span class="value">{{evaluateData.create_time.substring(0, 16)}}</span> </li>
+                    <li style="line-height: 28px;"><label class="title">站点名称：</label><span class="value">{{evaluateData.station_name}}</span> </li>
+                    <li style="line-height: 28px;"><label class="title">检查人：</label><span class="value">{{evaluateData.creator_name}}</span> </li>
+                    <li style="line-height: 28px;"><label class="title">检查时间：</label><span class="value">{{evaluateData.create_time.substring(0, 16)}}</span> </li>
                     <!--<li style="line-height: 28px;"><label>上一次保存时间：</label><span class="value">{{evaluateData.update_time}}</span> </li>-->
                 </ul>
             </div>
