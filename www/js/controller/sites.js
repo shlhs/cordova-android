@@ -3,6 +3,11 @@
 /**
  * Created by liucaiyun on 2017/7/28.
  */
+// 事件确认后调用该方法，需要
+function eventHandled() {
+    var scope = $("#siteHome").scope();
+    scope.getDataList();
+}
 
 
 app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, platformService) {
@@ -53,6 +58,19 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, p
             }
         });
     };
+
+    $scope.updateSiteData = function () {
+        var url = "/stations/" + $scope.currentSite.sn + "/events";
+        ajax.get({
+            url: url,
+            success: function (data) {
+            },
+            error: function () {
+
+            }
+        })
+    };
+
     $scope.showPopover = function () {
         $scope.popup_visible=true;
     };
@@ -248,6 +266,8 @@ app.controller('EventListCtrl', function ($scope, $stateParams, scrollerService,
                 if (!inserted) {
                     $scope.events.push(data);
                 }
+                // 确认事件后，需要在首页更新事件信息
+                window.android && window.android.onJsCallbackForPrevPage('eventHandled', '');
                 $scope.$apply();
             },
             error: function (data) {

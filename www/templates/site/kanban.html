@@ -68,6 +68,7 @@
         .summary-item .value{
             font-weight: normal;
             font-size: 16px;
+            margin-top: 0;
         }
         .summary-item .unit{
             margin-left: 2px;
@@ -146,7 +147,7 @@
                 <ul class="mui-row summary-list" style="padding-top:6px;">
                     <li ng-repeat="v in keyVarDatas" class="mui-col-xs-6 mui-col-sm-6 summary-item"
                     ng-style="{'background-color': getRandomColor($index)}">
-                        <span class="title">{{v.name}}</span>
+                        <span class="title mui-ellipsis">{{v.name}}</span>
                         <h4 class="value">{{v.value}}<span class="unit">{{v.unit}}</span> </h4>
                     </li>
                 </ul>
