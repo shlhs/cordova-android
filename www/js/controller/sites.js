@@ -104,10 +104,56 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, p
     };
 });
 
-app.controller('SiteDetailCtrl', function ($scope, $location, $stateParams, routerService) {
-    $scope.sn = GetQueryString('sn');
-    $scope.name = GetQueryString("name");
-    $scope.siteData = null;
+app.controller('SiteDetailCtrl', function ($scope, ajax, platformService) {
+    $scope.sn = GetQueryString("sn");
+    $scope.currentSite = {};
+    $scope.isSiteDetail = true;
+
+    $scope.getDataList = function () {
+        ajax.get({
+            url: "/stations/details",
+            success: function(result) {
+                $scope.isLoading = false;
+                for (var i=0; i<result.length; i++) {
+                    if (result[i].station.sn === $scope.sn) {
+                        var s = result[i];
+                        if (s.status === '') {
+                            s.status = 'unknown';
+                            s.status_name = '未知';
+                        } else if (s.status === '1') {
+                            if (s.unclosed_envet_amount > 0) {
+                                s.status = 'abnormal';
+                                s.status_name = '异常';
+                            } else {
+                                s.status = 'normal';
+                                s.status_name = '正常';
+                            }
+                        } else {
+                            s.status = 'offline';
+                            s.status_name = '离线';
+                        }
+                        if (s.station.photo_src_link) {
+                            s.site_image = platformService.getImageUrl(180, 180, platformService.host + s.station.photo_src_link);
+                        }
+                        else {
+                            s.site_image = '/img/site-default.png';
+                        }
+                        $scope.currentSite = s;
+                        break;
+                    }
+                }
+                $scope.$apply();
+            },
+            error: function (a,b,c) {
+                $scope.isLoading = false;
+                $.notify.error('获取站点列表失败');
+                console.log('get fail');
+                $scope.$apply();
+            }
+        });
+    };
+
+    $scope.getDataList();
 });
 
 app.controller('SiteBaseInfoCtrl', function ($scope, $timeout, $stateParams, ajax, platformService) {      //  站点基本信息
@@ -129,7 +175,7 @@ app.controller('SiteBaseInfoCtrl', function ($scope, $timeout, $stateParams, aja
                 else {
                     data.site_image = '/img/background/site-default.png';
                 }
-                $scope.siteData = data;
+                $scope.currentSite.station = data;
                 getUnhandledEventCount(data);
                 $scope.$apply();
             },

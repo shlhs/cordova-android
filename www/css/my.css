@@ -1671,7 +1671,7 @@ color: #a7a7a7;
     top: 0px;
     right: 0px;
 }
-.site-header .mui-pull-left {
+.site-header .site-popover {
     color: rgb(255,255,255);
     font-size: 14px;
     border-bottom: rgb(232,232,232) 1px dashed;
