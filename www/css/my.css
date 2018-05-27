@@ -969,6 +969,9 @@ a:hover.slidesjs-stop {
 .slidesjs-pagination li a:hover.active {
     background-color: #fff;
 }
+.kanban-slider .slidesjs-pagination {
+    bottom: 0;
+}
 
 #slides a:hover,
 #slides a:active {

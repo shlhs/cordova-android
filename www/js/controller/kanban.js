@@ -1,8 +1,9 @@
 "use strict";
 
 
-app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
+app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
     $scope.sn = GetQueryString('sn');
+    // $scope.sn = $stateParams.sn;
     $scope.hasData = true;
     $scope.isLoading = true;
     $scope.havaEventList = false;
@@ -23,8 +24,44 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
         }
         return colors[index];
     };
+    var needChartCount = 0, paintedChartCount=0, paintFailedCount=0;
+
+    function paintFailed() {        // 检测图表绘制是否已完成
+        paintFailedCount += 1;
+        if (paintedChartCount + paintFailedCount == needChartCount) {
+
+            var slide = $("#chartSlider");
+            slide.slidesjs({
+                start: $scope.index,
+                width: window.screen.width,
+                play: {
+                    active: true,
+                    swap: true
+                }
+            });
+        }
+    }
+
+    function paintSuccess() {
+        paintedChartCount += 1;
+        if (paintedChartCount + paintFailedCount == needChartCount) {
+
+            var slide = $("#chartSlider");
+            slide.slidesjs({
+                start: $scope.index,
+                width: window.screen.width,
+                play: {
+                    active: true,
+                    swap: true
+                }
+            });
+        }
+    }
 
     function getKanbanData() {
+        needChartCount = 0;
+        paintedChartCount = 0;
+        paintFailedCount = 0;
         ajax.get({
             url: "/station/" + $scope.sn + "/dashboardsetting/",
             cache: false,
@@ -33,8 +70,9 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
                     return;
                 }
                 var contentsResult = JSON.parse(result.data).widgets.contents;
-                var keyVarDatas = []
+                var keyVarDatas = [];
                 var haveChart = false;
+                var chartCount = 0;
                 for(var i in contentsResult){
                     if(contentsResult[i].type === 'singlestate' || contentsResult[i].type === 'multistate'){
                         for(var j in contentsResult[i].content) {
@@ -64,10 +102,11 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
                         }
                     }else if(contentsResult[i].type === 'pfv-electric-consumption-pie'){
                         var deviceVarSn = contentsResult[i].content[0].varInfo.deviceVarSn;
-                        if(!deviceVarSn || deviceVarSn == '') {
+                        if(!deviceVarSn) {
                             continue;
                         }
                         haveChart = true;
+                        needChartCount += 1;
                         getElectricalDegreeandCharge(contentsResult[i].title, deviceVarSn, contentsResult[i].period, $scope.queryTime, contentsResult[i].degreeOrCharge);
                     }else if(contentsResult[i].type === 'trend-analysis'){
                         var deviceVarSns = [];
@@ -78,6 +117,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
                             continue;
                         }
                         haveChart = true;
+                        needChartCount += 1;
                         getTrendAnalysis(contentsResult[i].title, deviceVarSns, contentsResult[i].period, $scope.queryTime, contentsResult[i].pfvSettings);
                     }else if(contentsResult[i].type === 'ratio-pie'){
                         var ratioPieData = [];
@@ -96,6 +136,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
                             tempData.value = getDeviceVarData(tempVarSn, $scope.queryTime, contentsResult[i].period, contentsResult[i].calcMethod);
                             ratioPieData.push(tempData);
                         }
+                        needChartCount += 1;
                         getRatioPie(contentsResult[i].title, ratioPieData);
                     }else if(contentsResult[i].type === 'device-statics'){
                         continue;
@@ -111,7 +152,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
 
                 $scope.isLoading = false;
                 $scope.$apply();
-               
+
             },
             error: function (a,b,c) {
                 $scope.isLoading = false;
@@ -153,6 +194,9 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
                 if ($("#realtime .mui-card:visible").length === 0){
                     $scope.hasData = false;
                 }
+                $('#chartSlider').swiper({
+                    pagination: '.swiper-pagination'
+                });
                 $scope.$apply();
             },
             error: function (a,b,c) {
@@ -190,194 +234,15 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
             }
         });
     }
-  
-    function drawPieVarGroupName(name, data) {
-        if (!data || !data.length){
-            return;
-        }
-        var valueList = [], names=[];
-        for (var i in data){
-            data[i].name = data[i].name;
-            data[i].y = data[i].data;
-            names.push(data[i].name);
-        }
-        Highcharts.getOptions().colors = Highcharts.map(['#90CAF9'], function (color) {
-            return {
-                radialGradient: { cx: 0.2, cy: 0.3, r: 0.7 },
-                stops: [
-                    [0, color],
-                    [1, Highcharts.Color(color).brighten(0.1).get('rgb')] // darken
-                ]
-            };
-        });
-        var config = {
-            chart: {
-                plotBackgroundColor: null,
-                plotBorderWidth: null,
-                plotShadow: false,
-                type: 'pie',
-                height:250,
-                margin: 10
-            },
-            credits: {
-                enabled: false
-            },
-            title: {
-                text: name
-            },
-            tooltip: {
-                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-            },
-            plotOptions: {
-                pie: {
-                    // allowPointSelect: true,
-                    cursor: 'pointer',
-                    colors: ['#BBDEFB', '#FFE0B2', '#D1C4E9', '#F8BBD0', '#C8E6C9', '#FFF59D'],
-                    dataLabels: {
-                        enabled: true,
-                        format: '<span>{point.name}</span><br>{point.options.data}{point.options.unit}<br>{point.percentage:.1f}%',
-                        distance: 0,
-                        style: {
-                            color: '#444',
-                            fontWeight: 'normal'
-                        },
-                        filter: {
-                            property: 'percentage',
-                            operator: '>',
-                            value: 4
-                        }
-                    }
-                }
-            },
-            series: [{
-                name: 'Brands',
-                data: data
-            }]
-        };
-        // 动态增加一个图标
-        drawChart(name, config);
-    }
-
-    function drawTopVarGroupName(name, data) {
-        if (!data || !data.length){
-            return;
-        }
-        data = data[0];
-        if (data.unit){
-            name += '/' + data.unit;
-        }
-        var timeList = [], values = [];
-        for (var i in data.time_keys){
-            if (varTrendType === 'DAY') {
-                timeList.push(data.time_keys[i].substring(11, 16));
-            }else{
-                timeList.push(data.time_keys[i].substring(5, 10));
-            }
-            values.push(data.datas[i] ? data.datas[i] : 0);
-        }
-        var config = {
-            chart: {
-                type: 'area',
-                height: 230
-            },
-            title: {
-                text: '能耗实时趋势'
-            },
-            subtitle:{
-                text: data.name + "/日"
-            },
-            credits: {
-                enabled: false
-            },
-            legend:{
-                enabled: false
-            },
-            xAxis: {
-                allowDecimals: false,
-                categories: timeList,
-                label: {
-                    step: 4
-                },
-                tickAmount: 4,
-                tickInterval: 5
-            },
-            yAxis: {
-                title: {
-                    enabled: false
-                },
-                labels: {
-                    formatter: function () {
-                        return this.value / 1000 + 'k';
-                    }
-                }
-            },
-            tooltip: {
-                pointFormat: '{series.name} 制造 <b>{point.y:,.0f}</b>枚弹头'
-            },
-            plotOptions: {
-                area: {
-                    // pointStart: 1940,
-                    marker: {
-                        enabled: false,
-                        symbol: 'circle',
-                        radius: 2,
-                        states: {
-                            hover: {
-                                enabled: true
-                            }
-                        }
-                    }
-                }
-            },
-            series: [{
-                name: '美国',
-                data: values
-            }]
-        };
-        // 动态增加一个图标
-        drawChart(name, config);
-    }
-
-    function drawChart(name, config) {
-        var id = 'chart' + chartCount;
-        if (chartCount === 1){
-            $("#chartGroup").empty();
-        }
-        /*jshint multistr: true */
-        $('<div class="mui-slider-item">\
-            <div class="card-content">\
-            <div class="mui-content-padded no-margin">\
-            <div class="chart" id="' + id + '"></div>\
-            <div style="position: absolute;left:0;top:0;width:100%;height:100%;"></div>\
-            </div>\
-            </div>\
-            </div>').prependTo($("#chartGroup"));
-
-        if (chartCount === 1)
-        {
-            $('<li class="slidesjs-pagination-item"><a href="#" class="active">1</a></li>').prependTo($("#chartSlidesPagination"));
-            document.querySelector("#chartSlider").addEventListener('slide', function (event) {
-               var slideNumber = event.detail.slideNumber;
-               $("#chartSlidesPagination li a").removeClass('active');
-                $("#chartSlidesPagination li:eq(" + (slideNumber-1) + ") a").addClass('active');
-            });
-        }else{
-            $('<li class="slidesjs-pagination-item"><a href="#">1</a></li>').prependTo($("#chartSlidesPagination"));
-        }
-
-        Highcharts.chart(id, config);
-        chartCount += 1;
-    }
-
 
     function getProcessedValue(stationSn, keyVaule, queryTime) {
-        let processedValue = {};
-        let tempContent = keyVaule;
+        var processedValue = {};
+        var tempContent = keyVaule;
         processedValue.name = tempContent.name;
-        let tempType = tempContent.type;
+        var tempType = tempContent.type;
         processedValue.type = tempType;
-  
-        let tempValue = '请进行配置';
+
+        var tempValue = '请进行配置';
         if(tempType == 'normal-text') {
             tempValue = tempContent.value;
         } else if(tempType == 'station-manage-info') {
@@ -390,122 +255,122 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
                 },
                 crossDomain: true,
                 success: function(data) {
-                let stationInfo = data;
-                stationInfo.capacity = stationInfo.capacity + 'KVA';
-                stationInfo.safe_operation_days='' +  parseInt((Math.abs(new Date() - Date.parse(stationInfo.init_time)))/1000/60/60/24) + '天';
-                tempValue = stationInfo[tempContent.value];
+                    var stationInfo = data;
+                    stationInfo.capacity = stationInfo.capacity + 'KVA';
+                    stationInfo.safe_operation_days='' +  parseInt((Math.abs(new Date() - Date.parse(stationInfo.init_time)))/1000/60/60/24) + '天';
+                    tempValue = stationInfo[tempContent.value];
                 },
                 error: function(err){
-                console.log('获取站点信息失败 '+stationSn+err);
+                    console.log('获取站点信息失败 '+stationSn+err);
                 }
             });
         } else if(tempType == 'device-data') {
             tempValue = getDeviceVarData(tempContent.varInfo.deviceVarSn, queryTime, tempContent.period, tempContent.calcMethod);
         }
         processedValue.processed_value = tempValue;
-    
+
         return processedValue;
     }
 
     function getDeviceVarData(deviceSn, queryTime, queryPeriod, calcMethod){
         if(deviceSn == null || deviceSn == '') {
-        console.warn('no deviceSn for getDeviceVarData')
-        return '';
+            console.warn('no deviceSn for getDeviceVarData');
+            return '';
         }
         if(queryTime == null || queryTime == '') {
-        console.warn('no queryTime for getDeviceVarData')
-        return '';
+            console.warn('no queryTime for getDeviceVarData');
+            return '';
         }
         if(queryPeriod == null || queryPeriod == '') {
-        console.warn('no queryPeriod for getDeviceVarData')
-        return '';
+            console.warn('no queryPeriod for getDeviceVarData');
+            return '';
         }
         if(calcMethod == null || calcMethod == '') {
-        console.warn('no calcMethod for getDeviceVarData')
-        return '';
+            console.warn('no calcMethod for getDeviceVarData');
+            return '';
         }
-    
+
         if(queryPeriod == 'real_time') {
-        let resultValue = '';
-        ajax.get({
-            url: `/devicevars/getrealtimevalues?sns=${deviceSn}`,
-            async: false,
-            success: function (data) {
-            if(!data || data.length == 0) {
-                return;
-            }
-            resultValue = data[0].data+data[0].unit;
-            },
-            error: function () {
-            console.warn('获取设备变量实时值失败 '+deviceSn);
-            }
-        });
-        return resultValue;
+            var resultValue = '';
+            ajax.get({
+                url: '/devicevars/getrealtimevalues?sns=' + deviceSn,
+                async: false,
+                success: function (data) {
+                    if(!data || data.length == 0) {
+                        return;
+                    }
+                    resultValue = data[0].data+data[0].unit;
+                },
+                error: function () {
+                    console.warn('获取设备变量实时值失败 '+deviceSn);
+                }
+            });
+            return resultValue;
         }
-    
-    
-        let tempQueryTime = queryTime.substr(0,10) + 'T' + queryTime.substr(11,8) + '.000Z';
-    
+
+
+        var tempQueryTime = queryTime.substr(0,10) + 'T' + queryTime.substr(11,8) + '.000Z';
+
         if(calcMethod == 'average') {
-        if(queryPeriod == 'current_month') {
-            let resultValue = '';
-            ajax.get({
-            url: '/devicevars/getstatisticalvalues?type=YEAR&calcmethod=AVG&sns=' + deviceSn + '&querytime=' + tempQueryTime,
-            async: false,
-            dataType: 'json',
-            xhrFields: {
-                withCredentials: true
-            },
-            crossDomain: true,
-            success: function(data) {
-                if(data.length == 0) {
-                return;
-                }
-                let varData = data[0];
-                let index = parseInt(tempQueryTime.substr(5,2)) - 1;
-                if(varData.datas != null && varData.datas.length > index) {
-                if(varData.datas[index] != null) {
-                    resultValue = varData.datas[index]+varData.unit;
-                }
-                }
-            },
-            error: function(){
-                console.log('获取设备变量值失败 '+deviceSn);
+            if(queryPeriod == 'current_month') {
+                var resultValue = '';
+                ajax.get({
+                    url: '/devicevars/getstatisticalvalues?type=YEAR&calcmethod=AVG&sns=' + deviceSn + '&querytime=' + tempQueryTime,
+                    async: false,
+                    dataType: 'json',
+                    xhrFields: {
+                        withCredentials: true
+                    },
+                    crossDomain: true,
+                    success: function(data) {
+                        if(data.length == 0) {
+                            return;
+                        }
+                        var varData = data[0];
+                        var index = parseInt(tempQueryTime.substr(5,2)) - 1;
+                        if(varData.datas != null && varData.datas.length > index) {
+                            if(varData.datas[index] != null) {
+                                resultValue = varData.datas[index]+varData.unit;
+                            }
+                        }
+                    },
+                    error: function(){
+                        console.log('获取设备变量值失败 '+deviceSn);
+                    }
+                });
+                return resultValue;
             }
-            });
-            return resultValue;
         }
-        }
-        
+
         if(calcMethod == 'diff'){
-        if(queryPeriod == 'current_month') {
-            let resultValue = '';
-            ajax.get({
-            url: '/devicevars/getaccumulatedvalues?type=MONTH&sns=' + deviceSn + '&starttime=' + tempQueryTime + '&endtime=' + tempQueryTime,
-            async: false,
-            dataType: 'json',
-            xhrFields: {
-                withCredentials: true
-            },
-            crossDomain: true,
-            success: function(data) {
-                if(data.length == 0) {
-                return;
-                }
-                let varData = data[0];
-                //查询的开始时间 与 结束时间 相同，因此直接去第一个结果值 即可
-                if(varData.datas != null && varData.datas.length > 0) {
-                if(varData.datas[0] != null) {
-                    resultValue = varData.datas[0]+varData.unit;
-                }
-                }
-            },
-            error: function(){
-                console.log('获取设备变量值失败 '+deviceSn);
+            if(queryPeriod == 'current_month') {
+                var resultValue = '';
+                ajax.get({
+                    url: '/devicevars/getaccumulatedvalues?type=MONTH&sns=' + deviceSn + '&starttime=' + tempQueryTime + '&endtime=' + tempQueryTime,
+                    async: false,
+                    dataType: 'json',
+                    xhrFields: {
+                        withCredentials: true
+                    },
+                    crossDomain: true,
+                    success: function(data) {
+                        if(data.length == 0) {
+                            return;
+                        }
+                        var varData = data[0];
+                        //查询的开始时间 与 结束时间 相同，因此直接去第一个结果值 即可
+                        if(varData.datas != null && varData.datas.length > 0) {
+                            if(varData.datas[0] != null) {
+                                resultValue = varData.datas[0]+varData.unit;
+                            }
+                        }
+                    },
+                    error: function(){
+                        console.log('获取设备变量值失败 '+deviceSn);
+                    }
+                });
+                return resultValue;
             }
-            });
-            return resultValue;
-        }
         }
         return '暂不支持：'+queryPeriod+'/'+calcMethod;
     }
@@ -527,6 +392,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
             },
             success: function (data) {
                 if (!data){
+                    paintFailed();
                     return;
                 }
                 var p = 0;
@@ -534,7 +400,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
                 var v = 0;
                 var sum = 0;
                 var unit = degreeOrCharge == 'charge' ? '元' : 'kWh';
-        
+
                 if(degreeOrCharge == 'charge') {
                     for(var i=0; i < data.length; i++) {
                         p += data[i].pCharge;
@@ -550,71 +416,72 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
                         sum += data[j].allDegree;
                     }
                 }
-        
+
                 var newData = [{
-                                    value: p,
-                                    name: '峰'
-                                }, {
-                                    value: f,
-                                    name: '平'
-                                }, {
-                                    value: v,
-                                    name: '谷'
-                                }];
+                    value: p,
+                    name: '峰'
+                }, {
+                    value: f,
+                    name: '平'
+                }, {
+                    value: v,
+                    name: '谷'
+                }];
 
                 var echartOptions = {
                     title: [{
-                      text: ''+sum+'\n'+unit,
-                      textStyle: {
-                        fontFamily: 'Microsoft YaHei',
-                        fontSize: 12
-                      },
-                      x: 'center',
-                      y: 'center'
+                        text: ''+sum+'\n'+unit,
+                        textStyle: {
+                            fontFamily: 'Microsoft YaHei',
+                            fontSize: 12
+                        },
+                        x: 'center',
+                        y: 'center'
                     }],
                     tooltip: {
-                      trigger: 'item',
-                      formatter: '{a} <br/>{b}: {c} ({d}%)'
+                        trigger: 'item',
+                        formatter: '{a} <br/>{b}: {c} ({d}%)'
                     },
                     legend: {
-                      orient: 'vertical',
-                      show: false,
-                      x: 'left',
-                      data: ['峰', '平', '谷']
+                        orient: 'vertical',
+                        show: false,
+                        x: 'left',
+                        data: ['峰', '平', '谷']
                     },
                     color: ['#F04863', '#F9CC13', '#369FFF', '#12C1C1', '#8442E0', '#2FC15B'],
                     series: [{
-                      name: '用电量',
-                      type: 'pie',
-                      radius: ['30%', '65%'],
-                      label: {
-                        normal: {
-                            formatter: '{b}: {c}'+unit+'\n{d}%'
-                        }
-                      },
-                      data: newData
+                        name: '用电量',
+                        type: 'pie',
+                        radius: ['30%', '65%'],
+                        label: {
+                            normal: {
+                                formatter: '{b}: {c}'+unit+'\n{d}%'
+                            }
+                        },
+                        data: newData
                     }]
-                  };
+                };
 
                 drawEchart(name, echartOptions);
 
             },
             error: function () {
+                paintFailed();
                 console.warn('获取数据失败');
             }
-          });
+        });
     }
 
     function getTrendAnalysis(name, deviceVarSns, period, queryTime, pfvSettings) {
-        let queryType = 'MONTH';
+        var queryType = 'MONTH';
         if(period == 'current_day') {
-        queryType = 'DAY';
+            queryType = 'DAY';
         } else if(period == 'current_year') {
-        queryType = 'YEAR';
+            queryType = 'YEAR';
         } else if(period == 'normal') {
-        queryType = 'NORMAL';
+            queryType = 'NORMAL';
         }
-        
+
         ajax.get({
             url: '/devicevars/getstatisticalvalues',
             data: {
@@ -625,7 +492,8 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
             },
             success: function (data) {
                 if (!data || !data.length){
-                return;
+                    paintFailed();
+                    return;
                 }
                 var times = [];
                 for(var i in data[0].time_keys) {
@@ -650,6 +518,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
                 drawEchart(name, getTrendAnalysisEchartOption(showPfvSetting, pfvSettings, times, chartDatas));
             },
             error: function () {
+                paintFailed();
                 console.warn('获取数据失败');
             }
         });
@@ -658,24 +527,24 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
     function getTrendAnalysisEchartOption(showPfvSetting, pfvSettings, times, data) {
         var yAxis =[
             {
-              type: 'value'
+                type: 'value'
             },{
-      
+
             }];
-      
+
         if(showPfvSetting) {
-            let tempPfvSettings = pfvSettings == 'pfv-settings-f' ? pfvSettingsF : pfvSettingsR;
+            var tempPfvSettings = pfvSettings == 'pfv-settings-f' ? pfvSettingsF : pfvSettingsR;
             if(tempPfvSettings != null) {
                 yAxis[1]={
                     type: 'value'
                 };
-        
+
                 //只支持 'DAY' 'NORMAL'
                 var timesInt = [];
                 for(var k in times) {
                     timesInt.push(60*parseInt(times[k].substr(0,2)) + parseInt(times[k].substr(3,5)));
                 }
-                
+
                 /*
                 [
                 {
@@ -689,7 +558,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
                 for(var i=0; i<tempPfvSettings.length; i++){
                     var markAreaData = [];
                     var chargeData = [];
-            
+
                     var tempStartTimeInt = 60*parseInt(tempPfvSettings[i].starttime.substr(0,2)) + parseInt(tempPfvSettings[i].starttime.substr(3,5));
                     var tempEndTimeInt = 60*parseInt(tempPfvSettings[i].endtime.substr(0,2)) + parseInt(tempPfvSettings[i].endtime.substr(3,5));
                     if(tempStartTimeInt >= tempEndTimeInt) {
@@ -711,13 +580,13 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
                             tempEndIndex = j;
                         }
                     }
-            
+
                     if(tempStartIndex == null || tempEndIndex == null || tempStartIndex >= tempEndIndex) {
                         continue;
                     }
-            
+
                     var tempPfv = tempPfvSettings[i].pfv;
-                    var tempCharge = tempPfvSettings[i].charge;          
+                    var tempCharge = tempPfvSettings[i].charge;
                     var tempName = '';
                     var tempColor = 'gray';
                     var tempLabelColor = 'gray';
@@ -732,9 +601,9 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
                     } else if(tempPfv == 'v') {
                         tempName = '谷';
                         tempColor = 'rgba(46,165,1,0.2)';
-                        tempLabelColor = 'rgba(46,165,1)';  
-                    } 
-            
+                        tempLabelColor = 'rgba(46,165,1)';
+                    }
+
                     var tempAreaData = [{
                         name: tempName+'\n'+tempPfvSettings[i].charge+'元',
                         xAxis: tempStartIndex,
@@ -743,40 +612,40 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
                         xAxis: tempEndIndex,
                         yAxis: tempPfvSettings[i].charge,
                     }];
-            
+
                     chargeData.push(tempPfvSettings[i].charge*1.2);
                     markAreaData.push(tempAreaData);
-            
-                    let newDate = {
+
+                    var newDate = {
                         name: i,
-                        yAxisIndex: 1, 
-                        type:'line', 
+                        yAxisIndex: 1,
+                        type:'line',
                         symbolSize: 0,
                         itemStyle: {
-                        normal: {
-                            lineStyle: {
-                            width: 0
+                            normal: {
+                                lineStyle: {
+                                    width: 0
+                                }
                             }
-                        }
                         },
                         data: chargeData,
                         markArea: {
-                        data: markAreaData,
-                        itemStyle: {
-                            normal: {
-                            color: tempColor
+                            data: markAreaData,
+                            itemStyle: {
+                                normal: {
+                                    color: tempColor
+                                }
+                            },
+                            label: {
+                                normal: {
+                                    color: tempLabelColor
+                                }
                             }
-                        },
-                        label: {
-                            normal: {
-                                color: tempLabelColor
-                            }
-                        }
                         }
                     };
-            
+
                     data.push(newDate);
-        
+
                 }
             }
         }
@@ -785,7 +654,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
         for(var i in data) {
             legendData.push(data[i].name);
         }
-    
+
         return {
             tooltip: {
                 trigger: 'axis',
@@ -804,7 +673,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
             },
             toolbox: {
                 feature: {
-                saveAsImage: false
+                    saveAsImage: false
                 }
             },
             xAxis: {
@@ -823,17 +692,17 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
             url: '/stations/' + $scope.sn,
             async: false,
             success: function (data) {
-              if(data.pfv_settings_f && data.pfv_settings_f != '') {
-                pfvSettingsF = JSON.parse(data.pfv_settings_f);
-              }
-              if(data.pfv_settings_r && data.pfv_settings_r != '') {
-                pfvSettingsR = JSON.parse(data.pfv_settings_r);
-              }
+                if(data.pfv_settings_f && data.pfv_settings_f != '') {
+                    pfvSettingsF = JSON.parse(data.pfv_settings_f);
+                }
+                if(data.pfv_settings_r && data.pfv_settings_r != '') {
+                    pfvSettingsR = JSON.parse(data.pfv_settings_r);
+                }
             },
             error: function(err) {
-              console.log('获取站点信息失败 '+$scope.sn+err);
+                console.log('获取站点信息失败 '+$scope.sn+err);
             }
-          })
+        })
     }
 
     function getRatioPie(title, data) {
@@ -842,6 +711,9 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
             title: [{
                 text: ''
             }],
+            chart: {
+                top: 15
+            },
             color: ['#F04863', '#F9CC13', '#369FFF', '#12C1C1', '#8442E0', '#2FC15B'],
             series: [{
                 name: '1',
@@ -897,35 +769,23 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax) {
         if (chartCount === 1){
             $("#chartGroup").empty();
         }
-        /*jshint multistr: true */
-        $('<div class="mui-slider-item">\
-            <div class="card-content">\
+
+        $('<div class="card-content">\
             <div class="mui-content-padded no-margin">\
-            <span> '+ name +'</span>\
+            <span>'+ name +'</span>\
             <div class="chart" id="' + id + '"></div>\
             <div style="position: absolute;left:0;top:0;width:100%;height:100%;"></div>\
             </div>\
-            </div>\
-            </div>').prependTo($("#chartGroup"));
-
-        if (chartCount === 1)
-        {
-            $('<li class="slidesjs-pagination-item"><a href="#" class="active">1</a></li>').prependTo($("#chartSlidesPagination"));
-            document.querySelector("#chartSlider").addEventListener('slide', function (event) {
-               var slideNumber = event.detail.slideNumber;
-               $("#chartSlidesPagination li a").removeClass('active');
-                $("#chartSlidesPagination li:eq(" + (slideNumber-1) + ") a").addClass('active');
-            });
-        }else{
-            $('<li class="slidesjs-pagination-item"><a href="#">1</a></li>').prependTo($("#chartSlidesPagination"));
-        }
-
-        setTimeout(function(){echarts.init(document.getElementById(id)).setOption(config);}, 500);
+            </div>').prependTo($("#chartSlider"));
+        echarts.init(document.getElementById(id)).setOption(config);
         chartCount += 1;
+        paintSuccess();
     }
 
     //getDataList();
-    getStationPfvSettings();
-    getKanbanData();
+    $timeout(function () {
+        getStationPfvSettings();
+        getKanbanData();
+    }, 500);
 
 });

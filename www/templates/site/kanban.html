@@ -136,7 +136,7 @@
 </head>
 <body class="box-vertical-center" ng-app="myApp">
     <header class="mui-bar bg-header mui-segmented-control-vertical">
-        <a class="mui-icon mui-action-back mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
+        <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
         <h1 class="mui-title">看板</h1>
         <!--<a onclick="showTopMenu()" class="mui-action-menu mui-icon mui-pull-right" ><i class="header-icon white icon-add"></i></a>-->
     </header>
@@ -152,14 +152,8 @@
                     </li>
                 </ul>
                 <div class="card" id="chartCard" style="padding-top: 0;">
-                    <div class="mui-slider" id="chartSlider" style="padding-bottom: 20px;">
-                        <div class="mui-slider-group" id="chartGroup">
-                            <div class="mui-slider-item">
-                            </div>
-                        </div>
+                    <div class="slides kanban-slider" id="chartSlider" style="width: 100%;height: 260px;">
                     </div>
-                    <ul class="slidesjs-pagination" style="bottom: -8px;" id="chartSlidesPagination">
-                    </ul>
                 </div>
                 <div class="card" ng-if="havaEventList" ng-controller="EventListCtrl">
                     <div class="card-header border">
@@ -186,15 +180,13 @@
         </div>
     </div>
     <div ui-view class="page page-left"></div>
-    <script src="../../components/mui/js/mui.min.js"></script>
-    <script>
-        mui.init();
-    </script>
     <div class="page page-left" ui-view=""></div>
     <script src="../../components/fastclick-master/lib/fastclick.js"></script>
     <script src="../../js/my/notify.js"></script>
     <script src="../../components/highcharts/highcharts.js"></script>
     <script src="../../components/echart/echarts.common.min.js"></script>
     <script src="../../components/moment.min.js"></script>
+    <script src="../../components/slides-playing/js/jquery.slides.js"></script>
+
 </body>
 </html>
