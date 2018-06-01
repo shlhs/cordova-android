@@ -9,6 +9,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
     $scope.havaEventList = false;
     $scope.varGroups = {};
     $scope.keyVarDatas = [];
+    $scope.keyStaticDatas = [];
     $scope.queryTime = moment().format('YYYY-MM-DD HH:mm:ss');
     var varTrendType = 'DAY';
     var chartCount = 1;
@@ -72,15 +73,15 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                 }
                 var contentsResult = JSON.parse(result.data).widgets.contents;
                 var keyVarDatas = [];
+                var keyStaticDatas = [];
                 var haveChart = false;
                 var chartCount = 0;
                 for(var i in contentsResult){
                     if(contentsResult[i].type === 'singlestate' || contentsResult[i].type === 'multistate'){
                         for(var j in contentsResult[i].content) {
-                            //只显示智能设备的数据；不显示 站点管理信息 和 自定义文本信息, 避免与站点概览页重复
+                            var processedValue = getProcessedValue($scope.sn, contentsResult[i].content[j], $scope.queryTime);
                             if(contentsResult[i].content[j].type === 'device-data') {
                                 var tempVarData = {};
-                                var processedValue = getProcessedValue($scope.sn, contentsResult[i].content[j], $scope.queryTime);
                                 // 如果name中含有单位，将单位去除
                                 if (processedValue.name.indexOf("（") > 0) {
                                     tempVarData.name = processedValue.name.substring(0, processedValue.name.indexOf('（'));
@@ -99,6 +100,8 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                                     tempVarData.value = processedValue.processed_value;
                                 }
                                 keyVarDatas.push(tempVarData);
+                            } else {
+                                keyStaticDatas.push({'name': processedValue.name, 'value': processedValue.processed_value});
                             }
                         }
                     }else if(contentsResult[i].type === 'pfv-electric-consumption-pie'){
@@ -145,7 +148,9 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                         $scope.havaEventList = true;
                     }
                 }
+
                 $scope.keyVarDatas = keyVarDatas;
+                $scope.keyStaticDatas = keyStaticDatas;
 
                 if (!haveChart){  //  隐藏图表
                     $("#chartCard").hide();
