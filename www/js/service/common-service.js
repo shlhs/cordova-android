@@ -178,8 +178,16 @@ app.directive('deviceTreeView',[function(){
 
                             if (childrenMap[i]) {
                                 newChildren.push(childrenMap[i]);
+                                delete childrenMap[i];
                             }
                         });
+                        // 如果children的id不在indexs里，那么顺序加到后面
+                        for (var id in childrenMap) {
+                            if (!id) {
+                                  continue;
+                                }
+                            newChildren.push(childrenMap[id]);
+                        }
                         item.children = newChildren;
                     }
                     item.children.forEach(function (child, i) {
@@ -211,6 +219,15 @@ app.directive('deviceTreeView',[function(){
                         item.is_group = true;
                         item.children = [];
                         formatted.push(item);
+                    } else if (item.depth === 0 && item.parent_id === 0) {
+                        if (item.is_group) {
+                                item.children = [];
+                            }
+                        item.text = item.name;
+                        if (maxDepth < 2) {
+                            maxDepth = 2;
+                        }
+                        formatted[0].children.push(item);
                     } else {
                         item.text = item.name;
                         item.children = [];

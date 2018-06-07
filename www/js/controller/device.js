@@ -589,9 +589,16 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile, $state
         ajax.get({
             url: '/stations/' + stationSn + '/devicetree',
             success: function (data) {
-                getDeviceVars(data, function () {
+                $scope.isLoading = false;
+                // 默认状态为"未知"
+                data.forEach(function (d) {
+                   d.status = 'offline';
+                });
+                $scope.deviceDatas = data;
+                $scope.$apply();
+                getDeviceVars(data, function (newDataList) {
                     $scope.isLoading = false;
-                    $scope.deviceDatas = data;
+                    $scope.deviceDatas = newDataList;
                     $scope.$apply();
                 });
             },
@@ -623,7 +630,7 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile, $state
 
     function getDeviceVars(deviceList, cb) {
         if (deviceList.length === 0){
-            cb([]);
+            // cb([]);
             return;
         }
         var deviceSns = [];
@@ -655,10 +662,10 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile, $state
                     device.important_realtime_datas = deviceData.important_realtime_datas;
                     _formatDeviceStatus(device);
                 }
-                cb(data);
+                cb(deviceList);
             },
             error: function () {
-                cb([]);
+                // cb([]);
             }
         });
     }
@@ -876,6 +883,12 @@ app.controller('VarRealtimeCtrl', function ($scope, ajax) {
             }
         });
     }
+
+    $scope.$on("$destroy", function (event) {
+        if (null != interval) {
+            clearInterval(interval);
+        }
+    })
 });
 
 app.controller('HistoryVarCtrl', function ($scope, ajax, $timeout) {
