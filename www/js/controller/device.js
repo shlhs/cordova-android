@@ -582,14 +582,36 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile) {     
     $scope.collapse = [false, false, 0];        // 表示选择器是否展开，一级、二级用true/false表示是否展开，三级用数据id表示
     $scope.maxDepth = -1;
 
+
+    function _formatDeviceStatus(device) {
+        if (device.communi_status > 0){
+            device.status = 'offline';
+            device.status_name = '离线';
+            $scope.faultDeviceList.push(device);
+
+        }else{
+            if (device.running_status > 0){
+                device.status = 'danger';
+                device.status_name = '故障';
+                $scope.faultDeviceList.push(device);
+            }else{
+                device.status = 'normal';
+                device.status_name = '正常';
+            }
+        }
+    }
+
     $scope.getDataList = function () {
         $scope.isLoading = true;
         $scope.loadingFailed = false;
         ajax.get({
             url: '/stations/' + stationSn + '/devicetree',
             success: function (data) {
+                $scope.isLoading = false;
+                $scope.deviceDatas = data;
+                $scope.$apply();
+
                 getDeviceVars(data, function () {
-                    $scope.isLoading = false;
                     $scope.deviceDatas = data;
                     $scope.$apply();
                 });
@@ -634,11 +656,11 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile) {     
                     device.communi_status = deviceData.communi_status;
                     device.running_status = deviceData.running_status;
                     device.important_realtime_datas = deviceData.important_realtime_datas;
+                    _formatDeviceStatus(device);
                 }
                 cb(data);
             },
             error: function () {
-                cb([]);
             }
         });
     }
