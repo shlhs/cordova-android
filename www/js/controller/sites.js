@@ -5,7 +5,7 @@
  */
 
 
-app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, platformService) {
+app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, platformService, cordovaService) {
     $scope.sites = [];
     $scope.currentSite = {};
     $scope.isLoading = true;

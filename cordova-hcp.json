@@ -1,0 +1,5 @@
+{
+  "update": "start",
+  //  "content_url": "https://7a6b0aa4.ngrok.io"
+  "content_url": "http://120.78.49.166:8123/cordova/www"
+}

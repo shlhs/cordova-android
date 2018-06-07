@@ -9,6 +9,30 @@ app.service('cordovaService', function (fileService, $timeout) {
         document.addEventListener("deviceready", onDeviceReady,false);
     }
 
+    this.checkVersionUpdate = function() {      // 检查版本是否有更新
+        if (typeof(chcp) === 'undefined'){
+            return;
+        }
+        chcp.fetchUpdate(updateCallback);
+        function updateCallback(error, data) {
+            if (error){
+                console.log("version check: " + JSON.stringify(error));
+            }
+            // 如果error 为空，且data不为空，则说明有需要安装的更新
+            if (!error && data && data.config && data.config.content_url){
+                mui.alert("请先升级新版本，升级完毕应用将自动重启", "检测到新版本", "升级", function () {
+                    $.notify.info('正在升级，升级完毕应用将自动重启...');
+                    chcp.installUpdate(function (error) {
+                        if (error && error.description){
+                            mui.alert(error.description, '升级失败', '知道了');
+                        }
+                    });
+                });
+            }
+        }
+    };
+
+
     function onDeviceReady() {
         // alert('deviceready');
         deviceReady = true;
