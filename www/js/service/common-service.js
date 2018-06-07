@@ -137,8 +137,10 @@ app.directive('deviceTreeView',[function(){
                             item.children = [];
                         }
                         item.text = item.name;
-                        maxDepth = 2;
                         formatted[0].children.push(item);
+                        if (maxDepth < 2) {
+                            maxDepth = 2;
+                        }
                     } else {
                         item.text = item.name;
                         item.children = [];
