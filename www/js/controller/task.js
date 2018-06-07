@@ -210,6 +210,7 @@ app.controller('TaskBaseCtrl', function ($scope, ajax, userService, routerServic
             headers: {
                 Accept: "application/json"
             },
+            timeout: 30000,
             success: function (data) {
                 $.notify.progressStop();
                 $.notify.info('操作成功');
@@ -1003,14 +1004,22 @@ function importImage(imageData) {    // 从Android读取的图片
 
 function deleteImage () {       // 删除图片
     var index = $("#slides .slidesjs-pagination a.active").parent().index();
-    $('div[ng-controller="TaskHandlerUpload"]').scope().files.splice(index, 1);
+    $('div[ng-controller="TaskHandlerUpload"]').scope().removeFile(index);
     history.back();
 }
 app.controller('TaskHandlerUpload', function ($scope, $timeout) {
     $scope.files = [];
     $scope.description = '';
     $scope.isPC = IsPC();
+    $scope.uploadDisabled = false;
     var insertPosition = angular.element("#imageList>.upload-item");
+
+    $scope.removeFile = function (index) {
+        $scope.files.splice(index, 1);
+        if ($scope.files.length < 9) {
+            $scope.uploadDisabled = false;
+        }
+    };
 
     $scope.chooseImage = function (files) {     // 选择图片
         $scope.canDelete = true;
@@ -1026,7 +1035,13 @@ app.controller('TaskHandlerUpload', function ($scope, $timeout) {
                img.onload = function(){
                    var quality =  75;
                    var dataUrl = imageHandler.compress(this, 75, file.orientation).src;
-                   $scope.files.push(dataUrl);
+                   // 如果超过9张，则后面的不上传
+                   if ($scope.files.length < 9) {
+                       $scope.files.push(dataUrl);
+                   }
+                   if ($scope.files.length >= 9) {
+                       $scope.uploadDisabled = true;
+                   }
                    $scope.$apply();
                };
            };
@@ -1071,7 +1086,7 @@ app.controller('GalleryCtrl', function ($scope, $stateParams, $timeout) {
 
     $scope.deleteImage = function() {       // 删除图片
         var index = $("#slides .slidesjs-pagination a.active").parent().index();
-        $('div[ng-controller="TaskHandlerUpload"]').scope().files.splice(index, 1);
+        $('div[ng-controller="TaskHandlerUpload"]').scope().removeFile(index);
         history.back();
     };
 

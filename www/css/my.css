@@ -1903,14 +1903,14 @@ color: #a7a7a7;
     background-color: rgb(73,72,75);
 }
 .site-status {
-    width: 4px;
-    height: 4px;
-    border-radius: 2px;
+    width: 8px;
+    height: 8px;
+    border-radius: 4px;
     background-color: #ffffff;
     display: inline-block;
     margin-right: 6px;
     float: left;
-    margin-top: 8px;
+    margin-top: 6px;
 }
 .site-status.normal {
     background-color: rgb(94,206,77);

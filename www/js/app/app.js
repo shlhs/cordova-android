@@ -224,15 +224,13 @@ app.service('ajax', function ($rootScope, platformService, userService, $http, c
             mode: 'cors'
         }, option.headers);
         $.extend(option, {
-            timeout: 5000,
             xhrFields: {withCredentials: true},
             crossDomain: true,
             headers: headers
         });
 
 
-		var newOption = $.extend({}, option
-        );
+		var newOption = $.extend({}, {timeout: 15000}, option);
         var r = $.ajax(newOption);
         return r;
     }

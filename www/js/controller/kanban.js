@@ -10,10 +10,12 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
     $scope.varGroups = {};
     $scope.keyVarDatas = [];
     $scope.queryTime = moment().format('YYYY-MM-DD HH:mm:ss');
+    $scope.keyStaticDatas = [];
     var varTrendType = 'DAY';
     var chartCount = 1;
     var pfvSettingsF = null;
     var pfvSettingsR = null;
+    var g_devicevar_unit_map = {};
 
     var colors = ['#f6d365', '#fda085', '#a1c4fd', '#c2e9fb', '#cfd9df', '#accbee', 'rgb(200, 221, 253)', 'rgb(84, 185, 253)', 'rgb(250, 137, 143)'];
 
@@ -72,10 +74,12 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                 var contentsResult = JSON.parse(result.data).widgets.contents;
                 var keyVarDatas = [];
                 var haveChart = false;
+                var keyStaticDatas = [];
                 var chartCount = 0;
                 for(var i in contentsResult){
                     if(contentsResult[i].type === 'singlestate' || contentsResult[i].type === 'multistate'){
                         for(var j in contentsResult[i].content) {
+                            var processedValue = getProcessedValue($scope.sn, contentsResult[i].content[j], $scope.queryTime);
                             //只显示智能设备的数据；不显示 站点管理信息 和 自定义文本信息, 避免与站点概览页重复
                             if(contentsResult[i].content[j].type === 'device-data') {
                                 var tempVarData = {};
@@ -98,6 +102,8 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                                     tempVarData.value = processedValue.processed_value;
                                 }
                                 keyVarDatas.push(tempVarData);
+                            } else {
+                                keyStaticDatas.push({'name': processedValue.name, 'value': processedValue.processed_value});
                             }
                         }
                     }else if(contentsResult[i].type === 'pfv-electric-consumption-pie'){
@@ -145,7 +151,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                     }
                 }
                 $scope.keyVarDatas = keyVarDatas;
-
+                $scope.keyStaticDatas = keyStaticDatas;
                 if (!haveChart){  //  隐藏图表
                     $("#chartCard").hide();
                 }
@@ -296,10 +302,11 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
             url: '/devicevars/getrealtimevalues?sns=' + deviceSn,
             async: false,
             success: function (data) {
-            if(!data || data.length == 0) {
-                return;
-            }
-            resultValue = data[0].data+data[0].unit;
+                if(!data || data.length == 0) {
+                    return;
+                }
+                resultValue = data[0].data+data[0].unit;
+                g_devicevar_unit_map[deviceSn] = data[0].unit;
             },
             error: function () {
             console.warn('获取设备变量实时值失败 '+deviceSn);
@@ -324,14 +331,15 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
             crossDomain: true,
             success: function(data) {
                 if(data.length == 0) {
-                return;
+                    return;
                 }
                 var varData = data[0];
                 var index = parseInt(tempQueryTime.substr(5,2)) - 1;
                 if(varData.datas != null && varData.datas.length > index) {
-                if(varData.datas[index] != null) {
-                    resultValue = varData.datas[index]+varData.unit;
-                }
+                    if(varData.datas[index] != null) {
+                        resultValue = varData.datas[index]+varData.unit;
+                        g_devicevar_unit_map[deviceSn] = data[0].unit;
+                    }
                 }
             },
             error: function(){
@@ -342,35 +350,73 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
         }
         }
         
-        if(calcMethod == 'diff'){
-        if(queryPeriod == 'current_month') {
-            var resultValue = '';
-            ajax.get({
-            url: '/devicevars/getaccumulatedvalues?type=MONTH&sns=' + deviceSn + '&starttime=' + tempQueryTime + '&endtime=' + tempQueryTime,
-            async: false,
-            dataType: 'json',
-            xhrFields: {
-                withCredentials: true
-            },
-            crossDomain: true,
-            success: function(data) {
-                if(data.length == 0) {
-                return;
-                }
-                var varData = data[0];
-                //查询的开始时间 与 结束时间 相同，因此直接去第一个结果值 即可
-                if(varData.datas != null && varData.datas.length > 0) {
-                if(varData.datas[0] != null) {
-                    resultValue = varData.datas[0]+varData.unit;
-                }
-                }
-            },
-            error: function(){
-                console.log('获取设备变量值失败 '+deviceSn);
+        if(calcMethod == 'diff') {
+            if (queryPeriod == 'current_month') {
+                var diffValue = "";
+
+                var startQueryTime = queryTime.substr(0, 7) + '-01T00:00:00.000Z';
+                var endQueryTime = queryTime.substr(0, 10) + 'T' + queryTime.substr(11, 8) + '.000Z';
+
+                var queryData = "&sns=" + [deviceSn].join(",");
+                queryData += '&querytimes=' + startQueryTime + ',' + endQueryTime;
+
+                ajax.get({
+                    url: '/devicevars/getOneTimeDatas',
+                    async: false,
+                    data: queryData,
+                    dataType: 'json',
+                    xhrFields: {
+                        withCredentials: true
+                    },
+                    crossDomain: true,
+                    success: function (values) {
+                        var startValues, endValues = null;
+                        for (var i = 0; i < values.length; i++) {
+                            if (values[i].time == startQueryTime) {
+                                startValues = values[i].values;
+                                continue;
+                            }
+                            if (values[i].time == endQueryTime) {
+                                endValues = values[i].values;
+                                continue;
+                            }
+                        }
+                        if (startValues == null || endValues == null) {
+                            if (startValues == null) {
+                                console.warn('获取时间点的值失败: ' + startQueryTime + deviceSn);
+                            }
+                            if (endValues == null) {
+                                console.warn('获取时间点的值失败: ' + endQueryTime + deviceSn);
+                            }
+                        } else {
+                            //resultValue = endValues[deviceSn] - startValues[deviceSn];
+                            if (!g_devicevar_unit_map[deviceSn]) {
+                                //待后台
+                                ajax.get({
+                                    url: '/devicevars/getbysn/' + deviceSn,
+                                    async: false,
+                                    success: function (data) {
+                                        if (!data) {
+                                            return;
+                                        }
+                                        g_devicevar_unit_map[deviceSn] = data.unit;
+                                    },
+                                    error: function () {
+                                        console.warn('获取设备变量信息 ' + deviceSn);
+                                    }
+                                });
+                            }
+                            var tempValue = endValues[deviceSn] - startValues[deviceSn];
+                            //tempValue = tempValue == 0 ? tempValue:tempValue.toFixed(valueFixNum);
+                            diffValue = tempValue + g_devicevar_unit_map[deviceSn];
+                        }
+                    },
+                    error: function () {
+                        console.log('获取设备变量值失败 ' + deviceSn);
+                    }
+                });
+                return diffValue;
             }
-            });
-            return resultValue;
-        }
         }
         return '暂不支持：'+queryPeriod+'/'+calcMethod;
     }
