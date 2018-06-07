@@ -634,7 +634,6 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile) {     
                     device.communi_status = deviceData.communi_status;
                     device.running_status = deviceData.running_status;
                     device.important_realtime_datas = deviceData.important_realtime_datas;
-                    _formatDeviceStatus(device);
                 }
                 cb(data);
             },
