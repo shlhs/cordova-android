@@ -608,11 +608,15 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile) {     
             url: '/stations/' + stationSn + '/devicetree',
             success: function (data) {
                 $scope.isLoading = false;
+                // 默认状态为"未知"
+                data.forEach(function (d) {
+                    d.status = 'offline';
+                });
                 $scope.deviceDatas = data;
                 $scope.$apply();
-
-                getDeviceVars(data, function () {
-                    $scope.deviceDatas = data;
+                getDeviceVars(data, function (newDataList) {
+                    $scope.isLoading = false;
+                    $scope.deviceDatas = newDataList;
                     $scope.$apply();
                 });
             },
@@ -626,7 +630,7 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile) {     
 
     function getDeviceVars(deviceList, cb) {
         if (deviceList.length === 0){
-            cb([]);
+            // cb([]);
             return;
         }
         var deviceSns = [];
@@ -658,7 +662,7 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile) {     
                     device.important_realtime_datas = deviceData.important_realtime_datas;
                     _formatDeviceStatus(device);
                 }
-                cb(data);
+                cb(deviceList);
             },
             error: function () {
             }
