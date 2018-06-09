@@ -31,26 +31,27 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
     function paintFailed() {        // 检测图表绘制是否已完成
         paintFailedCount += 1;
         if (paintedChartCount + paintFailedCount == needChartCount) {
-
-            var slide = $("#chartSlider");
-            slide.slidesjs({
-                start: $scope.index,
-                width: window.screen.width,
-                play: {
-                    active: true,
-                    swap: true
-                }
-            });
+            _initSlider(paintedChartCount);
         }
     }
 
     function paintSuccess() {
         paintedChartCount += 1;
         if (paintedChartCount + paintFailedCount == needChartCount) {
+            _initSlider(paintedChartCount);
+        }
+    }
 
+    function _initSlider(count) {
+        if (count === 1) {
+            $('<ul class="slidesjs-pagination">' +
+                '<li class="slidesjs-pagination-item">' +
+                '<a href="#" data-slidesjs-item="0" class="active">1</a>' +
+                '</li>' +
+                '</ul>').appendTo($('#chartSlider'));
+        } else {
             var slide = $("#chartSlider");
             slide.slidesjs({
-                start: $scope.index,
                 width: window.screen.width,
                 play: {
                     active: true,
@@ -59,7 +60,6 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
             });
         }
     }
-
     function getKanbanData() {
         needChartCount = 0;
         paintedChartCount = 0;
@@ -200,9 +200,9 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                 if ($("#realtime .mui-card:visible").length === 0){
                     $scope.hasData = false;
                 }
-                $('#chartSlider').swiper({
-                    pagination: '.swiper-pagination'
-                });
+                // $('#chartSlider').swiper({
+                //     pagination: '.swiper-pagination'
+                // });
                 $scope.$apply();
             },
             error: function (a,b,c) {
@@ -352,12 +352,12 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
 
         if(calcMethod == 'diff'){
             if(queryPeriod == 'current_month') {
-                let diffValue = "";
+                var diffValue = "";
 
-                let startQueryTime = queryTime.substr(0,7) + '-01T00:00:00.000Z';
-                let endQueryTime = queryTime.substr(0,10) + 'T' + queryTime.substr(11,8) + '.000Z';
+                var startQueryTime = queryTime.substr(0,7) + '-01T00:00:00.000Z';
+                var endQueryTime = queryTime.substr(0,10) + 'T' + queryTime.substr(11,8) + '.000Z';
 
-                let queryData = "&sns=" + [deviceSn].join(",");
+                var queryData = "&sns=" + [deviceSn].join(",");
                 queryData += '&querytimes=' + startQueryTime + ',' + endQueryTime;
             
                 ajax.get({
@@ -370,7 +370,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                     },
                     crossDomain: true,
                     success: function(values) {
-                    let startValues, endValues = null;
+                    var startValues, endValues = null;
                     for(var i=0; i<values.length; i++) {
                         if(values[i].time == startQueryTime) {
                         startValues = values[i].values;
@@ -393,7 +393,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                         if(!g_devicevar_unit_map[deviceSn]) {
                         //待后台
                         ajax.get({
-                            url: `/devicevars/getbysn/${deviceSn}`,
+                            url: '/devicevars/getbysn/' + deviceSn,
                             async: false,
                             success: function (data) {
                             if(!data) {
@@ -406,7 +406,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                             }
                         });
                         }
-                        let tempValue = endValues[deviceSn] - startValues[deviceSn];
+                        var tempValue = endValues[deviceSn] - startValues[deviceSn];
                         //tempValue = tempValue == 0 ? tempValue:tempValue.toFixed(valueFixNum);
                         diffValue = tempValue + g_devicevar_unit_map[deviceSn];
                     }
