@@ -1,9 +1,9 @@
 
 <div ng-controller="SecurityEvaluateChecklistCtrl" class="page page-left">
-    <header class="mui-bar mui-bar-nav">
+    <header class="mui-bar bg-header">
         <a class="mui-icon mui-icon-left-nav mui-pull-left text-white" ng-click="gotoPrevPage()"></a>
         <h1 class="mui-title">{{group.name}}</h1>
-        <a class="mui-action-menu mui-icon mui-pull-right" style="font-size: 16px;line-height: 28px;" ng-click="save()" ng-if="hasPermission && editable">保存</a>
+        <a class="mui-action-menu mui-icon mui-pull-right" style="font-size: 16px;line-height: 28px;color: #fff;" ng-click="save()" ng-if="hasPermission && editable">保存</a>
     </header>
     <div class="mui-content" ng-cloak style="display: -webkit-box;-webkit-box-align: stretch;">
         <div class="left-panel" style="background-color: #FFFFFF;width: 35%;box-shadow: 0 0 2px #ccc;">
@@ -32,9 +32,9 @@
                             </div>
                         </div>
                         <ul class="info-group" style="font-size: 11px;">
-                            <li><span class="value">缺陷类型：</span><span class="value">{{item.name}}</span></li>
-                            <li><span class="value">缺陷危害：</span><span class="value">{{item.damage}}</span></li>
-                            <li><span class="value">处理建议：</span><span class="value">{{item.resolve}}</span></li>
+                            <li><span class="value" style="margin-left: 0;">缺陷类型：</span><span class="value" style="margin-left: 0;">{{item.name}}</span></li>
+                            <li><span class="value" style="margin-left: 0;">缺陷危害：</span><span class="value" style="margin-left: 0;">{{item.damage}}</span></li>
+                            <li><span class="value" style="margin-left: 0;">处理建议：</span><span class="value" style="margin-left: 0;">{{item.resolve}}</span></li>
                         </ul>
                     </li>
                 </ul>

@@ -1,18 +1,27 @@
 <div class="page page-left" ng-controller="StaticDeviceDetailCtrl">
-    <header class="mui-bar mui-bar-nav bg-header">
-        <a class="mui-icon mui-action-back mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
+    <header class="mui-bar bg-header">
+        <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white" onclick="history.back()"></a>
         <h1 class="mui-title">{{device.name}}</h1>
     </header>
     <div class="mui-content" ng-cloak>
-        <div></div>
-        <div class="card no-padding" ng-repeat="device in device.items">
-            <div class="card-header">{{device.name}}</div>
+        <div ng-if="device.properties">
+            <div class="info-group properties-group">
+                <li ng-repeat="p in device.properties">
+                    <label class="title">{{p.name}}</label>
+                    <span class="value">{{p.value}}{{p.unit}}</span>
+                </li>
+            </div>
+        </div>
+        <div class="card no-padding" ng-repeat="item in device.items">
+            <div class="card-header device-detail-title">{{item.name}}</div>
             <div class="card-content">
-                <ul class="mui-table-view font-14 info-group">
-                    <li class="mui-table-view-cell" ng-repeat="c in device.config">
-                        <span class="value">{{c.name}}：</span><span class="value">{{c.value}}</span></li>
-                </ul>
-                <div class="card" ng-repeat="sub in device.contains">
+                <div class="info-group properties-group">
+                    <li ng-repeat="p in item.properties">
+                        <label class="title">{{p.name}}</label>
+                        <span class="value">{{p.value}}{{p.unit}}</span>
+                    </li>
+                </div>
+                <div class="card" ng-repeat="sub in item.contains">
                     <div class="card-header">{{sub.name}}</div>
                     <div class="card-content">
                         <ul  class="mui-table-view font-14 info-group">

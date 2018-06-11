@@ -15,10 +15,7 @@ app.controller('SettingCtrl', function ($scope, platformService, userService, $s
         if (window.android){
             window.android.logout();
         }
-        else{
-            // $state.go('login');
-            location.href = '/templates/login.html';
-        }
+        location.href = '/templates/login.html?finishPage=1';
     };
 });
 

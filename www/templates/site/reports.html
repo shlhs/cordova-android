@@ -23,34 +23,41 @@
     <script type="text/javascript" src="/js/service/router-service.js"></script>
     <script type="text/javascript" src="/js/service/common-service.js"></script>
 <body class="box-vertical-center" ng-app="myApp" ng-controller="SiteReportsCtrl">
-<header class="mui-bar mui-bar-nav bg-header">
-    <a class="mui-icon mui-action-back mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
+<header class="mui-bar bg-header">
+    <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
     <h1 class="mui-title">月度报告</h1>
 </header>
-<div class="mui-content" id="reports">
-    <ul class="mui-table-view" style="margin-top: 0;">
+<div class="mui-content" id="reports" ng-if="!loadingFailed">
+    <ul class="mui-table-view margin-table-view" style="margin-top: 0;">
         <li class="mui-table-view-cell" ng-repeat="r in reports">
             <a class="" ng-click="openReport(r.name, r.output_src_link)" style="white-space: normal;">
                 {{r.name}}
                 <h5 style="margin: 6px 0 0 0;position: relative;" class="ng-binding">生成日期：{{r.output_created.substring(0,11)}}
-                    <div style="padding:4px 10px;position: absolute;top:-4px;right:0px;">
-                        <i class="icon icon-16 icon-download" ng-click="download($event, r.output_src_link)"></i>
-                    </div>
                 </h5>
+                <div class="icon-report-download" ng-click="download($event, r.output_src_link)">
+                    <i class="icon icon-20 icon-download"></i>
+                </div>
             </a>
         </li>
     </ul>
-    <div class="page-alert-wrapper" ng-if="reports.length==0 && !isLoading">
+    <div class="page-alert-wrapper" ng-if="!loadingFailed && reports.length==0 && !isLoading">
         <div class="page-alert">
             <i class="alert-icon nodata"></i>
             <div class="alert-text info">当前无报告</div>
         </div>
     </div>
-    <div class="page-alert-wrapper" ng-if="isLoading">
-        <div class="page-alert">
-            <span class="mui-spinner"></span>
-            <div class="alert-text info">正在加载...</div>
-        </div>
+</div>
+<div class="page-alert-wrapper" ng-if="isLoading">
+    <div class="page-alert">
+        <img src="../../img/page-loading.gif" class="loading-img">
+        <div class="alert-text info">正在加载...</div>
+    </div>
+</div>
+<div class="page-alert-wrapper" ng-if="loadingFailed">
+    <div class="page-alert">
+        <i class="alert-icon warning"></i>
+        <div class="alert-text info">加载失败，请检查网络</div>
+        <div class="alert-reload" ng-click="getDataList()">重新加载</div>
     </div>
 </div>
 <div id="zoomObj"></div>

@@ -68,30 +68,27 @@
     </style>
 </head>
 <body class="box-vertical-center" ng-app="myApp" ng-controller="DeviceMonitorListCtrl">
-    <header class="mui-bar mui-bar-nav bg-header">
-        <a class="mui-icon mui-action-back mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
-        <h1 class="mui-title">所有设备</h1>
+    <header class="mui-bar bg-header">
+        <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
+        <h1 class="mui-title">设备监测</h1>
     </header>
     <div class="mui-content" ng-cloak>
-        <div class="scroll-wrapper">
+        <div class="scroll-wrapper" ng-if="!isLoading && !loadingFailed">
             <div class="mui-scroll">
-                <div class="tree" ng-if="treeData">
-                    <tree-view tree-data="treeData" text-field="name" value-field="id" item-clicked="itemClicked($item)" ></tree-view>
-                </div>
-                <div class="page-alert-wrapper" ng-if="!treeData.length && !isLoading">
-                    <div class="page-alert">
-                        <div class="page-alert">
-                            <i class="alert-icon nodata"></i>
-                            <div class="alert-text info">未配置检测设备</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="page-alert-wrapper" ng-if="isLoading">
-                    <div class="page-alert">
-                        <span class="mui-spinner"></span>
-                        <div class="alert-text info">正在加载...</div>
-                    </div>
-                </div>
+                <device-tree-view device-list="deviceDatas" goto-device="gotoDevice"></device-tree-view>
+            </div>
+        </div>
+        <div class="page-alert-wrapper" ng-if="isLoading">
+            <div class="page-alert">
+                <img src="../../img/page-loading.gif" class="loading-img">
+                <div class="alert-text info">正在加载...</div>
+            </div>
+        </div>
+        <div class="page-alert-wrapper" ng-if="loadingFailed">
+            <div class="page-alert">
+                <i class="alert-icon warning"></i>
+                <div class="alert-text info">加载失败，请检查网络</div>
+                <div class="alert-reload" ng-click="getDataList()">重新加载</div>
             </div>
         </div>
     </div>

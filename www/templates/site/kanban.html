@@ -48,6 +48,12 @@
             color: #fff;
             width: calc(33.33% - 6px);
             margin-bottom: 6px;
+            height: 68px;
+        }
+        @media screen and (max-width: 350px){
+            .summary-item{
+                width: calc(50% - 6px);
+            }
         }
         .summary-item:last-child{
             border-right: none;
@@ -61,6 +67,8 @@
         }
         .summary-item .value{
             font-weight: normal;
+            font-size: 16px;
+            margin-top: 0;
         }
         .summary-item .unit{
             margin-left: 2px;
@@ -127,40 +135,34 @@
     </style>
 </head>
 <body class="box-vertical-center" ng-app="myApp">
-    <header class="mui-bar mui-bar-nav bg-header mui-segmented-control-vertical">
-        <a class="mui-icon mui-action-back mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
+    <header class="mui-bar bg-header mui-segmented-control-vertical">
+        <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
         <h1 class="mui-title">看板</h1>
-        <a onclick="showTopMenu()" class="mui-action-menu mui-icon mui-pull-right" ><i class="header-icon white icon-add"></i></a>
+        <!--<a onclick="showTopMenu()" class="mui-action-menu mui-icon mui-pull-right" ><i class="header-icon white icon-add"></i></a>-->
     </header>
-    <div ng-include="'../../templates/top-menu.html'"></div>
+    <!--<div ng-include="'../../templates/top-menu.html'"></div>-->
     <div class="mui-content" ng-cloak ng-controller="KanbanCtrl">
         <div id="realtime" class=" height-wrap-parent">
             <div ng-show="!isLoading">
                 <ul class="mui-row summary-list" style="padding-top:6px;">
-                    <li ng-repeat="v in varGroups.keyVarGroupName.data" class="mui-col-xs-6 mui-col-sm-6 summary-item"
+                    <li ng-repeat="v in keyVarDatas" class="mui-col-xs-6 mui-col-sm-6 summary-item"
                     ng-style="{'background-color': getRandomColor($index)}">
-                        <span class="title">{{v.name}}</span>
-                        <h4 class="value">{{v.data}}<span class="unit">{{v.unit}}</span></h4>
+                        <span class="title mui-ellipsis">{{v.name}}</span>
+                        <h4 class="value">{{v.value}}<span class="unit">{{v.unit}}</span> </h4>
                     </li>
                 </ul>
                 <div class="card" id="chartCard" style="padding-top: 0;">
-                    <div class="mui-slider" id="chartSlider" style="padding-bottom: 20px;">
-                        <div class="mui-slider-group" id="chartGroup">
-                            <div class="mui-slider-item">
-                            </div>
-                        </div>
+                    <div class="slides kanban-slider" id="chartSlider" style="width: 100%;height: 260px;">
                     </div>
-                    <ul class="slidesjs-pagination" style="bottom: -8px;" id="chartSlidesPagination">
-                    </ul>
                 </div>
-                <div class="card" ng-controller="EventListCtrl">
+                <div class="card" ng-if="havaEventList" ng-controller="EventListCtrl">
                     <div class="card-header border">
                         <i class="icon icon-ms icon-card-event"></i>
                         事件与告警
                         <a class="mui-pull-right" href="/templates/site/event-list.html?sn={{sn}}" style="font-size: 14px;">更多</a>
                     </div>
                     <div class="card-content">
-                        <div ng-if="events.length === 0">站点无事件</div>
+                        <div ng-if="events.length === 0" style="text-align: center">无告警</div>
                         <ul class="mui-table-view info-group" style="font-size: 14px;margin:-7px 0 -8px -15px;">
                             <li class="mui-table-view-cell" ng-repeat="event in events | limitTo:3">
                                 {{event.update_time}}&nbsp;&nbsp;&nbsp;<span style="color: #444;">{{event.info}}</span>
@@ -168,23 +170,33 @@
                         </ul>
                     </div>
                 </div>
+                <div class="card" ng-if="keyStaticDatas.length != 0">
+                    <div class="card-content">
+                        <ul class="mui-table-view no-border info-group" style="font-size: 14px;margin-top:0px;">
+                            <li ng-repeat="v in keyStaticDatas">
+                                <label class="title">{{v.name}}</label>
+                                <span class="value">{{v.value}}</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
             <div class="page-alert-wrapper" ng-if="isLoading">
                 <div class="page-alert">
-                    <span class="mui-spinner"></span>
+                    <img src="../../img/page-loading.gif" class="loading-img">
                     <div class="alert-text info">正在加载...</div>
                 </div>
             </div>
         </div>
     </div>
     <div ui-view class="page page-left"></div>
-    <script src="../../components/mui/js/mui.min.js"></script>
-    <script>
-        mui.init();
-    </script>
     <div class="page page-left" ui-view=""></div>
     <script src="../../components/fastclick-master/lib/fastclick.js"></script>
     <script src="../../js/my/notify.js"></script>
     <script src="../../components/highcharts/highcharts.js"></script>
+    <script src="../../components/echart/echarts.common.min.js"></script>
+    <script src="../../components/moment.min.js"></script>
+    <script src="../../components/slides-playing/js/jquery.slides.js"></script>
+
 </body>
 </html>

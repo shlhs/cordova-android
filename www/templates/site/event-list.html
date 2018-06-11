@@ -28,9 +28,6 @@
         .mui-table-view-cell:after{
             right:15px;
         }
-        .title{
-            color:#222;
-        }
         .offline h4, .offline span{
             color: grey;
         }
@@ -42,44 +39,48 @@
         /*}*/
     </style>
 <body class="box-vertical-center" ng-app="myApp" ng-controller="EventListCtrl">
-    <header class="mui-bar mui-bar-nav bg-header">
-        <a class="mui-icon mui-action-back mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
+    <header class="mui-bar bg-header">
+        <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
         <h1 class="mui-title">所有事件</h1>
-        <a onclick="showTopMenu()" class="mui-action-menu mui-icon mui-pull-right" ><i class="header-icon white icon-add"></i></a>
     </header>
-    <div ng-include="'../../templates/top-menu.html'"></div>
     <div class="mui-content" ng-cloak>
-        <div class="scroll-wrapper" id="events">
-            <div class="mui-scroll">
-                <ul class="mui-table-view mui-table-view-striped mui-table-view-condensed" ng-if="events.length" style="margin-top:0px;">
+        <div class="scroll-wrapper" id="events" ng-if="!loadingFailed">
+            <div class="mui-scroll" ng-if="!eventLoading && !loadingFailed">
+                <ul class="mui-table-view mui-table-view-striped mui-table-view-condensed event-list" ng-if="events.length" style="margin-top:0px;">
                     <li class="mui-table-view-cell" ng-repeat="e in events">
                         <div class="mui-table">
-                            <div class="mui-table-cell mui-col-xs-10" ng-class="{'offline': e.status==0}">
-                                <span class="mui-ellipsis-2" style="font-size: 18px;">{{ e.info }}
-                                </span>
-                                <h5><span class="title">设备</span> ：{{ e.device_name }}</h5>
-                                <h5><span class="title">时间</span> ：{{e.update_time}}</h5>
+                            <div class="mui-table-cell mui-col-xs-12" ng-class="{'offline': e.status==0}">
+                                <label class="mui-ellipsis-2 event-title">{{ e.info }}
+                                    <div class="close" ng-if="e.status != 0"
+                                         ng-click="postCheckEventAction($event, e.id)"><label></label></div>
+                                </label>
+                                <h5 style="margin-top: 10px;"><span class="title">设备</span> ：{{ e.device_name }}</h5>
+                                <h5 style="margin: 10px 0 -2px 0;"><span class="title">时间</span> ：{{e.report_time}}</h5>
                             </div>
-                            <div class="mui-table-cell mui-col-xs-2 mui-text-right">
-                                <div style="position:absolute;right:0px;top:0px;bottom:55%;width:100%;background-color:#f0ad4e;color:#f7f7f7;text-align:center;line-height:38px" ng-controller="EventListCtrl" ng-if="e.status != 0" ng-click="postCheckEventAction($event, e.id)"><label>确认</label></div>
-                                <div style="position:absolute;right:0px;top:55%;bottom:0;width:100%;background-color:#f0ad4e;color:#f7f7f7;text-align:center;line-height:38px" ng-controller="EventListCtrl" ng-if="e.status != 0" ng-click="goToCreateTaskHtml($event, e.id, e.info)"><label>任务</label></div>
-                                <span class="mui-pull-right text-status" ng-if="e.status == 0" style="position: absolute;right: 0;">已处理</span>
-                            </div>
+                            <div class="event-task" ng-if="e.status != 0 && canCreateTask"
+                                 ng-click="goToCreateTaskHtml($event, e.id, e.info)"><label>创建任务</label></div>
                         </div>
                     </li>
                 </ul>
-                <div class="page-alert-wrapper" ng-if="eventLoading">
-                    <div class="page-alert">
-                        <span class="mui-spinner"></span>
-                        <div class="alert-text info">正在加载...</div>
-                    </div>
-                </div>
-                <div class="page-alert-wrapper" ng-if="!events.length && !eventLoading">
+                <div class="page-alert-wrapper" ng-if="!events.length && !eventLoading && !loadingFailed">
                     <div class="page-alert">
                         <i class="alert-icon nodata-info"></i>
                         <div class="alert-text info">当前无事件</div>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div class="page-alert-wrapper" ng-if="eventLoading">
+            <div class="page-alert">
+                <img src="../../img/page-loading.gif" class="loading-img">
+                <div class="alert-text info">正在加载...</div>
+            </div>
+        </div>
+        <div class="page-alert-wrapper" ng-if="loadingFailed">
+            <div class="page-alert">
+                <i class="alert-icon warning"></i>
+                <div class="alert-text info">加载失败，请检查网络</div>
+                <div class="alert-reload" ng-click="getDataList()">重新加载</div>
             </div>
         </div>
     </div>
