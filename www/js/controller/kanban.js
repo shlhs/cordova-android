@@ -31,26 +31,27 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
     function paintFailed() {        // 检测图表绘制是否已完成
         paintFailedCount += 1;
         if (paintedChartCount + paintFailedCount == needChartCount) {
-
-            var slide = $("#chartSlider");
-            slide.slidesjs({
-                start: $scope.index,
-                width: window.screen.width,
-                play: {
-                    active: true,
-                    swap: true
-                }
-            });
+            _initSlider(paintedChartCount);
         }
     }
 
     function paintSuccess() {
         paintedChartCount += 1;
         if (paintedChartCount + paintFailedCount == needChartCount) {
+            _initSlider(paintedChartCount);
+        }
+    }
 
+    function _initSlider(count) {
+        if (count === 1) {
+            $('<ul class="slidesjs-pagination">' +
+                '<li class="slidesjs-pagination-item">' +
+                '<a href="#" data-slidesjs-item="0" class="active">1</a>' +
+                '</li>' +
+                '</ul>').appendTo($('#chartSlider'));
+        } else {
             var slide = $("#chartSlider");
             slide.slidesjs({
-                start: $scope.index,
                 width: window.screen.width,
                 play: {
                     active: true,
