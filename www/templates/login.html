@@ -9,74 +9,122 @@
     <meta http-equiv="Access-Control-Allow-Origin" content="*">
     <link rel="stylesheet" href="../components/mui/css/icons-extra.css">
     <link rel="stylesheet" href="../css/setting.css">
-    <!--<script type="text/javascript" src="../cordova.js"></script>-->
-    <!--<script type="text/javascript" src="../cordova_plugins.js"></script>-->
     <script type="text/javascript" src="../components/libs/jquery-2.1.4.js"></script>
     <script type="text/javascript" src="../components/angular/angular.min.js"></script>
     <script type="text/javascript" src="../components/angular-ui-router/release/angular-ui-router.min.js"></script>
-    <!--<script type="text/javascript" src="../components/ui-router-extras/release/ct-ui-router-extras.js"></script>-->
     <script type="text/javascript" src="../components/angular-animate/angular-animate.js"></script>
     <script type="text/javascript" src="../components/angular-ui-router/release/stateEvents.min.js"></script>
     <script type="text/javascript" src="../js/app/utils.js"></script>
+    <script type="text/javascript" src="../js/lib/jwt/jsrsasign-all-min.js"></script>
     <script type="text/javascript" src="../js/app/app.js"></script>
     <script type="text/javascript" src="../js/service/common-service.js"></script>
 <style>
-    body{font-family:SimHei,'Helvetica Neue',Arial,'Droid Sans',sans-serif;font-size:14px;color:#333;background:#f2f2f2;background:url(../img/login-bg.png) no-repeat;background-size:cover;}
     html,body{
-        height: 100%;
+        font-family:SimHei,'Helvetica Neue',Arial,'Droid Sans',sans-serif;
+        padding: 0;
+        margin: 0;
+        background-color: #fff;
         position: relative;
+        height: 100%;
+        width: 100%;
         overflow: hidden;
     }
-    a, a.link{color:#666;text-decoration:none;font-weight:500;}
-    a, a.link:hover{color:#666;}
-    h1,h2,h3,h4,h5,h6{font-weight: normal;}
-
-    .login{
+    .main-icon {
+        margin-top: 20%;
+        width: 57%;
+        margin-left: 21.5%;
+    }
+    .login-area {
+        padding: 0px;
+        overflow: hidden;
+        left: 0;
         width: 100%;
-        position: fixed;
-        top: calc(50% - 110px);
+        bottom: 40px;
+        margin-top: 15%;
     }
-    .welcome{width:100%;margin:25% 0;}
-    .welcome img{width:100%;}
-    .login-form{
-        padding: 0 30px;
+    .form-item {
+        border-bottom: rgb(232,232,232) 1px solid;
+        padding: 12px 0;
+        box-sizing: border-box;
+        margin: 0 44px;
+        position: relative;
     }
-    .login-inp{margin-top:15px;border:1px solid #fff;border-radius:25px;}
-    .login-inp label{width:4em;text-align:center;display:inline-block;color:#fff;}
-    .login-inp input{line-height:40px;color:#fff;background-color:transparent;border:none;outline: none;margin: 0;font-size: 14px;}
-    .login-inp a{display:block;width:100%;text-align:center;line-height:40px;color:#fff;font-size:16px;letter-spacing:5px;}
-    .login-txt{text-align:center;color:#fff;padding: 6px;}
-    .login-txt a{color:#fff;padding:0 5px;}
-    input{
-        padding-left: 20px;
+    .form-item label {
+        color: rgb(1,1,1);
+        font-size: 18px;
+        position: absolute;
+        left: 0;
+    }
+    .form-item input {
+        outline: none;
+        border: none;
+        padding-left: 84px;
+        width: 100%;
+        font-size: 18px;
     }
     input::-webkit-input-placeholder {
         /* placeholder颜色  */
-        color: #fff;
+        color: rgb(187,187,187);
     }
     input::-moz-placeholder {
         /* placeholder颜色  */
+        color: rgb(187,187,187);
+    }
+    .login-btn {
+        background-color: rgb(195,227,249);
+        border-radius: 4px;
+        margin: 42px 4% 0 4%;
+        box-sizing: border-box;
+        height: 48px;
+        line-height: 48px;
+        text-align: center;
+        font-size: 18px;
         color: #fff;
+    }
+    .login-btn.enable {
+        background-color: #108ee9;
     }
     .error{
         color: red;
         padding-left: 20px;
         margin-top: 10px;
     }
+    @media screen and (max-height: 600px) {
+        .main-icon {
+            margin-top: 15%;
+        }
+        .login-area {
+            margin-top: 10%;
+        }
+        .login-btn {
+            margin-top: 30px;
+            height: 40px;
+            line-height: 40px;
+        }
+    }
 </style>
 <body class="box-vertical-center" ng-app="myApp" >
-    <div class="login" ng-controller="LoginCtrl">
+    <img class="main-icon" src="../img/login/login-icon.png">
+    <div class="login-area" ng-controller="LoginCtrl">
         <div class="login-form">
-            <div class="login-inp">
-                <label>平台</label><input type="text" placeholder="请输入平台编号" ng-model="platformCode" ng-change="platformError=''"></div>
-            <div class="error">{{platformError}}</div>
-            <div class="login-inp"><label>用户名</label><input type="text" ng-model="username" ng-change="error=''"></div>
-            <div class="login-inp"><label>密码</label><input type="password" ng-model="password" ng-change="error=''"></div>
-            <div class="error">{{error}}</div>
-            <div class="login-inp" style="background-color: #88c1e3;border: #1f6377;" ng-if="!isLogin"><a href="javascript:void(0)" ng-click="login()">立即登录</a></div>
-            <div class="login-inp" style="background-color: #88c1e3;border: #1f6377;" ng-if="isLogin" disabled><a href="javascript:void(0)" >正在登录...</a></a></div>
+            <div class="form-item">
+                <label>平台</label>
+                <input type="text" placeholder="请输入平台编号" ng-model="platformCode" ng-change="inputChange('platformCode')"></div>
+            <!--<div class="error">{{platformError}}</div>-->
+            <div class="form-item">
+                <label>用户名</label>
+                <input type="text" ng-model="username" ng-change="inputChange('username')" placeholder="请输入账号">
+            </div>
+            <div class="form-item">
+                <label>密码</label>
+                <input type="password" ng-model="password" ng-change="inputChange('password')" placeholder="请输入密码">
+            </div>
+            <!--<div class="error">{{error}}</div>-->
+            <div class="login-btn" ng-class="{'enable': enable}" ng-click="login()">
+                <span ng-if="!isLogin">登录</span>
+                <span ng-if="isLogin">正在登录...</span>
+            </div>
         </div>
-        <!--<div class="login-txt"><a href="#">立即注册</a>|<a href="#">忘记密码？</a></div>-->
     </div>
     <script src="../components/fastclick-master/lib/fastclick.js"></script>
     <script src="../js/my/notify.js"></script>

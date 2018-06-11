@@ -1,85 +1,34 @@
 app.controller('StaticDevicesHomeCtrl', function ($scope, ajax, routerService) {
     var stationSn = GetQueryString("sn");
     var devices = [];       // 设备
-    $scope.allDevices = [];
+    $scope.deviceDatas = [];
+    $scope.isLoading = false;
+    $scope.loadingFailed = false;
 
-    $scope.openPage = function(deviceData){
-        if (deviceData.is_group) {
-            routerService.openPage($scope, '/templates/site/static-devices/sub-device-list.html', {groupData: deviceData});
-        } else {
-            routerService.openPage($scope, '/templates/site/static-devices/device-detail.html', {device: deviceData});
-        }
+    $scope.gotoDevice = function(deviceData){
+        routerService.openPage($scope, '/templates/site/static-devices/device-detail.html', {id: deviceData.id});
     };
 
-    function formatToTreeData(data) {
-
-        function addToGroup(newItem, items) {
-            if (!items || !items.length) {
-                return;
-            }
-            for (var i=0; i<items.length; i++) {
-
-                var item = items[i];
-                if (!item.is_group){
-                    continue;
-                }
-                if (item.id === newItem.parent_id) {
-                    if (newItem.is_group) {
-                        newItem.children = [];
-                    }
-                    newItem.text = newItem.name;
-                    item.children.push(newItem);
-                    return true;
-                }
-                if (item.children) {
-                    if (addToGroup(newItem, item.children)) {
-                        return true;
-                    }
-                }
-            }
-
-        }
-
-        // 先按照depth进行排序
-        data = data.sort(function (a, b) {
-            if (a.depth !== b.depth) {
-                return a.depth - b.depth;
-            }
-            if (a.is_group !== b.is_group) {  // 分组排在前
-                return b.is_group - a.is_group;
-            }
-            return a.name.localeCompare(b.name, 'zh-CN');
-        });
-
-        var formatted = [];
-
-        // 先按照depth进行排序
-        data.forEach(function (item) {
-            if (!item.is_group) {
-                devices.push(item);
-            }
-            if (item.parent_id) {
-                addToGroup(item, formatted);
-            } else {
-                item.text = item.name;
-                item.children = [];
-                formatted.push(item);
-            }
-        });
-        return formatted;
-    }
-
-    function getDevices() {
+    $scope.getDataList = function() {
+        $scope.isLoading = true;
+        $scope.loadingFailed = false;
         ajax.get({
             url: '/stations/' + stationSn + '/staticdevices',
             success: function (data) {
-                $scope.allDevices = formatToTreeData(data);
+                $scope.isLoading = false;
+                // $scope.treeData = formatToTreeData(data);
+                // setDefaultData();
+                $scope.deviceDatas = data;
+                $scope.$apply();
+            }, error: function () {
+                $scope.isLoading = false;
+                $scope.loadingFailed = true;
                 $scope.$apply();
             }
         })
-    }
+    };
 
-    getDevices();
+    $scope.getDataList();
 });
 
 app.controller('StaticDeviceSubListCtrl', function ($scope, ajax) {
@@ -159,6 +108,29 @@ app.controller('StaticDeviceSubListCtrl', function ($scope, ajax) {
     init();
 });
 
-app.controller('StaticDeviceDetailCtrl', function ($scope) {
+app.controller('StaticDeviceDetailCtrl', function ($scope, ajax) {
+    $scope.device = {};
 
+    $scope.getDataList = function () {
+        ajax.get({
+            url: '/staticdevices/' + $scope.id,
+            success: function (data) {
+                if (data.properties) {
+                    data.properties = JSON.parse(data.properties);
+                    if (data.items) {
+                        data.items.forEach(function (n, i) {
+                            if (n.properties) {
+                                n.properties = JSON.parse(n.properties);
+                            }
+
+                        })
+                    }
+                }
+                $scope.device = data;
+                $scope.$apply();
+            }
+        })
+    };
+
+    $scope.getDataList();
 });

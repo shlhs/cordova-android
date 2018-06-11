@@ -16,6 +16,7 @@ app.controller('MaintenanceCheckHistoryCtrl', function ($scope, ajax, routerServ
     $scope.stationName = GetQueryString("name");
     $scope.history = [];
     $scope.isLoading = false;
+    $scope.loadingFailed = false;
 
     $scope.createOneRecord = function () {
         $scope.openPage('/templates/maintenance-check/check-one-record-home.html', {isCreate: true, stationSn: sn, stationName: $scope.stationName});
@@ -26,8 +27,9 @@ app.controller('MaintenanceCheckHistoryCtrl', function ($scope, ajax, routerServ
     };
 
 
-    function getHistory() {
+    $scope.getDataList = function() {
         $scope.isLoading = true;
+        $scope.loadingFailed = false;
         ajax.get({
             url: '/poweroff_reports?station_sn=' + sn,
             success: function (data) {
@@ -37,6 +39,7 @@ app.controller('MaintenanceCheckHistoryCtrl', function ($scope, ajax, routerServ
             },
             error: function (xhr, status, error) {
                 $scope.isLoading = false;
+                $scope.loadingFailed = true;
                 $scope.$apply();
             }
         });
@@ -46,7 +49,7 @@ app.controller('MaintenanceCheckHistoryCtrl', function ($scope, ajax, routerServ
         $scope.history.unshift(data);
     };
 
-    getHistory();
+    $scope.getDataList();
 });
 
 
@@ -72,6 +75,14 @@ app.controller("MaintenanceCheckRecordItemCtrl", function ($scope, ajax, routerS
 
     $scope.gotoCheckListPage = function(){
         routerService.openPage($scope, '/templates/maintenance-check/check-one-record-items.html', {recordData: $scope.recordData});
+    };
+
+    $scope.openGallery = function(startIndex, images) {
+
+        routerService.openPage($scope, '/templates/maintenance-check/gallery.html', {
+            index: startIndex,
+            images: images
+        });
     };
 
     $scope.gotoPrevPage = function () {

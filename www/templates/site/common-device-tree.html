@@ -1,0 +1,60 @@
+
+<div class="cascade-selector" ng-class="{'collapse': collapse[0] || collapse[1]}" ng-if="maxDepth>=4">
+    <div class="selector-mask" ng-if="collapse[0] || collapse[1]" ng-click="toggleCollapse(-1)"></div>
+    <div class="selector separator" style="width: 50%" ng-class="{'collapse': collapse[0]}" ng-if="maxDepth===5">
+        <div ng-click="toggleCollapse(0)"><label class="result-label">{{deviceSelected[0].name}}</label></div>
+        <ul class="option-wrapper option-vertical">
+            <li ng-repeat="item in selectOptions[0]" ng-class="{'selected': deviceSelected[0].id === item.id}"
+                ng-click="chooseDeviceOrGraph(0, item)">
+                <label><i class="device-status {{item.status}}"></i>{{item.name}}</label>
+            </li>
+        </ul>
+    </div>
+    <div class="selector" style="width: 50%" ng-class="{'collapse': collapse[1]}"
+         ng-style="{width: maxDepth===4 ? '100%' : '50%'}">
+        <div ng-click="toggleCollapse(1)">
+            <label class="result-label" ng-class="{'nodata': !deviceSelected[1]}">
+                {{deviceSelected[1] ? deviceSelected[1].name : '(空)'}}
+            </label>
+        </div>
+        <ul class="option-wrapper option-vertical">
+            <li ng-repeat="item in selectOptions[1]" ng-class="{'selected': deviceSelected[1].id === item.id}"
+                ng-click="chooseDeviceOrGraph(1, item)">
+                <label class="device-status {{item.status}}">{{item.name}}</label>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="device-tree-container device-tree" ng-style="{top: maxDepth<=3 ? '0px' : '45px'}">
+    <div class="tree-left-sider" ng-if="maxDepth>1">
+        <ul class="first-list" ng-if="selectOptions[2]">
+            <li ng-repeat="item in selectOptions[2]"
+                ng-class="{'group': item.is_group, 'collapse': item.id === collapse[2], 'selected': deviceSelected[2].id===item.id}">
+                <label class="mui-ellipsis" ng-click="chooseDeviceOrGraph(2, item)"><i class="device-status {{item.status}}"></i>{{item.name}}</label>
+                <ul ng-if="item.children" class="second-list">
+                    <li ng-repeat="child in item.children" ng-class="{'selected': child.id === deviceSelected[3].id}"
+                        ng-click="chooseDeviceOrGraph(3, child)">
+                        <label class="mui-ellipsis"><i class="device-status {{child.status}}"></i>{{child.name}}</label>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        <ul class="second-list" ng-if="maxDepth===2" style="display: block;">
+            <li ng-repeat="child in selectOptions[3]" ng-class="{'selected': child.id === deviceSelected[3].id}"
+                ng-click="chooseDeviceOrGraph(3, child)">
+                <label class="mui-ellipsis"><i class="device-status {{child.status}}"></i>{{child.name}}</label>
+            </li>
+        </ul>
+        <div class="nodata" ng-if="!selectOptions[2] && !selectOptions[3]" style="text-align: center;color: #7d8491;padding: 16px;">(空)</div>
+    </div>
+    <div class="tree-right-sider" ng-style="{width: maxDepth===1 ? '100%': '52%'}">
+        <ul class="device-list" ng-if="selectOptions[4]">
+            <li ng-repeat="item in selectOptions[4]"
+                ng-click="chooseDeviceOrGraph(4, item)">
+                <label class="mui-ellipsis"><i class="device-status {{item.status}}"></i> {{item.name}}</label>
+            </li>
+        </ul>
+        <div class="nodata" ng-if="!selectOptions[4]" style="text-align: center;color: #7d8491;padding: 16px;">(空)</div>
+    </div>
+</div>

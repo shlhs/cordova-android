@@ -27,25 +27,25 @@
     <style>
     </style>
 <body class="box-vertical-center" ng-app="myApp" ng-controller="MonitorListCtrl">
-<header class="mui-bar mui-bar-nav bg-header mui-segmented-control-vertical">
-    <a class="mui-icon mui-action-back mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
+<header class="mui-bar bg-header mui-segmented-control-vertical">
+    <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
     <h1 class="mui-title">所有画面</h1>
 </header>
 <div class="mui-content" ng-cloak>
     <div class="height-wrap-parent">
-        <div class="scroll-wrapper" id="monitors">
+        <div class="scroll-wrapper" id="monitors" ng-if="!loadingFailed && !monitorLoading">
             <div class="mui-scroll">
                 <ul class="mui-table-view no-margin" style="background-color: #fff;" ng-if="monitorScreens.length">
                     <li class="mui-table-view-cell mui-media" ng-repeat="screen in monitorScreens" >
                         <a class="mui-navigate-right" href="/templates/site/monitor-detail.html?url={{screen.mobile_screen_link}}&screen=h">
-                            <i class="mui-media-object mui-pull-left icon icon-md icon-monitor-list"></i>
-                            <div class="mui-media-body" style="line-height: 44px;">
+                            <i class="mui-media-object mui-pull-left icon icon-md icon-monitor-list" style="width: 50px;height: 50px;max-width: 50px;"></i>
+                            <div class="mui-media-body" style="line-height: 50px;font-size: 18px;">
                                 {{screen.name}}
                             </div>
                         </a>
                     </li>
                 </ul>
-                <div class="page-alert-wrapper" ng-if="!monitorScreens.length && !monitorLoading">
+                <div class="page-alert-wrapper" ng-if="!monitorScreens.length && !monitorLoading && !loadingFailed">
                     <div class="page-alert">
                         <i class="alert-icon nodata"></i>
                         <div class="alert-text info">暂无监控页面</div>
@@ -55,8 +55,15 @@
         </div>
         <div class="page-alert-wrapper" ng-if="monitorLoading">
             <div class="page-alert">
-                <span class="mui-spinner"></span>
+                <img src="../../img/page-loading.gif" class="loading-img">
                 <div class="alert-text info">正在加载...</div>
+            </div>
+        </div>
+        <div class="page-alert-wrapper" ng-if="loadingFailed">
+            <div class="page-alert">
+                <i class="alert-icon warning"></i>
+                <div class="alert-text info">加载失败，请检查网络</div>
+                <div class="alert-reload" ng-click="getDataList()">重新加载</div>
             </div>
         </div>
     </div>

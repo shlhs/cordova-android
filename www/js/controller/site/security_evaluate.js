@@ -167,6 +167,7 @@ app.controller('SecurityHistoryCtrl', function ($scope, routerService, ajax, use
     $scope.stationName = GetQueryString("name");
     $scope.history = [];
     $scope.isLoading = false;
+    $scope.loadingFailed = false;
 
     $scope.createOneRecord = function () {
         $scope.openPage('/templates/evaluate/security-evaluate-first-classify.html', {isCreate: true, stationSn: sn,
@@ -177,8 +178,9 @@ app.controller('SecurityHistoryCtrl', function ($scope, routerService, ajax, use
         routerService.openPage($scope, template, params, config);
     };
 
-    function getHistory() {
+    $scope.getDataList = function() {
         $scope.isLoading = true;
+        $scope.loadingFailed = false;
         ajax.get({
             url: '/security_reports?station_sn=' + sn,
             success: function (data) {
@@ -192,14 +194,11 @@ app.controller('SecurityHistoryCtrl', function ($scope, routerService, ajax, use
             },
             error: function () {
                 $scope.isLoading = false;
+                $scope.loadingFailed = true;
                 $scope.$apply();
             }
         })
-    }
-
-    function init() {
-        getHistory();
-    }
+    };
 
     $scope.refresh = function (data) {
         if (!data){
@@ -221,7 +220,7 @@ app.controller('SecurityHistoryCtrl', function ($scope, routerService, ajax, use
         }
     };
 
-    init();
+    $scope.getDataList();
 });
 
 app.controller('SecurityEvaluateHome', function ($scope, $http, ajax, routerService, SecurityReportService) {

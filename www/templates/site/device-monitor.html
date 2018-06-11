@@ -50,46 +50,81 @@
         .mui-btn{
             margin-right:6px;
         }
+        @media screen and (max-width: 360px) {
+            th, td {
+                font-size: 12px;
+            }
+        }
     </style>
 </head>
 <body class="box-vertical-center" ng-app="myApp" ng-controller="DeviceMonitorCtrl">
-<header class="mui-bar mui-bar-nav bg-header">
-    <a class="mui-icon mui-action-back mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
+<header class="mui-bar bg-header">
+    <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
     <h1 class="mui-title">{{deviceName}}</h1>
+    <a onclick="showTopMenu()" class="mui-action-menu mui-icon mui-pull-right" ><i class="header-icon white icon-add"></i></a>
 </header>
-<div class="mui-content" ng-cloak>
-    <div id="task_types" class="mui-slider-indicator mui-segmented-control mui-segmented-control-inverted" style="margin-left: 0;position: fixed;top:60px;background-color: #fff;box-shadow: 0 0 1px #ccc;z-index:100;">
-        <a class="mui-control-item mui-active" ng-click="changeDeviceType('$event', 'realtime')" ng-class="{'mui-active': showType=='realtime'}">
-            实时数据
-        </a>
-        <a class="mui-control-item" ng-click="changeDeviceType($event, 'history')" ng-class="{'mui-active': showType=='history'}">
-            历史数据
-        </a>
-    </div>
-    <div class="scroll-wrapper" ng-show="showType==='realtime'" style="top:32px;" ng-controller="VarRealtimeCtrl">
-        <div style="padding: 6px 16px;">
-            <button type="button" class="mui-btn" ng-repeat="item in realtime" ng-click="switchRealtimeType(item.type)" ng-class="{'mui-btn-primary': item.type===realtimeType}">
-                {{item.name}}
-            </button>
+<div ng-include="'../../templates/top-menu.html'"></div>
+<div class="mui-content" ng-cloak style="background-color: #fff;">
+    <div class="cascade-selector" style="top: 60px;" ng-class="{'collapse': collapse[0] || collapse[1]}">
+        <div class="selector-mask"  ng-if="collapse[0] || collapse[1]" ng-click="toggleCollapse(-1)" style="top: 105px;"></div>
+        <div class="selector separator" style="width: 50%" ng-class="{'collapse': collapse[0]}">
+            <div ng-click="toggleCollapse(0)"><label class="result-label">{{showType}}</label></div>
+            <ul class="option-wrapper option-vertical">
+                <li ng-click="selectShowType('实时数据')" ng-class="{'selected': showType==='实时数据'}">
+                    实时数据
+                </li>
+                <li ng-click="selectShowType('历史数据')" ng-class="{'selected': showType==='历史数据'}">
+                    历史数据
+                </li>
+            </ul>
         </div>
-        <div class="mui-scroll" style="background-color: #ffffff;" ng-if="realtime.length && !isLoading">
-            <div ng-if="realtimeType==='analog'">
+        <div class="selector" style="width: 50%" ng-class="{'collapse': collapse[1]}">
+            <div ng-click="toggleCollapse(1)"><label class="result-label" ng-class="{'nodata': !dataName}">{{dataName ? dataName : '无数据'}}</label></div>
+
+            <ul class="option-wrapper option-horizontal">
+                <li ng-repeat="item in secondOptions[showType]" ng-class="{'selected': dataName===item.name}"
+                    ng-click="selectDataType(item)">{{item.name}}</li>
+            </ul>
+        </div>
+    </div>
+    <div style="margin-top: 45px;" ng-show="showType==='历史数据'" ng-controller="HistoryVarCtrl">
+        <ul class="calendar-tabs" ng-if="currentGroup">
+            <li class="tab" ng-class="{'active': timeRange==='DAY'}" ng-click="switchTimeRange('DAY')">
+                <label><i class="icon icon-tab-clock"></i>今日</label>
+            </li>
+            <li class="tab" ng-class="{'active': timeRange==='MONTH'}" ng-click="switchTimeRange('MONTH')">
+                <label><i class="icon icon-tab-calendar"></i>本月</label>
+            </li>
+        </ul>
+        <div class="mui-scroll" style="background-color: #ffffff;">
+            <div class="card" style="margin-top: 16px;">
+                <div id="chartContainer"></div>
+                <div class="page-alert-wrapper" ng-if="!currentGroup">
+                    <div class="page-alert">
+                        <div class="page-alert">
+                            <i class="alert-icon nodata"></i>
+                            <div class="alert-text info">变量未关联标准定义</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="scroll-wrapper" ng-show="showType==='实时数据'" style="margin-top:45px;" ng-controller="VarRealtimeCtrl">
+
+        <div class="mui-scroll" style="background-color: #ffffff;" ng-if="realtime && !isLoading">
+            <div ng-if="realtimeType==='模拟量'">
                 <table>
-                    <thead>
-                    <tr>
-                        <th style="width: 65%;">名称</th>
-                        <th style="width: 35%;">实际值</th>
-                    </tr>
-                    </thead>
                     <tbody>
                     <tr ng-repeat="item in realtimeValues">
                         <td>{{item.name}}</td>
-                        <td>{{item.data}}{{item.unit}}</td>
+                        <td style="text-align: right;color: #3e7fdb;">{{item.data}}</td>
+                        <td style="padding-left: 4px;">{{item.unit}}</td>
                     </tr>
                     </tbody>
                 </table>
             </div>
-            <div ng-if="realtimeType === 'digital'" class=" height-wrap-parent" data-init="false">
+            <div ng-if="realtimeType === '状态量'" class=" height-wrap-parent" data-init="false">
                 <table>
                     <tbody>
                     <tr ng-repeat="item in realtimeValues">
@@ -100,54 +135,52 @@
                 </table>
             </div>
         </div>
-        <div class="page-alert-wrapper" ng-if="!realtime.length && !isLoading">
-            <div class="page-alert">
-                <div class="page-alert">
-                    <i class="alert-icon nodata"></i>
-                    <div class="alert-text info">该设备未配置变量</div>
-                </div>
-            </div>
-        </div>
         <div class="page-alert-wrapper" ng-if="isLoading">
             <div class="page-alert">
-                <span class="mui-spinner"></span>
+                <img src="../../img/page-loading.gif" class="loading-img">
                 <div class="alert-text info">正在加载...</div>
             </div>
         </div>
     </div>
-    <div class="scroll-wrapper" ng-show="showType==='history'" style="top:32px;" ng-controller="HistoryVarCtrl">
-        <div ng-if="history.length">
-            <div style="padding: 6px 16px;">
-                <button class="mui-btn" ng-repeat="item in history" ng-click="switchGroup(item.name)"
-                        ng-class="{'mui-btn-primary': currentGroupName===item.name}">
-                    {{item.name}}
-                </button>
-            </div>
-            <div style="padding: 0 0 6px 16px;">
-                <button class="mui-btn mui-btn-outlined" ng-class="{'mui-btn-primary': timeRange==='DAY'}" ng-click="switchTimeRange('DAY')">今日</button>
-                <button class="mui-btn mui-btn-outlined" ng-class="{'mui-btn-primary': timeRange==='MONTH'}" ng-click="switchTimeRange('MONTH')">本月</button>
-            </div>
-            <div class="mui-scroll">
-                <div class="card">
-                    <div id="chartContainer"></div>
-                </div>
-            </div>
-        </div>
-        <div class="page-alert-wrapper" ng-if="!history.length && !isLoading">
-            <div class="page-alert">
-                <div class="page-alert">
-                    <i class="alert-icon nodata"></i>
-                    <div class="alert-text info">变量未关联标准定义</div>
-                </div>
-            </div>
-        </div>
-        <div class="page-alert-wrapper" ng-if="isLoading">
-            <div class="page-alert">
-                <span class="mui-spinner"></span>
-                <div class="alert-text info">正在加载...</div>
-            </div>
+    <div class="page-alert-wrapper" ng-if="isLoading">
+        <div class="page-alert">
+            <img src="../../img/page-loading.gif" class="loading-img">
+            <div class="alert-text info">正在加载...</div>
         </div>
     </div>
+    <!--<div class="scroll-wrapper" ng-if="showType==='history'" style="top:32px;" ng-controller="HistoryVarCtrl1">-->
+        <!--<div ng-if="history.length">-->
+            <!--<div style="padding: 6px 16px;">-->
+                <!--<button class="mui-btn" ng-repeat="item in history" ng-click="switchGroup(item.name)"-->
+                        <!--ng-class="{'mui-btn-primary': currentGroupName===item.name}">-->
+                    <!--{{item.name}}-->
+                <!--</button>-->
+            <!--</div>-->
+            <!--<div style="padding: 0 0 6px 16px;">-->
+                <!--<button class="mui-btn mui-btn-outlined" ng-class="{'mui-btn-primary': timeRange==='DAY'}" ng-click="switchTimeRange('DAY')">今日</button>-->
+                <!--<button class="mui-btn mui-btn-outlined" ng-class="{'mui-btn-primary': timeRange==='MONTH'}" ng-click="switchTimeRange('MONTH')">本月</button>-->
+            <!--</div>-->
+            <!--<div class="mui-scroll">-->
+                <!--<div class="card">-->
+                    <!--<div id="chartContainer"></div>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--<div class="page-alert-wrapper" ng-if="!history.length && !isLoading">-->
+            <!--<div class="page-alert">-->
+                <!--<div class="page-alert">-->
+                    <!--<i class="alert-icon nodata"></i>-->
+                    <!--<div class="alert-text info">变量未关联标准定义</div>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--<div class="page-alert-wrapper" ng-if="isLoading">-->
+            <!--<div class="page-alert">-->
+                <!--<span class="mui-spinner"></span>-->
+                <!--<div class="alert-text info">正在加载...</div>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
 </div>
 <div class="page page-left" ui-view></div>
 <script src="../../components/fastclick-master/lib/fastclick.js"></script>

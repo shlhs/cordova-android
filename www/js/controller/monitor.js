@@ -4,26 +4,30 @@
 app.controller('MonitorListCtrl', function ($scope, $stateParams, scrollerService, ajax) {
     $scope.monitorScreens = [];
     $scope.monitorLoading = true;
-    var sn = GetQueryString('sn');
-    function getDataList () {
+    $scope.loadingFailed = false;
 
-        scrollerService.initScroll('#monitors', getDataList);
+    var sn = GetQueryString('sn');
+    $scope.getDataList = function() {
+
+        $scope.loadingFailed = false;
+        $scope.monitorLoading = true;
         ajax.get({
             url: '/monitoringscreens/findByStationSn?sn=' + sn,
             success: function (data) {
                 $scope.monitorLoading = false;
                 $scope.monitorScreens = data;
+                scrollerService.initScroll('#monitors', $scope.getDataList);
                 $scope.$apply();
             },
             error: function (xhr, status, error) {
                 $scope.monitorLoading = false;
-                $.notify.error('获取监控画面失败');
+                $scope.loadingFailed = true;
                 $scope.$apply();
             }
         });
-    }
+    };
 
-    getDataList();
+    $scope.getDataList();
 });
 
 

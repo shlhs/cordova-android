@@ -64,12 +64,18 @@
         .info-group>li{
             line-height: 24px;
         }
+        .info-group .title {
+            width: auto;
+        }
+        .info-group .value {
+            margin-left: 0;
+        }
     </style>
 </head>
 
 <body class="mui-android mui-android-5 mui-android-5-1 mui-android-5-1-1 mui-segmented-control-vertical" ng-app="myApp" ng-controller="TaskBaseCtrl">
 <header class="mui-bar bg-header" style="height: 120px;">
-    <a class="mui-icon mui-action-back mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
+    <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
     <h1 class="mui-title" id="head_title">任务详情</h1>
 </header>
 <div  ng-controller="TaskDetailCtrl" ng-cloak style="margin-top:50px;" id="taskDetail">
@@ -119,19 +125,20 @@
                             <label class="title">任务描述：</label><span class="value">{{taskData.desp}}</span>
                         </li>
                     </ul>
-                    <ul class=" info-group" style="padding-top: 8px;border-top: #eee 1px solid;">
-                        <li >
+                    <ul class="info-group" style="padding-top: 8px;border-top: #eee 1px solid;">
+                        <li>
                             <i class="icon icon-xs icon-site-blue mui-pull-left"></i>
                             <span class="link">站点:</span>
                             <a class="link" href="/templates/site/site-detail.html?sn={{taskData.station_sn}}&name={{taskData.station_name}}">{{taskData.station_name}}</a>
                         </li>
                         <li ng-if="taskData.events.length">
-                            <i class="icon icon-xs icon-event-red"></i><span class="value" style="color: rgb(250, 129, 12)">事件信息:{{taskData.events[0].name}}</span>
+                            <i class="icon icon-xs icon-event-red"></i><span style="color: rgb(250, 129, 12)">事件信息:{{taskData.events[0].name}}</span>
                         </li>
                         <li ng-repeat="device in taskData.devices">
-                            <i class="icon icon-xs icon-device-grey mui-pull-left"></i><span class="title mui-pull-left">检修设备:</span>
+                            <i class="icon icon-xs icon-device-grey mui-pull-left"></i>
+                            <span class="mui-pull-left" style="color: rgb(141,140,143);">检修设备:</span>
                             <div class="device-list">
-                                <a class="link device" href="/templates/site/device-detail.html?deviceSn={{device.sn}}&deviceName={{device.name}}">{{device.name}}</a>
+                                <a class="link device" href="/templates/site/device-monitor.html?deviceSn={{device.sn}}&deviceName={{device.name}}">{{device.name}}</a>
                             </div>
                         </li>
                     </ul>

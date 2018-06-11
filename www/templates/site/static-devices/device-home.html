@@ -25,18 +25,28 @@
     <script type="text/javascript" src="/js/service/router-service.js"></script>
     <script type="text/javascript" src="/js/service/common-service.js"></script>
 <body class="box-vertical-center" ng-app="myApp" ng-controller="StaticDevicesHomeCtrl">
-    <header class="mui-bar mui-bar-nav bg-header">
-        <a class="mui-icon mui-action-back mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
+    <header class="mui-bar bg-header">
+        <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
         <h1 class="mui-title">设备档案</h1>
     </header>
     <div class="mui-content" ng-cloak>
-        <ul class="mui-table-view" style="margin-top: 0;">
-            <li class="mui-table-view-cell" ng-repeat="device in allDevices" ng-click="openPage(device)">
-                <a class="mui-navigate-right">
-                    {{device.name}}
-                </a>
-            </li>
-        </ul>
+        <div ng-if="!isLoading && !loadingFailed">
+            <device-tree-view device-list="deviceDatas" goto-device="gotoDevice"></device-tree-view>
+        </div>
+        <div class="page-alert-wrapper" ng-if="isLoading">
+            <div class="page-alert">
+                <img src="../../../img/page-loading.gif" class="loading-img">
+                <div class="alert-text info">正在加载...</div>
+            </div>
+        </div>
+        <div class="page-alert-wrapper" ng-if="loadingFailed">
+            <div class="page-alert">
+                <i class="alert-icon warning"></i>
+                <div class="alert-text info">加载失败，请检查网络</div>
+                <div class="alert-reload" ng-click="getDataList()">重新加载</div>
+            </div>
+        </div>
+
     </div>
 <script src="/components/fastclick-master/lib/fastclick.js"></script>
 <script src="/js/my/notify.js"></script>
