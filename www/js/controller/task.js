@@ -364,7 +364,7 @@ app.controller('CompetitionTaskListCtrl', function ($scope, $rootScope, scroller
     }
 
     $scope.getDataList = function() {
-        scrollerService.initScroll('#competition_tasks', $scope.getDataList);
+        scrollerService.initScroll('#competition_tasks_scroller', $scope.getDataList);
         var company = userService.company;
         if (company && (company.length > 1 || company.length === 0)){    // 有两种情况，一种是该用户没有公司，一种是该用户为平台人员
             $scope.isLoading = false;
@@ -412,7 +412,7 @@ app.controller('CompetitionTaskListCtrl', function ($scope, $rootScope, scroller
                 // 从任务列表中删除
                 $scope.tasks.splice(i, 1);
                 // 给我的待办增加一条
-                var scope = angular.element('#my_tasks').scope();
+                var scope = angular.element('div[ng-controller="TaskListCtrl"]').scope();
                 scope.updateTask && scope.updateTask(taskData);
                 break;
             }
@@ -560,22 +560,6 @@ app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, us
     $scope.loadingFailed = false;
     $scope.todoCount = 0;
 
-    $scope.updateTask = function (taskData) {       // 用于在任务详情页修改后，更新首页上的任务
-        var task = null, existed = false;
-        for (var i in allTasks){
-            task = allTasks[i];
-            if (parseInt(task.id) === parseInt(taskData.id)){
-                existed = true;
-                break;
-            }
-        }
-        if (!existed){     // 如果不存在，则增加一条
-            allTasks.unshift(taskData);
-        }
-        $scope.changeTaskType(null, $scope.showType);
-        $scope.$apply();
-    };
-
     $scope.getDataList = function() {
         scrollerService.initScroll("#taskList", $scope.getDataList);
         var company = userService.company;
@@ -633,7 +617,8 @@ app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, us
             allTasks.unshift(taskData);
         }
         allTasks.sort(sortByUpdateTime);
-        $scope.changeTaskType($scope.showType);
+        $scope.changeTaskType(null, $scope.showType);
+        $scope.$apply();
     };
 
     function isTodoTask(task) {
@@ -684,14 +669,14 @@ app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, us
 function updateAfterGrab(strArgs) {     // 在任务详情页抢单后，需要将任务从主页中删除
     var taskData = JSON.parse(strArgs);
     // 更新到“抢单”
-    var scope = angular.element('#competition_tasks').scope();
+    var scope = angular.element('div[ng-controller="CompetitionTaskListCtrl"]').scope();
     scope.afterGrabTask(taskData);
 }
 
 function updateTask(strArgs) {  // json格式的参数， {data: taskData}
     var taskData = JSON.parse(strArgs);
     // 更新到“我的待办”
-    var scope = angular.element('#my_tasks').scope();
+    var scope = angular.element('div[ng-controller="TaskListCtrl"]').scope();
     formatTaskStatusName(taskData);
     scope.updateTask && scope.updateTask(taskData);
 }
