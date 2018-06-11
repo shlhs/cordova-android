@@ -414,7 +414,7 @@ app.controller('CompetitionTaskListCtrl', function ($scope, $rootScope, scroller
                 // 从任务列表中删除
                 $scope.tasks.splice(i, 1);
                 // 给我的待办增加一条
-                var scope = angular.element('#my_tasks').scope();
+                var scope = angular.element('div[ng-controller="TaskListCtrl"]').scope();
                 scope.updateTask && scope.updateTask(taskData);
                 break;
             }
@@ -457,101 +457,6 @@ app.controller('GrabTaskCtrl', function ($scope, userService, ajax) {
     };
 });
 
-app.controller('TaskTodoListCtrl', function ($scope, $rootScope, scrollerService, userService, ajax, TaskStatus) {
-    $scope.TaskStatus = TaskStatus;
-    $scope.tasks = [];
-    $scope.isLoading = true;
-    var username=userService.username;
-
-    $scope.getDataList = function() {
-        scrollerService.initScroll('#my_tasks', $scope.getDataList);
-        var company = userService.company;
-        if (company && company.length !== 1){
-            $scope.isLoading = false;
-            $scope.$apply();
-            return;
-        }
-        if (!company){
-            $rootScope.login($scope.getDataList);
-            return;
-        }
-        ajax.get({
-            url: "/opstasks/" + company.id,
-            data: {
-                handler: username
-            },
-            success: function (result) {
-                $scope.isLoading = false;
-                if (!result || !result.length) {
-                    $scope.$apply();
-                    return;
-                }
-                for (var i in result){
-                    formatTaskStatusName(result[i]);
-                    result[i].isTimeout = $scope.taskTimeout(result[i]);
-                }
-                $scope.tasks = result;
-                $scope.tasks.sort(sortByUpdateTime);
-                $scope.$apply();
-            },
-            error: function (a, b, c) {
-                $scope.isLoading = false;
-                $scope.$apply();
-                $.notify.error('读取待办失败');
-            }
-        });
-    };
-
-    $scope.updateTask = function (taskData) {
-        var task = null, existed = false;
-         for (var i in $scope.tasks){
-             task = $scope.tasks[i];
-             if (parseInt(task.id) == parseInt(taskData.id)){
-                 existed = true;
-                 if (taskData.current_handler != username || taskData.stage_id == TaskStatus.Closed){
-                     $scope.tasks.splice(i, 1);
-                 }else{
-                     $scope.tasks[i] = taskData;
-                 }
-                 $scope.tasks.sort(sortByUpdateTime);
-                 break;
-             }
-         }
-         if (!existed){     // 如果不存在，则增加一条
-             $scope.tasks.unshift(taskData);
-         }
-        $scope.$apply();
-    };
-
-    function postAction(taskId, action) {
-        $scope.commonPostAction(taskId, action, '', null, function (data) {
-            $scope.taskData = data;
-            for (var i in $scope.tasks){
-                if ($scope.tasks[i].id == taskId){
-                    $scope.tasks[i] = formatTaskStatusName(data);
-                    break;
-                }
-            }
-            $scope.$apply();
-        });
-    }
-
-    $scope.taskHandler = {
-        gotoSpot: function ($event, taskId) {
-            $event.stopPropagation();
-            $event.preventDefault();
-            postAction(taskId, TaskAction.Go);
-        },
-        setArrived: function ($event, taskId, siteLongitude, siteLatitude){
-            $event.stopPropagation();
-            $event.preventDefault();
-            // 需要先检查是否真的已到现场
-            $scope.checkActuallyArrived(taskId, siteLongitude, siteLatitude, postAction);
-        }
-    };
-    // $scope.getDataList();
-});
-
 app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, userService, ajax) {
     var allTasks = [];
     var username = userService.user.account;
@@ -561,22 +466,6 @@ app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, us
     $scope.isLoading = true;
     $scope.loadingFailed = false;
     $scope.todoCount = 0;
-
-    $scope.updateTask = function (taskData) {       // 用于在任务详情页修改后，更新首页上的任务
-        var task = null, existed = false;
-        for (var i in allTasks){
-            task = allTasks[i];
-            if (parseInt(task.id) === parseInt(taskData.id)){
-                existed = true;
-                break;
-            }
-        }
-        if (!existed){     // 如果不存在，则增加一条
-            allTasks.unshift(taskData);
-        }
-        $scope.changeTaskType(null, $scope.showType);
-        $scope.$apply();
-    };
 
     $scope.getDataList = function() {
         scrollerService.initScroll("#taskList", $scope.getDataList);
@@ -635,7 +524,8 @@ app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, us
             allTasks.unshift(taskData);
         }
         allTasks.sort(sortByUpdateTime);
-        $scope.changeTaskType($scope.showType);
+        $scope.changeTaskType(null, $scope.showType);
+        $scope.$apply();
     };
 
     function isTodoTask(task) {
@@ -686,16 +576,19 @@ app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, us
 function updateAfterGrab(strArgs) {     // 在任务详情页抢单后，需要将任务从主页中删除
     var taskData = JSON.parse(strArgs);
     // 更新到“抢单”
-    var scope = angular.element('#competition_tasks').scope();
+    var scope = angular.element('div[ng-controller="CompetitionTaskListCtrl"]').scope();
     scope.afterGrabTask(taskData);
 }
 
 function updateTask(strArgs) {  // json格式的参数， {data: taskData}
     var taskData = JSON.parse(strArgs);
     // 更新到“我的待办”
-    var scope = angular.element('#my_tasks').scope();
+    var scope = angular.element('div[ng-controller="TaskListCtrl"]').scope();
     formatTaskStatusName(taskData);
-    scope.updateTask && scope.updateTask(taskData);
+    if (scope)
+    {
+        scope.updateTask && scope.updateTask(taskData);
+    }
 }
 
 function setTaskReportId(reportId) {        // 安全检测和停电维护新建后返回到任务详情页时，设置任务的report_id
@@ -875,7 +768,13 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
         $scope.commonPostAction(id, actionType, description, images, function (data) {
             $scope.taskData = formatTaskStatusName(data);
             // 调用Android接口
-            window.android && window.android.onJsCallbackForPrevPage('updateTask', JSON.stringify(data));
+            if (window.android)
+            {
+                window.android.onJsCallbackForPrevPage('updateTask', JSON.stringify(data));
+            } else {
+                // ios的情况
+                updateTask(JSON.stringify(data));
+            }
             formatTaskStatus();
             cb && cb(data);
             getTaskHistory();
@@ -990,7 +889,12 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
         updateTaskInfo(taskData);
         $scope.$apply();
         // 调用Android接口
-        window.android && window.android.onJsCallbackForPrevPage('updateAfterGrab', JSON.stringify(taskData));
+        if (window.android) {
+            window.android.onJsCallbackForPrevPage('updateAfterGrab', JSON.stringify(taskData));
+        } else {
+            // ios的情况
+            updateAfterGrab(JSON.stringify(taskData));
+        }
     };
 
     $scope.openMap = function () {
