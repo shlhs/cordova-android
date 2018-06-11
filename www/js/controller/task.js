@@ -209,6 +209,7 @@ app.controller('TaskBaseCtrl', function ($scope, ajax, userService) {
             headers: {
                 Accept: "application/json"
             },
+            timeout: 30000,
             success: function (data) {
                 $.notify.progressStop();
                 $.notify.info('操作成功');
