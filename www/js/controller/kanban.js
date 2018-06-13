@@ -340,10 +340,64 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                             return;
                         }
                         var varData = data[0];
-                        var index = parseInt(tempQueryTime.substr(5,2)) - 1;
-                        if(varData.datas != null && varData.datas.length > index) {
+                        var queryMonth = parseInt(tempQueryTime.substr(5,2));
+                        var index = null;
+                        if(varData.time_keys != null) {
+                            for(var i=0; i<varData.time_keys.length; i++) {
+                                var temp = parseInt(varData.time_keys[i].substr(5,2));
+                                if(temp == queryMonth) {
+                                    index=i;
+                                    break;
+                                }
+                            }
+                        }
+                        if(index != null && varData.datas != null && varData.datas.length > index) {
                             if(varData.datas[index] != null) {
-                                resultValue = varData.datas[index]+varData.unit;
+                                var tempValue = varData.datas[index];
+                                resultValue = tempValue+varData.unit;
+                                g_devicevar_unit_map[deviceSn] = data[0].unit;
+                            }
+                        }
+                    },
+                    error: function(){
+                        console.log('获取设备变量值失败 '+deviceSn);
+                    }
+                });
+                return resultValue;
+            }
+        }
+
+        if(calcMethod == 'max') {
+            if(queryPeriod == 'current_month') {
+                var resultValue = '';
+                ajax.get({
+                    url: '/devicevars/getstatisticalvalues?type=YEAR&calcmethod=MAX&sns=' + deviceSn + '&querytime=' + tempQueryTime,
+                    async: false,
+                    dataType: 'json',
+                    xhrFields: {
+                        withCredentials: true
+                    },
+                    crossDomain: true,
+                    success: function(data) {
+                        if(data.length == 0) {
+                            return;
+                        }
+                        var varData = data[0];
+                        var queryMonth = parseInt(tempQueryTime.substr(5,2));
+                        var index = null;
+                        if(varData.time_keys != null) {
+                            for(var i=0; i<varData.time_keys.length; i++) {
+                                var temp = parseInt(varData.time_keys[i].substr(5,2));
+                                if(temp == queryMonth) {
+                                    index=i;
+                                    break;
+                                }
+                            }
+                        }
+                        if(index != null && varData.datas != null && varData.datas.length > index) {
+                            if(varData.datas[index] != null) {
+                                var tempValue = varData.datas[index];
+                                resultValue = tempValue+varData.unit;
                                 g_devicevar_unit_map[deviceSn] = data[0].unit;
                             }
                         }
