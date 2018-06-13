@@ -125,6 +125,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                         getTrendAnalysis(contentsResult[i].title, deviceVarSns, contentsResult[i].period, $scope.queryTime, contentsResult[i].pfvSettings);
                     }else if(contentsResult[i].type === 'ratio-pie'){
                         var ratioPieData = [];
+                        var unit = '';
                         for(var j in contentsResult[i].content) {
                             var tempVarSn = contentsResult[i].content[j].varInfo.deviceVarSn;
                             if(!tempVarSn || tempVarSn == '') {
@@ -137,11 +138,16 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                                 tempName = tempName.substring(0, pos) + "\n" + tempName.substring(pos)
                             }
                             tempData.name = tempName;
-                            tempData.value = getDeviceVarData(tempVarSn, $scope.queryTime, contentsResult[i].period, contentsResult[i].calcMethod);
+                            var tempValue = getDeviceVarData(tempVarSn, $scope.queryTime, contentsResult[i].period, contentsResult[i].calcMethod);
+                            tempData.value = parseFloat(tempValue);
+                            if(unit == '' && tempValue.length > String(tempData.value).length) {
+                                unit = tempValue.substring(String(tempData.value).length);
+                            }
                             ratioPieData.push(tempData);
                         }
+                        haveChart = true;
                         needChartCount += 1;
-                        getRatioPie(contentsResult[i].title, ratioPieData);
+                        getRatioPie(contentsResult[i].title, ratioPieData, unit);
                     }else if(contentsResult[i].type === 'device-statics'){
                         continue;
                     }else if(contentsResult[i].type === 'alarm-list'){
@@ -751,63 +757,27 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
         })
     }
 
-    function getRatioPie(title, data) {
-        console.log(data);
+    function getRatioPie(title, data, unit) {
+
         var echartOptions = {
-            title: [{
-                text: ''
-            }],
-            chart: {
-                top: 15
-            },
+            title: [],
             color: ['#F04863', '#F9CC13', '#369FFF', '#12C1C1', '#8442E0', '#2FC15B'],
             series: [{
-                name: '1',
-                type: 'pie',
-                label: {
-                    normal: {
-                        "position": "inner",
-                        formatter: function(param) {
-                            return (param.percent) + "%";
-                        },
-                        "textStyle": {
-                            "fontSize": 12,
-                            "color": "#ffffff"
-                        }
-                    }
-                },
-                "radius": "80%",
-                data: data
-            }, {
                 name: '2',
                 type: 'pie',
-                hoverAnimation: false,
-                "label": {
-                    "normal": {
-                        "position": "inner",
-                        formatter: function(param) {
-                            return param.name
-                        },
-                        "textStyle": {
-                            "fontSize": 12,
-                            "color" : "#666666"
-                        }
-                    }
-                },
-                "radius": ["90%", "110%"],
-                "itemStyle": {
-                    "normal": {
-                        "color": "rgba(0,0,0,0)"
+                radius: ['25%', '60%'],
+                label: {
+                    normal: {
+                    formatter: '{b}:\n{c}' + unit + '\n{d}%',
                     },
-                    "emphasis": {
-                        "color": "rgba(0,0,0,0)"
-                    }
                 },
-                data: data
-            }]
+                data: data,
+                },
+            ],
         };
 
-        drawEchart(title, echartOptions);
+        setTimeout(function(){drawEchart(title, echartOptions);}, 1000);
+
     }
 
     function drawEchart(name, config) {
