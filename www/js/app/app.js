@@ -222,8 +222,6 @@ app.service('ajax', function ($rootScope, platformService, userService, $http) {
             crossDomain: true,
             headers: headers
         });
-
-
 		var newOption = $.extend({}, option
         );
         var r = $.ajax(newOption);

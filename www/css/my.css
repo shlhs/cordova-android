@@ -1957,6 +1957,20 @@ color: #a7a7a7;
     top: 45px;
     max-height: calc(100% - 44px);
 }
+.cascade-selector .option-wrapper label {
+    position: relative;
+}
+.cascade-selector .option-wrapper label .device-status {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    display: inline-block;
+    position: absolute;
+    margin-right: 8px;
+    margin-top: -3px;
+    top: 50%;
+    left: -14px;
+}
 .option-vertical>li {
     height: 54px;
     line-height: 54px;
