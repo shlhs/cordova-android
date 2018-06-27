@@ -199,3 +199,6 @@
 .icon-history-1:before { 
     content: '\3000'; 
 }
+.icon-search {
+    background-image: url("../img/dark/32X32/search-grey.png");
+}
