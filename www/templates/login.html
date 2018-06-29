@@ -44,7 +44,7 @@
     }
     .form-item {
         border-bottom: rgb(232,232,232) 1px solid;
-        padding: 12px 0;
+        /*padding: 12px 0;*/
         box-sizing: border-box;
         margin: 0 44px;
         position: relative;
@@ -54,13 +54,35 @@
         font-size: 18px;
         position: absolute;
         left: 0;
+        line-height: 46px;
     }
     .form-item input {
         outline: none;
         border: none;
         padding-left: 84px;
-        width: 100%;
+        width: calc(100% - 115px);
         font-size: 18px;
+        line-height: 46px;
+    }
+    .form-item .password-not-seen {
+        width: 16px;
+        height: 16px;
+        display: inline-block;
+        background: url("../img/login/password-not-seen.png") no-repeat 50%;
+        background-size: 100% 100%;
+        position: absolute;
+        right: 6px;
+        top: 12px;
+    }
+    .form-item .password-can-seen {
+        width: 20px;
+        height: 20px;
+        display: inline-block;
+        background: url("../img/login/password-can-seen.png") no-repeat 50%;
+        background-size: 100% 100%;
+        position: absolute;
+        right: 6px;
+        top: 12px;
     }
     input::-webkit-input-placeholder {
         /* placeholder颜色  */
@@ -108,16 +130,19 @@
     <div class="login-area" ng-controller="LoginCtrl">
         <div class="login-form">
             <div class="form-item">
-                <label>平台</label>
-                <input type="text" placeholder="请输入平台编号" ng-model="platformCode" ng-change="inputChange('platformCode')"></div>
+                <label for="platform">平台</label>
+                <input type="text" id="platform" placeholder="请输入平台编号" ng-model="platformCode" ng-change="inputChange('platformCode')"></div>
             <!--<div class="error">{{platformError}}</div>-->
             <div class="form-item">
-                <label>用户名</label>
-                <input type="text" ng-model="username" ng-change="inputChange('username')" placeholder="请输入账号">
+                <label for="username">用户名</label>
+                <input type="text" id="username" ng-model="username" ng-change="inputChange('username')" placeholder="请输入账号">
             </div>
             <div class="form-item">
-                <label>密码</label>
-                <input type="password" ng-model="password" ng-change="inputChange('password')" placeholder="请输入密码">
+                <label for="password">密码</label>
+                <input type="password" id="password" ng-model="password" ng-change="inputChange('password')" placeholder="请输入密码" ng-show="!passwordVisible">
+                <i class="password-not-seen" ng-if="!passwordVisible" ng-click="togglePasswordVisible()"></i>
+                <input type="text" ng-model="password" ng-change="inputChange('password')" placeholder="请输入密码" ng-show="passwordVisible">
+                <i class="password-can-seen" ng-if="passwordVisible" ng-click="togglePasswordVisible()"></i>
             </div>
             <!--<div class="error">{{error}}</div>-->
             <div class="login-btn" ng-class="{'enable': enable}" ng-click="login()">
