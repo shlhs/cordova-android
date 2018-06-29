@@ -10,9 +10,9 @@
                 <textarea rows="3" placeholder="请添加描述..." name="description" ng-model="description"></textarea>
             </div>
             <ul class="image-list" id="imageList">
-                <li class="image-item" ng-repeat="file in files">
+                <li class="image-item" ng-repeat="file in images">
                     <div class="content">
-                        <a class="img-file" style="background-image: url({{file.data}})" ui-sref="task.update.gallery({index: $index+1, images: files, canDelete: true})"></a>
+                        <a class="img-file" style="background-image: url({{file}})" ui-sref="task.update.gallery({index: $index+1, images: images, canDelete: true})"></a>
                     </div>
                 </li>
                 <li class="upload-item">

@@ -1004,6 +1004,7 @@ function deleteImage (filename) {       // Android手机上删除所选图片
 
 app.controller('TaskHandlerUpload', function ($scope, $timeout) {
     $scope.files = [];
+    $scope.images = [];
     $scope.description = '';
     $scope.isPC = IsPC();
     $scope.useMobileGallery = window.android && window.android.openGallery;
@@ -1023,7 +1024,8 @@ app.controller('TaskHandlerUpload', function ($scope, $timeout) {
                img.onload = function(){
                    var quality =  75;
                    var dataUrl = imageHandler.compress(this, 75, file.orientation).src;
-                   $scope.files.push(dataUrl);
+                   $scope.files.push({name: file.name});
+                   $scope.images.push(dataUrl);
                    $scope.$apply();
                };
            };
@@ -1053,7 +1055,8 @@ app.controller('TaskHandlerUpload', function ($scope, $timeout) {
        if (filename === undefined) {
            filename = '';
        }
-       $scope.files.push({name: filename, data: data});
+       $scope.files.push({name: filename});
+       $scope.images.push(data);
        $scope.$apply();
    };
 
@@ -1061,6 +1064,7 @@ app.controller('TaskHandlerUpload', function ($scope, $timeout) {
        for (var i=0; i<$scope.files.length; i++) {
            if ($scope.files[i].name === filename) {
                $scope.files.splice(i, 1);
+               $scope.images.splice(i, 1);
                break;
            }
        }
@@ -1075,6 +1079,14 @@ app.controller('TaskHandlerUpload', function ($scope, $timeout) {
        window.android && window.android.clearSelectedPhotos && window.android.clearSelectedPhotos();      // 调用Android js接口，清除选择的所有照片
        window.history.back();
    };
+
+   $scope.deleteImage = function (index) {
+       // 删除某一张图片
+       var filename = $scope.files[index].name;
+       window.android && window.android.deleteSelectedPhoto && window.android.deleteSelectedPhoto(filename);
+       $scope.files.splice(index, 1);
+       $scope.images.splice(index, 1);
+   }
 });
 
 app.controller('GalleryCtrl', function ($scope, $stateParams, $timeout) {
@@ -1085,7 +1097,10 @@ app.controller('GalleryCtrl', function ($scope, $stateParams, $timeout) {
 
     $scope.deleteImage = function() {       // 删除图片
         var index = $("#slides .slidesjs-pagination a.active").parent().index();
-        $('div[ng-controller="TaskHandlerUpload"]').scope().files.splice(index, 1);
+        if (index < 0) {
+            index = 0;
+        }
+        $('div[ng-controller="TaskHandlerUpload"]').scope().deleteImage(index);
         history.back();
     };
 

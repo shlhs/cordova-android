@@ -9,7 +9,7 @@
             <!--<div class="mui-indicator" ng-repeat="image in images" ng-class="{'mui-active': $index==index}"></div>-->
         <!--</div>-->
 
-        <div class="weui-gallery__opr" ng-if="canDelete">
+        <div class="weui-gallery__opr" ng-if="canDelete" style="z-index: 100;">
             <a href="javascript:" class="weui-gallery__del" ng-click="deleteImage()">
                 <i class="weui-icon-delete weui-icon_gallery-delete fa fa-trash-o"></i>
             </a>
