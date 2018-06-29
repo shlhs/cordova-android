@@ -11,6 +11,8 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, p
     $scope.isLoading = true;
     $scope.popup_visible = false;
     $scope.scope = $scope;
+    $scope.searchSiteResult = [];
+
 
     $scope.getDataList = function () {
         scrollerService.initScroll('#sites', $scope.getDataList);
@@ -40,8 +42,10 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, p
                     else {
                         s.site_image = 'img/site-default.png';
                     }
+                    s.search_key = s.station.name + s.station.sn.toLowerCase();
                 });
                 $scope.sites = result;
+                $scope.searchSiteResult = result;
                 getCurrentSite();
                 $scope.isLoading = false;
                 $scope.$apply();
@@ -62,8 +66,24 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, p
     };
     $scope.chooseSite = function (site) {
         $scope.currentSite = site;
+        $scope.searchSiteResult = $scope.sites;
         localStorage.setItem("currentSite", JSON.stringify(site));
         $scope.closePopover();
+    };
+
+    $scope.searchInputChange = function (input) {
+        var value = input.value.toLowerCase().trim();
+        if (!value) {
+            $scope.searchSiteResult = $scope.sites;
+        } else {
+            $scope.searchSiteResult = [];
+            $scope.sites.forEach(function (site) {
+                if (site.search_key.indexOf(value) >= 0) {
+                    $scope.searchSiteResult.push(site);
+                }
+            });
+        }
+        $scope.$apply();
     };
 
     function getCurrentSite() {

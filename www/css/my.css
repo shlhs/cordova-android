@@ -120,6 +120,26 @@ html,body{
 .login-btn.enable {
     background-color: #108ee9;
 }
+.login-area .form-item .password-not-seen {
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    background: url("../img/login/password-not-seen.png") no-repeat 50%;
+    background-size: 100% 100%;
+    position: absolute;
+    right: 6px;
+    top: 12px;
+}
+.login-area .form-item .password-can-seen {
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    background: url("../img/login/password-can-seen.png") no-repeat 50%;
+    background-size: 100% 100%;
+    position: absolute;
+    right: 6px;
+    top: 12px;
+}
 @media screen and (max-height: 600px) {
     .login-icon {
         margin-top: 15%;
@@ -2354,6 +2374,20 @@ color: #a7a7a7;
 .device-tree label {
     position: relative;
 }
+.cascade-selector .option-wrapper label {
+    position: relative;
+}
+.cascade-selector .option-wrapper label .device-status {
+     width: 5px;
+     height: 5px;
+     border-radius: 50%;
+     display: inline-block;
+     position: absolute;
+     margin-right: 8px;
+     margin-top: -3px;
+     top: 50%;
+     left: -14px;
+ }
 .properties-group {
     background-color: #ffffff;
     margin-bottom: 8px;
@@ -2549,4 +2583,33 @@ table.monitor-table {
 }
 div.pinch-zoom, div.pinch-zoom-container{
     height: 100%;
+}
+.site-search-comp {
+    width: 100%;
+    border-bottom: rgb(73,72,75) 1px solid;
+    padding: 8px 16px;
+}
+.site-search-comp .search-wrapper {
+    background-color: rgba(31,31,31,0.7);
+    border-radius: 12px;
+    height: 28px;
+    position: relative;
+}
+.search-wrapper input {
+    background-color: transparent;
+    outline: none;
+    -webkit-appearance: none;
+    border: none;
+    width: 100%;
+    line-height: 28px;
+    padding-left: 28px;
+    font-size: 14px;
+    color: #CCCCCC;
+}
+.search-wrapper .icon {
+    width: 14px;
+    height: 14px;
+    position: absolute;
+    top: 8px;
+    left: 10px;
 }

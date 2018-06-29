@@ -132,7 +132,7 @@ app.directive('deviceTreeView',[function(){
 
                 function addToGroup(newItem, items, depth) {
                     if (!items || !items.length) {
-                        return;
+                        return false;
                     }
                     if (depth > maxDepth) {
                         maxDepth = depth;
@@ -160,7 +160,7 @@ app.directive('deviceTreeView',[function(){
                             }
                         }
                     }
-
+                    return false;
                 }
 
                 function _indexs_sort(item) {
@@ -201,39 +201,54 @@ app.directive('deviceTreeView',[function(){
 
                 // 先按照depth进行排序
                 data = data.sort(function (a, b) {
-                    if (a.depth !== b.depth) {
-                        return a.depth - b.depth;
-                    }
+
                     if (a.is_group !== b.is_group) {  // 分组排在前
                         return b.is_group - a.is_group;
+                    }
+                    if (!a.name) {
+                        return 0;
                     }
                     return a.name.localeCompare(b.name, 'zh-CN');
                 });
 
-                data.forEach(function (item) {
-                    if (item.parent_id) {
-                        addToGroup(item, formatted, 1);
-                    } else if (item.depth < 0) {
-                        // 根节点
-                        item.text = item.name;
-                        item.is_group = true;
-                        item.children = [];
-                        formatted.push(item);
-                    } else if (item.depth === 0 && item.parent_id === 0) {
-                        if (item.is_group) {
+                var notInsertedNodes = []; // 上一次遍历没有找到对应位置的节点
+                var insertNodeCount = 1; // 本次循环加入的节点数
+                while (insertNodeCount > 0) {
+                    notInsertedNodes = [];
+                    insertNodeCount = 0;
+                    data.forEach(function (item) {
+                        var found = true;
+                        if (item.parent_id) {
+                            if (!addToGroup(item, formatted, 1)) {
+                                notInsertedNodes.push(item);
+                                found = false;
+                            }
+                        } else if (item.depth < 0) {
+                            // 根节点
+                            item.text = item.name;
+                            item.is_group = true;
+                            item.children = [];
+                            formatted.push(item);
+                        } else if (item.depth === 0 && item.parent_id === 0) {
+                            if (item.is_group) {
                                 item.children = [];
                             }
-                        item.text = item.name;
-                        if (maxDepth < 2) {
-                            maxDepth = 2;
+                            item.text = item.name;
+                            formatted[0].children.push(item);
+                            if (maxDepth < 2) {
+                                maxDepth = 2;
+                            }
+                        } else {
+                            item.text = item.name;
+                            item.children = [];
+                            formatted.push(item);
                         }
-                        formatted[0].children.push(item);
-                    } else {
-                        item.text = item.name;
-                        item.children = [];
-                        formatted.push(item);
-                    }
-                });
+                        if (found) {
+                            insertNodeCount += 1;
+                        }
+                    });
+                    data = notInsertedNodes;
+                }
 
                 // 根据父节点的indexs对树再次进行排序
                 _indexs_sort(formatted[0]);

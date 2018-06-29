@@ -12,7 +12,10 @@
             </div>
             <div class="form-item">
                 <label>密码</label>
-                <input type="password" ng-model="password" ng-change="inputChange('password')" placeholder="请输入密码">
+                <input type="password" id="password" ng-model="password" ng-change="inputChange('password')" placeholder="请输入密码" ng-show="!passwordVisible">
+                <i class="password-not-seen" ng-if="!passwordVisible" ng-click="togglePasswordVisible()"></i>
+                <input type="text" ng-model="password" ng-change="inputChange('password')" placeholder="请输入密码" ng-show="passwordVisible">
+                <i class="password-can-seen" ng-if="passwordVisible" ng-click="togglePasswordVisible()"></i>
             </div>
             <!--<div class="error">{{error}}</div>-->
             <div class="login-btn" ng-class="{'enable': enable}" ng-click="login()">
