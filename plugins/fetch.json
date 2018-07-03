@@ -2,7 +2,7 @@
   "cordova-plugin-whitelist": {
     "source": {
       "type": "registry",
-      "id": "cordova-plugin-whitelist@1"
+      "id": "cordova-plugin-whitelist@^1.3.3"
     },
     "is_top_level": true,
     "variables": {}
@@ -82,7 +82,15 @@
   "cordova-plugin-settings-hook": {
     "source": {
       "type": "registry",
-      "id": "cordova-plugin-settings-hook@~0.2.7"
+      "id": "cordova-plugin-settings-hook"
+    },
+    "is_top_level": true,
+    "variables": {}
+  },
+  "cordova-plugin-zip": {
+    "source": {
+      "type": "registry",
+      "id": "cordova-plugin-zip"
     },
     "is_top_level": true,
     "variables": {}
@@ -109,14 +117,6 @@
       "id": "cordova-plugin-dialogs@>=1.1.1"
     },
     "is_top_level": false,
-    "variables": {}
-  },
-  "cordova-plugin-zip": {
-    "source": {
-      "type": "registry",
-      "id": "cordova-plugin-zip@3.1.0"
-    },
-    "is_top_level": true,
     "variables": {}
   }
 }
