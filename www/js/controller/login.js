@@ -4,7 +4,8 @@
  * Created by liucaiyun on 2017/7/23.
  */
 
-var gPublicApiHost = 'http://47.104.75.86:8090';
+// var gPublicApiHost = 'http://47.104.75.86:8090';
+var gPublicApiHost = 'http://120.78.49.166:8090';       // 明阳自己的平台编码查询服务
 
 
 app.controller('LoginCtrl', function ($scope, $timeout, platformService, userService, $state, $http, ajax) {
