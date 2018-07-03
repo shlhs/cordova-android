@@ -209,6 +209,7 @@ app.controller('TaskBaseCtrl', function ($scope, ajax, userService) {
             headers: {
                 Accept: "application/json"
             },
+            timeout: 30000,
             success: function (data) {
                 $.notify.progressStop();
                 $.notify.info('操作成功');
@@ -993,19 +994,20 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
     };
 });
 
-function importImage(imageData) {    // 从Android读取的图片
-    angular.element("#handlePage").scope().addImagesWithBase64(imageData);
+function importImage(imageData, filename) {    // 从Android读取的图片
+    angular.element("#handlePage").scope().addImagesWithBase64(imageData, filename);
 }
 
-function deleteImage () {       // 删除图片
-    var index = $("#slides .slidesjs-pagination a.active").parent().index();
-    $('div[ng-controller="TaskHandlerUpload"]').scope().files.splice(index, 1);
-    history.back();
+function deleteImage (filename) {       // Android手机上删除所选图片
+    angular.element("#handlePage").scope().deleteImageFromMobile(filename);
 }
+
 app.controller('TaskHandlerUpload', function ($scope, $timeout) {
     $scope.files = [];
+    $scope.images = [];
     $scope.description = '';
     $scope.isPC = IsPC();
+    $scope.useMobileGallery = window.android && window.android.openGallery;
     var insertPosition = angular.element("#imageList>.upload-item");
 
     $scope.chooseImage = function (files) {     // 选择图片
@@ -1022,7 +1024,8 @@ app.controller('TaskHandlerUpload', function ($scope, $timeout) {
                img.onload = function(){
                    var quality =  75;
                    var dataUrl = imageHandler.compress(this, 75, file.orientation).src;
-                   $scope.files.push(dataUrl);
+                   $scope.files.push({name: file.name});
+                   $scope.images.push(dataUrl);
                    $scope.$apply();
                };
            };
@@ -1042,17 +1045,48 @@ app.controller('TaskHandlerUpload', function ($scope, $timeout) {
         });
         $scope.postAction(TaskAction.Update, $scope.description, images, function () {       // 上传成功，清空本次信息
             $timeout(function () {
-                window.history.back();
+                $scope.cancel();
             }, 500);
         });
     };
 
-   $scope.addImagesWithBase64 = function (data) {
+   $scope.addImagesWithBase64 = function (data, filename) {
        $scope.canDelete = true;
-       $scope.files.push(data);
+       if (filename === undefined) {
+           filename = '';
+       }
+       $scope.files.push({name: filename});
+       $scope.images.push(data);
        $scope.$apply();
    };
 
+   $scope.deleteImageFromMobile = function (filename) {
+       for (var i=0; i<$scope.files.length; i++) {
+           if ($scope.files[i].name === filename) {
+               $scope.files.splice(i, 1);
+               $scope.images.splice(i, 1);
+               break;
+           }
+       }
+       $scope.$apply();
+   };
+
+   $scope.openMobileGallery = function () {
+       window.android.openGallery();
+   };
+
+   $scope.cancel = function () {
+       window.android && window.android.clearSelectedPhotos && window.android.clearSelectedPhotos();      // 调用Android js接口，清除选择的所有照片
+       window.history.back();
+   };
+
+   $scope.deleteImage = function (index) {
+       // 删除某一张图片
+       var filename = $scope.files[index].name;
+       window.android && window.android.deleteSelectedPhoto && window.android.deleteSelectedPhoto(filename);
+       $scope.files.splice(index, 1);
+       $scope.images.splice(index, 1);
+   }
 });
 
 app.controller('GalleryCtrl', function ($scope, $stateParams, $timeout) {
@@ -1063,7 +1097,10 @@ app.controller('GalleryCtrl', function ($scope, $stateParams, $timeout) {
 
     $scope.deleteImage = function() {       // 删除图片
         var index = $("#slides .slidesjs-pagination a.active").parent().index();
-        $('div[ng-controller="TaskHandlerUpload"]').scope().files.splice(index, 1);
+        if (index < 0) {
+            index = 0;
+        }
+        $('div[ng-controller="TaskHandlerUpload"]').scope().deleteImage(index);
         history.back();
     };
 

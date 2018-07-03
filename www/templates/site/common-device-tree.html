@@ -20,7 +20,7 @@
         <ul class="option-wrapper option-vertical">
             <li ng-repeat="item in selectOptions[1]" ng-class="{'selected': deviceSelected[1].id === item.id}"
                 ng-click="chooseDeviceOrGraph(1, item)">
-                <label class="device-status {{item.status}}">{{item.name}}</label>
+                <label><i class="device-status {{item.status}}"></i>{{item.name}}</label>
             </li>
         </ul>
     </div>

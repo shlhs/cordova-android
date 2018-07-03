@@ -5,10 +5,13 @@
             <a class=" mui-pull-left site-popover" ng-click="showPopover()" ng-show="sites.length > 1" ng-if="!isSiteDetail">站点切换</a>
             <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()" ng-if="isSiteDetail"></a>
             <h1 class="mui-title" style="font-size: 18px;left: 70px;right: 70px;">{{currentSite.station.name}}</h1>
-            <a class="mui-pull-right" href="/templates/site/event-list.html?sn={{currentSite.station.sn}}">
+            <a class="mui-pull-right" href="/templates/site/event-list.html?sn={{currentSite.station.sn}}" style="position: relative;margin-right: 8px;">
                 <i class="icon white icon-events" style="width: 18px;height: 18px;">
-                    <i class="mark" ng-if="currentSite.unclosed_envet_amount"></i>
                 </i>
+                <span class="mui-badge mui-badge-danger" ng-if="currentSite.unclosed_envet_amount"
+                      style="position: absolute;font-size: 9px;top:-8px;left: 10px;font-weight: 300;">
+                    {{currentSite.unclosed_envet_amount}}
+                </span>
             </a>
         </header>
         <div class="site-img-wrapper">
@@ -88,7 +91,7 @@
                     <span class="value">{{currentSite.station.fix_line_telephone}}</span>
                 </li>
                 <li class="mui-table-view-cell">
-                    <label class="title">额定容量</label>
+                    <label class="title">额定1容量</label>
                     <span class="value">{{currentSite.station.capacity}}KVA</span>
                 </li>
                 <li class="mui-table-view-cell">
@@ -113,10 +116,16 @@
 <!-- 站点选择对话框 -->
 <div class="popover-mask" ng-if="popup_visible" ng-click="closePopover()"></div>
 <div class="mui-popover dark-popover mui-active" ng-if="popup_visible"
-     style="display: block; top: 57px; left: 16px;width: auto;min-width: 200px;">
+     style="display: block; top: 57px; left: 16px;width: calc(100% - 32px);background-color: #323234;padding-bottom: 8px;">
     <div class="mui-popover-arrow" style="left:10px"></div>
+    <div class="site-search-comp">
+        <div class="search-wrapper">
+            <i class="icon icon-search"></i>
+            <input placeholder="支持名称和站点编号搜索" oninput="angular.element(this).scope().searchInputChange(this)">
+        </div>
+    </div>
     <ul class="mui-table-view">
-        <li class="mui-table-view-cell" ng-repeat="site in sites" ng-click="chooseSite(site)">
+        <li class="mui-table-view-cell" ng-repeat="site in searchSiteResult" ng-click="chooseSite(site)">
             <i class="site-status {{site.status}}"></i>{{site.station.name}}
             <label ng-if="site.unclosed_envet_amount" class="site-event">{{site.unclosed_envet_amount}}</label>
         </li>

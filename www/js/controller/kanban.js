@@ -125,6 +125,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                         getTrendAnalysis(contentsResult[i].title, deviceVarSns, contentsResult[i].period, $scope.queryTime, contentsResult[i].pfvSettings);
                     }else if(contentsResult[i].type === 'ratio-pie'){
                         var ratioPieData = [];
+                        var unit = '';
                         for(var j in contentsResult[i].content) {
                             var tempVarSn = contentsResult[i].content[j].varInfo.deviceVarSn;
                             if(!tempVarSn || tempVarSn == '') {
@@ -137,11 +138,16 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                                 tempName = tempName.substring(0, pos) + "\n" + tempName.substring(pos)
                             }
                             tempData.name = tempName;
-                            tempData.value = getDeviceVarData(tempVarSn, $scope.queryTime, contentsResult[i].period, contentsResult[i].calcMethod);
+                            var tempValue = getDeviceVarData(tempVarSn, $scope.queryTime, contentsResult[i].period, contentsResult[i].calcMethod);
+                            tempData.value = parseFloat(tempValue);
+                            if(unit == '' && tempValue.length > String(tempData.value).length) {
+                                unit = tempValue.substring(String(tempData.value).length);
+                            }
                             ratioPieData.push(tempData);
                         }
+                        haveChart = true;
                         needChartCount += 1;
-                        getRatioPie(contentsResult[i].title, ratioPieData);
+                        getRatioPie(contentsResult[i].title, ratioPieData, unit);
                     }else if(contentsResult[i].type === 'device-statics'){
                         continue;
                     }else if(contentsResult[i].type === 'alarm-list'){
@@ -334,10 +340,64 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                             return;
                         }
                         var varData = data[0];
-                        var index = parseInt(tempQueryTime.substr(5,2)) - 1;
-                        if(varData.datas != null && varData.datas.length > index) {
+                        var queryMonth = parseInt(tempQueryTime.substr(5,2));
+                        var index = null;
+                        if(varData.time_keys != null) {
+                            for(var i=0; i<varData.time_keys.length; i++) {
+                                var temp = parseInt(varData.time_keys[i].substr(5,2));
+                                if(temp == queryMonth) {
+                                    index=i;
+                                    break;
+                                }
+                            }
+                        }
+                        if(index != null && varData.datas != null && varData.datas.length > index) {
                             if(varData.datas[index] != null) {
-                                resultValue = varData.datas[index]+varData.unit;
+                                var tempValue = varData.datas[index];
+                                resultValue = tempValue+varData.unit;
+                                g_devicevar_unit_map[deviceSn] = data[0].unit;
+                            }
+                        }
+                    },
+                    error: function(){
+                        console.log('获取设备变量值失败 '+deviceSn);
+                    }
+                });
+                return resultValue;
+            }
+        }
+
+        if(calcMethod == 'max') {
+            if(queryPeriod == 'current_month') {
+                var resultValue = '';
+                ajax.get({
+                    url: '/devicevars/getstatisticalvalues?type=YEAR&calcmethod=MAX&sns=' + deviceSn + '&querytime=' + tempQueryTime,
+                    async: false,
+                    dataType: 'json',
+                    xhrFields: {
+                        withCredentials: true
+                    },
+                    crossDomain: true,
+                    success: function(data) {
+                        if(data.length == 0) {
+                            return;
+                        }
+                        var varData = data[0];
+                        var queryMonth = parseInt(tempQueryTime.substr(5,2));
+                        var index = null;
+                        if(varData.time_keys != null) {
+                            for(var i=0; i<varData.time_keys.length; i++) {
+                                var temp = parseInt(varData.time_keys[i].substr(5,2));
+                                if(temp == queryMonth) {
+                                    index=i;
+                                    break;
+                                }
+                            }
+                        }
+                        if(index != null && varData.datas != null && varData.datas.length > index) {
+                            if(varData.datas[index] != null) {
+                                var tempValue = varData.datas[index];
+                                resultValue = tempValue+varData.unit;
                                 g_devicevar_unit_map[deviceSn] = data[0].unit;
                             }
                         }
@@ -751,63 +811,27 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
         })
     }
 
-    function getRatioPie(title, data) {
-        console.log(data);
+    function getRatioPie(title, data, unit) {
+
         var echartOptions = {
-            title: [{
-                text: ''
-            }],
-            chart: {
-                top: 15
-            },
+            title: [],
             color: ['#F04863', '#F9CC13', '#369FFF', '#12C1C1', '#8442E0', '#2FC15B'],
             series: [{
-                name: '1',
-                type: 'pie',
-                label: {
-                    normal: {
-                        "position": "inner",
-                        formatter: function(param) {
-                            return (param.percent) + "%";
-                        },
-                        "textStyle": {
-                            "fontSize": 12,
-                            "color": "#ffffff"
-                        }
-                    }
-                },
-                "radius": "80%",
-                data: data
-            }, {
                 name: '2',
                 type: 'pie',
-                hoverAnimation: false,
-                "label": {
-                    "normal": {
-                        "position": "inner",
-                        formatter: function(param) {
-                            return param.name
-                        },
-                        "textStyle": {
-                            "fontSize": 12,
-                            "color" : "#666666"
-                        }
-                    }
-                },
-                "radius": ["90%", "110%"],
-                "itemStyle": {
-                    "normal": {
-                        "color": "rgba(0,0,0,0)"
+                radius: ['25%', '60%'],
+                label: {
+                    normal: {
+                    formatter: '{b}:\n{c}' + unit + '\n{d}%',
                     },
-                    "emphasis": {
-                        "color": "rgba(0,0,0,0)"
-                    }
                 },
-                data: data
-            }]
+                data: data,
+                },
+            ],
         };
 
-        drawEchart(title, echartOptions);
+        setTimeout(function(){drawEchart(title, echartOptions);}, 1000);
+
     }
 
     function drawEchart(name, config) {

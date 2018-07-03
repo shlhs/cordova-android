@@ -4,7 +4,7 @@
  * Created by liucaiyun on 2017/7/23.
  */
 
-var gPublicApiHost = 'http://114.215.90.83:8090';
+var gPublicApiHost = 'http://47.104.75.86:8090';
 
 
 app.controller('LoginCtrl', function ($scope, $timeout, platformService, userService, $state, $http, ajax) {
@@ -16,6 +16,11 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
     $scope.password = userService.getPassword();
     $scope.isLogin = false;
     $scope.isAutoLogin = false;
+    $scope.passwordVisible = false;
+
+    $scope.togglePasswordVisible = function () {
+        $scope.passwordVisible = !$scope.passwordVisible;
+    };
 
     $scope.inputChange = function () {
         if ($scope.platformCode && $scope.username && $scope.password) {

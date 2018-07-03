@@ -216,14 +216,12 @@ app.service('ajax', function ($rootScope, platformService, userService, $http) {
             credentials: 'include',
             mode: 'cors'
         }, option.headers);
+        option = $.extend({}, {timeout: 30000}, option);
         $.extend(option, {
-            timeout: 5000,
             xhrFields: {withCredentials: true},
             crossDomain: true,
             headers: headers
         });
-
-
 		var newOption = $.extend({}, option
         );
         var r = $.ajax(newOption);

@@ -584,19 +584,21 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile) {     
 
 
     function _formatDeviceStatus(device) {
-        if (device.communi_status > 0){
-            device.status = 'offline';
-            device.status_name = '离线';
-            $scope.faultDeviceList.push(device);
-
-        }else{
-            if (device.running_status > 0){
-                device.status = 'danger';
-                device.status_name = '故障';
+        if (!device.is_group) {
+            if (device.communi_status > 0){
+                device.status = 'offline';
+                device.status_name = '离线';
                 $scope.faultDeviceList.push(device);
+
             }else{
-                device.status = 'normal';
-                device.status_name = '正常';
+                if (device.running_status > 0){
+                    device.status = 'danger';
+                    device.status_name = '故障';
+                    $scope.faultDeviceList.push(device);
+                }else{
+                    device.status = 'normal';
+                    device.status_name = '正常';
+                }
             }
         }
     }
@@ -610,7 +612,10 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile) {     
                 $scope.isLoading = false;
                 // 默认状态为"未知"
                 data.forEach(function (d) {
-                    d.status = 'offline';
+                    if (!d.is_group)
+                    {
+                        d.status = 'offline';
+                    }
                 });
                 $scope.deviceDatas = data;
                 $scope.$apply();
