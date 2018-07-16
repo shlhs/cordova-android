@@ -4,6 +4,7 @@
  * Created by liucaiyun on 2017/7/20.
  */
 
+
 var TaskAction = {Create: 0, Accept: 1, Refuse: 2, Assign: 3, Go: 4, Apply: 5, Reject: 6, Close: 7, Comment: 8, Grab: 9, Arrive: 10, Update: 11};
 var TaskStatus = {ToAccept: 1, ToAssign: 2, Accepted: 3, ToClose: 4, Closed: 5, Competition: 6, Coming: 7, Arrived: 8};
 function formatTaskHistoryDesp(taskHistory) {     // 根据任务的action_id处理任务描述
@@ -37,17 +38,15 @@ function formatTaskStatusName(task) {   // 根据任务状态转换任务描述
     switch (task.stage_id){
         case TaskStatus.Closed:
             stage = '已关闭';
-            status = 'text-grey';
             break;
         case TaskStatus.ToClose:
-            stage = '审批';
-            break;
-        case TaskStatus.Arrived:
-            stage = '正在维修';
+            stage = '待审批';
             break;
         case TaskStatus.ToAccept:
-            status = 'text-red';
+            stage = '待接单';
             break;
+        default:
+            stage = '待处理';
     }
     task.stage = stage;
     task.status = status;
@@ -114,7 +113,7 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, ajax, $state
     var map = null;
     var role = userService.getUserRole();
     $scope.viewName = '';
-    $scope.tabName = 'competition_tasks';
+    $scope.tabName = 'sites';
     $scope.title = '';
     $scope.navMenus = [];
 
@@ -131,9 +130,9 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, ajax, $state
 
 
     function initMenu() {
-        $scope.navMenus = [];
+
         if (role === UserRole.OpsOperator || role === UserRole.OpsAdmin){
-            $scope.navMenus = [
+            $scope.navMenus.push(
                 {
                     id: 'competition_tasks',
                     name: '抢单',
@@ -146,7 +145,7 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, ajax, $state
                     templateUrl: '/templates/task/task-list.html',
                     icon: 'nav-all-tasks'
                 }
-            ];
+            );
         }
         else if (role === UserRole.SuperUser){
             $scope.navMenus.push(
@@ -158,21 +157,17 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, ajax, $state
                 }
             );
         }
+        var activeMenu = $scope.navMenus[0];
+        $timeout(function () {
+            $scope.chooseNav('sites', '站点监控');
 
-        $scope.navMenus.push(
-            {
-                id: 'sites',
-                name: '站点监控',
-                templateUrl: '/templates/site/site-list.html',
-                icon: 'nav-sites'
-            }
-        );
+        }, 500);
     }
     initMenu();
-    $rootScope.login(function () {
-        var menu = $scope.navMenus[0];
-        $scope.chooseNav(menu.id, menu.name);
-    });
+    // $rootScope.login(function () {
+    //     var menu = $scope.navMenus[0];
+    //     $scope.chooseNav(menu.id, menu.name);
+    // });
 });
 
 app.controller('TaskBaseCtrl', function ($scope, ajax, userService) {
@@ -214,6 +209,7 @@ app.controller('TaskBaseCtrl', function ($scope, ajax, userService) {
             headers: {
                 Accept: "application/json"
             },
+            timeout: 30000,
             success: function (data) {
                 $.notify.progressStop();
                 $.notify.info('操作成功');
@@ -251,12 +247,14 @@ app.controller('TaskBaseCtrl', function ($scope, ajax, userService) {
     };
 
     $scope.checkActuallyArrived = function (taskId, siteLongitude, siteLatitude, cb) {
-
-        //  如果站点的坐标为空，则直接提交操作
-        if (!siteLongitude || !siteLatitude || !window.android){
-            cb && cb(taskId, TaskAction.Arrive);
-            return;
-        }
+        // 不检查，直接返回
+        cb && cb(taskId, TaskAction.Arrive);
+        // //  如果站点的坐标为空，则直接提交操作
+        // if (!siteLongitude || !siteLatitude || !window.android){
+        //     cb && cb(taskId, TaskAction.Arrive);
+        //     return;
+        // }
+        /*
         $.notify.progressStart();
         apiLocation.start(function (longtitude, latitude) {     // 获取用户的当前位置
             // 判断位置是否一致
@@ -286,6 +284,7 @@ app.controller('TaskBaseCtrl', function ($scope, ajax, userService) {
                 $.notify.error('无法获取当前位置');
             }
         });
+        */
     };
 });
 
@@ -294,8 +293,27 @@ app.controller('CompetitionTaskListCtrl', function ($scope, $rootScope, scroller
     $scope.isLoading = true;
     var selectedTaskIndex = -1, company=userService.getCompany();
     var stationDistances = {};
-    function formatTime(task) {
 
+    moment.locale('en', {
+        relativeTime : {
+            future: "in %s",
+            past:   "%s前",
+            s:  "秒",
+            m:  "1分钟",
+            mm: "%d分钟",
+            h:  "1小时",
+            hh: "%d小时",
+            d:  "1天",
+            dd: "%d天",
+            M:  "1个月",
+            MM: "%d个月",
+            y:  "1年",
+            yy: "%d年"
+        }
+    });
+
+    function formatTime(task) {
+        task.create_time_desp = moment(task.create_time).fromNow();
         task.create_time = formatUpdateTime(task.create_time);
         task.expect_complete_time = task.expect_complete_time.substring(0, 16);
         return task;
@@ -347,14 +365,14 @@ app.controller('CompetitionTaskListCtrl', function ($scope, $rootScope, scroller
     }
 
     $scope.getDataList = function() {
-        scrollerService.initScroll('#competition_tasks', $scope.getDataList);
+        scrollerService.initScroll('#competition_tasks_scroller', $scope.getDataList);
         var company = userService.company;
         if (company && (company.length > 1 || company.length === 0)){    // 有两种情况，一种是该用户没有公司，一种是该用户为平台人员
             $scope.isLoading = false;
             $scope.$apply();
             return;
         }
-        if (null === company){
+        if (null === company) {
             $rootScope.login($scope.getDataList);
             // $rootScope.getCompany($scope.getDataList);
             return;
@@ -395,7 +413,7 @@ app.controller('CompetitionTaskListCtrl', function ($scope, $rootScope, scroller
                 // 从任务列表中删除
                 $scope.tasks.splice(i, 1);
                 // 给我的待办增加一条
-                var scope = angular.element('#my_tasks').scope();
+                var scope = angular.element('div[ng-controller="TaskListCtrl"]').scope();
                 scope.updateTask && scope.updateTask(taskData);
                 break;
             }
@@ -540,23 +558,8 @@ app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, us
     $scope.tasks = [];
     $scope.showType = 'todo';    // all, open, closed, todo
     $scope.isLoading = true;
+    $scope.loadingFailed = false;
     $scope.todoCount = 0;
-
-    $scope.updateTask = function (taskData) {       // 用于在任务详情页修改后，更新首页上的任务
-        var task = null, existed = false;
-        for (var i in allTasks){
-            task = allTasks[i];
-            if (parseInt(task.id) === parseInt(taskData.id)){
-                existed = true;
-                break;
-            }
-        }
-        if (!existed){     // 如果不存在，则增加一条
-            allTasks.unshift(taskData);
-        }
-        $scope.changeTaskType(null, $scope.showType);
-        $scope.$apply();
-    };
 
     $scope.getDataList = function() {
         scrollerService.initScroll("#taskList", $scope.getDataList);
@@ -566,9 +569,11 @@ app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, us
             return;
         }
         if (null === company){
-            $rootScope.login($scope.getDataList);
+            // $rootScope.login($scope.getDataList);
             return;
         }
+        $scope.isLoading = true;
+        $scope.loadingFailed = false;
 
         ajax.get({
             url: "/opstasks/history/" + company.id,
@@ -592,7 +597,7 @@ app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, us
             },
             error: function (a,b,c) {
                 $scope.isLoading = false;
-                $.notify.error("获取任务历史失败");
+                $scope.loadingFailed = true;
                 $scope.$apply();
             }
         });
@@ -613,7 +618,8 @@ app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, us
             allTasks.unshift(taskData);
         }
         allTasks.sort(sortByUpdateTime);
-        $scope.changeTaskType($scope.showType);
+        $scope.changeTaskType(null, $scope.showType);
+        $scope.$apply();
     };
 
     function isTodoTask(task) {
@@ -664,19 +670,24 @@ app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, us
 function updateAfterGrab(strArgs) {     // 在任务详情页抢单后，需要将任务从主页中删除
     var taskData = JSON.parse(strArgs);
     // 更新到“抢单”
-    var scope = angular.element('#competition_tasks').scope();
+    var scope = angular.element('div[ng-controller="CompetitionTaskListCtrl"]').scope();
     scope.afterGrabTask(taskData);
 }
 
 function updateTask(strArgs) {  // json格式的参数， {data: taskData}
     var taskData = JSON.parse(strArgs);
     // 更新到“我的待办”
-    var scope = angular.element('#my_tasks').scope();
+    var scope = angular.element('div[ng-controller="TaskListCtrl"]').scope();
     formatTaskStatusName(taskData);
     scope.updateTask && scope.updateTask(taskData);
 }
 
-app.controller('TaskDetailCtrl', function ($scope, $location, $state, userService, platformService, $http, $timeout, ajax) {
+function setTaskReportId(reportId) {        // 安全检测和停电维护新建后返回到任务详情页时，设置任务的report_id
+    var scope = angular.element('#taskDetail').scope();
+    scope.setReportId(reportId);
+}
+
+app.controller('TaskDetailCtrl', function ($scope, $location, $state, userService, platformService, $http, $timeout, $window, ajax) {
     $scope.TaskAction = TaskAction;
     $scope.TaskStatus = TaskStatus;
     $scope.imageScope = [1,2,3,4,5,6,7,8,9];
@@ -873,6 +884,42 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
             }
         });
     }
+
+    $scope.setReportId = function (reportId) {
+        $scope.taskData.report_id = reportId
+    };
+
+    $scope.gotoHandleTask = function () {       // 根据任务类型打开对应的操作界面
+        var reportId = $scope.taskData.report_id;
+        switch ($scope.taskData.task_type_id) {
+            case 1:     // 巡检任务
+                if (reportId) {
+                    var url = '/templates/evaluate/base_home.html?template=/templates/evaluate/security-evaluate-home.html&id=' + reportId;
+                } else {
+                    var url = '/templates/evaluate/base_home.html?template=/templates/evaluate/security-evaluate-first-classify.html&isCreate=1&taskId=' + $scope.taskData.id;
+                    if ($scope.taskData.station_sn){
+                        url += '&stationSn=' + $scope.taskData.station_sn + "&stationName=" + $scope.taskData.station_name;
+                    }
+                }
+                $window.location.href = url;
+                break;
+            case 6:     // 停电维护任务
+                var url = '/templates/maintenance-check/base_home.html?template=/templates/maintenance-check/check-one-record-home.html';
+                if (reportId) {
+                    url += '&id=' + reportId;
+                } else {
+                    url += '&isCreate=1&taskId=' + $scope.taskData.id;
+                    if ($scope.taskData.station_sn){
+                        url += '&stationSn=' + $scope.taskData.station_sn + "&stationName=" + $scope.taskData.station_name;
+                    }
+                }
+                $window.location.href = url;
+                break;
+            default:
+                $state.go('.update')
+        }
+    };
+
     $scope.showImageGallery = function (images, index) {        // 点击任务处理历史中的图片显示相册
         var imageList = [];
         for (var i in $scope.imageScope){
@@ -947,19 +994,20 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
     };
 });
 
-function importImage(imageData) {    // 从Android读取的图片
-    angular.element("#handlePage").scope().addImagesWithBase64(imageData);
+function importImage(imageData, filename) {    // 从Android读取的图片
+    angular.element("#handlePage").scope().addImagesWithBase64(imageData, filename);
 }
 
-function deleteImage () {       // 删除图片
-    var index = $("#slides .slidesjs-pagination a.active").parent().index();
-    $('div[ng-controller="TaskHandlerUpload"]').scope().files.splice(index, 1);
-    history.back();
+function deleteImage (filename) {       // Android手机上删除所选图片
+    angular.element("#handlePage").scope().deleteImageFromMobile(filename);
 }
+
 app.controller('TaskHandlerUpload', function ($scope, $timeout) {
     $scope.files = [];
+    $scope.images = [];
     $scope.description = '';
     $scope.isPC = IsPC();
+    $scope.useMobileGallery = window.android && window.android.openGallery;
     var insertPosition = angular.element("#imageList>.upload-item");
 
     $scope.chooseImage = function (files) {     // 选择图片
@@ -976,7 +1024,8 @@ app.controller('TaskHandlerUpload', function ($scope, $timeout) {
                img.onload = function(){
                    var quality =  75;
                    var dataUrl = imageHandler.compress(this, 75, file.orientation).src;
-                   $scope.files.push(dataUrl);
+                   $scope.files.push({name: file.name});
+                   $scope.images.push(dataUrl);
                    $scope.$apply();
                };
            };
@@ -996,17 +1045,48 @@ app.controller('TaskHandlerUpload', function ($scope, $timeout) {
         });
         $scope.postAction(TaskAction.Update, $scope.description, images, function () {       // 上传成功，清空本次信息
             $timeout(function () {
-                window.history.back();
+                $scope.cancel();
             }, 500);
         });
     };
 
-   $scope.addImagesWithBase64 = function (data) {
+   $scope.addImagesWithBase64 = function (data, filename) {
        $scope.canDelete = true;
-       $scope.files.push(data);
+       if (filename === undefined) {
+           filename = '';
+       }
+       $scope.files.push({name: filename});
+       $scope.images.push(data);
        $scope.$apply();
    };
 
+   $scope.deleteImageFromMobile = function (filename) {
+       for (var i=0; i<$scope.files.length; i++) {
+           if ($scope.files[i].name === filename) {
+               $scope.files.splice(i, 1);
+               $scope.images.splice(i, 1);
+               break;
+           }
+       }
+       $scope.$apply();
+   };
+
+   $scope.openMobileGallery = function () {
+       window.android.openGallery();
+   };
+
+   $scope.cancel = function () {
+       window.android && window.android.clearSelectedPhotos && window.android.clearSelectedPhotos();      // 调用Android js接口，清除选择的所有照片
+       window.history.back();
+   };
+
+   $scope.deleteImage = function (index) {
+       // 删除某一张图片
+       var filename = $scope.files[index].name;
+       window.android && window.android.deleteSelectedPhoto && window.android.deleteSelectedPhoto(filename);
+       $scope.files.splice(index, 1);
+       $scope.images.splice(index, 1);
+   }
 });
 
 app.controller('GalleryCtrl', function ($scope, $stateParams, $timeout) {
@@ -1017,7 +1097,10 @@ app.controller('GalleryCtrl', function ($scope, $stateParams, $timeout) {
 
     $scope.deleteImage = function() {       // 删除图片
         var index = $("#slides .slidesjs-pagination a.active").parent().index();
-        $('div[ng-controller="TaskHandlerUpload"]').scope().files.splice(index, 1);
+        if (index < 0) {
+            index = 0;
+        }
+        $('div[ng-controller="TaskHandlerUpload"]').scope().deleteImage(index);
         history.back();
     };
 
@@ -1058,168 +1141,6 @@ app.controller('TaskCloseRejectCtrl', function ($scope) {      //驳回关闭请
     };
 });
 
-var imageHandler = {
-    rotate: function (file, cb) {
-        EXIF.getData(file, function () {
-            var orientation = EXIF.getTag(this, 'Orientation');
-            var rotate='rotate(0deg)';
-            if (orientation && orientation !== 1){  // 增加旋转
-                switch(orientation){
-                    case 6: // 需要顺时针90度旋转
-                        rotate = 'rotate(90deg)';
-                        break;
-                    case 8: // 需要逆时针90度旋转
-                        rotate = 'rotate(-90deg)';
-                        break;
-                    case 3: // 需要180度旋转
-                        rotate = 'rotate(180deg)';
-                        break;
-                }
-            }
-            cb && cb(rotate);
-        });
-    },
-    readFileAsDataURL: function (file, callback) {
-        var a = new FileReader();
-        a.onload = function(e) {
-            callback(e.target.result);
-        };
-        a.readAsDataURL(file);
-    },
-    checkRotate: function(fileDict){
-        var that = this;
-        EXIF.getData(fileDict.file, function () {
-            var orientation = EXIF.getTag(this, 'Orientation');
-            // if(orientation != "" && orientation != 1){
-            if(orientation != ""){
-                var canvas = document.createElement("canvas"), data;
-                that.readFileAsDataURL(this, function(result){
-                    var img = $("<img style='display:none;'>").appendTo($('body'))[0];
-                    img.src = result;
-                    img.onload = function(){
-                        switch(orientation){
-                            case 1://需要顺时针（向左）90度旋转
-                                that._rotateImg(this,'left',canvas);
-                                break;
-                            case 6://需要顺时针（向左）90度旋转
-                                that._rotateImg(this,'left',canvas);
-                                break;
-                            case 8://需要逆时针（向右）90度旋转
-                                that._rotateImg(this,'right',canvas);
-                                break;
-                            case 3://需要180度旋转
-                                that._rotateImg(this,'right',canvas);//转两次
-                                that._rotateImg(this,'right',canvas);
-                                break;
-                        }
-                    }
-                });
-            }
-        });
-    },
-    //对图片旋转处理 added by lzk www.bcty365.com
-
-    _rotateImg: function (img, direction, canvas) {
-        //alert(img);
-        //最小与最大旋转方向，图片旋转4次后回到原方向
-        var min_step = 0, max_step = 3;
-        //var img = document.getElementById(pid);
-        if (img === null)return;
-        //img的高度和宽度不能在img元素隐藏后获取，否则会出错
-        var originHeight = img.height, originWidth = img.width, width=originWidth, height=originHeight;
-        if (originWidth > originHeight){
-            if (originHeight > 2048){
-                height = 2048;
-                width = parseInt((height/originHeight) * originWidth);
-            }
-        }
-        else {
-            if (originWidth > 2048){
-                width = 2048;
-                height = parseInt(width/originWidth*originHeight);
-            }
-        }
-        //var step = img.getAttribute('step');
-        var step = 2;
-        if (step === null) {
-            step = min_step;
-        }
-        if (direction === 'right') {
-            step++;
-            //旋转到原位置，即超过最大值
-            step > max_step && (step = min_step);
-        } else {
-            step--;
-            step < min_step && (step = max_step);
-        }
-        //旋转角度以弧度值为参数
-        var degree = step * 90 * Math.PI / 180, ctx = canvas.getContext('2d');
-        switch (step) {
-            case 0:
-                canvas.width = width;
-                canvas.height = height;
-                ctx.drawImage(img, 0, 0);
-                break;
-            case 1:
-                canvas.width = height;
-                canvas.height = width;
-                ctx.rotate(degree);
-                ctx.drawImage(img, 0, -height);
-                break;
-            case 2:
-                canvas.width = width;
-                canvas.height = height;
-                ctx.rotate(degree);
-                ctx.drawImage(img, -width, -height);
-                break;
-            case 3:
-                canvas.width = height;
-                canvas.height = width;
-                ctx.rotate(degree);
-                ctx.drawImage(img, -width, 0);
-                break;
-        }
-    },
-    compress: function(source_img_obj, quality, orientation){
-        var that = this, mime_type = "image/jpeg", cvs = document.createElement('canvas');
-        //naturalWidth真实图片的宽度
-        var originWidth = source_img_obj.naturalWidth, originHeight = source_img_obj.naturalHeight, width=originWidth, height=originHeight;
-        if (orientation && orientation !== 1){
-            switch (orientation){
-                case 6://需要顺时针（向左）90度旋转
-                    that._rotateImg(source_img_obj,'left',cvs);
-                    break;
-                case 8://需要逆时针（向右）90度旋转
-                    that._rotateImg(source_img_obj,'right',cvs);
-                    break;
-                case 3://需要180度旋转
-                    that._rotateImg(source_img_obj,'right',cvs);//转两次
-                    that._rotateImg(source_img_obj,'right',cvs);
-                    break;
-            }
-        }else{
-            if (originWidth > originHeight){
-                if (originHeight > 2048){
-                    height = 2048;
-                    width = parseInt((height/originHeight) * originWidth);
-                }
-            }
-            else {
-                if (originWidth > 2048){
-                    width = 2048;
-                    height = parseInt(width/originWidth*originHeight);
-                }
-            }
-            cvs.width = width;
-            cvs.height = height;
-            cvs.getContext("2d").drawImage(source_img_obj, 0, 0, originWidth, originHeight, 0, 0, width, height);
-        }
-        var result_image_obj = new Image();
-        result_image_obj.src = cvs.toDataURL(mime_type, quality/100);
-        return result_image_obj;
-    }
-};
-
 
 app.controller('TaskCreateCtrl', function ($scope, $timeout, userService, ajax) {
     var company = userService.company;
@@ -1228,6 +1149,8 @@ app.controller('TaskCreateCtrl', function ($scope, $timeout, userService, ajax) 
     $scope.handlerName = null;
     $scope.deviceName = null;
     $scope.user = null;
+    $scope.linkEventId = GetQueryString("eventId");
+    $scope.linkEventInfo = null;
     var isGrabTask = false;
 
     $scope.taskData = {
@@ -1237,7 +1160,11 @@ app.controller('TaskCreateCtrl', function ($scope, $timeout, userService, ajax) 
     var devicePicker = null;
     var userPicker = null;
     function init() {
-        initStations();
+        if($scope.linkEventId && $scope.linkEventId != '') {
+            initLinkEvent();;
+        } else {
+            initStations();
+        }   
         initTaskTypeList();
         initDatePicker();
         initMembers();
@@ -1256,6 +1183,24 @@ app.controller('TaskCreateCtrl', function ($scope, $timeout, userService, ajax) 
             d['value'] = d[idKey];
             d['text'] = d[nameKey];
         }
+    }
+
+    function initLinkEvent() {
+        ajax.get({
+            url: '/events/' + $scope.linkEventId,
+            success: function (data) {
+                $scope.linkEventInfo  = data.info;
+                $scope.stationName = data.station_name;
+                $scope.deviceName = data.device_name;
+                $scope.taskData.station_sn = data.station_sn;
+                $scope.taskData.events.push({"id": $scope.linkEventId });
+                $scope.taskData.devices.push({"id": data.device_id });
+                $scope.$apply();
+            },
+            error: function(){
+                console.log('获取事件信息失败: '+$scope.linkEventId);
+            }
+        });
     }
     
     function initStations() {

@@ -9,12 +9,10 @@
     <meta http-equiv="Access-Control-Allow-Origin" content="*">
     <link rel="stylesheet" href="../components/mui/css/icons-extra.css">
     <link rel="stylesheet" href="../css/setting.css">
-    <!--<script type="text/javascript" src="../cordova.js"></script>-->
-    <!--<script type="text/javascript" src="../cordova_plugins.js"></script>-->
+    <link rel="stylesheet" href="../css/animate.css">
     <script type="text/javascript" src="../components/libs/jquery-2.1.4.js"></script>
     <script type="text/javascript" src="../components/angular/angular.min.js"></script>
     <script type="text/javascript" src="../components/angular-ui-router/release/angular-ui-router.min.js"></script>
-    <!--<script type="text/javascript" src="components/ui-router-extras/release/ct-ui-router-extras.js"></script>-->
     <script type="text/javascript" src="../components/angular-animate/angular-animate.js"></script>
     <script type="text/javascript" src="../components/angular-ui-router/release/stateEvents.min.js"></script>
     <script type="text/javascript" src="../js/app/utils.js"></script>
@@ -27,13 +25,6 @@
     <link rel="stylesheet" href="../css/animate.css">
     <link rel="stylesheet" href="../css/task.css">
     <style>
-        html,
-        body {
-            background-color: #efeff4;
-        }
-        /*p {*/
-            /*text-indent: 22px;*/
-        /*}*/
         .site-value .mui-icon {
             font-size: 14px;
             color: #007aff;
@@ -69,80 +60,41 @@
             background: -webkit-gradient(linear, 0 0, 0 bottom, from(#CFD9DF), to(#E2EBF0));
         }
         .site-list .mui-card:nth-child(even){
-            /*background: -webkit-gradient(linear, 0 0, 0 bottom, from(#FDFBFB), to(#EBEDEE));*/
-            /*background: -webkit-gradient(linear, 0 0, 0 bottom, from(#FDFCFB), to(#E2D1C3));*/
             background: -webkit-gradient(linear, 0 0, 0 bottom, from(#CFD9DF), to(#E2EBF0));
-        }
-        .mui-table-view-cell.mui-media{
-            border-radius: 0 !important;
-        }
-        .text-red{
-            color: red !important;
-        }
-        .text-grey{
-            color: #6d6d6d !important;
-        }
-        header.bg-header{
-             background-color: #2856b6;
-         }
-        .bg-header h1{
-            color: #fff;
-        }
-        .bg-header .mui-action-back{
-            color: #fff;
         }
         .info-list span{
             display: inline-block;
-        }
-        .info-list{
-            margin-bottom: 0;
         }
         .task-title .time{
             position: absolute;
             right: 0;
             top:0;
         }
-        .info-list .status{
-            float: right;
-            color: #007aff;
-        }
-        .cell-body{
-            padding: 11px 16px;
-        }
-        .cell-footer{
-            border-top: #eee 1px solid;
-            padding: 6px 16px;
-            line-height: 26px;
-        }
-        .task-list .mui-table-view .mui-media-object{
-            line-height: 32px;
-            max-width: 32px;
-            height: 32px;
-            margin-top: 5px;
-        }
-        .mui-center.mui-title{
-            margin-left: 0 !important;
-        }
     </style>
 
 <body class="box-vertical-center" ng-app="myApp" ng-controller="HomeCtrl">
-    <header class="mui-bar mui-bar-nav bg-header" style="z-index:0;">
-        <h1 class="mui-title" id="header_title">{{title}}</h1>
-        <a onclick="showTopMenu()" class="mui-action-menu mui-icon mui-pull-right" ><i class="header-icon white icon-add"></i></a>
-    </header>
 <div ng-include="'/templates/top-menu.html'"></div>
-    <div class="mui-content no-padding" style="height: auto;">
-            <div class="scroll" style="height: 100%;overflow-y: hidden;" ng-controller="TaskBaseCtrl">
-                <div ng-repeat="menu in navMenus" id={{menu.id}} class=" no-padding mui-control-content scroll-wrapper"
-                     ng-class="{'mui-active': tabName === menu.id}" ng-include="menu.templateUrl" style="bottom:54px;">
-                </div>
-                <div ng-controller="SettingCtrl" id="setting" class=" no-padding mui-control-content"
-                     ng-class="{'mui-active': tabName === 'setting'}">
-                    <div ng-include="'/templates/setting/setting.html'"></div>
-                </div>
+    <div class="mui-content no-padding" style="height: auto;top: 0;">
+        <div style="height: 100%;overflow-y: hidden;" ng-controller="TaskBaseCtrl">
+
+            <div id='sites' class="no-padding mui-control-content content-wrapper"
+                 ng-class="{'mui-active': tabName === 'sites'}" ng-include="'/templates/site/site-home.html'" style="bottom:54px;">
             </div>
+            <div ng-repeat="menu in navMenus" id={{menu.id}} class="no-padding mui-control-content content-wrapper"
+                 ng-class="{'mui-active': tabName === menu.id}" ng-include="menu.templateUrl" style="bottom:54px;">
+            </div>
+            <div ng-controller="SettingCtrl" id="setting" class=" no-padding mui-control-content"
+                 ng-class="{'mui-active': tabName === 'setting'}" style="height: 100%;">
+                <div ng-include="'/templates/setting/setting.html'"></div>
+            </div>
+        </div>
     </div>
 <nav id="menu" class="mui-bar mui-bar-tab bg-footer nav-horizontal" style="box-shadow: none !important;z-index:0;">
+    <a class="mui-tab-item" href="javascript:void(0)" ng-click="chooseNav('sites', '站点监控')"
+       ng-class="{'mui-active': tabName==='sites'}">
+        <span class="mui-icon nav-icon nav-sites"></span>
+        <span class="mui-tab-label">站点监控</span>
+    </a>
     <a class="mui-tab-item" href="javascript:void(0)" ng-repeat="menu in navMenus"
        ng-click="chooseNav(menu.id, menu.name)" ng-class="{'mui-active': tabName===menu.id}">
         <span class="mui-icon nav-icon {{menu.icon}}"></span>
@@ -150,7 +102,7 @@
     </a>
     <a class="mui-tab-item" href="javascript:void(0)" ng-click="chooseNav('setting', '我')" ng-class="{'mui-active': tabName==='setting'}">
         <span class="mui-icon nav-icon nav-setting"></span>
-        <span class="mui-tab-label">我</span>
+        <span class="mui-tab-label">我的</span>
     </a>
 </nav>
 <div ui-view></div>
@@ -166,6 +118,7 @@
     <script src="../js/controller/setting.js"></script>
     <script src="../js/controller/monitor.js"></script>
     <script src="../js/controller/kanban.js"></script>
+    <script src="../../components/moment.min.js"></script>
     <script id="grab-task-template" type="text/x-handlebars-template">
         <div class="mui-popup mui-popup-in android-dialog" style="display: block;">
             <div class="mui-popup-inner">
@@ -182,6 +135,6 @@
         </div>
         <div class="mui-popup-backdrop mui-active" style="display: block;"></div>
     </script>
-    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=ITbaaCqA7nMWRjEIycEpddoUW1AvZvRq"></script>
+    <!--<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=ITbaaCqA7nMWRjEIycEpddoUW1AvZvRq"></script>-->
     </body>
 </html>

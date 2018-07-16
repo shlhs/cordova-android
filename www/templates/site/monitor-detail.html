@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>监控画面</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta http-equiv="Access-Control-Allow-Origin" content="*">
@@ -37,14 +37,13 @@
 </head>
 <body>
 <!--<header class="mui-bar mui-bar-transparent" style="z-index: 1000;">-->
-    <!--<a class="mui-icon mui-action-back mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()" style="color: #fff;"></a>-->
+    <!--<a class="mui-icon  mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()" style="color: #fff;"></a>-->
 <!--</header>-->
 <div style="position:relative;width: 100%;height: 100%;overflow: hidden;">
     <div id="targetObj" style="width: 100%;height: 100%;position:relative;transform-origin:center;"  >
         <div style="width: 100%;height: 100%;">
             <div style="width: 100%;height: 100%;">
                 <iframe id="iframe"></iframe>
-                <div style="position:absolute;top:0px;left: 0px;width: 100%;height: 100%;background-color: transparent;"></div>
             </div>
         </div>
     </div>
@@ -74,7 +73,7 @@
         }
 
         function enableZoom() {
-            new RTP.PinchZoom($("#targetObj"), {});
+            //new RTP.PinchZoom($("#targetObj"), {});
         }
 
     </script>

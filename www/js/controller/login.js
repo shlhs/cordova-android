@@ -4,90 +4,138 @@
  * Created by liucaiyun on 2017/7/23.
  */
 
-var gPublicApiHost = 'http://114.215.90.83:8090';
+var gPublicApiHost = 'http://47.104.75.86:8090';
 
 
-app.controller('LoginCtrl', function ($scope, $timeout, platformService, userService, $state, $http) {
+app.controller('LoginCtrl', function ($scope, $timeout, platformService, userService, $state, $http, ajax) {
     $scope.error = '';
     var platform = null;
+    $scope.enable = false;
     $scope.platformCode = platformService.getLatestPlatform() ? platformService.getLatestPlatform().code : null;
     $scope.username = userService.getUsername();
     $scope.password = userService.getPassword();
     $scope.isLogin = false;
     $scope.isAutoLogin = false;
+    $scope.passwordVisible = false;
+
+    $scope.togglePasswordVisible = function () {
+        $scope.passwordVisible = !$scope.passwordVisible;
+    };
+
+    $scope.inputChange = function () {
+        if ($scope.platformCode && $scope.username && $scope.password) {
+            $scope.enable = true;
+        } else {
+            $scope.enable = false;
+        }
+    };  // 输入更改事件
+    $scope.inputChange();
+
     $scope.login = function () {
-        // if (!platform || $scope.platformCode != platform.code){
+        $scope.enable = false;
         queryPlatform(login);
-        // }else{
-        //     login();
-        // }
-        // $state.go('index');
     };
 
     $scope.setAutoLogin = function(isAutoLogin){
         $scope.isAutoLogin = isAutoLogin;
     };
 
-    function getCompany(callback) {
+    function toast(message) {
+        var div = $('<div class="toast"><div class="msg">' + message + '</div></div>').appendTo($('body'));
+        $timeout(function () {
+            div.remove();
+        }, 2000);
+
+    }
+
+    function login() {
+        $scope.error = '';
+        var loginUrl = platform.url.substring(0, platform.url.indexOf(':', 6)) + ':8900/v1';
+        var data = {
+            username: $scope.username,
+            password: $scope.password
+        };
+        $scope.isLogin = true;
         $.ajax({
+            url: loginUrl + '/auth',
+            method:'POST',
+            timeout: 10000,
+            data: JSON.stringify(data),
+            dataType:"json",
+            headers: {
+                "xhrFields-Type": {
+                    withCredentials: true
+                },
+                'Content-Type': 'application/json;chartset=UTF-8'
+            },
+            xhrFields: {
+                withCredentials: true
+            },
+            crossDomain: true,
+            success: function (data) {
+
+                var result = KJUR.jws.JWS.verify(data.token, 'zjlhstest');
+                if (result) {
+                    userService.setAccountToken(data.token);
+                    getUserInfo();
+                } else {
+                    toast('用户名或密码错误');
+                }
+            },
+            error :function () {
+                $scope.enable = true;
+                $scope.isLogin = false;
+                $scope.$apply();
+                toast('用户名或密码错误');
+                if ($scope.isAutoLogin) {
+                    userService.setPassword('');
+                    location.href = 'login.html';
+                }
+
+            }
+        });
+    }
+
+    function getUserInfo() {
+        ajax.get({
+            url: '/user/' + $scope.username,
+            success: function (data) {
+                userService.saveLoginUser(data, $scope.password);
+                getCompany();
+            },
+            error: function () {
+                $scope.enable = true;
+                $scope.isLogin = false;
+                toast('用户名或密码错误');
+                $scope.$apply();
+            }
+        })
+    }
+
+    function getCompany() {
+        ajax.get({
             url: platform.url + '/user/' + $scope.username + '/opscompany',
             xhrFields: {
                 withCredentials: true
             },
             crossDomain: true,
             success: function (data) {
-                if (data && data.length === 1)
+                if (data && data.length >= 1)
                 {
                     userService.saveCompany(data[0]);
-                }else{
-                    userService.saveCompany(data);
+                } else{
+                    userService.saveCompany([]);
                 }
-                $state.go('index');
-            },
-            error: function (xhr, status, error) {
-                console.log('get company info fail:' + xhr.status);
-            }
-        });
-    }
-
-    function login() {
-        $scope.error = '';
-        $scope.isLogin = true;
-
-        $.ajax({
-            url: platform.url + '/login',
-            method:'POST',
-            timeout: 10000,
-            data: {
-                username: $scope.username,
-                password: $scope.password
-            },
-            dataType:"json",
-            xhrFields: {
-                withCredentials: true
-            },
-            crossDomain: true,
-            success: function (data) {
-                userService.saveLoginUser(data, $scope.password);
-                platformService.addPlatform($scope.username, platformService.getLatestPlatform());
                 if (window.android){
-                window.android.loginSuccess(platform.url, $scope.username, $scope.password);
+                    window.android.loginSuccess();
                 }else{
                     location.href = '/templates/home.html?finishPage=1';
                 }
-                // $state.go('index');
-                // getCompany();
             },
-            error :function () {
-
-                $scope.error = '用户名或密码错误';
+            error: function (xhr, status, error) {
                 $scope.isLogin = false;
-                $scope.$apply();
-                if ($scope.isAutoLogin) {
-                    userService.setPassword('');
-                    location.href = 'login.html';
-                }
-
+                userService.saveCompany([]);
+                console.log('get company info fail:' + xhr.status);
             }
         });
     }
@@ -111,11 +159,13 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
                     userService.setPassword('');
                     location.href = 'login.html';
                 }else{
-                    $scope.platformError = '平台编码不正确，请重新输入';
+                    $scope.enable = true;
+                    toast('平台编号错误');
                     $scope.$apply();
                 }
                 return;
             }
+            // platform.url = 'http://127.0.0.1:8099/v1';
             platformService.setLatestPlatform(platform);
             cb && cb();
 
@@ -123,8 +173,10 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
             if ($scope.isAutoLogin){
                 userService.setPassword('');
                 location.href = '/templates/login.html';
+                $scope.enable = false;
             }else{
-                $scope.platformError = '查询平台失败，请检查平台编码是否正确';
+                $scope.enable = true;
+                toast('平台编号错误');
                 $scope.$apply();
             }
         });
@@ -133,7 +185,7 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
 
 });
 
-app.controller('AutoLoginCtrl', function ($scope, $timeout, $state) {
+app.controller('AutoLoginCtrl', function ($scope, $timeout, userService, platformService) {
 
     $scope.autoLogin = function () {
         //先等1.5s
@@ -146,7 +198,7 @@ app.controller('AutoLoginCtrl', function ($scope, $timeout, $state) {
         }else{
             $timeout(function () {
                 // $state.go('login');
-                location.href = '/templates/login.html';
+                location.href = '/templates/login.html?finishPage=1';
             }, 1500);
         }
     };

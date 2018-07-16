@@ -1,0 +1,24 @@
+<div class="page page-fade zoom-wrapper" ng-controller="ImageZoomCtrl" style="background-color: #ececec;">
+    <header class="mui-bar bg-header" style="z-index: 1;" ng-show="headerVisible">
+        <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white" onclick="history.back()"></a>
+        <h1 class="mui-title">{{name}}</h1>
+    </header>
+    <div class="" id="zoomTarget" style="height: 100%;">
+        <div style="width: 100%;height: 100%;" class="box-vertical-center">
+        <img ng-src="{{link}}" class="zoom-obj" style="width: 100%;">
+        </div>
+    </div>
+    <div class="mui-popover mui-popover-action mui-popover-bottom" ng-class="{'mui-active': menuVisible}">
+        <ul class="mui-table-view">
+            <li class="mui-table-view-cell">
+                <a ng-click="saveImage()">保存报告</a>
+            </li>
+        </ul>
+        <ul class="mui-table-view">
+            <li class="mui-table-view-cell">
+                <a ng-click="menuVisible=false" style="color: #aaaaaa;"><b>取消</b></a>
+            </li>
+        </ul>
+    </div>
+    <div class="mui-backdrop mui-backdrop-action" ng-class="{'mui-active': menuVisible}" ng-show="menuVisible"></div>
+</div>

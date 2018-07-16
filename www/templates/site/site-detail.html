@@ -7,153 +7,38 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta http-equiv="Access-Control-Allow-Origin" content="*">
-    <link rel="stylesheet" href="../../components/mui/css/mui.min.css">
-    <link rel="stylesheet" href="../../css/my.css">
-    <link rel="stylesheet" href="../../css/icon.css">
-    <link rel="stylesheet" href="../../css/animate.css">
-    <link rel="stylesheet" href="../../components/mui/css/icons-extra.css">
-    <link rel="stylesheet" href="../../css/setting.css">
-    <!--<script type="text/javascript" src="../../cordova.js"></script>-->
-    <!--<script type="text/javascript" src="../../cordova_plugins.js"></script>-->
-    <script type="text/javascript" src="../../components/libs/jquery-2.1.4.js"></script>
-    <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
-    <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <link rel="stylesheet" href="/components/mui/css/mui.min.css">
+    <link rel="stylesheet" href="/css/my.css">
+    <link rel="stylesheet" href="/css/icon.css">
+    <link rel="stylesheet" href="/css/animate.css">
+    <link rel="stylesheet" href="/components/mui/css/icons-extra.css">
+    <!--<script type="text/javascript" src="/cordova.js"></script>-->
+    <!--<script type="text/javascript" src="/cordova_plugins.js"></script>-->
+    <script type="text/javascript" src="/components/libs/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="/components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="/components/angular-ui-router/release/angular-ui-router.min.js"></script>
     <!--<script type="text/javascript" src="components/ui-router-extras/release/ct-ui-router-extras.js"></script>-->
-    <script type="text/javascript" src="../../components/angular-animate/angular-animate.js"></script>
-    <script type="text/javascript" src="../../components/angular-ui-router/release/stateEvents.min.js"></script>
-    <script type="text/javascript" src="../../js/app/utils.js"></script>
-    <script type="text/javascript" src="../../js/app/app.js"></script>
-    <script type="text/javascript" src="../../js/router/site-router.js"></script>
-
+    <script type="text/javascript" src="/components/angular-animate/angular-animate.js"></script>
+    <script type="text/javascript" src="/components/angular-ui-router/release/stateEvents.min.js"></script>
+    <script type="text/javascript" src="/js/app/utils.js"></script>
+    <script type="text/javascript" src="/js/app/app.js"></script>
+    <script type="text/javascript" src="/js/service/common-service.js"></script>
+    <script type="text/javascript" src="/js/service/router-service.js"></script>
+    <script type="text/javascript" src="/js/router/site-router.js"></script>
     <style>
-        html,body{
-            height: 100%;
-            padding: 0;
-            margin: 0;
-        }
-        .background{
-            height: 100%;
-            overflow: hidden;
-        }
-        img{
-            height: 100%;
-        }
-        .mui-table-view.mui-grid-view .mui-table-view-cell .mui-media-body{
-            font-size: 0.8em;
-        }
-        .mui-table-view-cell>a>.mui-badge{
-            top: 12px;
-            font-size: 11px;
-            padding: 1px 3px;
-            min-width: 14px;
-            left: calc(50% + 6px);
-            right: auto;
-        }
-        #site.mui-table-view-cell{
-            padding: 11px 0;
-        }
-        .mui-table-view:before{
-            display: none;
-        }
-        .mui-table-view-cell .text-value{
-            color: #8f8f94;
-        }
 
-        .mui-table-view-cell:after{
-            left: 0;
-        }
-        .site-img{
-            height: 150px;
-            width: 100%;
-        }
-        .site-img .img{
-            height: 100%;
-            width: 100%;
-            background: no-repeat 50%;
-            background-size: cover;
+        .mui-grid-view.mui-grid-9 {
+            background-color: transparent;
+            border-radius: 0;
         }
     </style>
+
 </head>
 <body class="box-vertical-center" ng-app="myApp" ng-controller="SiteDetailCtrl">
-    <header class="mui-bar mui-bar-nav bg-header ">
-        <a class="mui-icon mui-action-back mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
-        <h1 class="mui-title">{{name}}</h1>
-        <a onclick="showTopMenu()" class="mui-action-menu mui-icon mui-pull-right" ><i class="header-icon white icon-add"></i></a>
-    </header>
-    <div ng-include="'../../templates/top-menu.html'"></div>
-    <div class="mui-content" ng-cloak id="site" ng-controller="SiteBaseInfoCtrl">
-        <div class="card">
-            <ul class="mui-table-view mui-grid-view mui-grid-9 no-border" style="background-color: #fff;">
-                <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
-                    <a href="/templates/site/kanban.html?sn={{sn}}">
-                        <span class="mui-icon icon icon-ms icon-kanban"></span>
-                        <div class="mui-media-body no-margin">看板</div>
-                    </a>
-                </li>
-                <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
-                    <a href="/templates/site/event-list.html?sn={{sn}}">
-                        <span class="mui-icon icon icon-ms icon-events">
-                        </span>
-                        <div class="mui-media-body no-margin">事件</div>
-                        <span class="mui-badge mui-badge-danger" ng-if="unhandledEventCount">{{unhandledEventCount}}</span>
-                    </a>
-                </li>
-                <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
-                    <a href="/templates/site/monitor-list.html?sn={{sn}}">
-                        <span class="mui-icon icon icon-ms icon-monitor"></span>
-                        <div class="mui-media-body no-margin">画面</div>
-                    </a>
-                </li>
-                <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
-                    <a href="/templates/site/device-list.html?sn={{sn}}">
-                        <span class="mui-icon icon icon-ms icon-devices"></span>
-                        <div class="mui-media-body no-margin">设备</div>
-                    </a>
-                </li>
-                <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
-                    <a href="/templates/site/docs.html?sn={{sn}}">
-                        <span class="mui-icon icon icon-ms icon-docs"></span>
-                        <div class="mui-media-body no-margin">电子档案</div>
-                    </a>
-                </li>
-            </ul>
-        </div>
-        <div class="mui-control-content height-wrap-parent mui-active card" >
-            <!--<img ng-src="../../img/background/site-default.png" style="width: 100%;height: auto;display: block">-->
-            <img ng-src="{{siteData.site_image}}" style="width: 100%;height: auto;display: block">
-            <ul class="mui-table-view no-border info-group" style="font-size: 14px;margin-top:0px;">
-                <li class="mui-table-view-cell">
-                    <a href="/templates/map.html?stationName={{siteData.name}}&stationSn={{siteData.sn}}">
-                        <i class="icon icon-xs icon-location"></i>
-                        <span class="title">{{siteData.address}}</span>
-                    </a>
-                </li>
-                <li class="mui-table-view-cell">
-                    <!-- 朗晟 -->
-                    <label class="title">额定容量</label>
-                    <span class="value">{{siteData.capacity}}KVA</span>
-                     <!--其他-->
-                    <!--<label class="title">额定负载</label>-->
-                    <!--<span class="value">{{siteData.capacity}}KW</span>-->
-                </li>
-                <li class="mui-table-view-cell">
-                    <label class="title">供电类型</label>
-                    <span class="value">{{siteData.power_supply_type}}</span>
-                </li>
-                <li class="mui-table-view-cell">
-                    <label class="title">电压等级</label>
-                    <span class="value">{{siteData.voltage_class}}</span>
-                </li>
-            </ul>
-        </div>
-    </div>
-    <div class="page page-left" ui-view=""></div>
-    <script src="../../components/fastclick-master/lib/fastclick.js"></script>
-    <script src="../../js/my/notify.js"></script>
-    <script src="../../components/dropload-gh-pages/dist/dropload.min.js"></script>
-    <script type="text/javascript" src="../../js/controller/sites.js"></script>
-    <script type="text/javascript" src="../../js/controller/device.js"></script>
-    <script src="../../js/controller/monitor.js"></script>
-    <script src="../../js/controller/kanban.js"></script>
+    <div ng-include="'/templates/site/site-detail-template.html'" style="height: 100%;"></div>
+    <script src="/components/fastclick-master/lib/fastclick.js"></script>
+    <script src="/js/my/notify.js"></script>
+    <script src="/components/dropload-gh-pages/dist/dropload.min.js"></script>
+    <script type="text/javascript" src="/js/controller/sites.js"></script>
 </body>
 </html>

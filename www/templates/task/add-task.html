@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="../../components/mui/css/mui.min.css">
     <link rel="stylesheet" href="../../components/mui/css/mui.picker.min.css">
     <link rel="stylesheet" href="../../css/my.css" />
+    <link rel="stylesheet" href="../../css/task.css" />
     <script type="text/javascript" src="../../components/libs/jquery-2.1.4.js"></script>
     <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
     <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
@@ -23,16 +24,16 @@
     <script type="text/javascript" src="../../js/controller/task.js"></script>
     <style>
         .mui-input-row label{
-            width: 140px;
+            width: 160px;
         }
         .mui-input-row .mui-btn{
-            width: calc(100% - 140px);
+            width: calc(100% - 160px);
             outline: none;
             background: transparent;
             border: none;
         }
         .mui-input-row label~input, .mui-input-row label~select, .mui-input-row label~textarea{
-            width: calc(100% - 140px);
+            width: calc(100% - 160px);
         }
         .mui-input-group:before{
             display: none;
@@ -56,7 +57,7 @@
         }
         .error{
             color: red;
-            margin-left: 126px;
+            margin-left: 146px;
             font-size: 12px;
             margin-top: -16px;
         }
@@ -70,21 +71,21 @@
 </head>
 
 <body class="mui-android mui-android-5 mui-android-5-1 mui-android-5-1-1" ng-app="myApp">
-<header class="mui-bar mui-bar-nav bg-header mui-segmented-control-vertical">
-    <a class="mui-icon mui-action-back mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
+<header class="mui-bar bg-header mui-segmented-control-vertical">
+    <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
     <h1 class="mui-title">派单</h1>
 </header>
 <div class="mui-content bg-white" ng-controller="TaskCreateCtrl" ng-cloak="" ng-submit="submitForm()" id="main">
-    <form class="mui-input-group" name="myForm" novalidate >
+    <form class="mui-input-group task-create-rows" name="myForm" novalidate >
         <div class="mui-input-row">
-            <label>任务名称</label>
+            <label class="label">任务名称<span style="color:red">*</span></label>
             <input type="text" name="name" ng-model="taskData.name" placeholder="请输入任务名称" required>
             <label class="error" ng-show="myForm.name.$invalid && (myForm.name.$dirty || myForm.$submitted)">
                 <span ng-show="myForm.name.$error.required">任务名称不能为空</span>
             </label>
         </div>
         <div class="mui-input-row">
-            <label>任务类型</label>
+            <label class="label">任务类型<span style="color:red">*</span></label>
             <input type="text" name="taskTypeName" ng-model="taskTypeName" placeholder="选择任务类型" required>
             <button id="taskTypePicker" class="mui-btn mui-btn-block" type="button">&nbsp; </button>
             <label class="error" ng-show="myForm.taskTypeName.$invalid && (myForm.taskTypeName.$dirty || myForm.$submitted)">
@@ -92,7 +93,7 @@
             </label>
         </div>
         <div class="mui-input-row">
-            <label>期望完成时间</label>
+            <label class="label">期望完成时间<span style="color:red">*</span></label>
             <input type="text" name="expect_complete_time" ng-model="taskData.expect_complete_time" placeholder="选择任务处理截止时间" required>
             <button type="button" id='expectedTime' data-options='{}' class="btn mui-btn mui-btn-block">&nbsp;</button>
             <label class="error" ng-show="myForm.expect_complete_time.$invalid && (myForm.expect_complete_time.$dirty || myForm.$submitted)">
@@ -100,18 +101,18 @@
             </label>
         </div>
         <div class="mui-input-row">
-            <label>站点</label>
+            <label class="label">站点</label>
             <input type="text" style="position: absolute;" ng-model="stationName" placeholder="可不填">
             <button type="button" id='stationPicker' data-options='{}' class="btn mui-btn mui-btn-block">&nbsp;</button>
         </div>
         <div class="mui-input-row">
-            <label>设备</label>
+            <label class="label">设备</label>
             <input type="text" style="position: absolute;" ng-model="deviceName" placeholder="可不填">
             <button type="button" id='devicePicker' data-options='{}' class="btn mui-btn mui-btn-block">&nbsp;</button>
         </div>
         <div class="mui-input-row">
-            <label>是否抢单任务</label>
-            <div class="mui-switch mui-switch-blue mui-switch-mini" style="float: none;left:140px;">
+            <label class="label">是否抢单任务</label>
+            <div class="mui-switch mui-switch-blue mui-switch-mini" style="float: none;left:160px;margin-top: 10px;">
                 <div class="mui-switch-handle"></div>
             </div>
         </div>
@@ -123,6 +124,10 @@
                 <span>责任人不能为空</span>
             </label>
         </div>
+        <div class="mui-input-row" ng-if="linkEventInfo">
+            <label class="label">关联事件</label>
+            <span style="position: absolute;">{{linkEventInfo}}</span>
+        </div>
         <div class="mui-input-row" style="margin: 10px 5px;height: auto;">
             <textarea rows="3" placeholder="任务描述，必填" name="desp" ng-model="taskData.desp" required></textarea>
             <label class="error" style="margin-left: 0;" ng-show="myForm.desp.$invalid && (myForm.desp.$dirty || myForm.$submitted)">
@@ -130,7 +135,8 @@
             </label>
         </div>
         <div class="mui-button-row" style="padding: 8px 16px;">
-            <button type="submit" class="mui-btn mui-btn-primary mui-btn-block" >确认</button>
+            <button type="submit" class="mui-btn mui-btn-primary mui-btn-block"
+                    style="background-color: rgba(88,107,243,0.88);border-color: rgba(88,107,243,0.88);height: 48px;">确认发布</button>
         </div>
     </form>
 </div>

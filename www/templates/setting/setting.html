@@ -1,30 +1,32 @@
 <div class="mui-page">
-    <div class="mui-page-content">
-        <ul class="mui-table-view mui-table-view-chevron mt20">
-            <li class="mui-table-view-cell mui-media">
-                <a class="mui-navigate-right" ui-sref="index.account">
-                    <img class="mui-media-object mui-pull-left head-img" id="head-img" src="{{ user.photo ? host + user.photo : '../../img/dark/64X64/profile-outline.png'}}">
-                    <div class="mui-media-body">
-                        {{user.name}}
-                        <p class="mui-ellipsis">{{user.account}}</p>
-                    </div>
-                </a>
+    <div class="top-base">
+        <img src="/img/profile-top.png" style="width: 100%;">
+        <div class="portrait">
+            <img src="/img/icon/head-portrait-default@2x.png">
+        </div>
+        <div class="base-info">
+            <div class="account-info" style="float: left">
+                <div class="name">{{user.name}}<label class="role" ng-if="user.user_groups.length">{{user.user_groups[0].description}}</label> </div>
+                <div class="account">{{user.account}}</div>
+            </div>
+            <a style="float: right;width: 48px;" ui-sref="index.account.password">
+                <img src="/img/icon/icon-profile-edit@2x.png" style="width: 48px;">
+            </a>
+        </div>
+    </div>
+    <div style="position: static;margin-top: 10px;">
+        <ul class="mui-table-view mui-table-view-chevron mt20 no-out-border">
+            <li class="mui-table-view-cell light-border" ng-if="company && company.id">
+                <a ui-sref="index.company" class="mui-navigate-right">运维公司 <i class="mui-pull-right update mui-ellipsis" style="max-width: 60%;">{{company.name}}</i></a>
             </li>
-        </ul>
-        <ul class="mui-table-view mui-table-view-chevron mt20" ng-if="company && company.id">
-            <li class="mui-table-view-cell">
-                <a ui-sref="index.company" class="mui-navigate-right">运维公司 <i class="mui-pull-right update">{{company.name}}</i></a>
-            </li>
-        </ul>
-        <ul class="mui-table-view mui-table-view-chevron mt20">
-            <li class="mui-table-view-cell">
+            <li class="mui-table-view-cell light-border">
                 <a>关于{{appName}} <i class="mui-pull-right update">{{version}}</i></a>
             </li>
-            <li class="mui-table-view-cell">
-                <a class="mui-navigate-right" ui-sref="index.share">分享 <i class="mui-pull-right update"></i></a>
-            </li>
+            <!--<li class="mui-table-view-cell">-->
+                <!--<a class="mui-navigate-right" ui-sref="index.share">分享 <i class="mui-pull-right update"></i></a>-->
+            <!--</li>-->
         </ul>
-        <ul class="mui-table-view mt20">
+        <ul class="mui-table-view mt20 no-border" style="margin-top: 30px;">
             <li class="mui-table-view-cell mui-segmented-control-vertical" style="text-align: center;">
                 <a class="text-red" ng-click="logout()">退出登录</a>
             </li>
