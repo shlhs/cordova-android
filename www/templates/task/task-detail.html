@@ -129,7 +129,8 @@
                         <li>
                             <i class="icon icon-xs icon-site-blue mui-pull-left"></i>
                             <span class="link">站点:</span>
-                            <a class="link" href="/templates/site/site-detail.html?sn={{taskData.station_sn}}&name={{taskData.station_name}}">{{taskData.station_name}}</a>
+                            <!--<a class="link" href="/templates/site/site-detail.html?sn={{taskData.station_sn}}&name={{taskData.station_name}}">{{taskData.station_name}}</a>-->
+                            <a class="link" href="javascript:;" ng-click="openMap()" ng-if="taskData.station_sn">{{taskData.station_name}}</a>
                         </li>
                         <li ng-if="taskData.events.length">
                             <i class="icon icon-xs icon-event-red"></i><span style="color: rgb(250, 129, 12)">事件信息:{{taskData.events[0].name}}</span>

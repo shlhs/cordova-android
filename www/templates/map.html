@@ -77,6 +77,11 @@
                     withCredentials: true
                 },
                 crossDomain: true,
+                headers: {
+                    Authorization: 'Bearer' + (getStorageItem('accountToken') || ''),
+                    credentials: 'include',
+                    mode: 'cors'
+                },
                 success: function (data) {
                     data.address = (data.address_province?data.address_province:'') + (data.address_city?data.address_city:'')
                         + (data.address_district?data.address_district:'') + data.address;
@@ -88,7 +93,7 @@
                     $.notify.error('获取站点信息失败');
                     console.log('login fail');
                 }
-            })
+            });
         }
 
         function drawMap(siteData) {
@@ -153,7 +158,6 @@
                 });
             }
         };
-
         getSite();
     });
 

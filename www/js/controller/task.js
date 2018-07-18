@@ -990,7 +990,7 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
     };
 
     $scope.openMap = function () {
-        location.href='map.html?id=' + $scope.taskData.id + '&name=' + $scope.taskData.station_name;
+        location.href='/templates/map.html?stationSn=' + $scope.taskData.station_sn + '&stationName=' + $scope.taskData.station_name;
     };
 });
 

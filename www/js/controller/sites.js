@@ -102,6 +102,12 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, p
         $scope.closePopover();
     };
 
+    $scope.openMap = function () {
+        // 打开站点地图
+        var station = $scope.currentSite.station;
+        location.href='/templates/map.html?stationSn=' + station.sn + '&stationName=' + station.name + '&lng=' + station.longitude + '&lat=' + station.latitude;
+    };
+
     function getCurrentSite() {
         var siteStr = localStorage.getItem("currentSite");
         if (siteStr){
@@ -171,7 +177,6 @@ app.controller('SiteDetailCtrl', function ($scope, ajax, platformService) {
             }
         });
     };
-
     $scope.getDataList();
 });
 
