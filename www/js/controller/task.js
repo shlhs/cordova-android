@@ -247,14 +247,15 @@ app.controller('TaskBaseCtrl', function ($scope, ajax, userService) {
     };
 
     $scope.checkActuallyArrived = function (taskId, siteLongitude, siteLatitude, cb) {
-        // 不检查，直接返回
-        cb && cb(taskId, TaskAction.Arrive);
-        // //  如果站点的坐标为空，则直接提交操作
-        // if (!siteLongitude || !siteLatitude || !window.android){
-        //     cb && cb(taskId, TaskAction.Arrive);
-        //     return;
-        // }
-        /*
+        // 不检查，直接返回 -- 默认
+        // cb && cb(taskId, TaskAction.Arrive);
+        //  如果站点的坐标为空，则直接提交操作
+        if (!siteLongitude || !siteLatitude || !window.android){
+            cb && cb(taskId, TaskAction.Arrive);
+            return;
+        }
+
+        // 朗晟需要检查距离
         $.notify.progressStart();
         apiLocation.start(function (longtitude, latitude) {     // 获取用户的当前位置
             // 判断位置是否一致
@@ -270,7 +271,7 @@ app.controller('TaskBaseCtrl', function ($scope, ajax, userService) {
                     }
                     var sitePoint = new BMap.Point(siteLongitude, siteLatitude);
                     var distance = map.getDistance(data.points[0], sitePoint);
-                    if (distance > 300){    // 距离大于300米，无法确认到达
+                    if (distance > 500){    // 距离大于500米，无法确认到达
                         $.notify.progressStop();
                         $.notify.error('检测到您未到达现场');
                     }else{
@@ -284,7 +285,7 @@ app.controller('TaskBaseCtrl', function ($scope, ajax, userService) {
                 $.notify.error('无法获取当前位置');
             }
         });
-        */
+
     };
 });
 
