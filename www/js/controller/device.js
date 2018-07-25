@@ -432,8 +432,8 @@ app.controller('DeviceTreeCommonCtrl', function ($scope, ajax) {
                 return;
             }
             if (item.indexs) {
-                const newChildren = [];
-                const childrenMap = {};
+                var newChildren = [];
+                var childrenMap = {};
                 item.children.forEach(function (n, i) {
                     childrenMap[n.id] = n;
                 });

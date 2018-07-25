@@ -4,7 +4,7 @@
  * Created by liucaiyun on 2017/7/23.
  */
 
-var gPublicApiHost = 'http://47.104.75.86:8090';
+var gPublicApiHost = 'http://47.104.75.86:8090';        // 公有云接口
 // var gPublicApiHost = 'http://114.215.90.83:8090';
 
 
@@ -203,6 +203,9 @@ app.controller('AutoLoginCtrl', function ($scope, $timeout, userService, platfor
             }, 1500);
         }
     };
-
+    if (window.android && window.android.checkWebVersion) {
+        // 启动时先检测web版本并升级
+        window.android.checkWebVersion();
+    }
     $scope.autoLogin();
 });
