@@ -990,7 +990,7 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
     };
 
     $scope.openMap = function () {
-        location.href='/templates/map.html?stationSn=' + $scope.taskData.station_sn + '&stationName=' + $scope.taskData.station_name;
+        location.href='map.html?id=' + $scope.taskData.id + '&name=' + $scope.taskData.station_name;
     };
 });
 
@@ -1207,11 +1207,17 @@ app.controller('TaskCreateCtrl', function ($scope, $timeout, userService, ajax) 
         ajax.get({
             url: '/stations',
             success: function (data) {
-                $scope.companyList = data;
-                _format(data, 'sn');
+                var sites = [];
+                data.forEach(function (d) {
+                    if (!d.is_group) {
+                        sites.push(d);
+                    }
+                });
+                $scope.companyList = sites;
+                _format(sites, 'sn');
                 // 初始化picker
                 var stationPicker = new mui.PopPicker();
-                stationPicker.setData(data);
+                stationPicker.setData(sites);
                 var showUserPickerButton = document.getElementById('stationPicker');
                 showUserPickerButton.addEventListener('click', function(event) {
                     stationPicker.show(function(items) {
