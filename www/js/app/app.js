@@ -140,6 +140,7 @@ app.service('platformService', function () {
     this.setLatestPlatform = function (platform) {
         setStorageItem('latestPlatform', JSON.stringify(platform));
         this.host = platform.url;
+        this.ipAddress = this.host.substring(0, this.host.indexOf(':', 5));
         this.thumbHost = this.getImageThumbHost();
     };
 
@@ -158,13 +159,31 @@ app.service('platformService', function () {
         return platform ? platform.url : null;
     };
 
+    this.getAuthHost = function () {
+        return this.ipAddress + ":8096/v1"
+    };
+
     this.getImageThumbHost = function () {      // 获取图片压缩服务的地址
         // 格式为： http://ip:8888/unsafe
-        if (this.host)
+        if (this.ipAddress)
         {
-            return this.host.substring(0, this.host.indexOf(':', 5)) + ":8888/unsafe"
+            return this.ipAddress + ":8888/unsafe"
         }
         return null;
+    };
+
+    this.getGraphHost = function () {
+        return this.ipAddress + ':8920/v1';
+    };
+
+    this.getGraphScreenUrl = function (graphSn) {
+        // 新的监控画面服务
+        return this.ipAddress + ':8921/monitor.html?sn=' + graphSn;
+    };
+
+    this.getOldMonitorScreenUrl = function (screenSn) {
+        // 老的监控画面服务
+        return this.ipAddress + ':8098/monitor_screen?sn=' + screenSn;
     };
 
     this.getImageUrl = function (width, height, imageUrl) {
@@ -172,6 +191,7 @@ app.service('platformService', function () {
     };
 
     this.host = this.getHost();
+    this.ipAddress = this.host.substring(0, this.host.indexOf(':', 5));
     this.thumbHost = this.getImageThumbHost();
 });
 
