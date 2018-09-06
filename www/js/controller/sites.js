@@ -87,13 +87,14 @@ app.directive('siteTreeView',[function(){
     };
 }]);
 
-app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, routerService, platformService) {
+app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, routerService, platformService, userService) {
     $scope.sitesTree = [];
     $scope.sites = [];
     $scope.currentSite = {};
     $scope.isLoading = true;
     $scope.popup_visible = false;
     $scope.searchSiteResult = [];
+    $scope.role = userService.getUserRole();
 
     $scope.getDataList = function () {
         scrollerService.initScroll('#sites', $scope.getDataList);
