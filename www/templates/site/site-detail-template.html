@@ -61,13 +61,13 @@
                     <div class="mui-media-body">月度报告</div>
                 </a>
             </li>
-            <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
+            <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border" ng-hide="role==='USER'">
                 <a href="/templates/evaluate/evaluate-history.html?sn={{currentSite.sn}}&name={{currentSite.name}}" style="padding: 6px 0 0 0;">
                     <span class="mui-icon icon icon-36 icon-security"></span>
                     <div class="mui-media-body">安全评测</div>
                 </a>
             </li>
-            <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
+            <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border" ng-hide="role==='USER'">
                 <a href="/templates/maintenance-check/check-history.html?sn={{currentSite.sn}}&name={{currentSite.name}}" style="padding: 6px 0 0 0;">
                     <span class="mui-icon icon icon-36 icon-poweroff"></span>
                     <div class="mui-media-body">停电维护</div>
@@ -97,7 +97,7 @@
                     <span class="value">{{currentSite.fix_line_telephone}}</span>
                 </li>
                 <li class="mui-table-view-cell">
-                    <label class="title">额定1容量</label>
+                    <label class="title">额定容量</label>
                     <span class="value">{{currentSite.capacity}}KVA</span>
                 </li>
                 <li class="mui-table-view-cell">
