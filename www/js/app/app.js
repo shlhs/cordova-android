@@ -191,7 +191,7 @@ app.service('platformService', function () {
     };
 
     this.host = this.getHost();
-    this.ipAddress = this.host.substring(0, this.host.indexOf(':', 5));
+    this.ipAddress = this.host ? this.host.substring(0, this.host.indexOf(':', 5)) : '';
     this.thumbHost = this.getImageThumbHost();
 });
 

@@ -28,7 +28,6 @@ app.controller('MonitorListCtrl', function ($scope, $stateParams, platformServic
                         $scope.monitorScreens.push(item);
                     }
                 });
-                $scope.monitorScreens = data;
                 scrollerService.initScroll('#monitors', $scope.getDataList);
                 $scope.$apply();
             },
