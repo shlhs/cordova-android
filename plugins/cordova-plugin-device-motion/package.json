@@ -22,7 +22,7 @@
   "_resolved": "https://registry.npmjs.org/cordova-plugin-device-motion/-/cordova-plugin-device-motion-2.0.1.tgz",
   "_shasum": "7f6d974c4eb8fc5ae58e9aadd63d9fa502edec6d",
   "_spec": "cordova-plugin-device-motion",
-  "_where": "/Users/luohusi/workspace/lhs/cordova-android",
+  "_where": "/Users/luohusi/workspace/lhs/iOS/ios-master",
   "author": {
     "name": "Apache Software Foundation"
   },

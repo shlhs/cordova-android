@@ -16,6 +16,11 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
     $scope.password = userService.getPassword();
     $scope.isLogin = false;
     $scope.isAutoLogin = false;
+    $scope.passwordVisible = false;
+
+    $scope.togglePasswordVisible = function () {
+        $scope.passwordVisible = !$scope.passwordVisible;
+    };
 
     $scope.inputChange = function () {
         if ($scope.platformCode && $scope.username && $scope.password) {
