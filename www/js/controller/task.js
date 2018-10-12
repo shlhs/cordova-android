@@ -1161,7 +1161,7 @@ app.controller('TaskCreateCtrl', function ($scope, $timeout, userService, ajax) 
     var userPicker = null;
     function init() {
         if($scope.linkEventId && $scope.linkEventId != '') {
-            initLinkEvent();;
+            initLinkEvent();
         } else {
             initStations();
         }   
@@ -1195,6 +1195,9 @@ app.controller('TaskCreateCtrl', function ($scope, $timeout, userService, ajax) 
                 $scope.taskData.station_sn = data.station_sn;
                 $scope.taskData.events.push({"id": $scope.linkEventId });
                 $scope.taskData.devices.push({"id": data.device_id });
+                if (data.station_sn) {
+                    getDevices({sn: data.station_sn});
+                }
                 $scope.$apply();
             },
             error: function(){
