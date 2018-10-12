@@ -139,13 +139,13 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
                 $scope.isLoading = false;
                 var sites = $scope.sites;
                 result.forEach(function (s) {
-                    if (s.status === '') {
+                    if (s.communication_status == null || s.communication_status == '') {
                         s.status = 'unknown';
                         s.status_name = '未知';
-                    } else if (s.status === '1') {
-                        if (s.unclosed_envet_amount > 0) {
+                    } else if (s.communication_status == 1) {
+                        if (s.running_status == 1) {
                             s.status = 'abnormal';
-                            s.status_name = '异常';
+                            s.status_name = '故障';
                         } else {
                             s.status = 'normal';
                             s.status_name = '正常';
