@@ -1354,7 +1354,7 @@ app.controller('TaskCreateCtrl', function ($scope, $timeout, userService, ajax) 
     }
     
     $scope.handlerIsInvalid = function (form) {
-        if (form.$submitted && !isGrabTask && !$scope.taskData.current_handler){
+        if (form.$submitted && ((!isGrabTask && !$scope.taskData.current_handler))){
             return true;
         }
         return false;
@@ -1363,7 +1363,13 @@ app.controller('TaskCreateCtrl', function ($scope, $timeout, userService, ajax) 
 
     $scope.createTask = function () {
         var taskData = $scope.taskData;
-
+        var devices = [];
+        taskData.devices.forEach(function (d) {
+           if (d.id) {
+               devices.push(d);
+           }
+        });
+        taskData.devices = devices;
         $.notify.progressStart();
         ajax.post({
             url: '/opstasks/' + company.id,
@@ -1395,7 +1401,7 @@ app.controller('TaskCreateCtrl', function ($scope, $timeout, userService, ajax) 
     };
 
     $scope.submitForm = function() {
-        if($scope.myForm.$invalid){
+        if($scope.myForm.$invalid || $scope.handlerIsInvalid($scope.myForm)){
             console.log('form invalid');
         }else {
             $scope.createTask();
