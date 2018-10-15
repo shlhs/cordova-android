@@ -1,7 +1,7 @@
 "use strict";
 
 
-app.controller('MonitorListCtrl', function ($scope, $state, $stateParams, scrollerService, ajax, routerService) {
+app.controller('MonitorListCtrl', function ($scope, $state, $stateParams, scrollerService, ajax, platformService) {
     $scope.scope = $scope;
     $scope.sn = $stateParams.sn;
     $scope.monitorScreens = [];
@@ -13,11 +13,22 @@ app.controller('MonitorListCtrl', function ($scope, $state, $stateParams, scroll
 
         $scope.loadingFailed = false;
         $scope.monitorLoading = true;
+        var graphHost = platformService.getGraphHost();
         ajax.get({
-            url: '/monitoringscreens/findByStationSn?sn=' + $scope.sn,
+            url: graphHost + '/graphs/findByParentIndex?index='+$scope.sn,     // 新的监控画面接口
             success: function (data) {
                 $scope.monitorLoading = false;
-                $scope.monitorScreens = data;
+                $scope.monitorScreens = [];
+                data.forEach(function (item, i) {
+                    if (item.userVisible === 1) {
+                        if (item.type = 'KK') {
+                            item.mobile_screen_link = platformService.getGraphScreenUrl(item.sn);
+                        } else {
+                            item.mobile_screen_link = platformService.getOldMonitorScreenUrl(item.sn);
+                        }
+                        $scope.monitorScreens.push(item);
+                    }
+                });
                 scrollerService.initScroll('#monitors', $scope.getDataList);
                 $scope.$apply();
             },
@@ -38,8 +49,9 @@ app.controller('MonitorListCtrl', function ($scope, $state, $stateParams, scroll
 });
 
 
-app.controller('MonitorDetailCtrl', function ($scope, $stateParams) {
+app.controller('MonitorDetailCtrl', function ($scope, $stateParams, cordovaService) {
 
+    setLandscape();
     var url = $stateParams.url;
     var iframe = document.getElementById('iframe');
 
@@ -49,29 +61,40 @@ app.controller('MonitorDetailCtrl', function ($scope, $stateParams) {
         iframe.onload = function(){
             iframe.onload = null;
             $.notify.progressStop();
-            setLandscape();
-            enableZoom();
+            // setLandscape();
+            // enableZoom();
         };
     } else {
         iframe.onreadystatechange = function(){
             if (iframe.readyState === "complete"){
                 $.notify.progressStop();
 
-                enableZoom();
+                // enableZoom();
             }
         };
     }
 
     function setLandscape() {
-        var width = window.screen.width, height=window.screen.height;
-        if (width > height) {   // 本来就是横屏，不处理
-            return;
+        // 设置横屏
+        // var width = window.screen.width, height=window.screen.height;
+        // if (width > height) {   // 本来就是横屏，不处理
+        //     return;
+        // }
+        // var offset = (height-width)/2;
+        // $("#monitorDetailContainer").css({width: height+'px', height: width+'px', top: offset+'px', left: -offset +'px'});
+        if (cordovaService.deviceReady) {
+            screen.orientation.lock('landscape');
         }
-        var offset = (height-width)/2;
-        $("#monitorDetailContainer").css({width: height+'px', height: width+'px', top: offset+'px', left: -offset +'px'});
     }
 
     function enableZoom() {
         new window.PinchZoom.default(document.querySelector('#iframeTargetObj'), {});
     }
+
+    $scope.$on("$destroy", function (event) {
+        // 页面离开时，恢复竖屏
+        if (cordovaService.deviceReady) {
+            screen.orientation.lock('portrait');
+        }
+    });
 });

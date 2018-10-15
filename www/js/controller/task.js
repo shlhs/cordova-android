@@ -1051,7 +1051,7 @@ app.controller('TaskCreateCtrl', function ($scope, $stateParams, $timeout, route
     var userPicker = null;
     function init() {
         if($scope.linkEventId && $scope.linkEventId != '') {
-            initLinkEvent();;
+            initLinkEvent();
         } else {
             initStations();
         }   
@@ -1104,6 +1104,9 @@ app.controller('TaskCreateCtrl', function ($scope, $stateParams, $timeout, route
                 $scope.taskData.station_sn = data.station_sn;
                 $scope.taskData.events.push({"id": $scope.linkEventId });
                 $scope.taskData.devices.push({"id": data.device_id });
+                if (data.station_sn) {
+                    getDevices({sn: data.station_sn});
+                }
                 $scope.$apply();
             },
             error: function(){
@@ -1265,6 +1268,13 @@ app.controller('TaskCreateCtrl', function ($scope, $stateParams, $timeout, route
 
     $scope.createTask = function () {
         var taskData = $scope.taskData;
+        var devices = [];
+        taskData.devices.forEach(function (d) {
+            if (d.id) {
+                devices.push(d);
+            }
+        });
+        taskData.devices = devices;
 
         $.notify.progressStart();
         ajax.post({
