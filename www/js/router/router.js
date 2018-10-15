@@ -28,6 +28,13 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
 
     // 战点相关
     $stateProvider
+        .state('index.search', {
+            url: '/search',
+            params: {
+                sn: null
+            },
+            templateUrl: 'templates/site/site-select-page.html'
+        })
         .state('index.eventList', {
             url: '/siteEvents',
             params: {
