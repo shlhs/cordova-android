@@ -146,16 +146,16 @@ app.controller('SiteListCtrl', function ($scope, $http, $state, scrollerService,
     }
 
     $scope.openSiteSelectPage = function () {
-        // routerService.openPage($scope, '/templates/site/site-select-page.html',
-            // {treeData: $scope.sitesTree, onSelect: $scope.chooseSite, selectedSn: $scope.currentSite.sn});
-        $state.go('.search', {sitesTree: $scope.sitesTree, onSelect: $scope.chooseSite, selectedSn: $scope.currentSite.sn});
+        routerService.openPage($scope, 'templates/site/site-select-page.html',
+            {sitesTree: $scope.sitesTree, onSelect: $scope.chooseSite, selectedSn: $scope.currentSite.sn});
+        // $state.go('.search', {sitesTree: $scope.sitesTree, onSelect: $scope.chooseSite, selectedSn: $scope.currentSite.sn});
     };
 });
 
 app.controller('SiteTreeCtrl', function ($scope, $stateParams) {
-    $scope.onSelect = $stateParams.onSelect;
-    $scope.selectedSn = $stateParams.selectedSn;
-    $scope.data = JSON.parse(JSON.stringify($stateParams.sitesTree));
+    // $scope.onSelect = $stateParams.onSelect;
+    // $scope.selectedSn = $stateParams.selectedSn;
+    $scope.data = JSON.parse(JSON.stringify($scope.sitesTree));
     $scope.itemExpended = function(item, $event){
         item.$$isExpend = ! item.$$isExpend;
         ($scope[itemClicked] || angular.noop)({
