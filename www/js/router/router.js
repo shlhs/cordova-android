@@ -31,7 +31,9 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
         .state('index.search', {
             url: '/search',
             params: {
-                sn: null
+                sitesTree: null,
+                onSelect: null,
+                selectedSn: null,
             },
             templateUrl: 'templates/site/site-select-page.html'
         })
