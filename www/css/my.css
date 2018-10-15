@@ -2639,7 +2639,7 @@ div.pinch-zoom, div.pinch-zoom-container{
     height: 18px;
     display: inline-block;
     float: left;
-    background: url("/img/station/tree-node-group.png") 50% no-repeat;
+    background: url("../img/station/tree-node-group.png") 50% no-repeat;
     background-size: contain;
     margin-right: 8px;
 }
