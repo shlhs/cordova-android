@@ -92,7 +92,7 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, p
             // 检查站点是否在当前站点中
             var site = JSON.parse(siteStr);
             for (var i=0; i<$scope.sites.length; i++) {
-                if ($scope.sites[i].station.sn === site.station.sn) {
+                if ($scope.sites[i].station.sn === site.sn) {
                     $scope.currentSite = $scope.sites[i];
                     return;
                 }
@@ -286,7 +286,7 @@ app.controller('EventListCtrl', function ($scope, $stateParams, scrollerService,
 });
 
 
-app.controller('SiteDocsCtrl', function ($scope, $stateParams, platformService, ajax) {
+app.controller('SiteDocsCtrl', function ($scope, $stateParams, platformService, ajax, cordovaService) {
     var sn = $stateParams.sn, host = platformService.getHost();
     $scope.docList = [];
     $scope.docLoading = false;
@@ -376,6 +376,7 @@ app.controller('SiteDocsCtrl', function ($scope, $stateParams, platformService, 
             $("#slides").hide();
             window.removeEventListener("popstate", hide);
         }
+        var host = platformService.host;
         if (doc.isImage){
             $scope.currentImage = host + doc.src_link;
             $("#slides").show().on('click', function () {
@@ -387,9 +388,8 @@ app.controller('SiteDocsCtrl', function ($scope, $stateParams, platformService, 
         } else {
             if (window.android){
                 window.android.openFile(host + doc.src_link);
-            }else
+            } else
             {
-                var host = platformService.host;
                 window.open(host+doc.src_link, '_blank', 'location=no,enableViewportScale=yes,zoom=yes');
             }
         }

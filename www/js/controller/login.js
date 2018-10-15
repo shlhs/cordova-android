@@ -57,7 +57,7 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
 
     function login() {
         $scope.error = '';
-        var loginUrl = platform.url.substring(0, platform.url.indexOf(':', 6)) + ':8900/v1';
+        var loginUrl = platformService.getAuthHost();
         var data = {
             username: $scope.username,
             password: $scope.password
@@ -96,7 +96,7 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
                 toast('用户名或密码错误');
                 if ($scope.isAutoLogin) {
                     userService.setPassword('');
-                    location.href = 'login.html';
+                    $state.go('login');
                 }
 
             }

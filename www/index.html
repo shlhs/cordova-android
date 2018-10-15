@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="css/task.css">
     <script type="text/javascript" src="cordova.js"></script>
     <!--<script type="text/javascript" src="js/index.js"></script>-->
-    <!--<script type="text/javascript" src="cordova_plugins.js"></script>-->
+    <script type="text/javascript" src="cordova_plugins.js"></script>
     <script type="text/javascript" src="components/libs/jquery-2.1.4.js"></script>
     <script type="text/javascript" src="components/angular/angular.min.js"></script>
     <script type="text/javascript" src="components/angular-ui-router/release/angular-ui-router.min.js"></script>
@@ -59,8 +59,8 @@
 <script type="text/javascript" src="components/mui/js/mui.picker.min.js"></script>
 <script type="text/javascript" src="components/mui/js/mui.poppicker.js"></script>
 <script src="components/slides-playing/js/jquery.slides.js"></script>
-<!--<script src="components/pinch-zoom-js/dist/underscore.js"></script>-->
-<!--<script src="components/pinch-zoom-js/dist/pinch-zoom.js"></script>-->
+<script src="components/pinch-zoom-js/dist/underscore.js"></script>
+<script src="components/pinch-zoom-js/dist/pinch-zoom.js"></script>
 <script src="js/lib/pinchzoom/pinch-zoom.umd.js"></script>
 <script src="js/lib/imagesloaded-master/imagesloaded.pkgd.min.js"></script>
 <script src="js/lib/circleChart.es5.min.js"></script>
@@ -74,6 +74,12 @@
 //             menubutton: true   //Boolean(默认true)关闭menu按键监听
 //         }
 //     });
+    window.addEventListener('message', function(e) {
+        var frames = window.frames;
+        for(var i=0; i<frames.length; i++) {
+            frames[i].postMessage('Bearer' + (getStorageItem('accountToken') || ''), '*');
+        }
+    }, false);
 </script>
 </body>
 </html>
