@@ -38,9 +38,9 @@ app.controller('MonitorListCtrl', function ($scope, $state, $stateParams, scroll
 });
 
 
-app.controller('MonitorDetailCtrl', function ($scope, $stateParams) {
+app.controller('MonitorDetailCtrl', function ($scope, $stateParams, cordovaService) {
 
-    var url = $stateParams.url;
+    var url = $stateParams.url + "&zoom=true";
     var iframe = document.getElementById('iframe');
 
     iframe.src = url;
@@ -50,28 +50,31 @@ app.controller('MonitorDetailCtrl', function ($scope, $stateParams) {
             iframe.onload = null;
             $.notify.progressStop();
             setLandscape();
-            enableZoom();
         };
     } else {
         iframe.onreadystatechange = function(){
             if (iframe.readyState === "complete"){
                 $.notify.progressStop();
-
-                enableZoom();
+                setLandscape();
             }
         };
     }
 
     function setLandscape() {
-        var width = window.screen.width, height=window.screen.height;
-        if (width > height) {   // 本来就是横屏，不处理
-            return;
+        if (cordovaService.deviceReady) {
+            screen.orientation.lock('landscape');
         }
-        var offset = (height-width)/2;
-        $("#monitorDetailContainer").css({width: height+'px', height: width+'px', top: offset+'px', left: -offset +'px'});
+
     }
 
-    function enableZoom() {
-        new window.PinchZoom.default(document.querySelector('#iframeTargetObj'), {});
-    }
+    $scope.$on('$destroy', function (event) {
+        if (cordovaService.deviceReady) {
+            screen.orientation.unlock();
+        }
+    });
 });
+
+
+function gotoNextMonitor() {
+    console.log('gotoNextMonitor');
+}

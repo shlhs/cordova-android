@@ -1,8 +1,9 @@
 "use strict";
 
 app.service('cordovaService', function (fileService, $timeout) {
+    this.deviceReady = false;
 
-    var self=this, deviceReady = false, networkValid=true;
+    var self=this, networkValid=true;
 
     function init() {
         // alert('listen for device ready');
@@ -34,8 +35,7 @@ app.service('cordovaService', function (fileService, $timeout) {
 
 
     function onDeviceReady() {
-        // alert('deviceready');
-        deviceReady = true;
+        self.deviceReady = true;
         if (cordova && cordova.InAppBrowser)
         {
             console.log("window.open works well");
@@ -56,7 +56,7 @@ app.service('cordovaService', function (fileService, $timeout) {
     }
 
     function onNetworkState() {
-        if (deviceReady && typeof (Connection) !== 'undefined') {
+        if (self.deviceReady && typeof (Connection) !== 'undefined') {
             var networkState = navigator.connection.type;
             if (networkState !== Connection.NONE){
                 networkValid = true;
@@ -72,7 +72,7 @@ app.service('cordovaService', function (fileService, $timeout) {
     };
 
     this.getDeviceInfo = function () {      // 获取设备信息
-        if (!deviceReady){
+        if (!self.deviceReady){
             return null;
         }
         return {
