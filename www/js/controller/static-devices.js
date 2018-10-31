@@ -108,7 +108,7 @@ app.controller('StaticDeviceSubListCtrl', function ($scope, ajax) {
     init();
 });
 
-app.controller('StaticDeviceDetailCtrl', function ($scope, ajax, routerService) {
+app.controller('StaticDeviceDetailCtrl', function ($scope, ajax, routerService, platformService) {
     $scope.device = {};
     $scope.showTab = 'info';
     $scope.isPC = IsPC();
@@ -133,6 +133,13 @@ app.controller('StaticDeviceDetailCtrl', function ($scope, ajax, routerService) 
                         })
                     }
                 }
+                if (data.device_photo_src_link) {
+                    var width = window.screen.width*2, height=Math.round(width/2);
+                    data.device_photo_src_link = platformService.host + data.device_photo_src_link;
+                }
+                if (data.qr_photo_src_link) {
+                    data.qr_photo_src_link = platformService.host + data.qr_photo_src_link;
+                }
                 $scope.device = data;
                 $scope.$apply();
             }
@@ -146,7 +153,7 @@ app.controller('StaticDeviceDetailCtrl', function ($scope, ajax, routerService) 
     $scope.getDataList();
 });
 
-app.controller('StaticDeviceEditCtrl', function ($scope, ajax, routerService) {
+app.controller('StaticDeviceEditCtrl', function ($scope, ajax, routerService, platformService) {
     $scope.device = {};
     $scope.showTab = 'info';
     $scope.editObj = {};
@@ -170,6 +177,14 @@ app.controller('StaticDeviceEditCtrl', function ($scope, ajax, routerService) {
                         });
                     }
                 }
+
+                if (data.device_photo_src_link) {
+                    data.device_photo_src_link = platformService.host + data.device_photo_src_link;
+                }
+                if (data.qr_photo_src_link) {
+                    data.qr_photo_src_link = platformService.host + data.qr_photo_src_link;
+                }
+
                 $scope.deviceImage = data.device_photo_src_link;
                 data.device_photo_src_link = null;
                 $scope.device = parseDeviceData(data);

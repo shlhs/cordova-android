@@ -1,14 +1,15 @@
 <div class="mui-content" ng-cloak style="top: 92px;background-color: #fff;padding-bottom: 40px;">
     <div class="device-img-wrapper">
         <ul class="container">
-            <li class="img device-img" ng-click="chooseDeviceImage()"
+            <li class="img device-img"
                 style="background-image: url({{device.device_photo_src_link}});background-position: center;background-repeat: no-repeat; background-size: contain;">
                 <i class="icon icon-no-picture icon-36" ng-if="!device.device_photo_src_link"></i>
                 <div style="color: #999; font-size: 13px;margin-top: -4px;" ng-if="!device.device_photo_src_link">暂无图片</div>
             </li>
-            <li class="img qr" ng-click="chooseDeviceQr()">
-                <i class="icon icon-no-qr icon-36"></i>
-                <div style="color: #999; font-size: 13px;margin-top: -4px;">暂无二维码</div>
+            <li class="img qr"
+                style="background-image: url({{device.qr_photo_src_link}});background-position: center;background-repeat: no-repeat; background-size: contain;">
+                <i class="icon icon-no-qr icon-36" ng-if="!device.qr_photo_src_link"></i>
+                <div style="color: #999; font-size: 13px;margin-top: -4px;" ng-if="!device.qr_photo_src_link">暂无二维码</div>
             </li>
         </ul>
     </div>

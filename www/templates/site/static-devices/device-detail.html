@@ -3,8 +3,7 @@
         <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white" onclick="history.back()"></a>
         <h1 class="mui-title">{{device.name}}</h1>
         <div class="mui-slider-indicator mui-segmented-control mui-segmented-control-inverted sd-tabs">
-            <a class="mui-control-item active" ng-click="changeTabType('$event', 'info')"
-               ng-class="{'active': showTab=='info'}">
+            <a class="mui-control-item" ng-click="changeTabType('$event', 'info')" ng-class="{'active': showTab=='info'}">
                 <div class="tab-name">设备信息</div>
             </a>
             <a class="mui-control-item" ng-click="changeTabType($event, 'ops')" ng-class="{'active': showTab=='ops'}">
