@@ -108,8 +108,15 @@ app.controller('StaticDeviceSubListCtrl', function ($scope, ajax) {
     init();
 });
 
-app.controller('StaticDeviceDetailCtrl', function ($scope, ajax) {
+app.controller('StaticDeviceDetailCtrl', function ($scope, ajax, routerService) {
     $scope.device = {};
+    $scope.showTab = 'info';
+    $scope.isPC = IsPC();
+    $scope.useMobileGallery = window.android && window.android.openGallery;
+
+    $scope.changeTabType = function ($event, tab) {
+      $scope.showTab = tab;
+    };
 
     $scope.getDataList = function () {
         ajax.get({
@@ -131,6 +138,233 @@ app.controller('StaticDeviceDetailCtrl', function ($scope, ajax) {
             }
         })
     };
+
+    $scope.startDeviceEditor = function () {
+        routerService.openPage($scope, '/templates/site/static-devices/device-edit.html', {id: $scope.device.id});
+    };
+
+    $scope.getDataList();
+});
+
+app.controller('StaticDeviceEditCtrl', function ($scope, ajax, routerService) {
+    $scope.device = {};
+    $scope.showTab = 'info';
+    $scope.editObj = {};
+    $scope.deviceImage = null;
+
+    $scope.changeTabType = function ($event, tab) {
+        $scope.showTab = tab;
+    };
+
+    $scope.getDataList = function () {
+        ajax.get({
+            url: '/staticdevices/' + $scope.id,
+            success: function (data) {
+                if (data.properties) {
+                    data.properties = JSON.parse(data.properties);
+                    if (data.items) {
+                        data.items.forEach(function (n, i) {
+                            if (n.properties) {
+                                n.properties = JSON.parse(n.properties);
+                            }
+                        });
+                    }
+                }
+                $scope.deviceImage = data.device_photo_src_link;
+                data.device_photo_src_link = null;
+                $scope.device = parseDeviceData(data);
+                $scope.$apply();
+            }
+        })
+    };
+
+    function parseDeviceData(data) {
+        // 将设备数据中的属性由字符串转成列表
+        if (!data.properties) {
+            data.properties = [];
+        } else if (typeof data.properties === 'string') {
+            data.properties = JSON.parse(data.properties);
+        }
+        if (data.items) {
+            data.items.forEach(function (item) {
+                if (!item.properties) {
+                    item.properties = [];
+                } else if (typeof item.properties === 'string') {
+                    item.properties = JSON.parse(item.properties);
+                }
+            });
+        }
+        return data;
+    }
+
+    function stringifyDeviceData(data) {
+        // 将设备和子部件的属性由列表转成字符串
+        var tmpData = JSON.parse(JSON.stringify(data));
+        tmpData.properties = JSON.stringify(data.properties);
+        if (tmpData.items) {
+            tmpData.items.forEach(function (item) {
+               if (item.properties) {
+                   item.properties = JSON.stringify(item.properties);
+               }
+            });
+        }
+        return tmpData;
+    }
+
+    $scope.onClickEditItem = function (items, index) {
+        // 点击编辑子部件名
+        routerService.openPage($scope, '/templates/site/static-devices/item-name-edit-modal.html',
+            {
+                name: items[index].name,
+                confirm: function (name) {
+                    items[index].name = name;
+                    history.back();
+                }
+            }, {
+                hidePrev: false
+            });
+    };
+
+    $scope.onClickDeleteItem = function ($event, items ,index) {
+        // 点击删除子部件
+        $event.stopPropagation();
+        items.splice(index, 1);
+    };
+
+    $scope.onClickAddItem = function (items) {
+        // 点击增加子部件
+        routerService.openPage($scope, '/templates/site/static-devices/item-name-edit-modal.html',
+            {
+                name: '',
+                confirm: function (name) {
+                    if (name) {
+                        items.push({
+                            name: name,
+                            properties: []
+                        });
+                    }
+                    history.back();
+                }
+            }, {
+                hidePrev: false
+            });
+    };
+
+    $scope.onClickEditProperty = function (properties, index) {
+        // 点击编辑属性
+        routerService.openPage($scope, '/templates/site/static-devices/property-edit-modal.html',
+            {
+                title: properties[index].name,
+                value: properties[index].value,
+                confirm: function (title, value) {
+                    properties[index].name = title;
+                    properties[index].value = value;
+                    history.back();
+                }
+            }, {
+                hidePrev: false
+            });
+    };
+
+    $scope.onClickDeleteProperty = function ($event, properteis, index) {
+        // 点击删除属性
+        $event.stopPropagation();
+        properteis.splice(index, 1);
+    };
+
+    $scope.onClickAddProperty = function (properties) {
+        // 点击增加属性
+        routerService.openPage($scope, '/templates/site/static-devices/property-edit-modal.html',
+            {
+                title: '',
+                value: '',
+                confirm: function (title, value) {
+                    if (title && value) {
+                        properties.push({
+                            name: title,
+                            value: value
+                        });
+                    }
+                    history.back();
+                }
+            }, {
+                hidePrev: false
+            });
+    };
+
+    $scope.onClickEditDevice = function (keyTitle, keyName) {
+        // 编辑设备属性
+        routerService.openPage($scope, '/templates/site/static-devices/device-edit-modal.html',
+            {
+                title: keyTitle,
+                value: $scope.device[keyName],
+                confirm: function (value) {
+                    if (value) {
+                        $scope.device[keyName] = value;
+                    }
+                    history.back();
+                }
+            }, {
+                hidePrev: false
+            });
+
+    };
+
+    $scope.chooseImage = function (files) {     // 选择图片
+        $scope.canDelete = true;
+        for (var i = 0; i < files.length; i++) {
+            var reader = new FileReader(), file=files[i];
+            reader.readAsDataURL(file);
+            reader.onloadstart = function () {
+                //用以在上传前加入一些事件或效果，如载入中...的动画效果
+            };
+            reader.onload = function (event) {
+                var img = new Image();
+                img.src = event.target.result;
+                img.onload = function(){
+                    var quality =  75;
+                    var dataUrl = imageHandler.compress(this, 75, file.orientation).src;
+                    $scope.deviceImage = dataUrl;
+                    $scope.device.device_photo_src_link = dataUrl;
+                    $scope.$apply();
+                };
+            };
+        }
+    } ;
+
+    $scope.chooseDeviceImage = function () {
+        // 上传设备图片
+
+    };
+
+    $scope.chooseDeviceQr = function () {
+        // 上传二维码
+    };
+
+    $scope.save = function () {
+        $.notify.progressStart();
+        var params = stringifyDeviceData($scope.device);
+        ajax.patch({
+            url: '/stations/' + $scope.device.station_sn + '/staticdevices/' + $scope.device.id,
+            data: JSON.stringify(params),
+            contentType:"application/json",
+            headers: {
+                Accept: "application/json"
+            },
+            success: function (response) {
+                $.notify.progressStop();
+                $.notify.info('更新成功');
+                response.device_photo_src_link = null;      // 默认使用$scope.deviceImage显示图片
+                $scope.device = parseDeviceData(response);
+            },
+            error: function () {
+                $.notify.progressStop();
+                $.notify.error('更新失败');
+                console.log('error');
+            }
+        })
+    };
+
 
     $scope.getDataList();
 });

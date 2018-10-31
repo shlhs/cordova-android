@@ -733,7 +733,6 @@ background-image: url("../img/light/64X64/profile.png");
 .bg-header .text-white{
     color: #fff;
 }
-
 /*    notify    */
 .mui-popup-backdrop.notify{
     background-color: transparent;
@@ -2256,9 +2255,58 @@ color: #a7a7a7;
     position: relative;
 }
 .properties-group {
-    background-color: #ffffff;
     margin-bottom: 8px;
-    padding-left: 20px;
+    padding: 10px 12px;
+    font-size: 14px;
+}
+.properties-group li {
+    background-color: #f4f4f4;
+    margin-bottom: 2px;
+    padding: 6px 10px;
+}
+.properties-group li .title {
+    color: #0091E0;
+    position: absolute;
+}
+.properties-group li .value {
+    float: right;
+    color: #666666;
+    min-height: 22px;
+}
+.properties-group.is-edit li {
+    position: relative;
+    margin-right: 22px;
+}
+.properties-group.is-edit li .icon-delete {
+    position: absolute;
+    right: -32px;
+    top: 4px;
+    cursor: pointer;
+    border: transparent 4px solid;
+    width: 24px;
+    height: 24px;
+}
+.sub-device-card .card-header{
+    margin: -20px 0 -20px 0;
+    border-bottom: none !important;
+}
+.device-edit-btn {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    width: 48px;
+    height: 48px;
+    background-color: #586BF3;
+    border-radius: 50%;
+    box-shadow: 0 4px 4px #b4bcf5;
+    cursor: pointer;
+    text-align: center;
+}
+.device-edit-btn .icon-edit {
+    background: url("../img/light/64X64/edit.png") 50% no-repeat;
+    background-size: contain;
+    margin-top: 12px;
+    margin-left: 2px;
 }
 .entrance-list>li {
     margin: 9px 0 !important;
@@ -2270,9 +2318,34 @@ color: #a7a7a7;
     height: 44px;
     line-height: 44px;
     padding-left: 12px;
-    font-size: 18px;
+    font-size: 14px;
     color: rgb(51,51,51);
     border-bottom: rgba(220, 220, 220, 0.51) 1px solid;
+}
+.device-detail-title.is-edit {
+    padding-right: 30px;
+}
+.device-detail-title.is-edit label {
+    position: relative;
+}
+.device-detail-title.is-edit label .icon-delete {
+    position: absolute;
+    right: -32px;
+    top: -4px;
+    cursor: pointer;
+    border: transparent 4px solid;
+    width: 24px;
+    height: 24px;
+}
+.device-detail-title.is-edit {
+    clear: both;
+    content: '';
+    display: block;
+}
+.is-edit .add-property-btn {
+    float: right;
+    color: #4bd299;
+    cursor: pointer;
 }
 .site-search-comp {
     width: 100%;

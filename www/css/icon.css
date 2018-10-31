@@ -165,6 +165,15 @@
 .icon-camera{
     background-image: url("../img/dark/64X64/icon-camera.png");
 }
+.icon-camera-blue{
+    background-image: url("../img/dark/64X64/icon-camera-blue.png");
+}
+.icon-no-picture {
+    background-image: url("../img/dark/64X64/no-picture.png");
+}
+.icon-no-qr {
+    background-image: url("../img/dark/64X64/no-qr.png");
+}
 .icon-usb{
     background-image: url("../img/dark/64X64/icon-usb.png");
 }
@@ -201,4 +210,13 @@
 }
 .icon-search {
     background-image: url("../img/dark/32X32/search-grey.png");
+}
+.icon-delete {
+    background-image: url("../img/dark/64X64/delete-circle-o.png");
+}
+.icon-qr-blank {
+    background-image: url("../img/dark/64X64/no-qr.png");
+}
+.icon-image-blank {
+    background-image: url("../img/dark/64X64/no-picture.png");
 }
