@@ -807,10 +807,10 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
             url: '/stations/' + $scope.sn,
             async: false,
             success: function (data) {
-                if(data.pfv_settings_f && data.pfv_settings_f != '') {
+                if(data.pfv_settings_f && data.pfv_settings_f != '' && data.pfv_settings_f != '[]') {
                     pfvSettingsF = JSON.parse(data.pfv_settings_f);
                 }
-                if(data.pfv_settings_r && data.pfv_settings_r != '') {
+                if(data.pfv_settings_r && data.pfv_settings_r != '' && data.pfv_settings_r != '[]') {
                     pfvSettingsR = JSON.parse(data.pfv_settings_r);
                 }
             },
