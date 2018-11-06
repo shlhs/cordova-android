@@ -1,0 +1,14 @@
+<div class="page page-fade" ng-controller="BaseGalleryCtrl" id="#handlePage">
+    <div id="slides" class="slides">
+        <div class="img-container" ng-repeat="image in images">
+            <div>
+                <img ng-src="{{image}}" ng-click="hide()">
+            </div>
+        </div>
+    </div>
+    <div class="weui-gallery__opr" ng-if="canDelete" style="z-index: 100;">
+        <a href="javascript:" class="weui-gallery__del" ng-click="deleteImage()">
+            <i class="weui-icon-delete weui-icon_gallery-delete fa fa-trash-o"></i>
+        </a>
+    </div>
+</div>

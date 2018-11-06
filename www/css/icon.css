@@ -220,3 +220,7 @@
 .icon-image-blank {
     background-image: url("../img/dark/64X64/no-picture.png");
 }
+.icon-static-device {
+    background-image: url("../img/static-device-icon.png");
+}
+

@@ -48,7 +48,6 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
         $timeout(function () {
             div.remove();
         }, 2000);
-
     }
 
     function login() {
@@ -78,7 +77,6 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
             },
             crossDomain: true,
             success: function (data) {
-
                 var result = KJUR.jws.JWS.verify(data.token, 'zjlhstest');
                 if (result) {
                     userService.setAccountToken(data.token);

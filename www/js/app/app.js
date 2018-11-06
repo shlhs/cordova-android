@@ -105,8 +105,25 @@ app.service('userService', function ($rootScope) {
 
     this.getCompany = function () {
         return getStorageItem('company') ? JSON.parse(getStorageItem('company')) : null;
-
     };
+
+    this.getTaskCompanyId = function () {
+        // 获取任务时需要用到的用户id
+        var perms = JSON.parse(localStorage.getItem("user")).permissions;
+        for (var i=0; i<perms.length; i++) {
+            var auth = perms[i].authrity_name;
+            //运维公司
+            if (auth.startsWith("COMPANY_OPS_COMPANY_VIEWCOMPANY")) {
+                return auth.substring("COMPANY_OPS_COMPANY_VIEWCOMPANY".length);
+            }
+            //用户公司
+            if (auth.startsWith("USER_COMPANY_USERUSER_COMPANY")) {
+                return 'user' + auth.substring("USER_COMPANY_USERUSER_COMPANY".length);
+            }
+        }
+        return null;
+    };
+
     this.user = this.getUser();
     this.username = this.getUsername();
     this.password = this.getPassword();
@@ -203,7 +220,6 @@ app.service('ajax', function ($rootScope, platformService, userService, $http) {
     $rootScope.user = null;
 
     $rootScope.getCompany = function(callback) {
-        console.log(platformService.host + '/user/' + username + '/opscompany');
         $.ajax({
             url: platformService.host + '/user/' + username + '/opscompany',
             xhrFields: {
@@ -230,6 +246,7 @@ app.service('ajax', function ($rootScope, platformService, userService, $http) {
     function request(option) {
         if (option.url.indexOf("http://") !== 0){
             option.url = platformService.host + option.url;
+            // option.url = 'http://127.0.0.1:8099/v1' + option.url;
         }
         var headers = $.extend({
             Authorization: userService.getAccountToken(),
@@ -492,4 +509,54 @@ app.controller('ImageZoomCtrl', function ($scope, $timeout) {
         $scope.headerVisible = !$scope.headerVisible;
     };
 
+});
+
+function importImage(imageData, filename) {    // 从Android读取的图片
+    angular.element("#handlePage").scope().addImagesWithBase64(imageData, filename);
+}
+
+function deleteImage (filename) {       // Android手机上删除所选图片
+    angular.element("#handlePage").scope().deleteImageFromMobile(filename);
+}
+
+app.controller('BaseGalleryCtrl', function ($scope, $stateParams, $timeout) {
+    // $scope.canDelete = false;
+    // $scope.index = $stateParams.index;
+    // $scope.images = $stateParams.images;
+    $scope.show = false;
+
+    $scope.deleteImage = function() {       // 删除图片
+        var index = $("#slides .slidesjs-pagination a.active").parent().index();
+        if (index < 0) {
+            index = 0;
+        }
+        if ($scope.onDelete) {
+            $scope.onDelete(index);
+        }
+        history.back();
+    };
+
+
+    function initSlider() {
+        if ($scope.images.length>1){
+
+            var slide = $("#slides");
+            slide.slidesjs({
+                start: $scope.index,
+                width: window.screen.width,
+                play: {
+                    active: true,
+                    swap: true
+                }
+            });
+        }
+        $scope.$apply();
+    }
+
+    $timeout(initSlider, 100);
+
+
+    $scope.hide = function () {
+        history.back();
+    };
 });

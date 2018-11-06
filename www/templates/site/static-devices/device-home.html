@@ -13,7 +13,6 @@
     <link rel="stylesheet" href="/css/animate.css">
     <link rel="stylesheet" href="/components/mui/css/icons-extra.css">
     <link rel="stylesheet" href="/css/setting.css">
-    <link rel="stylesheet" href="/css/static-device.css">
     <!--<script type="text/javascript" src="/cordova.js"></script>-->
     <!--<script type="text/javascript" src="/cordova_plugins.js"></script>-->
     <script type="text/javascript" src="/components/libs/jquery-2.1.4.js"></script>
@@ -30,9 +29,9 @@
         <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
         <h1 class="mui-title">设备档案</h1>
     </header>
-    <div class="mui-content" ng-cloak>
+    <div class="mui-content" ng-cloak style="padding-left: 8px;background-color: #fff;">
         <div ng-if="!isLoading && !loadingFailed">
-            <device-tree-view device-list="deviceDatas" goto-device="gotoDevice"></device-tree-view>
+            <device-tree-view device-list="deviceDatas" click-callback="gotoDevice"></device-tree-view>
         </div>
         <div class="page-alert-wrapper" ng-if="isLoading">
             <div class="page-alert">
