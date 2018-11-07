@@ -79,7 +79,7 @@
     position: relative;
 }
 
-.timeout.task-status{
+.timeout{
     color: red;
 }
 .task-item.closed .main-body{

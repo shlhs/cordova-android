@@ -10,6 +10,7 @@
 
     <!--标准mui.css-->
     <link rel="stylesheet" href="../../components/mui/css/mui.min.css">
+    <link rel="stylesheet" href="../../components/mui/css/mui.picker.min.css">
     <link rel="stylesheet" href="../../components/libs/font-awesome-4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="../../css/my.css" />
     <link rel="stylesheet" href="../../css/icon.css" />
@@ -124,12 +125,12 @@
                         <li>
                             <label class="title">截止时间：</label><span class="value">{{taskData.expect_complete_time}}</span>
                         </li>
-                        <li>
+                        <li ng-if="taskData.desp">
                             <label class="title">任务描述：</label><span class="value">{{taskData.desp}}</span>
                         </li>
                     </ul>
                     <ul class="info-group" style="padding-top: 8px;border-top: #eee 1px solid;">
-                        <li>
+                        <li ng-if="taskData.station_sn">
                             <i class="icon icon-xs icon-site-blue mui-pull-left"></i>
                             <span class="link">站点:</span>
                             <a class="link" href="javascript:;" ng-click="openMap()" ng-if="taskData.station_sn">{{taskData.station_name}}</a>
@@ -141,7 +142,6 @@
                             <i class="icon icon-xs icon-device-grey mui-pull-left"></i>
                             <span class="mui-pull-left" style="color: rgb(141,140,143);">检修设备:</span>
                             <div class="device-list">
-                                    <!--<a class="link device" href="/templates/site/device-monitor.html?deviceSn={{record.device.sn}}&deviceName={{record.device.name}}">{{record.device.name}}</a>-->
                                 <a class="link device" ng-click="gotoStaticDeviceDetail(record.device)">{{record.device.name}}</a>
                             </div>
                         </li>
@@ -212,6 +212,10 @@
                 <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-btn-outlined mui-control-item task-btn" style="margin-bottom: 6px;"
                         ng-click="taskHandler.acceptTaskAssign()">接受</button>
             </a>
+            <a class="mui-tab-item mui-active mui-segmented-control-vertical" href="#" style="padding: 8px;">
+                <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-btn-outlined mui-control-item task-btn" style="margin-bottom: 6px;"
+                        ng-click="taskHandler.transferHandler()" id="taskTransferBtn">转给他人</button>
+            </a>
             <a class="mui-tab-item mui-active mui-segmented-control-vertical" href="#">
                 <button type="button" class="mui-btn mui-btn-danger mui-btn-block mui-btn-outlined mui-control-item  task-btn"
                         ng-click="taskHandler.refuseTaskAssign()">拒绝</button>
@@ -266,6 +270,7 @@
 <script src="../../components/baidu/map/MarkerManager-1.2.min.js"></script>
 <script src="../../js/my/notify.js"></script>
 <script src="../../js/controller/static-devices.js"></script>
+<script src="../../components/mui/js/mui.picker.min.js"></script>
 <script>
     mui.init();
 
@@ -302,6 +307,10 @@
             .state('task.reject', {
                 url: 'reject',
                 templateUrl: '/templates/task/task-close-reject.html'
+            })
+            .state('task.transfer', {
+                url: 'transfer',
+                templateUrl: '/templates/task/task-transfer.html'
             })
         ;
         $urlRouterProvider.otherwise('/');

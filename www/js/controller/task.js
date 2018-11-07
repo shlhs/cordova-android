@@ -5,7 +5,7 @@
  */
 
 
-var TaskAction = {Create: 0, Accept: 1, Refuse: 2, Assign: 3, Go: 4, Apply: 5, Reject: 6, Close: 7, Comment: 8, Grab: 9, Arrive: 10, Update: 11};
+var TaskAction = {Create: 0, Accept: 1, Refuse: 2, Assign: 3, Go: 4, Apply: 5, Reject: 6, Close: 7, Comment: 8, Grab: 9, Arrive: 10, Update: 11, Transfer: 12};
 var TaskStatus = {ToAccept: 1, ToAssign: 2, Accepted: 3, ToClose: 4, Closed: 5, Competition: 6, Coming: 7, Arrived: 8};
 function formatTaskHistoryDesp(taskHistory) {     // 根据任务的action_id处理任务描述
     switch (taskHistory.action_id){
@@ -44,6 +44,9 @@ function formatTaskStatusName(task) {   // 根据任务状态转换任务描述
             break;
         case TaskStatus.ToAccept:
             stage = '待接单';
+            break;
+        case TaskStatus.ToAssign:
+            stage = '待指派';
             break;
         default:
             stage = '待处理';
@@ -141,8 +144,8 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, ajax, $state
                 },
                 {
                     id: 'my_tasks',
-                    name: '所有任务',
-                    templateUrl: '/templates/task/task-list.html',
+                    name: '我的待办',
+                    templateUrl: '/templates/task/task-todo-list.html',
                     icon: 'nav-all-tasks'
                 }
             );
@@ -151,8 +154,8 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, ajax, $state
             $scope.navMenus.push(
                 {
                     id: 'my_tasks',
-                    name: '所有任务',
-                    templateUrl: '/templates/task/task-list.html',
+                    name: '我的待办',
+                    templateUrl: '/templates/task/task-todo-list.html',
                     icon: 'nav-all-tasks'
                 }
             );
@@ -191,7 +194,7 @@ app.controller('TaskBaseCtrl', function ($scope, ajax, userService) {
         //data.expect_complete_time
     };
 
-    $scope.commonPostAction = function(taskId, actionType, description, images, cb) {
+    $scope.commonPostAction = function(taskId, actionType, description, images, transferUser, cb) {
         var data = {};
         if (description){
             data.description = description;
@@ -206,6 +209,30 @@ app.controller('TaskBaseCtrl', function ($scope, ajax, userService) {
         ajax.post({
             url: '/opstasks/' + company.id + '/' + taskId + '/actions?action_type=' + actionType,
             data: JSON.stringify(data),
+            contentType:"application/json",
+            headers: {
+                Accept: "application/json"
+            },
+            timeout: 30000,
+            success: function (data) {
+                $.notify.progressStop();
+                $.notify.info('操作成功');
+                cb && cb(data);
+            },
+            error: function (data) {
+                $.notify.progressStop();
+                console.log('post action fail');
+                $.notify.error('操作失败');
+            }
+        });
+    };
+
+    $scope.commonPostActionWithParams = function(taskId, actionType, params, cb) {
+        var companyId = userService.getTaskCompanyId();
+        $.notify.progressStart();
+        ajax.post({
+            url: '/opstasks/' + companyId + '/' + taskId + '/actions?action_type=' + actionType,
+            data: params ? JSON.stringify(params) : '{}',
             contentType:"application/json",
             headers: {
                 Accept: "application/json"
@@ -458,99 +485,114 @@ app.controller('GrabTaskCtrl', function ($scope, userService, ajax) {
 });
 
 app.controller('TaskTodoListCtrl', function ($scope, $rootScope, scrollerService, userService, ajax, TaskStatus) {
+    var allTasks = [];
+    var username = userService.user.account;
     $scope.TaskStatus = TaskStatus;
     $scope.tasks = [];
+    $scope.showType = 'todo';    // all, open, closed, todo
     $scope.isLoading = true;
-    var username=userService.username;
+    $scope.loadingFailed = false;
+    $scope.todoCount = 0;
 
     $scope.getDataList = function() {
-        scrollerService.initScroll('#my_tasks', $scope.getDataList);
-        // var company = userService.company;
-        // if (company && company.length !== 1){
-        //     $scope.isLoading = false;
-        //     $scope.$apply();
-        //     return;
-        // }
-        // if (!company){
-        //     $rootScope.login($scope.getDataList);
-        //     return;
-        // }
+        scrollerService.initScroll("#taskList", $scope.getDataList);
+        $scope.isLoading = true;
+        $scope.loadingFailed = false;
+
         var companyId = userService.getTaskCompanyId();
         ajax.get({
-            url: "/opstasks/" + companyId,
-            data: {
-                handler: username
+            url: "/opstasks/history/" + companyId,
+            data:{
+                page_size: 100,
+                page_index: 0,
+                s_echo: 0
             },
-            success: function (result) {
+            success: function(result) {
                 $scope.isLoading = false;
-                if (!result || !result.length) {
-                    $scope.$apply();
-                    return;
+                result.aaData.sort(sortByUpdateTime);
+                var tasks = result.aaData, task = null;
+                for (var i in tasks){
+                    task = tasks[i];
+                    formatTaskStatusName(task);
+                    task.isTimeout = $scope.taskTimeout(task);
                 }
-                for (var i in result){
-                    formatTaskStatusName(result[i]);
-                    result[i].isTimeout = $scope.taskTimeout(result[i]);
-                }
-                $scope.tasks = result;
-                $scope.tasks.sort(sortByUpdateTime);
+                allTasks = result.aaData;
+                $scope.changeTaskType(null, $scope.showType);
                 $scope.$apply();
             },
-            error: function (a, b, c) {
+            error: function (a,b,c) {
                 $scope.isLoading = false;
+                $scope.loadingFailed = true;
                 $scope.$apply();
-                $.notify.error('读取待办失败');
             }
         });
     };
 
     $scope.updateTask = function (taskData) {
-        var task = null, existed = false;
-         for (var i in $scope.tasks){
-             task = $scope.tasks[i];
-             if (parseInt(task.id) == parseInt(taskData.id)){
-                 existed = true;
-                 if (taskData.current_handler != username || taskData.stage_id == TaskStatus.Closed){
-                     $scope.tasks.splice(i, 1);
-                 }else{
-                     $scope.tasks[i] = taskData;
-                 }
-                 $scope.tasks.sort(sortByUpdateTime);
-                 break;
-             }
-         }
-         if (!existed){     // 如果不存在，则增加一条
-             $scope.tasks.unshift(taskData);
-         }
+        console.log('TaskHistoryCtrl updateTask');
+        // 查找任务是否存在
+        var exist = false;
+        for (var i in allTasks){
+            if (allTasks[i].id === taskData.id){
+                allTasks[i] = taskData;
+                exist = true;
+                break;
+            }
+        }
+        if (!exist){        // 如果不存在，则加入到最前面
+            allTasks.unshift(taskData);
+        }
+        allTasks.sort(sortByUpdateTime);
+        $scope.changeTaskType(null, $scope.showType);
         $scope.$apply();
     };
 
-    function postAction(taskId, action) {
-        $scope.commonPostAction(taskId, action, '', null, function (data) {
-            $scope.taskData = data;
-            for (var i in $scope.tasks){
-                if ($scope.tasks[i].id == taskId){
-                    $scope.tasks[i] = formatTaskStatusName(data);
-                    break;
-                }
-            }
-            $scope.$apply();
-        });
+    function isTodoTask(task) {
+        if (task.stage_id !== TaskStatus.Closed && task.current_handler === username){
+            return true;
+        }
+        return false;
     }
 
-    $scope.taskHandler = {
-        gotoSpot: function ($event, taskId) {
-            $event.stopPropagation();
-            $event.preventDefault();
-            postAction(taskId, TaskAction.Go);
-        },
-        setArrived: function ($event, taskId, siteLongitude, siteLatitude){
-            $event.stopPropagation();
-            $event.preventDefault();
-            // 需要先检查是否真的已到现场
-            $scope.checkActuallyArrived(taskId, siteLongitude, siteLatitude, postAction);
+    $scope.changeTaskType = function ($event, type) {
+        console.log('change type');
+        var showTasks = [], task = null, todoCount = 0;
+
+        if (type === 'all'){
+            showTasks = allTasks;
         }
+        else if (type === 'closed'){
+            for(var i in allTasks){
+                task = allTasks[i];
+                if (task.stage_id === TaskStatus.Closed){
+                    showTasks.push(task);
+                }
+            }
+        }
+        else if (type === 'todo'){
+            for(var i in allTasks){
+                task = allTasks[i];
+                if (task.stage_id !== TaskStatus.Closed && task.current_handler === username){
+                    showTasks.push(task);
+                }
+            }
+            $scope.todoCount = showTasks.length;
+        }
+        else{
+            for (var i in allTasks){
+                task = allTasks[i];
+                if (task.stage_id !== TaskStatus.Closed){
+                    showTasks.push(task);
+                }
+            }
+        }
+        $scope.tasks = showTasks;
+        $scope.showType = type;
     };
-    // $scope.getDataList();
+
+    $scope.gotoTaskHistory = function () {
+        window.location.href = '/templates/task/task-list.html';
+    }
 });
 
 app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, userService, ajax) {
@@ -565,15 +607,6 @@ app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, us
 
     $scope.getDataList = function() {
         scrollerService.initScroll("#taskList", $scope.getDataList);
-        // var company = userService.company;
-        // if (company && (company.length > 1 || company.length === 0)){
-        //     $scope.isLoading = false;
-        //     return;
-        // }
-        // if (null === company){
-        //     // $rootScope.login($scope.getDataList);
-        //     return;
-        // }
         $scope.isLoading = true;
         $scope.loadingFailed = false;
 
@@ -668,6 +701,7 @@ app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, us
          $scope.showType = type;
     };
 
+    $scope.getDataList();
 });
 
 function updateAfterGrab(strArgs) {     // 在任务详情页抢单后，需要将任务从主页中删除
@@ -847,6 +881,9 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
             }
         }
         $scope.history = formattedList;
+        if (taskData.stage_id === TaskStatus.ToAccept) {
+            initMembers();
+        }
     }
 
     function cloneTaskList(){
@@ -950,6 +987,8 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
                 }
             });
         },
+        transferHandler: function () {
+        },
         gotoSpot: function () {     // 去现场
             $scope.postAction(TaskAction.Go);
         },
@@ -997,6 +1036,7 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
     };
 
     $scope.gotoDeviceHandlerPage = function () {
+        // 打开设备列表页
         routerService.openPage($scope, '/templates/task/device-list.html',
             {
                 task: $scope.taskData
@@ -1011,6 +1051,66 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
             id: device.id
         });
     };
+
+
+    var userPicker = null;
+    function initMembers() {
+
+        function _format(data, idKey, nameKey) {
+            var d = null;
+            if (typeof (idKey) === 'undefined'){
+                idKey = 'id';
+            }
+            if (typeof (nameKey) === 'undefined'){
+                nameKey = 'name'
+            }
+            for(var i=0; i<data.length; i++){
+                d = data[i];
+                d['value'] = d[idKey];
+                d['text'] = d[nameKey];
+            }
+        }
+        if (null === userPicker) {
+            ajax.get({
+                url: '/opscompanies/' + companyId + '/members',
+                success: function (data) {
+                    // 去掉当前处理人
+                    var currentHandler = $scope.taskData.current_handler;
+                    data.forEach(function (user, i) {
+                       if (user.account === currentHandler) {
+                           data.splice(i, 1);
+                           return false;
+                       }
+                    });
+                    $scope.memberList = data;
+                    _format(data, 'account');
+                    if (!userPicker){
+                        userPicker = new mui.PopPicker();
+                        var taskTypeButton = document.getElementById('taskTransferBtn');
+                        taskTypeButton.addEventListener('click', function(event) {
+                            userPicker.show(function(items) {
+                                // $scope.handlerName = items[0].text;
+                                // $scope.taskData.current_handler = items[0].value;
+                                // $scope.$apply();
+                                $scope.commonPostActionWithParams($scope.taskData.id, TaskAction.Transfer, {transfer_user: items[0].value}, function (data) {
+                                    $scope.taskData = formatTaskStatusName(data);
+                                    // 调用Android接口
+                                    window.android && window.android.onJsCallbackForPrevPage('updateTask', JSON.stringify(data));
+                                    formatTaskStatus();
+                                    getTaskHistory();
+                                });
+                            });
+                        }, false);
+                    }
+                    userPicker.setData(data);
+                },
+                error: function () {
+                    console.log('获取站点成员失败');
+                }
+            });
+
+        }
+    }
 });
 
 app.controller('TaskHandlerUpload', function ($scope, $timeout) {
@@ -1143,6 +1243,16 @@ app.controller('TaskGalleryCtrl', function ($scope, $stateParams, $timeout) {
 });
 
 app.controller('TaskCloseRejectCtrl', function ($scope) {      //驳回关闭请求
+
+    $scope.submit = function () {
+
+        $scope.postAction(TaskAction.Reject, $scope.description, null, function () {
+            history.back();
+        });
+    };
+});
+
+app.controller('TaskTransferCtrl', function ($scope) {      //驳回关闭请求
 
     $scope.submit = function () {
 
