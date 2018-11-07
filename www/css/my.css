@@ -1277,7 +1277,7 @@ a:hover.slidesjs-stop {
 .info-group>li{
     list-style: none;
     line-height: 1.6em;
-    padding: 5px 2px;
+    padding: 5px 2px 2px 2px;
 }
 .info-group>li:after {
     display: block;

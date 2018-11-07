@@ -194,7 +194,7 @@ app.controller('TaskBaseCtrl', function ($scope, ajax, userService) {
         //data.expect_complete_time
     };
 
-    $scope.commonPostAction = function(taskId, actionType, description, images, transferUser, cb) {
+    $scope.commonPostAction = function(taskId, actionType, description, images, cb) {
         var data = {};
         if (description){
             data.description = description;
@@ -501,7 +501,7 @@ app.controller('TaskTodoListCtrl', function ($scope, $rootScope, scrollerService
 
         var companyId = userService.getTaskCompanyId();
         ajax.get({
-            url: "/opstasks/history/" + companyId,
+            url: "/opstasks/todo",
             data:{
                 page_size: 100,
                 page_index: 0,
@@ -730,6 +730,8 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
     $scope.imageScope = [1,2,3,4,5,6,7,8,9];
     $scope.history = [];
     $scope.lastHistory = null;
+    $scope.checkedDeviceCount = 0;
+    $scope.xunjianStage = '';
 
     var id = GetQueryString('id'), username=userService.username;
     $scope.taskData = {};
@@ -777,7 +779,6 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
             drawMap($scope.taskData);
         }
         formatTaskStatus();
-
     }
 
     function drawMap(taskData) {
@@ -842,6 +843,29 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
         taskData.finishIndex = finishIndex;
         taskData.progress = progress + '%';
         $scope.canHandle = (taskData.current_handler === username) && canHandle;
+
+        var checkedCount = 0;
+        taskData.device_record.forEach(function (r) {
+            if (r.status !== '未处理') {
+                checkedCount += 1;
+            }
+        });
+        $scope.checkedDeviceCount = checkedCount;
+        // 设置巡检的阶段
+        $scope.xunjianStage = '';
+        var stageId= taskData.stage_id;
+        if (taskData.task_type_id === 11) {
+            switch (stageId) {
+                case TaskStatus.Arrived:
+                    $scope.xunjianStage = 'toHandle';
+                    break;
+                case TaskStatus.ToClose:
+                    $scope.xunjianStage = 'toClose';
+                    break;
+                default:
+                    $scope.xunjianStage = 'toStart';
+            }
+        }
         return taskData;
     }
 
@@ -881,8 +905,8 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
             }
         }
         $scope.history = formattedList;
-        if (taskData.stage_id === TaskStatus.ToAccept) {
-            initMembers();
+        if (taskData.stage_id === TaskStatus.ToAccept || taskData.stage_id === TaskStatus.ToAssign) {
+            setTimeout(initMembers, 200);
         }
     }
 
@@ -1053,7 +1077,6 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
     };
 
 
-    var userPicker = null;
     function initMembers() {
 
         function _format(data, idKey, nameKey) {
@@ -1070,46 +1093,46 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
                 d['text'] = d[nameKey];
             }
         }
-        if (null === userPicker) {
-            ajax.get({
-                url: '/opscompanies/' + companyId + '/members',
-                success: function (data) {
-                    // 去掉当前处理人
-                    var currentHandler = $scope.taskData.current_handler;
+        var userPicker = null;
+        ajax.get({
+            url: '/opscompanies/' + companyId + '/members',
+            success: function (data) {
+                // 去掉当前处理人
+                var currentHandler = $scope.taskData.current_handler;
+                var stageId = $scope.taskData.stage_id;
+                if (stageId === TaskStatus.ToAccept) {
+                    // 如果是待接单，那么不能将任务转给自己，如果是待指派，可以将任务指派给自己
                     data.forEach(function (user, i) {
-                       if (user.account === currentHandler) {
-                           data.splice(i, 1);
-                           return false;
-                       }
+                        if (user.account === currentHandler) {
+                            data.splice(i, 1);
+                            return false;
+                        }
                     });
-                    $scope.memberList = data;
-                    _format(data, 'account');
-                    if (!userPicker){
-                        userPicker = new mui.PopPicker();
-                        var taskTypeButton = document.getElementById('taskTransferBtn');
-                        taskTypeButton.addEventListener('click', function(event) {
-                            userPicker.show(function(items) {
-                                // $scope.handlerName = items[0].text;
-                                // $scope.taskData.current_handler = items[0].value;
-                                // $scope.$apply();
-                                $scope.commonPostActionWithParams($scope.taskData.id, TaskAction.Transfer, {transfer_user: items[0].value}, function (data) {
-                                    $scope.taskData = formatTaskStatusName(data);
-                                    // 调用Android接口
-                                    window.android && window.android.onJsCallbackForPrevPage('updateTask', JSON.stringify(data));
-                                    formatTaskStatus();
-                                    getTaskHistory();
-                                });
-                            });
-                        }, false);
-                    }
-                    userPicker.setData(data);
-                },
-                error: function () {
-                    console.log('获取站点成员失败');
                 }
-            });
-
-        }
+                $scope.memberList = data;
+                _format(data, 'account');
+                if (!userPicker){
+                    userPicker = new mui.PopPicker();
+                    var taskTypeButton = document.getElementById('taskTransferBtn');
+                    taskTypeButton.addEventListener('click', function(event) {
+                        userPicker.show(function(items) {
+                            var action = stageId === TaskStatus.ToAccept ? TaskAction.Transfer : TaskAction.Assign;
+                            $scope.commonPostActionWithParams($scope.taskData.id, action, {transfer_user: items[0].value}, function (data) {
+                                $scope.taskData = formatTaskStatusName(data);
+                                // 调用Android接口
+                                window.android && window.android.onJsCallbackForPrevPage('updateTask', JSON.stringify(data));
+                                formatTaskStatus();
+                                getTaskHistory();
+                            });
+                        });
+                    }, false);
+                }
+                userPicker.setData(data);
+            },
+            error: function () {
+                console.log('获取站点成员失败');
+            }
+        });
     }
 });
 
@@ -1251,17 +1274,6 @@ app.controller('TaskCloseRejectCtrl', function ($scope) {      //驳回关闭请
         });
     };
 });
-
-app.controller('TaskTransferCtrl', function ($scope) {      //驳回关闭请求
-
-    $scope.submit = function () {
-
-        $scope.postAction(TaskAction.Reject, $scope.description, null, function () {
-            history.back();
-        });
-    };
-});
-
 
 app.controller('TaskCreateCtrl', function ($scope, $timeout, userService, ajax) {
     var company = userService.company;

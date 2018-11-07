@@ -78,12 +78,12 @@
 </head>
 
 <body class="mui-android mui-android-5 mui-android-5-1 mui-android-5-1-1 mui-segmented-control-vertical" ng-app="myApp" ng-controller="TaskBaseCtrl">
-<header class="mui-bar bg-header" style="height: 120px;">
+<div ng-controller="TaskDetailCtrl" ng-cloak id="taskDetail">
+<header class="mui-bar bg-header" ng-style="{height: taskData.stage_id != TaskStatus.ToAssign ? '120px' : '60px'}">
     <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
     <h1 class="mui-title" id="head_title">任务详情</h1>
 </header>
-<div  ng-controller="TaskDetailCtrl" ng-cloak style="margin-top:50px;" id="taskDetail">
-
+<div style="margin-top:50px;">
     <div class="steps" ng-if="taskData.stage_id != TaskStatus.ToAssign">
         <div class="step" ng-class="{'active': taskData.activeIndex==0, 'finished': taskData.finishIndex>=0}">
             <div class="icon"></div>
@@ -106,8 +106,24 @@
         </div>
     </div>
     <!-- 正在处理的任务单 -->
-    <div class="mui-content" style="top: 120px;" ng-class="{'page-bottom': canHandle}">
-        <div ng-if="taskData.stage_id==2">
+    <div class="mui-content" ng-style="{top: taskData.stage_id != TaskStatus.ToAssign ? '120px' : '60px', backgroundColor: 'transparent'}" ng-class="{'page-bottom': canHandle}">
+        <div class="xunjian-devices-area horizontal" ng-if="xunjianStage === 'toStart'">
+            <div class="name">应检设备数</div>
+            <div class="count">{{taskData.device_record.length}}</div>
+            <button ng-click="gotoDeviceHandlerPage()">查看设备详情</button>
+        </div>
+        <div class="xunjian-devices-area vertical" ng-if="xunjianStage === 'toHandle' || xunjianStage==='toClose' ">
+            <div style="height: 80px;">
+                <div class="item">
+                    <span class="count">{{taskData.device_record.length}}</span>
+                    <span class="name">应检设备数</span>
+                </div>
+                <div class="item">
+                    <span class="count" style="color: #FD6D27;">{{checkedDeviceCount}}</span>
+                    <span class="name">已检设备数</span>
+                </div>
+            </div>
+            <button ng-click="gotoDeviceHandlerPage()">{{xunjianStage === 'toHandle' ? '去检查' : '查看设备'}}</button>
         </div>
         <div class="mui-card card" style="box-shadow: none;margin-top: 6px;">
             <div class="mui-card-content">
@@ -200,6 +216,12 @@
         <div class="card" ng-show="taskData.stage_id === TaskStatus.Competition && taskData.station_longitude">
             <div id="map" style="height: 300px;width: 100%;"></div>
         </div>
+        <nav class="mui-bar mui-bar-tab bg-transparent" ng-if="taskData.stage_id === TaskStatus.ToAssign">
+            <a class="mui-tab-item mui-active mui-segmented-control-vertical" href="#">
+                <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-btn-outlined mui-control-item task-btn"
+                        ng-click="taskHandler.transferHandler()" id="taskTransferBtn">指定责任人</button>
+            </a>
+        </nav>
         <nav class="mui-bar mui-bar-tab bg-transparent" ng-if="taskData.stage_id === TaskStatus.Competition">
             <a class="mui-tab-item mui-active mui-segmented-control-vertical" href="#" ng-controller="GrabTaskCtrl">
                 <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-btn-outlined mui-control-item accept"
@@ -217,7 +239,7 @@
                         ng-click="taskHandler.transferHandler()" id="taskTransferBtn">转给他人</button>
             </a>
             <a class="mui-tab-item mui-active mui-segmented-control-vertical" href="#">
-                <button type="button" class="mui-btn mui-btn-danger mui-btn-block mui-btn-outlined mui-control-item  task-btn"
+                <button type="button" class="mui-btn mui-btn-danger mui-btn-block mui-btn-outlined mui-control-item task-btn"
                         ng-click="taskHandler.refuseTaskAssign()">拒绝</button>
             </a>
         </nav>
@@ -234,11 +256,8 @@
             </a>
         </nav>
         <nav class="mui-bar mui-bar-tab" ng-if='canHandle && taskData.stage_id===TaskStatus.Arrived'>
-            <a class="mui-tab-item mui-segmented-control-vertical" ng-click="gotoHandleTask()" ng-if="taskData.task_type_id!==1 && taskData.task_type_id!==6">
+            <a class="mui-tab-item mui-segmented-control-vertical" ng-click="gotoHandleTask()" ng-if="taskData.task_type_id!==1 && taskData.task_type_id!==6 && taskData.task_type_id !== 11">
                 <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-control-item">上传处理结果</button>
-            </a>
-            <a class="mui-tab-item mui-segmented-control-vertical" ng-click="gotoDeviceHandlerPage()">
-                <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-control-item">处理设备</button>
             </a>
             <a class="mui-tab-item mui-segmented-control-vertical">
                 <button type="button" class="mui-btn mui-btn-warning mui-btn-block mui-control-item task-btn"
@@ -262,7 +281,7 @@
         <div id="updater"></div>
     </div>
 </div>
-
+</div>
 <script src="../../components/mui/js/mui.min.js"></script>
 <script src="../../components/fastclick-master/lib/fastclick.js"></script>
 <script src="../../components/slides-playing/js/jquery.slides.js"></script>

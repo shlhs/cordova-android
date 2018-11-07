@@ -245,8 +245,8 @@ app.service('ajax', function ($rootScope, platformService, userService, $http) {
 
     function request(option) {
         if (option.url.indexOf("http://") !== 0){
-            option.url = platformService.host + option.url;
-            // option.url = 'http://127.0.0.1:8099/v1' + option.url;
+            // option.url = platformService.host + option.url;
+            option.url = 'http://127.0.0.1:8099/v1' + option.url;
         }
         var headers = $.extend({
             Authorization: userService.getAccountToken(),
