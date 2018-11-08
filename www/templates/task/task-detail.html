@@ -116,7 +116,7 @@
                     <span class="name">已检设备数</span>
                 </div>
             </div>
-            <button ng-click="gotoDeviceHandlerPage()">{{xunjianStage === 'toHandle' ? '去检查' : '查看设备'}}</button>
+            <button ng-click="gotoDeviceHandlerPage()" ng-if="xunjianStage === 'toClose'">查看设备</button>
         </div>
         <div class="mui-card card" style="box-shadow: none;margin-top: 6px;">
             <div class="mui-card-content">
@@ -251,7 +251,10 @@
             </a>
         </nav>
         <nav class="mui-bar mui-bar-tab" ng-if='canHandle && taskData.stage_id===TaskStatus.Arrived'>
-            <a class="mui-tab-item mui-segmented-control-vertical" ng-click="gotoHandleTask()" ng-if="taskData.task_type_id!==1 && taskData.task_type_id!==6 && taskData.task_type_id !== 11">
+            <a class="mui-tab-item mui-segmented-control-vertical" ng-click="gotoDeviceHandlerPage()" ng-if="taskData.task_type_id === 11">
+                <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-control-item">去检查</button>
+            </a>
+            <a class="mui-tab-item mui-segmented-control-vertical" ng-click="gotoHandleTask()" ng-if="taskData.task_type_id!==1 && taskData.task_type_id!==6">
                 <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-control-item">上传处理结果</button>
             </a>
             <a class="mui-tab-item mui-segmented-control-vertical">

@@ -22,9 +22,9 @@
                 <li class="mui-table-view-cell mui-media task-item" ng-repeat="task in tasks"
                     ng-click="openTask(task)" ng-class="{'closed': task.stage_id == TaskStatus.Closed}">
                     <div class="main-body">
-                        <img class="mui-pull-left task-icon" src="/img/task_type_{{task.task_type_id}}@2x.png">
                         <div class="mui-media-body task-main">
                             <h4 class="mui-ellipsis task-title" style="margin-top: 0">
+                                <img class="mui-pull-left task-icon" src="/img/task_type_{{task.task_type_id}}@2x.png">
                                 <strong class="task-type" ng-class="{'ergent': task.task_type_id===3}">{{task.task_type_name}}</strong>
                             </h4>
                         </div>

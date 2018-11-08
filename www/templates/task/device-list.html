@@ -1,12 +1,12 @@
 <div class="page page-fade" ng-controller="TaskDevicesHandlerCtrl">
     <header class="mui-bar bg-header" style="box-shadow: none;background: #f5f5f5;">
         <a class="mui-icon text-white" onclick="history.back()" style="color: #9a9a9a;font-size: 16px;margin-top: 6px;margin-left: 6px;">取消</a>
-        <h1 class="mui-title" style="color: #444;">设备编辑</h1>
+        <h1 class="mui-title" style="color: #444;">设备列表</h1>
     </header>
     <div class="mui-content" ng-cloak style="background-color: #fff;top: 60px;">
         <ul class="no-border static-device-list" style="margin-top: 0;">
             <li class="box-horizontal box-vertical-middle" ng-repeat="record in device_record">
-                <div class="mui-checkbox mui-left checkbox-square">
+                <div class="mui-checkbox mui-left checkbox-square" ng-if="canHandle">
                     <a class="checkbox" ng-class="{checked: record.checked}" ng-click="checkDevice($event, record.device_sn)"></a>
                 </div>
                 <div class="device-body box-horizontal box-vertical-middle" ng-click="gotoDevice(record.device)">
@@ -24,10 +24,10 @@
         </ul>
 
     </div>
-    <nav class="mui-bar mui-bar-tab" style="z-index: 0;">
+    <nav class="mui-bar mui-bar-tab" style="z-index: 0;" ng-if="canHandle">
         <a class="mui-tab-item mui-active mui-segmented-control-vertical" href="#">
             <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-btn-outlined mui-control-item task-btn"
-                    ng-click="addRecord()">添加记录</button>
+                    ng-click="setStatusOk()">添加记录</button>
         </a>
         <a class="mui-tab-item mui-active mui-segmented-control-vertical" href="#">
             <button type="button" class="mui-btn mui-btn-danger mui-btn-block mui-btn-outlined mui-control-item task-btn"

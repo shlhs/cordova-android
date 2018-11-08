@@ -1040,7 +1040,8 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
         // 打开设备列表页
         routerService.openPage($scope, '/templates/task/device-list.html',
             {
-                task: $scope.taskData
+                task: $scope.taskData,
+                canHandle: $scope.canHandle && $scope.taskData.stage_id === TaskStatus.Arrived
             }, {
                 hidePrev: false
             }
@@ -1049,7 +1050,8 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
 
     $scope.gotoStaticDeviceDetail = function (device) {
         routerService.openPage($scope, '/templates/site/static-devices/device-detail.html', {
-            id: device.id
+            device_id: device.id,
+            device_sn: device.sn
         });
     };
 
@@ -1531,57 +1533,42 @@ app.controller('TaskDevicesHandlerCtrl', function ($scope, routerService, ajax) 
     $scope.checkedSns = [];
 
     $scope.device_record.forEach(function (r) {
-        if (r.status === '运行良好') {
+        if (r.status === '未处理' || !r.status) {
+            r.status = '';
+        } else if (r.status === '运行良好') {
             r.status_name = 'normal';
         } else {
-            r.status = '';
+            r.status_name = 'danger';
         }
+        r.checked = false;
     });
 
     function init() {
-        ajax.get({
-            url: '/stations/' + $scope.task.station_sn + '/staticdevices',
-            success: function (response) {
-                setDevicesPath(response);
-                $scope.$apply();
-            }
-        });
-    }
-
-    function setDevicesPath(allDevices) {
-        function _findPath(path, device, children) {
-            if (!children || !children.length) {
+        var deviceSns = [];
+        var pathExist = false;
+        $scope.device_record.forEach(function (r) {
+            if (r.device.path) {
+                pathExist = true;
                 return false;
             }
-            for (var i=0; i<children.length; i++) {
-                var child = children[i];
-                if (child.sn === device.sn) {
-                    device.name = child.name;
-                    path.push(child.name);
-                    return true;
-                }
-                if (child.children && child.children.length) {
-                    path.push(child.name);
-                    if (_findPath(path, device, child.children)) {
-                        return true;
-                    }
-                }
-            }
-            path.splice(path.length-1, 1);      // 如果没找到的话，那么删除最后的路径
-            return false;
-        }
-        // 找到任务设备所在的路径
-        var deviceTree = formatToTreeData(allDevices);
-        $scope.device_record.forEach(function (record) {
-           var path = [];
-
-           _findPath(path, record.device, deviceTree[0].children);
-           // 如果path为空，说明没找到该设备
-           if (path.length) {
-               path.splice(path.length-1, 1);
-               record.device.path = path.join('/');
-           }
+            deviceSns.push(r.device_sn);
         });
+        if (!pathExist && deviceSns.length) {
+            ajax.get({
+                url: '/staticdevices/path',
+                data: {
+                    station_sn: $scope.task.station_sn,
+                    device_sns: deviceSns.join(',')
+                },
+                success: function (response) {
+                    $scope.device_record.forEach(function (record) {
+                        record.device.path = response[record.device_sn];
+                    });
+                    $scope.$apply();
+
+                }
+            });
+        }
     }
 
     $scope.checkDevice = function ($event, sn) {
@@ -1669,7 +1656,7 @@ app.controller('TaskDevicesHandlerCtrl', function ($scope, routerService, ajax) 
     };
 
     $scope.gotoDevice = function(deviceData){
-        routerService.openPage($scope, '/templates/site/static-devices/device-detail.html', {id: deviceData.id});
+        routerService.openPage($scope, '/templates/site/static-devices/device-detail.html', {device_id: deviceData.id, device_sn: deviceData.sn});
         return false;
     };
 

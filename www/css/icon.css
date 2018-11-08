@@ -44,6 +44,9 @@
 .icon-device-monitor{
     background-image: url("../img/dashboard/icon-device-monitor@2x.png");
 }
+.icon-dashboard-dts{
+    background-image: url("../img/dashboard/icon-dts@2x.png");
+}
 .icon-events{
     background-image: url("../img/light/icon-events@2x.png");
     position: relative;

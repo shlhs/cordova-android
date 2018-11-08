@@ -472,7 +472,7 @@ aside.light .mui-table-view-cell>a:not(.mui-btn){
     color: #000;
 }
 .page-bottom{
-    padding-bottom: 54px;
+    padding-bottom: 54px !important;
 }
 .nav-icon{
     background-size: cover;
@@ -2656,7 +2656,7 @@ color: #a7a7a7;
     background-color: #EFEFF1;
     top: 50%;
     margin-top: -20px;
-    opacity: 0.5;
+    opacity: 0.3;
 }
 .vertical-tabs .tab:first-child:before {
     display: none;
