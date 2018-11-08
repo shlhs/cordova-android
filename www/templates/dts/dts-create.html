@@ -74,14 +74,18 @@
 
 <body class="mui-android mui-android-5 mui-android-5-1 mui-android-5-1-1" ng-app="myApp">
 <header class="mui-bar bg-header mui-segmented-control-vertical">
-    <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
+    <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back btn-back" onclick="pageBack()"></a>
     <h1 class="mui-title">缺陷提交</h1>
 </header>
 <div class="mui-content bg-white" ng-controller="DtsCreateCtrl" ng-cloak="" ng-submit="submitForm()" id="main">
     <form class="mui-input-group task-create-rows" name="myForm" novalidate >
         <div class="mui-input-row">
             <label class="label">设备</label>
-            <label style="line-height: 28px;padding-left: 0;width: calc(100% - 160px)">{{name}}</label>
+            <label style="line-height: 28px;padding-left: 0;width: calc(100% - 160px)">{{device.name}}</label>
+        </div>
+        <div class="mui-input-row">
+            <label class="label">所在位置</label>
+            <label style="line-height: 28px;padding-left: 0;width: calc(100% - 160px)">{{device.path}}</label>
         </div>
         <div class="mui-input-row">
             <label class="label">缺陷等级<span style="color:red">*</span></label>

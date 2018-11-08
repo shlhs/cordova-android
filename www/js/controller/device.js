@@ -375,8 +375,8 @@ app.controller('DeviceTaskHistoryCtrl', function ($scope, ajax, scrollerService)
         $scope.showType = type;
     };
 
-    $scope.openTask = function (taskId) {
-        location.href = '/templates/task/task-detail.html?id=' + taskId;
+    $scope.openTask = function (task) {
+        location.href = '/templates/task/task-detail.html?id=' + task.id + '&taskType=' + task.task_type_id;
     };
 
     $scope.getDataList();

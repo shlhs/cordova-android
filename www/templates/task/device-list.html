@@ -25,14 +25,13 @@
 
     </div>
     <nav class="mui-bar mui-bar-tab" style="z-index: 0;">
-        <a class="mui-tab-item mui-active mui-segmented-control-vertical" href="#" style="padding: 8px;">
+        <a class="mui-tab-item mui-active mui-segmented-control-vertical" href="#">
             <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-btn-outlined mui-control-item task-btn"
-                    style="margin-bottom: 6px;padding: 6px;border-color: #79C679;background-color: #79C679;"
-                    ng-click="setStatusOk()">确认运行良好</button>
+                    ng-click="addRecord()">添加记录</button>
         </a>
         <a class="mui-tab-item mui-active mui-segmented-control-vertical" href="#">
             <button type="button" class="mui-btn mui-btn-danger mui-btn-block mui-btn-outlined mui-control-item task-btn"
-                    style="padding: 6px;border-color: #E54A59;background-color: #E54A59"
+                    style="border-color: #E54A59;background-color: #E54A59"
                     ng-click="openDtsPage()">提交缺陷</button>
         </a>
     </nav>

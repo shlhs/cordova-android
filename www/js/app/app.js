@@ -2,8 +2,6 @@
 /**
  * Created by liucaiyun on 2017/5/4.
  */
-
-
 var app = angular.module('myApp', ['ngAnimate', 'ui.router', 'ui.router.state.events']);
 
 app.run(function ($animate) {

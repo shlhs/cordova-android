@@ -1,4 +1,5 @@
 app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, routerService) {
+    var taskId = GetQueryString("task_id");
     $scope.device = {
         sn: GetQueryString('device_sn'),
         station_sn: GetQueryString('station_sn'),
@@ -234,6 +235,7 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
         }
         taskData.events = [];
         taskData.station_sn = $scope.device.station_sn;
+        taskData.mother_task_id = taskId;
         $.notify.progressStart();
         ajax.post({
             url: '/opstasks/' + companyId,
@@ -245,7 +247,7 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
                 $.notify.progressStop();
                 $.notify.info('创建成功');
                 $timeout(function () {
-                    window.location.href = '/templates/task/task-detail.html?finishPage=1&id=' + data.id;       // 设置finish=1，这样在Android端在打开新页面时，会将当前页finish掉
+                    window.location.href = '/templates/task/task-detail.html?finishPage=1&id=' + data.id + '&taskType=' + data.task_type_id;       // 设置finish=1，这样在Android端在打开新页面时，会将当前页finish掉
                 }, 800);
             },error: function () {
                 $.notify.progressStop();
@@ -256,4 +258,253 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
     };
 
     init();
+});
+
+// 设备缺陷记录
+app.controller('DeviceDtsListCtrl', function ($scope, ajax, scrollerService) {
+    var deviceSn = GetQueryString('device_sn');
+    var allTasks = [];
+    $scope.TaskStatus = TaskStatus;
+    $scope.tasks = [];
+    $scope.isLoading = true;
+    $scope.loadingFailed = false;
+
+    function sortDts(d1, d2) {
+        // 排序规则：未完成、待审批、已关闭，同样状态的按截止日期排序
+        var stage1 = d1.stage_id;
+        var stage2 = d2.stage_id;
+        var status1 = 0;        // 0:未完成，1：待审批，2：已关闭
+        var status2 = 0;        // 0:未完成，1：待审批，2：已关闭
+        switch (stage1) {
+            case TaskStatus.Closed:
+                status1 = 2;
+                break;
+            case TaskStatus.ToClose:
+                status1 = 1;
+                break;
+        }
+        switch (stage2) {
+            case TaskStatus.Closed:
+                status2 = 2;
+                break;
+            case TaskStatus.ToClose:
+                status2 = 1;
+                break;
+        }
+        if (status1 !== status2) {
+            return status1 - status2;
+        }
+        if (d1.expect_complete_time > d2.expect_complete_time){
+            return 1;
+        }
+        if (d1.expect_complete_time === d2.expect_complete_time){
+            return 0;
+        }
+        return -1;
+    }
+
+
+    $scope.getDataList = function() {
+        scrollerService.initScroll("#taskList", $scope.getDataList);
+        $scope.isLoading = true;
+        $scope.loadingFailed = false;
+
+        ajax.get({
+            url: "/dts",
+            data:{
+                device_sn: deviceSn
+            },
+            success: function(result) {
+                $scope.isLoading = false;
+                result.sort(sortDts);
+                var tasks = result, task = null;
+                for (var i in tasks){
+                    task = tasks[i];
+                    formatTaskStatusName(task);
+                    task.isTimeout = $scope.taskTimeout(task);
+                }
+                $scope.tasks = tasks;
+                $scope.$apply();
+            },
+            error: function (a,b,c) {
+                $scope.isLoading = false;
+                $scope.loadingFailed = true;
+                $scope.$apply();
+            }
+        });
+    };
+
+    $scope.updateTask = function (taskData) {
+        console.log('TaskHistoryCtrl updateTask');
+        // 查找任务是否存在
+        var exist = false;
+        for (var i in allTasks){
+            if (allTasks[i].id === taskData.id){
+                allTasks[i] = taskData;
+                exist = true;
+                break;
+            }
+        }
+        if (!exist){        // 如果不存在，则加入到最前面
+            allTasks.unshift(taskData);
+        }
+        allTasks.sort(sortDts);
+        $scope.changeTaskType(null, $scope.showType);
+        $scope.$apply();
+    };
+
+    function isTodoTask(task) {
+        if (task.stage_id !== TaskStatus.Closed && task.current_handler === username){
+            return true;
+        }
+        return false;
+    }
+
+    $scope.changeTaskType = function ($event, type) {
+        console.log('change type');
+        var showTasks = [], task = null, todoCount = 0;
+
+        if (type === 'all'){
+            showTasks = allTasks;
+        }
+        else if (type === 'closed'){
+            for(var i in allTasks){
+                task = allTasks[i];
+                if (task.stage_id === TaskStatus.Closed){
+                    showTasks.push(task);
+                }
+            }
+        }
+        else if (type === 'todo'){
+            for(var i in allTasks){
+                task = allTasks[i];
+                if (task.stage_id !== TaskStatus.Closed && task.current_handler === username){
+                    showTasks.push(task);
+                }
+            }
+            $scope.todoCount = showTasks.length;
+        }
+        else{
+            for (var i in allTasks){
+                task = allTasks[i];
+                if (task.stage_id !== TaskStatus.Closed){
+                    showTasks.push(task);
+                }
+            }
+        }
+        $scope.tasks = showTasks;
+        $scope.showType = type;
+    };
+
+    $scope.getDataList();
+});
+
+
+
+app.controller('StationDtsListCtrl', function ($scope, $rootScope, scrollerService, userService, ajax) {
+    var allTasks = [];
+    var stationSn = GetQueryString("sn");
+    $scope.TaskStatus = TaskStatus;
+    $scope.tasks = [];
+    $scope.isLoading = true;
+    $scope.loadingFailed = false;
+    $scope.todoCount = 0;
+
+    function sortDts(d1, d2) {
+        // 排序规则：未完成、待审批、已关闭，同样状态的按截止日期排序
+        var stage1 = d1.stage_id;
+        var stage2 = d2.stage_id;
+        var status1 = 0;        // 0:未完成，1：待审批，2：已关闭
+        var status2 = 0;        // 0:未完成，1：待审批，2：已关闭
+        switch (stage1) {
+            case TaskStatus.Closed:
+                status1 = 2;
+                break;
+            case TaskStatus.ToClose:
+                status1 = 1;
+                break;
+        }
+        switch (stage2) {
+            case TaskStatus.Closed:
+                status2 = 2;
+                break;
+            case TaskStatus.ToClose:
+                status2 = 1;
+                break;
+        }
+        if (status1 !== status2) {
+            return status1 - status2;
+        }
+        if (d1.expect_complete_time > d2.expect_complete_time){
+            return 1;
+        }
+        if (d1.expect_complete_time === d2.expect_complete_time){
+            return 0;
+        }
+        return -1;
+    }
+
+    $scope.getDataList = function() {
+        scrollerService.initScroll("#taskList", $scope.getDataList);
+        $scope.isLoading = true;
+        $scope.loadingFailed = false;
+        ajax.get({
+            url: '/dts',
+            data:{
+                station: stationSn,
+                page_size: 100,
+                page_index: 0,
+                s_echo: 0
+            },
+            success: function(result) {
+                $scope.isLoading = false;
+                result.sort(sortDts);
+                var tasks = result, task = null;
+                for (var i in tasks){
+                    task = tasks[i];
+                    formatTaskStatusName(task);
+                    switch (task.task_type_id) {
+                        case 8:
+                            task.dts_type = 'normal';
+                            break;
+                        case 9:
+                            task.dts_type = 'serious';
+                            break;
+                        case 10:
+                            task.dts_type = 'fatal';
+                            break;
+                    }
+                    task.isTimeout = $scope.taskTimeout(task);
+                }
+                $scope.tasks = tasks;
+                $scope.$apply();
+            },
+            error: function (a,b,c) {
+                $scope.isLoading = false;
+                $scope.loadingFailed = true;
+                $scope.$apply();
+            }
+        });
+    };
+
+    $scope.updateTask = function (taskData) {
+        console.log('TaskHistoryCtrl updateTask');
+        // 查找任务是否存在
+        var exist = false;
+        for (var i in allTasks){
+            if (allTasks[i].id === taskData.id) {
+                allTasks[i] = taskData;
+                exist = true;
+                break;
+            }
+        }
+        if (!exist){        // 如果不存在，则加入到最前面
+            allTasks.unshift(taskData);
+        }
+        allTasks.sort(sortDts);
+        $scope.changeTaskType(null, $scope.showType);
+        $scope.$apply();
+    };
+
+    $scope.getDataList();
 });

@@ -6,7 +6,7 @@ app.controller('StaticDevicesHomeCtrl', function ($scope, ajax, routerService) {
     $scope.loadingFailed = false;
 
     $scope.gotoDevice = function(deviceData){
-        routerService.openPage($scope, '/templates/site/static-devices/device-detail.html', {id: deviceData.id});
+        routerService.openPage($scope, '/templates/site/static-devices/device-detail.html', {device_id: deviceData.id, device_sn: deviceData.sn});
     };
 
     $scope.getDataList = function() {
@@ -108,19 +108,33 @@ app.controller('StaticDeviceSubListCtrl', function ($scope, ajax) {
     init();
 });
 
+var OpsTaskType = [1, 2, 3, 4, 5, 6, 7, 11];
+
+
 app.controller('StaticDeviceDetailCtrl', function ($scope, ajax, routerService, platformService) {
     $scope.device = {};
     $scope.showTab = 'info';
     $scope.isPC = IsPC();
     $scope.useMobileGallery = window.android && window.android.openGallery;
+    $scope.opsTaskCount = 0;        // 运维个数
+    $scope.unhandledDtsCount = 0;   // 未解决缺陷个数
+    $scope.closedDtsCount = 0;      // 已关闭缺陷个数
+
+    function init() {
+        getDeviceInfo();
+        // 获取运维个数
+        getOpsTaskCount();
+        // 获取缺陷个数
+        getDtsCount();
+    }
 
     $scope.changeTabType = function ($event, tab) {
       $scope.showTab = tab;
     };
 
-    $scope.getDataList = function () {
+    function getDeviceInfo () {
         ajax.get({
-            url: '/staticdevices/' + $scope.id,
+            url: '/staticdevices/' + $scope.device_id,
             success: function (data) {
                 if (data.properties) {
                     data.properties = JSON.parse(data.properties);
@@ -144,13 +158,65 @@ app.controller('StaticDeviceDetailCtrl', function ($scope, ajax, routerService, 
                 $scope.$apply();
             }
         })
-    };
+    }
+
+    function getOpsTaskCount() {
+        ajax.get({
+            url: '/staticdevices/opstasks/count',
+            data: {
+                device_sn: $scope.device_sn,
+                types: OpsTaskType.join(',')
+            },
+            success: function (response) {
+                var count = 0;
+                for (var stageId in response) {
+                    count += response[stageId];
+                }
+                $scope.opsTaskCount = count;
+                $scope.$apply();
+            }
+        });
+    }
+
+    function getDtsCount() {
+        var taskTypes = [8, 9, 10];
+        ajax.get({
+            url: '/staticdevices/opstasks/count',
+            data: {
+                device_sn: $scope.device_sn,
+                types: taskTypes.join(',')
+            },
+            success: function (response) {
+                var closed = 0;
+                var unhandled = 0;
+                for (var stageId in response) {
+                    if (stageId === TaskStatus.Closed) {
+                        closed += response[stageId];
+                    } else {
+                        unhandled += response[stageId];
+                    }
+                }
+                $scope.unhandledDtsCount = unhandled;
+                $scope.closedDtsCount = closed;
+                $scope.$apply();
+            }
+        });
+
+    }
 
     $scope.startDeviceEditor = function () {
         routerService.openPage($scope, '/templates/site/static-devices/device-edit.html', {id: $scope.device.id});
     };
 
-    $scope.getDataList();
+    $scope.gotoDtsList = function () {
+        window.location.href = '/templates/site/static-devices/device-dts-history.html?device_sn=' + $scope.device.sn;
+    };
+
+    $scope.gotoOpsList = function () {
+        window.location.href = '/templates/task/task-list.html?device_sn=' + $scope.device.sn;
+    };
+
+    init();
 });
 
 app.controller('StaticDeviceEditCtrl', function ($scope, ajax, routerService, platformService) {

@@ -33,7 +33,7 @@
     <div class="mui-inner-wrap" >
         <div class="">
             <header class="mui-bar bg-header">
-                <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
+                <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
                 <h1 class="mui-title" id="header_title">维修历史</h1>
             </header>
             <div id="task_history" class="mui-content no-padding mui-control-content mui-active task-list">
@@ -48,7 +48,7 @@
                     <div class="mui-scroll1">
                         <ul class="mui-table-view mui-table-view-striped mui-table-view-condensed task-list" ng-if="showTasks.length">
                             <li class="mui-table-view-cell mui-media task-item" ng-repeat="task in showTasks"
-                                ng-click="openTask(task.id)" ng-class="{'closed': task.stage_id == TaskStatus.Closed}">
+                                ng-click="openTask(task)" ng-class="{'closed': task.stage_id == TaskStatus.Closed}">
                                 <div ng-if="task.task_type_id===3" class="triangle-topleft"><div class="label">修</div></div>
                                 <img class="mui-media-object mui-pull-left task-icon" src="/img/task_type_{{task.task_type_id}}.png">
                                 <div class="mui-media-body task-main">

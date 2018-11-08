@@ -13,7 +13,7 @@
 }
 .task-item .task-icon{
     height: 22px;
-    margin-left: 12px;
+    margin-left: 0px;
     margin-right: 8px;
     margin-top: 8px;
 }
@@ -24,6 +24,7 @@
     position: relative;
     /*padding-right: 80px;*/
     margin: 0;
+    padding-left: 12px;
 }
 .task-item .task-main{
     margin-bottom: 0px;
@@ -82,8 +83,8 @@
 .timeout{
     color: red;
 }
-.task-item.closed .main-body{
-    background-color: rgba(143, 143, 143, 0.3);
+.task-item.closed .main-body, .task-item.closed .sub-body{
+    background-color: rgba(212, 212, 212, 0.2);
 }
 .task-item.closed .task-status{
     color: #8f8f94;
@@ -168,7 +169,7 @@
     font-size: 16px;
 }
 .task-type.ergent{
-    color: rgba(220, 3, 88, 0.71);
+    color: rgba(220, 3, 3, 0.71);
 }
 .steps{
     display: -webkit-box;
@@ -469,6 +470,10 @@
     background-color: #ff9800;
     border:0;
     color:#fff;
+}
+.task-btn.mui-btn {
+    padding: 8px 0;
+    font-size: 14px;
 }
 .task-item .triangle-topleft {
     width: 0px;

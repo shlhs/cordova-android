@@ -76,14 +76,14 @@
 
 <body class="mui-android mui-android-5 mui-android-5-1 mui-android-5-1-1 mui-segmented-control-vertical" ng-app="myApp" ng-controller="TaskBaseCtrl">
     <header class="mui-bar bg-header">
-        <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
-        <h1 class="mui-title">所有任务</h1>
+        <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
+        <h1 class="mui-title">{{pageTitle}}</h1>
     </header>
     <div id="taskList" style="top:61px;" class="scroll-wrapper" ng-controller="TaskListCtrl">
         <div class="mui-scroll1" ng-if="!isLoading && !loadingFailed">
             <ul class="mui-table-view mui-table-view-striped mui-table-view-condensed task-list no-out-border" ng-if="tasks.length">
                 <li class="mui-table-view-cell mui-media task-item" ng-repeat="task in tasks"
-                    ng-click="openTask(task.id)" ng-class="{'closed': task.stage_id == TaskStatus.Closed}">
+                    ng-click="openTask(task)" ng-class="{'closed': task.stage_id == TaskStatus.Closed}">
                     <div class="main-body">
                         <img class="mui-pull-left task-icon" src="/img/task_type_{{task.task_type_id}}@2x.png">
                         <div class="mui-media-body task-main">
@@ -105,14 +105,14 @@
                         </div>
                     </div>
                     <div class="task-status">
-                        <span style="color: #6f6f6f;margin: 0 2px;">{{task.current_handler_name}}</span>{{task.stage}}
+                        <span style="color: #6f6f6f;margin: 0 2px;">{{task.current_handler_name}}</span>{{task.stage_name}}
                     </div>
                 </li>
             </ul>
             <div class="page-alert-wrapper" ng-if="tasks.length==0 && !isLoading && !loadingFailed">
                 <div class="page-alert">
-                    <i class="alert-icon nodata-info"></i>
-                    <div class="alert-text info">无任务信息</div>
+                    <i class="alert-icon no-task"></i>
+                    <div class="alert-text info">无记录</div>
                 </div>
             </div>
         </div>
