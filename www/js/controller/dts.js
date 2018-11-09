@@ -6,6 +6,7 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
         name: GetQueryString('name'),
         path: GetQueryString('path')
     };
+    $scope.isForDevice = $scope.device.sn ? true : false;
     $scope.taskData = {};
     $scope.name = $scope.device.path ? $scope.device.path + '/' + $scope.device.name : $scope.device.name;
 
@@ -14,14 +15,31 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
     $scope.description = '';
     $scope.isPC = IsPC();
     $scope.useMobileGallery = window.android && window.android.openGallery;
+    var staticDevices = [];
 
     var insertPosition = angular.element("#imageList>.upload-item");
     var companyId = userService.getTaskCompanyId();
 
     function init() {
+        if (!$scope.device.sn && $scope.device.station_sn) {
+            // 如果设备sn为空的话，则需要用户选择设备
+            getStaticDevicesOfStation();
+        }
         initTaskTypeList();
         initDatePicker();
         initMembers();
+    }
+
+
+    function getStaticDevicesOfStation() {
+        ajax.get({
+            url: '/stations/' + $scope.device.station_sn + '/staticdevices',
+            success: function (data) {
+                staticDevices = data;
+            }, error: function () {
+                $.notify.error('获取设备列表失败');
+            }
+        });
     }
 
     function _format(data, idKey, nameKey) {
@@ -123,6 +141,19 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
             }
         }, false);
     }
+
+    $scope.openDeviceSelector = function () {
+        // 打开设备选择页面
+        routerService.openPage($scope, '/templates/dts/device-select-page.html', {
+            deviceDatas: staticDevices,
+            onSelect: function (device) {
+                $scope.device.sn = device.sn;
+                $scope.device.path = device.path;
+                $scope.device.name = device.name;
+                history.back();
+            }
+        })
+    };
 
     $scope.chooseImage = function (files) {     // 选择图片
         $scope.canDelete = true;
@@ -264,6 +295,7 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
 // 设备缺陷记录
 app.controller('DeviceDtsListCtrl', function ($scope, ajax, scrollerService) {
     var deviceSn = GetQueryString('device_sn');
+    var stationSn = GetQueryString('station_sn');
     var allTasks = [];
     $scope.TaskStatus = TaskStatus;
     $scope.tasks = [];
@@ -303,7 +335,6 @@ app.controller('DeviceDtsListCtrl', function ($scope, ajax, scrollerService) {
         }
         return -1;
     }
-
 
     $scope.getDataList = function() {
         scrollerService.initScroll("#taskList", $scope.getDataList);
@@ -352,6 +383,10 @@ app.controller('DeviceDtsListCtrl', function ($scope, ajax, scrollerService) {
         allTasks.sort(sortDts);
         $scope.changeTaskType(null, $scope.showType);
         $scope.$apply();
+    };
+
+    $scope.openDtsCreatePage = function () {
+        window.location.href = '/templates/dts/dts-create.html?station_sn=' + (stationSn || '') + '&device_sn=' + deviceSn;
     };
 
     $scope.getDataList();

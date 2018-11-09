@@ -23,6 +23,7 @@
     <script type="text/javascript" src="../../js/app/utils.js"></script>
     <script type="text/javascript" src="../../js/app/app.js"></script>
     <script type="text/javascript" src="../../js/service/router-service.js"></script>
+    <script type="text/javascript" src="../../js/service/common-service.js"></script>
     <script type="text/javascript" src="../../js/controller/dts.js"></script>
     <style>
         .mui-input-row label{
@@ -81,7 +82,9 @@
     <form class="mui-input-group task-create-rows" name="myForm" novalidate >
         <div class="mui-input-row">
             <label class="label">设备</label>
-            <label style="line-height: 28px;padding-left: 0;width: calc(100% - 160px)">{{device.name}}</label>
+            <label style="line-height: 28px;padding-left: 0;width: calc(100% - 160px)" ng-if="isForDevice">{{device.name}}</label>
+            <input type="text" ng-if="!isForDevice" placeholder="请选择设备" ng-model="device.name">
+            <button class="mui-btn mui-btn-block" type="button" ng-click="openDeviceSelector()" ng-if="!isForDevice">&nbsp;</button>
         </div>
         <div class="mui-input-row">
             <label class="label">所在位置</label>

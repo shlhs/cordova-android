@@ -210,7 +210,7 @@ app.controller('StaticDeviceDetailCtrl', function ($scope, ajax, routerService, 
     };
 
     $scope.gotoDtsList = function () {
-        window.location.href = '/templates/site/static-devices/device-dts-history.html?device_sn=' + $scope.device.sn;
+        window.location.href = '/templates/site/static-devices/device-dts-history.html?device_sn=' + $scope.device.sn + '&station_sn=' + $scope.device.station_sn;
     };
 
     $scope.gotoOpsList = function () {

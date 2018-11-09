@@ -108,6 +108,7 @@ function formatToTreeData(data) {
                 if (newItem.is_group) {
                     newItem.children = [];
                 }
+                newItem.path = item.path ? (item.path + '/' + item.name) : item.name;
                 newItem.text = newItem.name;
                 item.children.push(newItem);
                 if (maxDepth < depth + 1) {

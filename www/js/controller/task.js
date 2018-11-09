@@ -176,6 +176,7 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, ajax, $state
 });
 
 app.controller('TaskBaseCtrl', function ($scope, ajax, userService) {
+    var stationSn = GetQueryString("sn");
     var deviceSn = GetQueryString("device_sn");     // 如果设备sn不为空，则获取的是设备的运维记录
     $scope.pageTitle = deviceSn ? '运维记录' : '所有任务';
 
@@ -318,6 +319,10 @@ app.controller('TaskBaseCtrl', function ($scope, ajax, userService) {
             }
         });
         */
+    };
+
+    $scope.openDtsCreatePage = function () {
+        window.location.href = '/templates/dts/dts-create.html?station_sn=' + (stationSn || '') + '&device_sn=' + (deviceSn || '');
     };
 });
 
