@@ -1,5 +1,5 @@
 app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, routerService) {
-    var taskId = GetQueryString("task_id");
+    var taskId = GetQueryString("task_id") || '';
     $scope.device = {
         sn: GetQueryString('device_sn'),
         station_sn: GetQueryString('station_sn'),
@@ -308,9 +308,9 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
             success: function (data) {
                 $.notify.progressStop();
                 $.notify.info('创建成功');
-                window.android && window.android.onJsCallbackForPrevPage('updateTask', JSON.stringify(data));
                 $timeout(function () {
-                    window.location.href = '/templates/task/task-detail.html?finishPage=1&id=' + data.id + '&taskType=' + data.task_type_id;       // 设置finish=1，这样在Android端在打开新页面时，会将当前页finish掉
+                    window.location.href = '/templates/task/task-detail.html?finishPage=1&id=' + data.id +
+                        '&taskType=' + data.task_type_id + '&mother_task_id=' + taskId;       // 设置finish=1，这样在Android端在打开新页面时，会将当前页finish掉
                 }, 800);
             },error: function () {
                 $.notify.progressStop();

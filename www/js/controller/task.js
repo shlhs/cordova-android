@@ -717,6 +717,16 @@ function setTaskReportId(reportId) {        // 安全检测和停电维护新建
     scope.setReportId(reportId);
 }
 
+function onAndroidCb_updateDeviceRecord(strRecord) {
+    // 从巡检任务创建的缺陷单回到巡检任务时，需要更新巡检的设备状态
+    if (strRecord) {
+        var scope = angular.element('#xunjianTaskDevices').scope();
+        if (scope) {
+            scope.updateDeviceRecordWidthDts(JSON.parse(strRecord));
+        }
+    }
+}
+
 app.controller('TaskDetailCtrl', function ($scope, $location, $state, userService, platformService, $http, $timeout, $window, ajax, routerService) {
     $scope.TaskAction = TaskAction;
     $scope.TaskStatus = TaskStatus;
@@ -752,18 +762,27 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
 
     }
 
-    var companyId = userService.getTaskCompanyId();
-    var option = {
-        url: '/opstasks/' + companyId + '/' + id,
-        success: function (data) {
-            console.log('get task detail success');
-            updateTaskInfo(data);
-        },
-        error: function (a, b, c) {
-            console.log('get task detail fail');
-            $.notify.error('读取数据失败');
-        }};
-    ajax.get(option);
+    function getTaskDetail() {
+
+        var companyId = userService.getTaskCompanyId();
+        var option = {
+            url: '/opstasks/' + companyId + '/' + id,
+            success: function (data) {
+                console.log('get task detail success');
+                updateTaskInfo(data);
+
+                var motherTaskId = GetQueryString('mother_task_id');        // mother_task_id不为空，说明该任务是由巡检任务创建的缺陷，需要通知巡检任务更新设备状态
+                if (GetQueryString('mother_task_id')) {
+                    window.android && window.android.onJsCallbackForPrevPage('onAndroidCb_updateDeviceRecord', JSON.stringify(data.device_record[0]));
+                }
+            },
+            error: function (a, b, c) {
+                console.log('get task detail fail');
+                $.notify.error('读取数据失败');
+            }};
+        ajax.get(option);
+    }
+    getTaskDetail();
 
     function updateTaskInfo(data) {
         $scope.taskData = formatTaskStatusName(data);
@@ -1651,7 +1670,7 @@ app.controller('TaskDevicesHandlerCtrl', function ($scope, routerService, ajax) 
                             r.status = '运行良好';
                             r.status_name = 'normal';
                         }
-                    })
+                    });
                 }
                 $scope.$apply();
             },
@@ -1685,6 +1704,18 @@ app.controller('TaskDevicesHandlerCtrl', function ($scope, routerService, ajax) 
     $scope.gotoDevice = function(deviceData){
         routerService.openPage($scope, '/templates/site/static-devices/device-detail.html', {device_id: deviceData.id, device_sn: deviceData.sn});
         return false;
+    };
+
+    $scope.updateDeviceRecordWidthDts = function (deviceRecord) {
+        $scope.device_record.forEach(function (r) {
+            if (r.device_sn === deviceRecord.device_sn) {
+                r.status = deviceRecord.status;
+                r.desp = deviceRecord.desp;
+                r.photo_links = deviceRecord.photo_links;
+                r.status_name = 'danger';
+                return false;
+            }
+        });
     };
 
     init();

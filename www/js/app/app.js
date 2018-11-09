@@ -206,7 +206,7 @@ app.service('platformService', function () {
     };
 
     this.host = this.getHost();
-    this.host = 'http://127.0.0.1:8099/v1';
+    // this.host = 'http://127.0.0.1:8099/v1';
     this.ipAddress = this.host ? this.host.substring(0, this.host.indexOf(':', 5)) : '';
     this.thumbHost = this.getImageThumbHost();
 });
@@ -244,8 +244,8 @@ app.service('ajax', function ($rootScope, platformService, userService, $http) {
 
     function request(option) {
         if (option.url.indexOf("http://") !== 0){
-            // option.url = platformService.host + option.url;
-            option.url = 'http://127.0.0.1:8099/v1' + option.url;
+            option.url = platformService.host + option.url;
+            // option.url = 'http://127.0.0.1:8099/v1' + option.url;
         }
         var headers = $.extend({
             Authorization: userService.getAccountToken(),
