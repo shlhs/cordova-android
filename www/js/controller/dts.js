@@ -246,6 +246,7 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
             success: function (data) {
                 $.notify.progressStop();
                 $.notify.info('创建成功');
+                window.android && window.android.onJsCallbackForPrevPage('updateTask', JSON.stringify(data));
                 $timeout(function () {
                     window.location.href = '/templates/task/task-detail.html?finishPage=1&id=' + data.id + '&taskType=' + data.task_type_id;       // 设置finish=1，这样在Android端在打开新页面时，会将当前页finish掉
                 }, 800);
@@ -351,49 +352,6 @@ app.controller('DeviceDtsListCtrl', function ($scope, ajax, scrollerService) {
         allTasks.sort(sortDts);
         $scope.changeTaskType(null, $scope.showType);
         $scope.$apply();
-    };
-
-    function isTodoTask(task) {
-        if (task.stage_id !== TaskStatus.Closed && task.current_handler === username){
-            return true;
-        }
-        return false;
-    }
-
-    $scope.changeTaskType = function ($event, type) {
-        console.log('change type');
-        var showTasks = [], task = null, todoCount = 0;
-
-        if (type === 'all'){
-            showTasks = allTasks;
-        }
-        else if (type === 'closed'){
-            for(var i in allTasks){
-                task = allTasks[i];
-                if (task.stage_id === TaskStatus.Closed){
-                    showTasks.push(task);
-                }
-            }
-        }
-        else if (type === 'todo'){
-            for(var i in allTasks){
-                task = allTasks[i];
-                if (task.stage_id !== TaskStatus.Closed && task.current_handler === username){
-                    showTasks.push(task);
-                }
-            }
-            $scope.todoCount = showTasks.length;
-        }
-        else{
-            for (var i in allTasks){
-                task = allTasks[i];
-                if (task.stage_id !== TaskStatus.Closed){
-                    showTasks.push(task);
-                }
-            }
-        }
-        $scope.tasks = showTasks;
-        $scope.showType = type;
     };
 
     $scope.getDataList();

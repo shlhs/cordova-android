@@ -2420,7 +2420,7 @@ color: #a7a7a7;
     text-overflow: ellipsis;
     color: inherit;
     border-bottom: rgba(230, 230, 230, 0.57) 1px solid;
-    padding: 12px;
+    padding: 12px 36px 12px 12px;
 }
 .tree-cell .tree-group {
     display: none;
@@ -2448,6 +2448,18 @@ color: #a7a7a7;
     margin-right: 8px;
     float: left;
     margin-top: 3px;
+}
+.tree-cell .text-status {
+    float: right;
+    margin-left: 8px;
+}
+.tree-cell .text-status.danger {
+    background-color: #FFEEEE;
+    color: #FF929A;
+}
+.tree-cell .text-status.warning {
+    background-color: #EEEEFF;
+    color: #929AFF;
 }
 .tree-cell>a.selected {
     background-color: rgba(204, 204, 204, 0.25);

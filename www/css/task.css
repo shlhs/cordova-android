@@ -171,6 +171,9 @@
 .task-type.ergent{
     color: rgba(220, 3, 3, 0.71);
 }
+.task-type.serious {
+    color: #ea9925;
+}
 .steps{
     display: -webkit-box;
     padding: 16px 0px 0px 0px;

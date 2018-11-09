@@ -119,6 +119,7 @@ app.controller('StaticDeviceDetailCtrl', function ($scope, ajax, routerService, 
     $scope.opsTaskCount = 0;        // 运维个数
     $scope.unhandledDtsCount = 0;   // 未解决缺陷个数
     $scope.closedDtsCount = 0;      // 已关闭缺陷个数
+    var TaskStatus = {ToAccept: 1, ToAssign: 2, Accepted: 3, ToClose: 4, Closed: 5, Competition: 6, Coming: 7, Arrived: 8};
 
     function init() {
         getDeviceInfo();
@@ -190,7 +191,7 @@ app.controller('StaticDeviceDetailCtrl', function ($scope, ajax, routerService, 
                 var closed = 0;
                 var unhandled = 0;
                 for (var stageId in response) {
-                    if (stageId === TaskStatus.Closed) {
+                    if (parseInt(stageId) === TaskStatus.Closed) {
                         closed += response[stageId];
                     } else {
                         unhandled += response[stageId];

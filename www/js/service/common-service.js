@@ -272,6 +272,33 @@ app.directive('deviceTreeView',[function(){
         controller:['$scope', '$attrs', function($scope, $attrs){
             $scope.treeData = formatToTreeData($scope.deviceList)[0].children;
             var lastSelected = null;
+
+            function calcDeviceStatus() {
+                function _calcItem(item) {
+                    var taskCount = item.unclosed_task_count ? parseInt(item.unclosed_task_count) : 0;
+                    var dtsCount = item.unclosed_defect_count ? parseInt(item.unclosed_defect_count) : 0;
+                    if (item.is_group && item.children) {
+                        item.children.forEach(function (child) {
+                            var counts = _calcItem(child);
+                            taskCount += counts[0];
+                            dtsCount += counts[1];
+                        });
+                    }
+                    if (taskCount) {
+                        item.hasTask = true;
+                    }
+                    if (dtsCount) {
+                        item.hasDts = true;
+                    }
+                    return [taskCount, dtsCount];
+                }
+
+                // 计算设备是否有运维、是否有缺陷
+                $scope.treeData.forEach(function (item) {
+                    var count = _calcItem(item);
+                });
+            }
+            calcDeviceStatus();
             $scope.itemExpended = function(item, $event){
                 item.$$isExpend = ! item.$$isExpend;
                 ($scope[itemClicked] || angular.noop)({
@@ -302,10 +329,6 @@ app.directive('deviceTreeView',[function(){
                         $scope.clickCallback(item);
                     }
                 }
-                // ($scope[callback] || angular.noop)({
-                //     $item:item,
-                //     $event:$event
-                // });
             };
 
             $scope.searchInputChange = function (input) {
