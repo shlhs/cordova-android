@@ -226,4 +226,18 @@
 .icon-static-device {
     background-image: url("../img/static-device-icon.png");
 }
-
+.icon-xunjianstatus-normal {
+    background-image: url("../img/xunjianstatus-normal@2x.png");
+    width: 36px;
+    height: 36px;
+}
+.icon-xunjianstatus-danger {
+    background-image: url("../img/xunjianstatus-danger.png");
+    width: 36px;
+    height: 36px;
+}
+.icon-xunjianstatus-waiting {
+    background-image: url("../img/xunjianstatus-waiting.png");
+    width: 36px;
+    height: 36px;
+}

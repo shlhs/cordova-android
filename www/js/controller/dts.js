@@ -24,6 +24,9 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
         if (!$scope.device.sn && $scope.device.station_sn) {
             // 如果设备sn为空的话，则需要用户选择设备
             getStaticDevicesOfStation();
+        } else if ($scope.device.sn && !$scope.device.name) {
+            // 如果只有设备sn，那么需要读取设备详情
+            getDeviceDetail();
         }
         initTaskTypeList();
         initDatePicker();
@@ -38,6 +41,34 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
                 staticDevices = data;
             }, error: function () {
                 $.notify.error('获取设备列表失败');
+            }
+        });
+    }
+
+    function getDeviceDetail() {
+        ajax.get({
+            url: '/staticdevices',
+            data: {
+                sn: $scope.device.sn
+            },
+            success: function (data) {
+                $scope.device = data;
+                getDevicePath(data.sn);
+                $scope.$apply();
+            }
+        });
+    }
+
+    function getDevicePath(sn) {
+        ajax.get({
+            url: '/staticdevices/path',
+            data: {
+                station_sn: $scope.device.station_sn,
+                device_sns: sn
+            },
+            success: function (data) {
+                $scope.device.path = data[sn];
+                $scope.$apply();
             }
         });
     }

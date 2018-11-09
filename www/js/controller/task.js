@@ -3,7 +3,9 @@
 /**
  * Created by liucaiyun on 2017/7/20.
  */
-
+var TaskTypes = {
+    Xunjian: 11
+};
 var OpsTaskType = [1, 2, 3, 4, 5, 6, 7, 11];
 var DtsTaskType = [8, 9, 10];
 var TaskAction = {Create: 0, Accept: 1, Refuse: 2, Assign: 3, Go: 4, Apply: 5, Reject: 6, Close: 7, Comment: 8, Grab: 9, Arrive: 10, Update: 11, Transfer: 12};
@@ -182,7 +184,12 @@ app.controller('TaskBaseCtrl', function ($scope, ajax, userService) {
 
     var map = null;
     $scope.openTask = function (task) {
-        location.href = '/templates/task/task-detail.html?id=' + task.id + '&taskType=' + task.task_type_id;
+        if (deviceSn && task.task_type_id === TaskTypes.Xunjian) {
+            // 如果是查看单个设备的巡检任务，那么进入特殊的巡检页面
+            location.href = '/templates/task/xunjian-device-detail.html?id=' + task.id + '&device_sn=' + deviceSn;
+        } else {
+            location.href = '/templates/task/task-detail.html?id=' + task.id + '&taskType=' + task.task_type_id;
+        }
     };
 
     $scope.taskTimeout = function (task) {
@@ -615,6 +622,7 @@ app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, us
     $scope.loadingFailed = false;
     $scope.todoCount = 0;
     var deviceSn = GetQueryString("device_sn");     // 如果设备sn不为空，则获取的是设备的运维记录
+    $scope.isDeviceOps = deviceSn ? true : false;
     $scope.pageTitle = deviceSn ? '运维记录' : '所有任务';
 
     $scope.getDataList = function() {
@@ -640,6 +648,20 @@ app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, us
                 for (var i in tasks){
                     task = tasks[i];
                     formatTaskStatusName(task);
+                    // 如果是设备巡检记录的话，处理设备状态
+                    if ($scope.isDeviceOps && task.device_record && task.device_record.length) {
+                        var deviceRecord = task.device_record[0];
+                        if (deviceRecord.status === '有缺陷') {
+                            deviceRecord.status_name ='danger';
+                        } else if (deviceRecord.status === '未处理') {
+                            deviceRecord.status = '待检查';
+                            deviceRecord.status_name ='waiting';
+                            task.operator_name = task.operator_name || task.current_handler_name;   // 巡检人
+                        } else {
+                            deviceRecord.status_name = 'normal';
+                        }
+                        task.device_record = deviceRecord;
+                    }
                     task.isTimeout = $scope.taskTimeout(task);
                 }
                 $scope.tasks = result.aaData;
@@ -1666,4 +1688,62 @@ app.controller('TaskDevicesHandlerCtrl', function ($scope, routerService, ajax) 
     };
 
     init();
+});
+
+app.controller('DeviceXunjianTaskDetailCtrl', function ($scope, ajax, platformService, routerService) {
+    var taskId = GetQueryString("id");
+    var deviceSn = GetQueryString("device_sn");
+    $scope.taskData = {};
+    $scope.checkResult = {};
+    function getTaskDetail(id) {
+
+        ajax.get({
+            url: '/opstasks',
+            data: {
+                task_ids: id
+            },
+            success: function (data) {
+                data[0].device_record.forEach(function (r) {
+                    if (r.device_sn === deviceSn) {
+                        if (r.photo_links) {
+                            var images = [];
+                            r.photo_links.split(',').forEach(function (src) {
+                                // images.push(platformService.getImageUrl(width, height, platformService.host + src));
+                                images.push(platformService.host + '/images/' + src);
+                            });
+                            r.images = images;
+                        }
+                        if (r.status === '有缺陷') {
+                            r.status_name ='danger';
+                        } else if (r.status === '未处理') {
+                            r.status = '待检查...';
+                            r.status_name ='waiting';
+                        } else {
+                            r.status_name = 'normal';
+                        }
+                        $scope.checkResult = r;
+                        return false;
+                    }
+                });
+                $scope.taskData = data[0];
+                $scope.$apply();
+
+            },
+            error: function (a, b, c) {
+                $.notify.error('读取数据失败');
+            }
+        });
+    }
+
+    $scope.openGallery = function (index) {
+        routerService.openPage($scope, '/templates/base-gallery.html', {
+            index: index+1,
+            images: $scope.checkResult.images,
+            canDelete: false
+        }, {
+            hidePrev: false
+        });
+    };
+
+    getTaskDetail(taskId);
 });

@@ -2621,6 +2621,16 @@ color: #a7a7a7;
 .static-device-list .status.danger {
     color: #FB6868;
 }
+.status-danger {
+    color: #FB6868;
+}
+.text-danger {
+    color: #FB6868;
+}
+.text-normal {
+    color: #2fca59;
+}
+
 .mui-checkbox .checkbox.checked:before {
     font-family: iconfont;
     content: '\a600';

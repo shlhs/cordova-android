@@ -84,28 +84,56 @@
             <ul class="mui-table-view mui-table-view-striped mui-table-view-condensed task-list no-out-border" ng-if="tasks.length">
                 <li class="mui-table-view-cell mui-media task-item" ng-repeat="task in tasks"
                     ng-click="openTask(task)" ng-class="{'closed': task.stage_id == TaskStatus.Closed}">
-                    <div class="main-body">
-                        <div class="mui-media-body task-main">
-                            <h4 class="mui-ellipsis task-title" style="margin-top: 0">
-                                <img class="mui-pull-left task-icon" src="/img/task_type_{{task.task_type_id}}@2x.png">
-                                <strong class="task-type" ng-class="{'ergent': task.task_type_id===3}">{{task.task_type_name}}</strong>
-                            </h4>
+                    <div ng-if="task.task_type_id !== 11 || !isDeviceOps">
+                        <div class="main-body">
+                            <div class="mui-media-body task-main">
+                                <h4 class="mui-ellipsis task-title" style="margin-top: 0">
+                                    <img class="mui-pull-left task-icon" src="/img/task_type_{{task.task_type_id}}@2x.png">
+                                    <strong class="task-type" ng-class="{'ergent': task.task_type_id===3}">{{task.task_type_name}}</strong>
+                                </h4>
+                            </div>
+                        </div>
+                        <div class="sub-body">
+                            <p class="task-name">
+                                {{task.name}}
+                            </p>
+                            <div ng-if="task.station_name">
+                                <span class="task-info-label">站点名称</span><span class="task-info-value">{{task.station_name}}</span>
+                            </div>
+                            <div style="padding-bottom: 10px">
+                                <span class="task-info-label" style="padding-right: 0;">期望完成时间：</span>
+                                <span class="task-info-value" ng-class="{'timeout': task.isTimeout}">{{task.expect_complete_time.substring(0,16)}}</span>
+                            </div>
+                        </div>
+                        <div class="task-status">
+                            <span style="color: #6f6f6f;margin: 0 2px;">{{task.current_handler_name}}</span>{{task.stage_name}}
                         </div>
                     </div>
-                    <div class="sub-body">
-                        <p class="task-name">
-                            {{task.name}}
-                        </p>
-                        <div ng-if="task.station_name">
-                            <span class="task-info-label">站点名称</span><span class="task-info-value">{{task.station_name}}</span>
+                    <div ng-if="isDeviceOps && task.task_type_id === 11">
+                        <div class="main-body">
+                            <div class="mui-media-body task-main">
+                                <h4 class="mui-ellipsis task-title" style="margin-top: 0">
+                                    <img class="mui-pull-left task-icon" src="/img/task_type_{{task.task_type_id}}@2x.png">
+                                    <strong class="task-type" ng-class="{'ergent': task.task_type_id===3}">{{task.task_type_name}}</strong>
+                                </h4>
+                            </div>
                         </div>
-                        <div style="padding-bottom: 10px">
-                            <span class="task-info-label" style="padding-right: 0;">期望完成时间：</span>
-                            <span class="task-info-value" ng-class="{'timeout': task.isTimeout}">{{task.expect_complete_time.substring(0,16)}}</span>
+                        <div class="sub-body">
+                            <p class="task-name">
+                                {{task.name}}
+                            </p>
+                            <div style="padding-bottom: 10px;">
+                                <span class="task-info-label" style="padding-right: 0;">巡检人：</span>
+                                <span class="task-info-value">{{task.operator_name}}</span>
+                            </div>
+                            <div style="padding-bottom: 10px;margin-top: -10px;" ng-if="task.device_record.desp">
+                                <span class="task-info-label" style="padding-right: 0;">结论：</span>
+                                <span class="task-info-value">{{task.device_record.desp}}</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="task-status">
-                        <span style="color: #6f6f6f;margin: 0 2px;">{{task.current_handler_name}}</span>{{task.stage_name}}
+                        <div class="task-status">
+                            <span style="margin: 0 2px;" class="text-{{task.device_record.status_name}}">{{task.device_record.status}}</span>
+                        </div>
                     </div>
                 </li>
             </ul>
