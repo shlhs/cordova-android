@@ -107,7 +107,7 @@ app.service('userService', function ($rootScope) {
 
     this.getTaskCompanyId = function () {
         // 获取任务时需要用到的用户id
-        var perms = JSON.parse(localStorage.getItem("user")).permissions;
+        var perms = JSON.parse(getStorageItem("user")).permissions;
         for (var i=0; i<perms.length; i++) {
             var auth = perms[i].authrity_name;
             //运维公司
@@ -509,14 +509,6 @@ app.controller('ImageZoomCtrl', function ($scope, $timeout) {
     };
 
 });
-
-function importImage(imageData, filename) {    // 从Android读取的图片
-    angular.element("#handlePage").scope().addImagesWithBase64(imageData, filename);
-}
-
-function deleteImage (filename) {       // Android手机上删除所选图片
-    angular.element("#handlePage").scope().deleteImageFromMobile(filename);
-}
 
 app.controller('BaseGalleryCtrl', function ($scope, $stateParams, $timeout) {
     // $scope.canDelete = false;

@@ -104,7 +104,12 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
             url: '/user/' + $scope.username,
             success: function (data) {
                 userService.saveLoginUser(data, $scope.password);
-                getCompany();
+                // getCompany();
+                if (window.android){
+                    window.android.loginSuccess();
+                }else{
+                    location.href = '/templates/home.html?finishPage=1';
+                }
             },
             error: function () {
                 $scope.enable = true;

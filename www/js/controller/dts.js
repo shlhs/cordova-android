@@ -1,3 +1,19 @@
+function importImage(imageData, filename) {    // 从Android读取的图片
+    console.log('start import image');
+    var scope = angular.element('div[ng-controller="DtsCreateCtrl"]').scope();
+    // var scope = angular.element('#handlePage').scope();
+    if (scope) {
+        console.log('find scope');
+        scope.addImagesWithBase64(imageData, filename);
+    } else {
+        alert('not find scope');
+    }
+}
+
+function deleteImage (filename) {       // Android手机上删除所选图片
+    angular.element("#handlePage").scope().deleteImageFromMobile(filename);
+}
+
 app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, routerService) {
     var taskId = GetQueryString("task_id") || '';
     $scope.device = {
