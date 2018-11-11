@@ -281,23 +281,6 @@
                 url:'update/',
                 templateUrl: '/templates/task/task-handle-update.html'
             })
-            .state('task.gallery', {
-                url: 'gallery',
-                templateUrl: '/templates/task/task-gallery.html',
-                params: {
-                    index: 0,
-                    images: []
-                }
-            })
-            .state('task.update.gallery', {
-                url: 'gallery',
-                templateUrl: '/templates/task/task-gallery.html',
-                params: {
-                    index: 0,
-                    images: [],
-                    canDelete: true
-                }
-            })
             .state('task.reject', {
                 url: 'reject',
                 templateUrl: '/templates/task/task-close-reject.html'

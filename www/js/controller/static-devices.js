@@ -206,7 +206,14 @@ app.controller('StaticDeviceDetailCtrl', function ($scope, ajax, routerService, 
     }
 
     $scope.startDeviceEditor = function () {
-        routerService.openPage($scope, '/templates/site/static-devices/device-edit.html', {id: $scope.device.id});
+        routerService.openPage($scope, '/templates/site/static-devices/device-edit.html',
+            {
+                id: $scope.device.id,
+                onSave: function (data) {
+                    $scope.device = data;
+                }
+            }
+        );
     };
 
     $scope.gotoDtsList = function () {
@@ -438,6 +445,10 @@ app.controller('StaticDeviceEditCtrl', function ($scope, ajax, routerService, pl
                 $.notify.info('更新成功');
                 response.device_photo_src_link = null;      // 默认使用$scope.deviceImage显示图片
                 $scope.device = parseDeviceData(response);
+                if ($scope.onSave) {
+                    $scope.onSave($scope.device);
+                }
+                $scope.$apply();
             },
             error: function () {
                 $.notify.progressStop();

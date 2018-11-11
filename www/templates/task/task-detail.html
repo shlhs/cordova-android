@@ -80,6 +80,19 @@
         .info-group .value {
             margin-left: 0;
         }
+        .mui-input-row .mui-btn{
+            width: calc(100% - 160px);
+            outline: none;
+            background: transparent;
+            border: none;
+        }
+        .create-form input{
+            position: absolute;
+        }
+        .create-form .mui-input-row label~input, .create-form .mui-input-row label~select, .create-form .mui-input-row label~textarea{
+            width: calc(100% - 160px);
+            right: 0;
+        }
     </style>
 </head>
 
@@ -219,7 +232,7 @@
         </nav>
         <nav class="mui-bar mui-bar-tab bg-transparent" ng-if="taskData.stage_id === TaskStatus.Competition">
             <a class="mui-tab-item mui-active mui-segmented-control-vertical" href="#" ng-controller="GrabTaskCtrl">
-                <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-btn-outlined mui-control-item accept"
+                <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-btn-outlined mui-control-item accept task-btn"
                         style="background-color: #f0ad4e;color: #fff;border: #f0ad4e;"
                         ng-click="postGrabAction($event, taskData.id)">抢单</button>
             </a>
@@ -252,10 +265,10 @@
         </nav>
         <nav class="mui-bar mui-bar-tab" ng-if='canHandle && taskData.stage_id===TaskStatus.Arrived'>
             <a class="mui-tab-item mui-segmented-control-vertical" ng-click="gotoDeviceHandlerPage()" ng-if="taskData.task_type_id === 11">
-                <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-control-item">去检查</button>
+                <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-control-item task-btn">去检查</button>
             </a>
             <a class="mui-tab-item mui-segmented-control-vertical" ng-click="gotoHandleTask()" ng-if="taskData.task_type_id!==1 && taskData.task_type_id!==6">
-                <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-control-item">上传处理结果</button>
+                <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-control-item task-btn">上传处理结果</button>
             </a>
             <a class="mui-tab-item mui-segmented-control-vertical">
                 <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-control-item task-btn"
@@ -288,6 +301,8 @@
 <script src="../../js/my/notify.js"></script>
 <script src="../../js/controller/static-devices.js"></script>
 <script src="../../components/mui/js/mui.picker.min.js"></script>
+<script src="../../js/controller/dts.js"></script>
+
 <script>
     mui.init();
 
@@ -303,23 +318,6 @@
             .state('task.update', {
                 url:'update/',
                 templateUrl: '/templates/task/task-handle-update.html'
-            })
-            .state('task.gallery', {
-                url: 'gallery',
-                templateUrl: '/templates/task/task-gallery.html',
-                params: {
-                    index: 0,
-                    images: []
-                }
-            })
-            .state('task.update.gallery', {
-                url: 'gallery',
-                templateUrl: '/templates/task/task-gallery.html',
-                params: {
-                    index: 0,
-                    images: [],
-                    canDelete: true
-                }
             })
             .state('task.reject', {
                 url: 'reject',

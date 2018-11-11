@@ -15,13 +15,14 @@ function deleteImage (filename) {       // Android手机上删除所选图片
 }
 
 app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, routerService) {
-    var taskId = GetQueryString("task_id") || '';
+    var taskId = GetQueryString("task_id") || $scope.task_id || '';
     $scope.device = {
-        sn: GetQueryString('device_sn'),
-        station_sn: GetQueryString('station_sn'),
-        name: GetQueryString('name'),
-        path: GetQueryString('path')
+        sn: GetQueryString('device_sn') || $scope.device_sn,
+        station_sn: GetQueryString('station_sn') || $scope.station_sn,
+        name: GetQueryString('name') || $scope.name,
+        path: GetQueryString('path') || $scope.path
     };
+
     $scope.isForDevice = $scope.device.sn ? true : false;
     $scope.taskData = {};
     $scope.name = $scope.device.path ? $scope.device.path + '/' + $scope.device.name : $scope.device.name;
@@ -324,10 +325,22 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
             success: function (data) {
                 $.notify.progressStop();
                 $.notify.info('创建成功');
+                if ($scope.isInPage) {
+                    history.back();
+                }
                 $timeout(function () {
-                    window.location.href = '/templates/task/task-detail.html?finishPage=1&id=' + data.id +
-                        '&taskType=' + data.task_type_id + '&mother_task_id=' + taskId;       // 设置finish=1，这样在Android端在打开新页面时，会将当前页finish掉
-                }, 800);
+                    var url = '/templates/task/task-detail.html?id=' + data.id +
+                        '&taskType=' + taskData.task_type_id + '&mother_task_id=' + taskId;
+                    if ($scope.isInPage) {
+                        url += '&finishPage=1';
+                        var record = {
+                            device_sn: $scope.device.sn,
+                            status: '有故障'
+                        };
+                        onAndroidCb_updateDeviceRecord(JSON.stringify(record));     // 调用任务页更新设备状态
+                    }
+                    window.location.href = url;       // 设置finish=1，这样在Android端在打开新页面时，会将当前页finish掉
+                }, 300);
             },error: function () {
                 $.notify.progressStop();
                 $.notify.error('创建失败');
@@ -442,7 +455,6 @@ app.controller('DeviceDtsListCtrl', function ($scope, ajax, scrollerService) {
 
 
 app.controller('StationDtsListCtrl', function ($scope, $rootScope, scrollerService, userService, ajax) {
-    var allTasks = [];
     var stationSn = GetQueryString("sn");
     $scope.TaskStatus = TaskStatus;
     $scope.tasks = [];
@@ -528,21 +540,19 @@ app.controller('StationDtsListCtrl', function ($scope, $rootScope, scrollerServi
     };
 
     $scope.updateTask = function (taskData) {
-        console.log('TaskHistoryCtrl updateTask');
         // 查找任务是否存在
         var exist = false;
-        for (var i in allTasks){
-            if (allTasks[i].id === taskData.id) {
-                allTasks[i] = taskData;
+        for (var i in $scope.tasks){
+            if ($scope.tasks[i].id === taskData.id) {
+                $scope.tasks[i] = taskData;
                 exist = true;
                 break;
             }
         }
         if (!exist){        // 如果不存在，则加入到最前面
-            allTasks.unshift(taskData);
+            $scope.tasks.unshift(taskData);
         }
-        allTasks.sort(sortDts);
-        $scope.changeTaskType(null, $scope.showType);
+        $scope.tasks.sort(sortDts);
         $scope.$apply();
     };
 

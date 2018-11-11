@@ -84,7 +84,7 @@
     color: red;
 }
 .task-item.closed .main-body, .task-item.closed .sub-body{
-    background-color: rgba(212, 212, 212, 0.2);
+    background-color: rgba(241, 241, 241, 0.2);
 }
 .task-item.closed .task-status{
     color: #8f8f94;
@@ -172,7 +172,7 @@
     color: rgba(220, 3, 3, 0.71);
 }
 .task-type.serious {
-    color: #ea9925;
+    color: #f0ad4e;
 }
 .steps{
     display: -webkit-box;
@@ -475,7 +475,7 @@
     color:#fff;
 }
 .task-btn.mui-btn {
-    padding: 8px 0;
+    padding: 10px 0 8px 0;
     font-size: 14px;
 }
 .task-item .triangle-topleft {

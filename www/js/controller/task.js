@@ -60,6 +60,7 @@ function formatTaskStatusName(task) {   // 根据任务状态转换任务描述
 }
 
 function sortByUpdateTime(t1, t2) {
+    // 排序顺序：待处理、待审核、已关闭。 想等状态按期望关闭时间排序
     if (t1.last_modified_time > t2.last_modified_time){
         return -1;
     }
@@ -102,13 +103,11 @@ function formatUpdateTime(t) {      // 格式化更新时间，有日期和时�
 }
 
 function importImage(imageData, filename) {    // 从Android读取的图片
-    console.log('start import image');
     var scope = angular.element("#handlePage").scope();
     if (scope) {
-        console.log('find scope');
         scope.addImagesWithBase64(imageData, filename);
     } else {
-        alert('not find scope');
+        // alert('not find scope');
     }
 }
 
@@ -466,7 +465,7 @@ app.controller('CompetitionTaskListCtrl', function ($scope, $rootScope, scroller
                 // 从任务列表中删除
                 $scope.tasks.splice(i, 1);
                 // 给我的待办增加一条
-                var scope = angular.element('div[ng-controller="TaskListCtrl"]').scope();
+                var scope = angular.element('#taskListWrapper').scope();
                 scope.updateTask && scope.updateTask(taskData);
                 break;
             }
@@ -542,7 +541,6 @@ app.controller('TaskTodoListCtrl', function ($scope, $rootScope, scrollerService
                 $scope.$apply();
             },
             error: function (a,b,c) {
-                alert('55');
                 $scope.isLoading = false;
                 $scope.loadingFailed = true;
                 $scope.$apply();
@@ -551,17 +549,21 @@ app.controller('TaskTodoListCtrl', function ($scope, $rootScope, scrollerService
     };
 
     $scope.updateTask = function (taskData) {
-        console.log('TaskHistoryCtrl updateTask');
         // 查找任务是否存在
         var exist = false;
         for (var i in allTasks){
             if (allTasks[i].id === taskData.id){
-                allTasks[i] = taskData;
+                // 如果责任人不是当前用户，则从列表中删除
+                if (isTodoTask(taskData)) {
+                    allTasks[i] = taskData;
+                } else {
+                    allTasks.splice(i, 1);
+                }
                 exist = true;
                 break;
             }
         }
-        if (!exist){        // 如果不存在，则加入到最前面
+        if (!exist && isTodoTask(taskData)){        // 如果不存在，则加入到最前面
             allTasks.unshift(taskData);
         }
         allTasks.sort(sortByUpdateTime);
@@ -618,7 +620,6 @@ app.controller('TaskTodoListCtrl', function ($scope, $rootScope, scrollerService
 });
 
 app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, userService, ajax) {
-    var allTasks = [];
     var username = userService.user.account;
     $scope.TaskStatus = TaskStatus;
     $scope.tasks = [];
@@ -629,6 +630,41 @@ app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, us
     var deviceSn = GetQueryString("device_sn");     // 如果设备sn不为空，则获取的是设备的运维记录
     $scope.isDeviceOps = deviceSn ? true : false;
     $scope.pageTitle = deviceSn ? '运维记录' : '所有任务';
+
+    function sortFunc(d1, d2) {
+
+        // 排序规则：未完成、待审批、已关闭，同样状态的按截止日期排序
+        var stage1 = d1.stage_id;
+        var stage2 = d2.stage_id;
+        var status1 = 0;        // 0:未完成，1：待审批，2：已关闭
+        var status2 = 0;        // 0:未完成，1：待审批，2：已关闭
+        switch (stage1) {
+            case TaskStatus.Closed:
+                status1 = 2;
+                break;
+            case TaskStatus.ToClose:
+                status1 = 1;
+                break;
+        }
+        switch (stage2) {
+            case TaskStatus.Closed:
+                status2 = 2;
+                break;
+            case TaskStatus.ToClose:
+                status2 = 1;
+                break;
+        }
+        if (status1 !== status2) {
+            return status1 - status2;
+        }
+        if (d1.expect_complete_time > d2.expect_complete_time){
+            return 1;
+        }
+        if (d1.expect_complete_time === d2.expect_complete_time){
+            return 0;
+        }
+        return -1;
+    }
 
     $scope.getDataList = function() {
         scrollerService.initScroll("#taskList", $scope.getDataList);
@@ -648,7 +684,7 @@ app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, us
             },
             success: function(result) {
                 $scope.isLoading = false;
-                result.aaData.sort(sortByUpdateTime);
+                result.aaData.sort(sortFunc);
                 var tasks = result.aaData, task = null;
                 for (var i in tasks){
                     task = tasks[i];
@@ -681,21 +717,19 @@ app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, us
     };
 
     $scope.updateTask = function (taskData) {
-        console.log('TaskHistoryCtrl updateTask');
         // 查找任务是否存在
         var exist = false;
-        for (var i in allTasks){
-            if (allTasks[i].id === taskData.id) {
-                allTasks[i] = taskData;
+        for (var i in $scope.tasks){
+            if ($scope.tasks[i].id === taskData.id) {
+                $scope.tasks[i] = taskData;
                 exist = true;
                 break;
             }
         }
         if (!exist){        // 如果不存在，则加入到最前面
-            allTasks.unshift(taskData);
+            $scope.tasks.unshift(taskData);
         }
-        allTasks.sort(sortByUpdateTime);
-        $scope.changeTaskType(null, $scope.showType);
+        $scope.tasks.sort(sortFunc);
         $scope.$apply();
     };
 
@@ -709,12 +743,25 @@ function updateAfterGrab(strArgs) {     // 在任务详情页抢单后，需要�
     scope.afterGrabTask(taskData);
 }
 
+function notifyPrevPageToUpdateTask(taskData) {
+    var data = $.extend({}, taskData);
+    if (data.device_record) {
+        delete data.device_record;
+    }
+    if (data.events) {
+        delete data.events;
+    }
+    window.android && window.android.onJsCallbackForPrevPage('updateTask', JSON.stringify(data));
+
+}
 function updateTask(strArgs) {  // json格式的参数， {data: taskData}
     var taskData = JSON.parse(strArgs);
     // 更新到“我的待办”
-    var scope = angular.element('div[ng-controller="TaskListCtrl"]').scope();
+    var scope = angular.element('#taskListWrapper').scope();
     formatTaskStatusName(taskData);
-    scope.updateTask && scope.updateTask(taskData);
+    if (scope) {
+        scope.updateTask && scope.updateTask(taskData);
+    }
 }
 
 function setTaskReportId(reportId) {        // 安全检测和停电维护新建后返回到任务详情页时，设置任务的report_id
@@ -781,9 +828,9 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
                 updateTaskInfo(task);
 
                 // mother_task_id不为空，说明该任务是由巡检任务创建的缺陷，需要通知巡检任务更新设备状态
-                if (GetQueryString('mother_task_id')) {
-                    window.android && window.android.onJsCallbackForPrevPage('onAndroidCb_updateDeviceRecord', JSON.stringify(task.device_record[0]));
-                }
+                // if (GetQueryString('mother_task_id')) {
+                //     window.android && window.android.onJsCallbackForPrevPage('onAndroidCb_updateDeviceRecord', JSON.stringify(task.device_record[0]));
+                // }
             },
             error: function (a, b, c) {
                 console.log('get task detail fail');
@@ -954,7 +1001,7 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
         $scope.commonPostAction(id, actionType, description, images, function (data) {
             $scope.taskData = formatTaskStatusName(data);
             // 调用Android接口
-            window.android && window.android.onJsCallbackForPrevPage('updateTask', JSON.stringify(data));
+            notifyPrevPageToUpdateTask(data);
             formatTaskStatus();
             cb && cb(data);
             getTaskHistory();
@@ -1023,7 +1070,15 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
                 imageList.push(platformService.host + images['picture' + i]);
             }
         }
-        $state.go('task.gallery', {index: index, images: imageList});
+        // $state.go('task.gallery', {index: index, images: imageList});
+
+        routerService.openPage($scope, '/templates/base-gallery.html', {
+            index: index,
+            images: imageList,
+            canDelete: false
+        }, {
+            hidePrev: false
+        });
     };
 
     $scope.taskHandler = {
@@ -1096,7 +1151,8 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
         routerService.openPage($scope, '/templates/task/device-list.html',
             {
                 task: $scope.taskData,
-                canHandle: $scope.canHandle && $scope.taskData.stage_id === TaskStatus.Arrived
+                canHandle: $scope.canHandle && $scope.taskData.stage_id === TaskStatus.Arrived,
+                recountFunc: $scope.recountCheckedDevices
             }, {
                 hidePrev: false
             }
@@ -1109,7 +1165,6 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
             device_sn: device.sn
         });
     };
-
 
     function initMembers() {
 
@@ -1155,7 +1210,7 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
                                 $scope.commonPostActionWithParams($scope.taskData.id, action, {transfer_user: items[0].value}, function (data) {
                                     $scope.taskData = formatTaskStatusName(data);
                                     // 调用Android接口
-                                    window.android && window.android.onJsCallbackForPrevPage('updateTask', JSON.stringify(data));
+                                    notifyPrevPageToUpdateTask(data);
                                     formatTaskStatus();
                                     getTaskHistory();
                                 });
@@ -1170,9 +1225,20 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
             }
         });
     }
+
+    $scope.recountCheckedDevices = function () {
+        // 重新计算已检查的设备数
+        var checkedCount = 0;
+        $scope.taskData.device_record.forEach(function (r) {
+            if (r.status && r.status !== '未处理') {
+                checkedCount += 1;
+            }
+        });
+        $scope.checkedDeviceCount = checkedCount;
+    }
 });
 
-app.controller('TaskHandlerUpload', function ($scope, $timeout) {
+app.controller('TaskHandlerUpload', function ($scope, $timeout, routerService) {
     $scope.files = [];
     $scope.images = [];
     $scope.description = '';
@@ -1256,7 +1322,20 @@ app.controller('TaskHandlerUpload', function ($scope, $timeout) {
        window.android && window.android.deleteSelectedPhoto && window.android.deleteSelectedPhoto(filename);
        $scope.files.splice(index, 1);
        $scope.images.splice(index, 1);
-   }
+   };
+
+    $scope.openGallery = function (index, images) {
+        routerService.openPage($scope, '/templates/base-gallery.html', {
+            index: index+1,
+            images: $scope.images,
+            canDelete: true,
+            onDelete: function (deleteIndex) {
+                $scope.images.splice(deleteIndex, 1);
+            }
+        }, {
+            hidePrev: false
+        });
+    };
 });
 
 app.controller('TaskGalleryCtrl', function ($scope, $stateParams, $timeout) {
@@ -1680,6 +1759,7 @@ app.controller('TaskDevicesHandlerCtrl', function ($scope, routerService, ajax) 
                             r.status_name = 'normal';
                         }
                     });
+                    $scope.recountFunc();
                 }
                 $scope.$apply();
             },
@@ -1706,8 +1786,16 @@ app.controller('TaskDevicesHandlerCtrl', function ($scope, routerService, ajax) 
                 return false;
             }
         });
-        location.href = '/templates/dts/dts-create.html?task_id=' + $scope.task.id + '&station_sn=' + $scope.task.station_sn +
-            '&device_sn=' + record.device_sn + '&path=' + record.device.path + '&name=' + record.device.name;
+        routerService.openPage($scope, '/templates/task/dts-create-from-task.html', {
+            task_id: $scope.task.id,
+            station_sn: $scope.task.station_sn,
+            device_sn: record.device_sn,
+            path: record.device.path,
+            name: record.device.name,
+            isInPage: true
+        });
+        // location.href = '/templates/dts/dts-create.html?task_id=' + $scope.task.id + '&station_sn=' + $scope.task.station_sn +
+        //     '&device_sn=' + record.device_sn + '&path=' + record.device.path + '&name=' + record.device.name;
     };
 
     $scope.gotoDevice = function(deviceData){
@@ -1725,6 +1813,7 @@ app.controller('TaskDevicesHandlerCtrl', function ($scope, routerService, ajax) 
                 return false;
             }
         });
+        $scope.recountFunc();
     };
 
     init();

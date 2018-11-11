@@ -129,10 +129,7 @@
             <span style="position: absolute;">{{linkEventInfo}}</span>
         </div>
         <div class="mui-input-row" style="margin: 10px 5px;height: auto;">
-            <textarea rows="3" placeholder="任务描述，必填" name="desp" ng-model="taskData.desp" required></textarea>
-            <label class="error" style="margin-left: 0;" ng-show="myForm.desp.$invalid && (myForm.desp.$dirty || myForm.$submitted)">
-                <span ng-show="myForm.desp.$error.required">任务描述不能为空</span>
-            </label>
+            <textarea rows="3" placeholder="任务具体描述" name="desp" ng-model="taskData.desp"></textarea>
         </div>
         <div class="mui-button-row" style="padding: 8px 16px;">
             <button type="submit" class="mui-btn mui-btn-primary mui-btn-block"
