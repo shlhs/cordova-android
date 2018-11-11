@@ -115,7 +115,6 @@ app.controller('StaticDeviceDetailCtrl', function ($scope, ajax, routerService, 
     $scope.device = {};
     $scope.showTab = 'info';
     $scope.isPC = IsPC();
-    $scope.useMobileGallery = window.android && window.android.openGallery;
     $scope.opsTaskCount = 0;        // 运维个数
     $scope.unhandledDtsCount = 0;   // 未解决缺陷个数
     $scope.closedDtsCount = 0;      // 已关闭缺陷个数
@@ -209,8 +208,9 @@ app.controller('StaticDeviceDetailCtrl', function ($scope, ajax, routerService, 
         routerService.openPage($scope, '/templates/site/static-devices/device-edit.html',
             {
                 id: $scope.device.id,
-                onSave: function (data) {
-                    $scope.device = data;
+                onSave: function (data, photoLink) {
+                    $.extend($scope.device, data);
+                    $scope.device.device_photo_src_link = platformService.host + photoLink;
                 }
             }
         );
@@ -227,11 +227,23 @@ app.controller('StaticDeviceDetailCtrl', function ($scope, ajax, routerService, 
     init();
 });
 
+function onAndroid_deviceImageImport(imageData, filename) {    // 从Android读取的图片
+    var scope = angular.element('#staticDeviceEditPage').scope();
+    // var scope = angular.element('#handlePage').scope();
+    if (scope) {
+        scope.addImagesWithBase64(imageData, filename);
+    }
+}
+
 app.controller('StaticDeviceEditCtrl', function ($scope, ajax, routerService, platformService) {
     $scope.device = {};
     $scope.showTab = 'info';
     $scope.editObj = {};
     $scope.deviceImage = null;
+    $scope.useMobileGallery = window.android && window.android.openGallery;
+
+    // 先清除上一次选择的图片
+    window.android && window.android.clearSelectedPhotos();
 
     $scope.changeTabType = function ($event, tab) {
         $scope.showTab = tab;
@@ -421,10 +433,21 @@ app.controller('StaticDeviceEditCtrl', function ($scope, ajax, routerService, pl
         }
     } ;
 
+    $scope.openMobileGallery = function () {
+        window.android.openGallery(1, 'onAndroid_deviceImageImport', null);
+    };
+
     $scope.chooseDeviceImage = function () {
         // 上传设备图片
 
     };
+
+    $scope.addImagesWithBase64 = function (data, filename) {
+        $scope.deviceImage = data;
+        $scope.device.device_photo_src_link = data;
+        $scope.$apply();
+    };
+
 
     $scope.chooseDeviceQr = function () {
         // 上传二维码
@@ -443,11 +466,11 @@ app.controller('StaticDeviceEditCtrl', function ($scope, ajax, routerService, pl
             success: function (response) {
                 $.notify.progressStop();
                 $.notify.info('更新成功');
-                response.device_photo_src_link = null;      // 默认使用$scope.deviceImage显示图片
                 $scope.device = parseDeviceData(response);
                 if ($scope.onSave) {
-                    $scope.onSave($scope.device);
+                    $scope.onSave($scope.device, response.device_photo_src_link);
                 }
+                $scope.device.device_photo_src_link = null;      // 默认使用$scope.deviceImage显示图片
                 $scope.$apply();
             },
             error: function () {

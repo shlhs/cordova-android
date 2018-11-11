@@ -272,7 +272,7 @@
             </a>
             <a class="mui-tab-item mui-segmented-control-vertical">
                 <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-control-item task-btn"
-                        ng-click="taskHandler.requestTaskComplete()">任务完成</button>
+                        ng-click="taskHandler.requestTaskComplete()" style="background-color: #00BFA5;">任务完成</button>
             </a>
         </nav>
         <nav class="mui-bar mui-bar-tab" ng-if='canHandle && taskData.stage_id===TaskStatus.ToClose'>

@@ -60,7 +60,7 @@ function formatTaskStatusName(task) {   // 根据任务状态转换任务描述
 }
 
 function sortByUpdateTime(t1, t2) {
-    // 排序顺序：待处理、待审核、已关闭。 想等状态按期望关闭时间排序
+    // 排序顺序：待处理、待审核、已关闭。 相同状态下按更新时间排序
     if (t1.last_modified_time > t2.last_modified_time){
         return -1;
     }
@@ -102,16 +102,14 @@ function formatUpdateTime(t) {      // 格式化更新时间，有日期和时�
     return t.substring(5, 16);
 }
 
-function importImage(imageData, filename) {    // 从Android读取的图片
+function onAndroid_taskImageImport(imageData, filename) {    // 从Android读取的图片
     var scope = angular.element("#handlePage").scope();
     if (scope) {
         scope.addImagesWithBase64(imageData, filename);
-    } else {
-        // alert('not find scope');
     }
 }
 
-function deleteImage (filename) {       // Android手机上删除所选图片
+function onAndroid_taskImageDelete(filename) {       // Android手机上删除所选图片
     angular.element("#handlePage").scope().deleteImageFromMobile(filename);
 }
 
@@ -1246,6 +1244,9 @@ app.controller('TaskHandlerUpload', function ($scope, $timeout, routerService) {
     $scope.useMobileGallery = window.android && window.android.openGallery;
     var insertPosition = angular.element("#imageList>.upload-item");
 
+    // 先清除上一次选择的图片
+    window.android && window.android.clearSelectedPhotos();
+
     $scope.chooseImage = function (files) {     // 选择图片
         $scope.canDelete = true;
        for (var i = 0; i < files.length; i++) {
@@ -1308,7 +1309,7 @@ app.controller('TaskHandlerUpload', function ($scope, $timeout, routerService) {
    };
 
    $scope.openMobileGallery = function () {
-       window.android.openGallery();
+       window.android.openGallery(9, 'onAndroid_taskImageImport', 'onAndroid_taskImageDelete');
    };
 
    $scope.cancel = function () {
@@ -1329,9 +1330,7 @@ app.controller('TaskHandlerUpload', function ($scope, $timeout, routerService) {
             index: index+1,
             images: $scope.images,
             canDelete: true,
-            onDelete: function (deleteIndex) {
-                $scope.images.splice(deleteIndex, 1);
-            }
+            onDelete: $scope.deleteImage
         }, {
             hidePrev: false
         });

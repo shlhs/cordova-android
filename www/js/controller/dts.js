@@ -1,17 +1,17 @@
-function importImage(imageData, filename) {    // 从Android读取的图片
+function onAndroid_dtsImageImport(imageData, filename) {    // 从Android读取的图片
     console.log('start import image');
-    var scope = angular.element('div[ng-controller="DtsCreateCtrl"]').scope();
+    var scope = angular.element('#dtsCreatePage').scope();
     // var scope = angular.element('#handlePage').scope();
     if (scope) {
         console.log('find scope');
         scope.addImagesWithBase64(imageData, filename);
     } else {
-        alert('not find scope');
+        // alert('not find scope');
     }
 }
 
-function deleteImage (filename) {       // Android手机上删除所选图片
-    angular.element("#handlePage").scope().deleteImageFromMobile(filename);
+function onAndroid_dtsImageDelete (filename) {       // Android手机上删除所选图片
+    angular.element("#dtsCreatePage").scope().deleteImageFromMobile(filename);
 }
 
 app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, routerService) {
@@ -33,6 +33,9 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
     $scope.isPC = IsPC();
     $scope.useMobileGallery = window.android && window.android.openGallery;
     var staticDevices = [];
+
+    // 先清除上一次选择的图片
+    window.android && window.android.clearSelectedPhotos();
 
     var insertPosition = angular.element("#imageList>.upload-item");
     var companyId = userService.getTaskCompanyId();
@@ -244,6 +247,7 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
     };
 
     $scope.addImagesWithBase64 = function (data, filename) {
+        // alert('add images for dts create');
         $scope.canDelete = true;
         if (filename === undefined) {
             filename = '';
@@ -265,7 +269,7 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
     };
 
     $scope.openMobileGallery = function () {
-        window.android.openGallery();
+        window.android.openGallery(9, 'onAndroid_dtsImageImport', 'onAndroid_dtsImageDelete');
     };
 
     $scope.cancel = function () {
@@ -278,9 +282,7 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
             index: index+1,
             images: $scope.images,
             canDelete: true,
-            onDelete: function (deleteIndex) {
-                $scope.images.splice(deleteIndex, 1);
-            }
+            onDelete: $scope.deleteImage
         }, {
             hidePrev: false
         });
@@ -332,12 +334,13 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
                     var url = '/templates/task/task-detail.html?id=' + data.id +
                         '&taskType=' + taskData.task_type_id + '&mother_task_id=' + taskId;
                     if ($scope.isInPage) {
-                        url += '&finishPage=1';
                         var record = {
                             device_sn: $scope.device.sn,
                             status: '有故障'
                         };
                         onAndroidCb_updateDeviceRecord(JSON.stringify(record));     // 调用任务页更新设备状态
+                    } else {
+                        url += '&finishPage=1';
                     }
                     window.location.href = url;       // 设置finish=1，这样在Android端在打开新页面时，会将当前页finish掉
                 }, 300);
@@ -387,13 +390,13 @@ app.controller('DeviceDtsListCtrl', function ($scope, ajax, scrollerService) {
         if (status1 !== status2) {
             return status1 - status2;
         }
-        if (d1.expect_complete_time > d2.expect_complete_time){
-            return 1;
+        if (d1.last_modified_time > d2.last_modified_time){
+            return -1;
         }
-        if (d1.expect_complete_time === d2.expect_complete_time){
+        if (d1.last_modified_time === d2.last_modified_time){
             return 0;
         }
-        return -1;
+        return 1;
     }
 
     $scope.getDataList = function() {
@@ -487,13 +490,13 @@ app.controller('StationDtsListCtrl', function ($scope, $rootScope, scrollerServi
         if (status1 !== status2) {
             return status1 - status2;
         }
-        if (d1.expect_complete_time > d2.expect_complete_time){
-            return 1;
+        if (d1.last_modified_time > d2.last_modified_time){
+            return -1;
         }
-        if (d1.expect_complete_time === d2.expect_complete_time){
+        if (d1.last_modified_time === d2.last_modified_time){
             return 0;
         }
-        return -1;
+        return 1;
     }
 
     $scope.getDataList = function() {
