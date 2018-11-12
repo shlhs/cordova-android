@@ -557,7 +557,7 @@ app.controller('TaskTodoListCtrl', function ($scope, $rootScope, scrollerService
         if (!exist && isTodoTask(taskData)){        // 如果不存在，则加入到最前面
             allTasks.unshift(taskData);
         }
-        allTasks.sort(sortByUpdateTime);
+        // allTasks.sort(sortByUpdateTime);
         $scope.changeTaskType(null, $scope.showType);
         $scope.$apply();
     };
@@ -719,7 +719,7 @@ app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, us
         if (!exist){        // 如果不存在，则加入到最前面
             $scope.tasks.unshift(taskData);
         }
-        $scope.tasks.sort(sortFunc);
+        // $scope.tasks.sort(sortFunc);
         $scope.$apply();
     };
 

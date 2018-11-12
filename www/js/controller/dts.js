@@ -359,7 +359,6 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
 app.controller('DeviceDtsListCtrl', function ($scope, ajax, scrollerService) {
     var deviceSn = GetQueryString('device_sn');
     var stationSn = GetQueryString('station_sn');
-    var allTasks = [];
     $scope.TaskStatus = TaskStatus;
     $scope.tasks = [];
     $scope.isLoading = true;
@@ -430,21 +429,19 @@ app.controller('DeviceDtsListCtrl', function ($scope, ajax, scrollerService) {
     };
 
     $scope.updateTask = function (taskData) {
-        console.log('TaskHistoryCtrl updateTask');
         // 查找任务是否存在
         var exist = false;
-        for (var i in allTasks){
-            if (allTasks[i].id === taskData.id){
-                allTasks[i] = taskData;
+        for (var i in $scope.tasks){
+            if ($scope.tasks[i].id === taskData.id){
+                $scope.tasks[i] = taskData;
                 exist = true;
                 break;
             }
         }
         if (!exist){        // 如果不存在，则加入到最前面
-            allTasks.unshift(taskData);
+            $scope.tasks.unshift(taskData);
         }
-        allTasks.sort(sortDts);
-        $scope.changeTaskType(null, $scope.showType);
+        // $scope.tasks.sort(sortDts);
         $scope.$apply();
     };
 
@@ -454,8 +451,6 @@ app.controller('DeviceDtsListCtrl', function ($scope, ajax, scrollerService) {
 
     $scope.getDataList();
 });
-
-
 
 app.controller('StationDtsListCtrl', function ($scope, $rootScope, scrollerService, userService, ajax) {
     var stationSn = GetQueryString("sn");
@@ -555,7 +550,7 @@ app.controller('StationDtsListCtrl', function ($scope, $rootScope, scrollerServi
         if (!exist){        // 如果不存在，则加入到最前面
             $scope.tasks.unshift(taskData);
         }
-        $scope.tasks.sort(sortDts);
+        // $scope.tasks.sort(sortDts);
         $scope.$apply();
     };
 
