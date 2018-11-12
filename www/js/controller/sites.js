@@ -246,7 +246,11 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
     $scope.openSiteSelectPage = function () {
         routerService.openPage($scope, '/templates/site/site-select-page.html',
             {treeData: $scope.sitesTree, onSelect: $scope.chooseSite, selectedSn: $scope.currentSite.sn})
-    }
+    };
+
+    $scope.openMap = function () {
+        location.href='/templates/map.html?name=' + $scope.currentSite.name + '&stationSn=' + $scope.currentSite.sn;
+    };
 });
 
 app.controller('SiteTreeCtrl', function ($scope) {
