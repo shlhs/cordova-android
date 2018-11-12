@@ -111,11 +111,11 @@ app.service('userService', function ($rootScope) {
         for (var i=0; i<perms.length; i++) {
             var auth = perms[i].authrity_name;
             //运维公司
-            if (auth.startsWith("COMPANY_OPS_COMPANY_VIEWCOMPANY")) {
+            if (auth.indexOf("COMPANY_OPS_COMPANY_VIEWCOMPANY") === 0) {
                 return auth.substring("COMPANY_OPS_COMPANY_VIEWCOMPANY".length);
             }
             //用户公司
-            if (auth.startsWith("USER_COMPANY_USERUSER_COMPANY")) {
+            if (auth.indexOf("USER_COMPANY_USERUSER_COMPANY") === 0) {
                 return 'user' + auth.substring("USER_COMPANY_USERUSER_COMPANY".length);
             }
         }

@@ -127,10 +127,7 @@ app.service('Permission', function (userService, UserRole) {      // 权限服�
     };
 });
 
-app.controller('HomeCtrl', function ($scope, $timeout, userService, ajax, $state, $rootScope, Permission) {
-
-    var company = userService.company;
-    var map = null;
+app.controller('HomeCtrl', function ($scope, $timeout, userService) {
     var role = userService.getUserRole();
     $scope.viewName = '';
     $scope.tabName = 'sites';
@@ -141,7 +138,7 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, ajax, $state
         $scope.tabName = tabName;
         $scope.title = title;
         var element=angular.element('#' + tabName).children().first(), scope = element.scope();
-        if (scope.getDataList && !element.data('inited')){
+        if (scope && scope.getDataList && !element.data('inited')){
             scope.getDataList();
             element.data('inited', true);
         }
@@ -184,10 +181,6 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, ajax, $state
         }, 500);
     }
     initMenu();
-    // $rootScope.login(function () {
-    //     var menu = $scope.navMenus[0];
-    //     $scope.chooseNav(menu.id, menu.name);
-    // });
 });
 
 app.controller('TaskBaseCtrl', function ($scope, ajax, userService) {
@@ -618,7 +611,6 @@ app.controller('TaskTodoListCtrl', function ($scope, $rootScope, scrollerService
 });
 
 app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, userService, ajax) {
-    var username = userService.user.account;
     $scope.TaskStatus = TaskStatus;
     $scope.tasks = [];
     $scope.showType = 'all';    // all, open, closed, todo
