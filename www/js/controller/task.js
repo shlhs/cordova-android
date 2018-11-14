@@ -1578,6 +1578,7 @@ app.controller('TaskCreateCtrl', function ($scope, $timeout, userService, ajax) 
             } else {
                 var optionsJson = this.getAttribute('data-options') || '{}';
                 var options = JSON.parse(optionsJson);
+                options.type = 'month';
                 var id = this.getAttribute('id');
                 /*
                  * 首次显示时实例化组件
