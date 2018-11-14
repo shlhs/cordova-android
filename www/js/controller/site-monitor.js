@@ -11,7 +11,7 @@ var g_line_colors = ['#9474df','#ef7e9c', '#6bc1dd', '#13cf5a',  '#f3a15d', '#6c
 var g_pvf_colors = {
     'p': 'rgba(239, 150, 166, 0.18)',
     'v': 'rgba(138, 212, 199, 0.18)',
-    'f': 'rgba(136, 169, 248, 0.18)',
+    'f': 'rgba(136, 169, 248, 0.18)'
 };
 
 var g_pvf_label_colors = {
@@ -38,12 +38,14 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
         id: 'MAX',
         name: '所有值'
     }];
-    $scope.currentDay = moment().format('YYYY-MM-DD');
     $scope.calcMethod = {id: 'MAX', name: '最大值'};
     $scope.timeType = {id: 'DAY', name: '按日'};
     $scope.trendGroups = [];
     $scope.picker = null;
+    var currentDay = moment().format('YYYY-MM-DDT00:00:00.000') + 'Z';
+    refreshDateShowName();
 
+    $scope.isLoading = false;
     function init() {
         getStationInfo(stationSn);
         initDatePicker();
@@ -71,18 +73,30 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
                     name: '最小值'
                 }];
             }
+            refreshDateShowName();
             $scope.calcMethod = $scope.calcMethodList[0];
-            if ($scope.picker) {
-                $scope.picker.dispose();
-                $scope.picker = null;
-            }
         }
         $scope[key] = {
             id: value,
             name: name
         };
-        refreshData($scope.trendGroups);
+        refreshData();
+        refreshDateShowName();
     };
+
+    function refreshDateShowName() {
+        // 根据按日、按月、按年，显示当前时间的格式
+        switch ($scope.timeType.id) {
+            case 'DAY':
+                $scope.dateName = currentDay.substring(0, 10);
+                break;
+            case 'MONTH':
+                $scope.dateName = currentDay.substring(0, 7);
+                break;
+            case 'YEAR':
+                $scope.dateName = currentDay.substring(0, 4);
+        }
+    }
 
     function initDatePicker() {
 
@@ -90,48 +104,21 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
             var _self = $scope;
             if(_self.picker) {
                 _self.picker.show(function (rs) {
-                    switch ($scope.timeType.id) {
-                        case 'DAY':
-                            $scope.currentDay = rs.text;
-                            break;
-                        case 'MONTH':
-                            $scope.currentDay = rs.text + $scope.currentDay.substring(7);
-                            break;
-                        case 'YEAR':
-                            $scope.currentDay = rs.text.substring(0, 5) + $scope.currentDay.substring(5);
-                            break;
-                    }
-                    // _self.picker.dispose();
-                    // _self.picker = null;
+                    currentDay = rs.text + 'T00:00:00.000Z';
+                    refreshDateShowName();
                     $scope.$apply();
+                    refreshData();
                 });
             } else {
-                var optionsJson = this.getAttribute('data-options') || '{}';
-                var options = JSON.parse(optionsJson);
-                options.type = $scope.timeType.id === 'DAY' ? 'date' : 'month';
-                var id = this.getAttribute('id');
-                /*
-                 * 首次显示时实例化组件
-                 * 示例为了简洁，将 options 放在了按钮的 dom 上
-                 * 也可以直接通过代码声明 optinos 用于实例化 DtPicker
-                 */
+                var options = {type: 'date'};
                 _self.picker = new mui.DtPicker(options);
-                _self.picker.setData({value: '2018', text: '2018'});
                 _self.picker.show(function(rs) {
-                    switch ($scope.timeType.id) {
-                        case 'DAY':
-                            $scope.currentDay = rs.text;
-                            break;
-                        case 'MONTH':
-                            $scope.currentDay = rs.text + $scope.currentDay.substring(7);
-                            break;
-                        case 'YEAR':
-                            $scope.currentDay = rs.text.substring(0, 5) + $scope.currentDay.substring(5);
-                            break;
-                    }
+                    currentDay = rs.text + 'T00:00:00.000Z';
+                    refreshDateShowName();
                     // _self.picker.dispose();
                     // _self.picker = null;
                     $scope.$apply();
+                    refreshData();
                 });
             }
         }, false);
@@ -162,35 +149,23 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
             url: '/stations/' + sn + '/trendgroups',
             success: function (response) {
                 $scope.trendGroups = response;
-                refreshData(response);
+                refreshData();
                 $scope.$apply();
             }
         })
     }
 
-    function refreshData(trendGroups) {
-        trendGroups.forEach(function (group) {
+    function refreshData() {
+        $scope.trendGroups.forEach(function (group) {
             getDataInfoOfGroup(group.id);
         });
     }
 
     function getDataInfoOfGroup(groupId) {
-        var time = $scope.currentDay;
-        switch ($scope.timeType.id) {
-            case 'DAY':
-                time += 'T00:00:00.000Z';
-                break;
-            case 'MONTH':
-                time += '-01T00:00:00.000Z';
-                break;
-            case 'YEAR':
-                time += '01-01T00:00:00.000Z';
-                break;
-        }
         ajax.get({
-            url: '/trendgroups/' + groupId + '/datainfo?type=' + $scope.timeType.id + '&calcmethod=' + $scope.calcMethod.id + '&starttime=' + time,
+            url: '/trendgroups/' + groupId + '/datainfo?type=' + $scope.timeType.id + '&calcmethod=' + $scope.calcMethod.id + '&starttime=' + currentDay,
             success: function (data) {
-                showChart(groupId, data, $scope.timeType.id, time, $scope.calcMethod.id);
+                showChart(groupId, data, $scope.timeType.id, currentDay, $scope.calcMethod.id);
             }
         });
     }
@@ -364,7 +339,6 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
         }
     }
 
-
     function showChart(groupId, data, timety, dataday, calcMethod) { //依据时间段展示
         /**
          * @param timety: 'DAY', 'MONTH', 'YEAR'
@@ -490,31 +464,101 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
         id: 'MAX',
         name: '瞬时值'
     }];
-    $scope.currentDay = moment().format('YYYY-MM-DDTHH:mm:ss.000') + 'Z';
+    var currentDay = moment().format('YYYY-MM-DDTHH:mm:ss.000') + 'Z';
     $scope.calcMethod = $scope.calcMethodList[0];
     $scope.timeType = {id: 'DAY', name: '按日'};
     $scope.reportGroups = [];
     $scope.currentReport = null;
     $scope.reportDataInfo = [];
     $scope.reportSetting = {};
+    $scope.isLoading = false;
+    refreshDateShowName();
 
     function init() {
         getReports(stationSn);
+        initDatePicker();
+    }
+
+    function initDatePicker() {
+
+        document.getElementById('datePicker').addEventListener('tap', function() {
+            var _self = $scope;
+            if(_self.picker) {
+                _self.picker.show(function (rs) {
+                    currentDay = rs.text + 'T00:00:00.000Z';
+                    refreshDateShowName();
+                    $scope.$apply();
+                    getDataInfoOfReport();
+                });
+            } else {
+                var options = {type: 'date'};
+                _self.picker = new mui.DtPicker(options);
+                _self.picker.show(function(rs) {
+                    currentDay = rs.text + 'T00:00:00.000Z';
+                    refreshDateShowName();
+                    // _self.picker.dispose();
+                    // _self.picker = null;
+                    $scope.$apply();
+                    getDataInfoOfReport();
+                });
+            }
+        }, false);
+    }
+    function refreshDateShowName() {
+        // 根据按日、按月、按年，显示当前时间的格式
+        switch ($scope.timeType.id) {
+            case 'DAY':
+                $scope.dateName = currentDay.substring(0, 10);
+                break;
+            case 'MONTH':
+                $scope.dateName = currentDay.substring(0, 7);
+                break;
+            case 'YEAR':
+                $scope.dateName = currentDay.substring(0, 4);
+        }
     }
 
     function getReports(sn) {
         // 获取站点信息，主要是为了得到电价配置
+        $scope.isLoading = true;
         ajax.get({
             url: '/stations/' + sn + '/reportgroups',
             success: function (data) {
+                $scope.isLoading = false;
                 $scope.reportGroups = data;
                 if (data.length) {
                     var report = data[0];
                     $scope.currentReport = report;
                     $scope.reportSetting = JSON.parse(report.extend_js);
                     getDataInfoOfReport(report);
+
+                    // 初始化报告选择器
+                    var pickerData = [];
+                    data.forEach(function (item) {
+                        pickerData.push({
+                            value: item.id,
+                            text: item.name
+                        })
+                    });
+                    var taskTypePicker = new mui.PopPicker();
+                    taskTypePicker.setData(pickerData);
+                    var taskTypeButton = document.getElementById('reportPicker');
+                    taskTypeButton.addEventListener('click', function(event) {
+                        taskTypePicker.show(function(items) {
+                            if (items[0].value !== $scope.currentReport.id) {
+                                $scope.currentReport.name = items[0].text;
+                                $scope.currentReport.id = items[0].value;
+                                getDataInfoOfReport();
+                                $scope.$apply();
+                            }
+                        });
+                    }, false);
                 }
                 $scope.$apply();
+            },
+            error: function () {
+                $scope.isLoading = false;
+                $.notify.error('获取数据失败');
             }
         });
     }
@@ -546,16 +590,13 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
                 }];
             }
             $scope.calcMethod = $scope.calcMethodList[0];
-            if ($scope.picker) {
-                $scope.picker.dispose();
-                $scope.picker = null;
-            }
         }
         $scope[key] = {
             id: value,
             name: name
         };
-        getDataInfoOfReport($scope.currentReport);
+        getDataInfoOfReport();
+        refreshDateShowName();
     };
 
     $scope.onSelectReport = function (key, value, name) {
@@ -564,20 +605,48 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
         getDataInfoOfReport($scope.currentReport);
     };
 
-    function getDataInfoOfReport(report) {
+    function getDataInfoOfReport() {
         if (!$scope.currentReport) {
             return;
         }
         ajax.get({
-            url: '/reportgroups/' + report.id + '/datainfo',
+            url: '/reportgroups/' + $scope.currentReport.id + '/datainfo',
             data: {
                 type: $scope.timeType.id,
                 calcmethod: $scope.calcMethod.id,
-                querytime: $scope.currentDay
+                querytime: currentDay
             },
-            success: function (data) {
+            success: function (response) {
                 // 根据reportSetting看是否需要对数据进行统计
-                calcDataBySetting($scope.reportSetting, data.data);
+                // 调用接口补充数据中的空时间点
+                response.data.forEach(function (data) {
+                    var startTime, endTime, queryPeriod;
+                    switch ($scope.timeType.id) {
+                        case 'YEAR':
+                            startTime = currentDay.substring(0, 4) + '-01-01 00:00:00.000';
+                            endTime = currentDay.substring(0, 4) + '-12-01 00:00:00.000';
+                            queryPeriod = 'MONTH';
+                            break;
+                        case 'MONTH':
+                            startTime = currentDay.substring(0, 7) + '-01 00:00:00.000';
+                            var startMoment = moment(startTime);
+                            startMoment.add(1, 'M').subtract(1, 'd');
+                            endTime = startMoment.format().substring(0, 10) + ' 00:00:00.000';
+                            queryPeriod = 'DAY';
+                            break;
+                        case 'DAY':
+                            startTime = currentDay.substring(0, 10) + ' 01:00:00.000';     // 从1点开始，到第二天0点结束
+                            var startMoment = moment(startTime);
+                            startMoment.add(1, 'd');
+                            endTime = startMoment.format().substring(0, 10) + ' 00:00:00.000';
+                            queryPeriod = 'HOUR';
+                            break;
+                    }
+                    var result = fillTrendDataVacancy(startTime, endTime, queryPeriod, data.time_keys, data.datas);
+                    data.time_keys = result.time_keys;
+                    data.datas = result.datas;
+                });
+                calcDataBySetting($scope.reportSetting, response.data);
                 refreshTable();
                 $scope.$apply();
             }
@@ -606,16 +675,6 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
         var timeKeys = [];
         var timeType = $scope.timeType.id;
 
-        // 调用接口补充数据中的空时间点
-        dataInfo.forEach(function (data) {
-            if (timeType === 'YEAR') {
-                var startTime = $scope.currentDay.substring(0, 4) + '-01-01T00:00:00.000Z';
-                var endTime = $scope.currentDay.substring(0, 4) + '-12-30T00:00:00.000Z';
-                var result = fillTrendDataVacancy(startTime, endTime, 'MONTH', data.time_keys, data.datas);
-                data.time_keys = result.time_keys;
-                data.datas = result.datas;
-            }
-        });
         dataInfo[0].time_keys.forEach(function (t) {
             if (timeType === 'DAY') {
                 if (t.slice(11, 13) === '00') {

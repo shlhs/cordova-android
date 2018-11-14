@@ -2734,7 +2734,7 @@ color: #a7a7a7;
     content: '\a603';
     color: #586BF3;
 }
-.selector-tab .dropdown {
+.dropdown {
     background-color: #fff;
     position: absolute;
     left: 50%;
@@ -2746,7 +2746,7 @@ color: #a7a7a7;
     border: #efefef 1px solid;
     display: none;
 }
-.selector-tab .dropdown>div {
+.dropdown>div {
     padding: 8px;
     margin: 0 6px;
     border-bottom: rgba(224, 224, 224, 0.7) 1px solid;
@@ -2755,13 +2755,13 @@ color: #a7a7a7;
 .selector-tab.active .dropdown {
     display: block;
 }
-.selector-tab .dropdown>div.active {
+.dropdown>div.active {
     color: #586BF3;
 }
-.selector-tab .dropdown>div:last-child {
+.dropdown>div:last-child {
     border-bottom: none;
 }
-.selector-tab .dropdown.horizontal {
+.dropdown.horizontal {
     display: -webkit-box;
 }
 .dropdown .day-list {
@@ -2784,3 +2784,34 @@ color: #a7a7a7;
 .dropdown .day-list>li.active {
     color: #586BF3;
 }
+.mui-dtpicker-title, .mui-dtpicker-body {
+    display: -webkit-box;
+}
+.mui-dtpicker-title h5 {
+    -webkit-box-flex: 1;
+    float: none;
+    display: block;
+}
+.mui-dtpicker-body>.mui-picker {
+    -webkit-box-flex: 1;
+    float: none;
+}
+.timeType-MONTH [data-id=title-d], .timeType-MONTH [data-id=picker-d] {
+    display: none;
+}
+.timeType-YEAR [data-id=title-m],.timeType-YEAR [data-id=title-d], .timeType-YEAR [data-id=picker-m], .timeType-YEAR [data-id=picker-d] {
+    display: none;
+}
+header .mui-title .dropdown-arrow {
+    position: relative;
+}
+header .mui-title .dropdown-arrow:after {
+    content: '\a604';
+    font-family: iconfont !important;
+    font-size: 12px;
+    color: #fff;
+    position: absolute;
+    right: -22px;
+    top: -10px;
+}
+

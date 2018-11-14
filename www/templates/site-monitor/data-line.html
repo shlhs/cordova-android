@@ -27,21 +27,6 @@
             background-color: #fff;
             margin-top: 4px;
         }
-        .mui-dtpicker-title, .mui-dtpicker-body {
-            display: -webkit-box;
-        }
-        .mui-dtpicker-title h5 {
-            -webkit-box-flex: 1;
-            float: none;
-            display: block;
-        }
-        .mui-dtpicker-body>.mui-picker {
-             -webkit-box-flex: 1;
-             float: none;
-         }
-        .timeType-YEAR [data-id=title-m], .timeType-YEAR [data-id=picker-m] {
-            display: none;
-        }
     </style>
 </head>
 <body ng-app="myApp" ng-cloak ng-controller="SiteHistoryTrendCtrl" class="box-vertical-center timeType-{{timeType.id}}">
@@ -52,50 +37,10 @@
 <div class="mui-content">
     <ul class="selector-group">
         <drop-down-menu options="timeTypeList" on-select="onSelect" model-name="'timeType'" selected="timeType"></drop-down-menu>
-        <!--<li class="selector-tab">-->
-            <!--<label>{{currentDay}}</label>-->
-            <!--<div class="dropdown horizontal" style="display: none;height: 300px;min-width: 200px;margin-left: -100px;">-->
-                <!--<ul class="day-list">-->
-                    <!--<li>2010</li>-->
-                    <!--<li>2011</li>-->
-                    <!--<li>2012</li>-->
-                    <!--<li>2013</li>-->
-                    <!--<li>2014</li>-->
-                    <!--<li>2015</li>-->
-                    <!--<li>2016</li>-->
-                    <!--<li>2017</li>-->
-                    <!--<li class="active">2018</li>-->
-                    <!--<li>2019</li>-->
-                    <!--<li>2020</li>-->
-                    <!--<li>2021</li>-->
-                <!--</ul>-->
-                <!--<ul class="day-list">-->
-                    <!--<li>1月</li>-->
-                    <!--<li>2月</li>-->
-                    <!--<li>3月</li>-->
-                    <!--<li>4月</li>-->
-                    <!--<li>5月</li>-->
-                    <!--<li>6月</li>-->
-                    <!--<li>7月</li>-->
-                    <!--<li>8月</li>-->
-                    <!--<li>9月</li>-->
-                    <!--<li>10月</li>-->
-                    <!--<li class="active">11月</li>-->
-                    <!--<li>12月</li>-->
-                <!--</ul>-->
-                <!--<ul class="day-list">-->
-                    <!--<li>1日</li>-->
-                    <!--<li>2日</li>-->
-                    <!--<li>3日</li>-->
-                    <!--<li>4日</li>-->
-                    <!--<li class="active">5日</li>-->
-                <!--</ul>-->
-            <!--</div>-->
-        <!--</li>-->
-        <li class="selector-tab">
-            <label>2018-11-16</label>
+        <li class="selector-tab" style="width: 20%;">
+            <label>{{dateName}}</label>
             <button style="position: absolute;top:0;width: 100%;height: 100%;left: 0;background-color: transparent;border: none;"
-                    id="datePicker" data-options='{"timeType": "year"}'></button>
+                    id="datePicker"></button>
         </li>
         <drop-down-menu options="calcMethodList" on-select="onSelect" model-name="'calcMethod'" default-value="'MAX'" selected="calcMethod"></drop-down-menu>
     </ul>
@@ -117,7 +62,6 @@
 <script src="../../components/highcharts/highcharts.js"></script>
 <script src="../../components/echart/echarts.common.min.js"></script>
 <script src="../../components/moment.min.js"></script>
-<script src="../../components/slides-playing/js/jquery.slides.js"></script>
 <script src="../../components/mui/js/mui.min.js"></script>
 <script src="../../components/mui/js/mui.picker.min.js"></script>
 

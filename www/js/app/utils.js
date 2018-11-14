@@ -217,7 +217,7 @@ function formatToTreeData(data) {
 
 
 
-var dtFormat = 'YYYY-MM-DDTHH:mm:ss.000';
+var dtFormat = 'YYYY-MM-DD HH:mm:ss.000';
 
 /**
  * 根据calcMethod表示的时间间隔，生成[startTime,entTime]直接的时间列表

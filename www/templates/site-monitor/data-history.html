@@ -8,6 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta http-equiv="Access-Control-Allow-Origin" content="*">
     <link rel="stylesheet" href="../../components/mui/css/mui.min.css">
+    <link rel="stylesheet" href="../../components/mui/css/mui.picker.min.css">
     <link rel="stylesheet" href="../../css/iconfont/iconfont.css">
     <link rel="stylesheet" href="../../css/my.css">
     <link rel="stylesheet" href="../../css/icon.css">
@@ -69,23 +70,34 @@
         }
     </style>
 </head>
-<body class="box-vertical-center" ng-app="myApp" ng-cloak ng-controller="SiteHistoryReportCtrl">
+<body ng-app="myApp" ng-cloak ng-controller="SiteHistoryReportCtrl" class="box-vertical-center timeType-{{timeType.id}}">
 <header class="mui-bar bg-header mui-segmented-control-vertical">
     <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
     <h1 class="mui-title">
-        <ul class="selector-group">
-            <drop-down-menu options="reportGroups" on-select="onSelectReport" selected="currentReport"></drop-down-menu>
-        </ul>
+        <label ng-if="currentReport !== null" class="dropdown-arrow">
+            {{currentReport.name}}
+        </label>
+        <label ng-if="currentReport === null">历史报表</label>
+        <button style="position: absolute;top: 10px;width: 100%;bottom: -8px;left: 8px;background-color: transparent;border: none;"
+                id="reportPicker"></button>
     </h1>
+
 </header>
+<!--<div style="position: fixed;background-color: rgba(0,0,0,0.15);width: 100%;height: 100%;top:60px;z-index: 1;left: 0;" ng-click="toggle()">-->
+
+    <!--<div class="dropdown" style="display: block;">-->
+        <!--<div ng-repeat="option in reportGroups" ng-class="{active: option.id === selected.id}"-->
+             <!--ng-click="onClick($event, option.id)">{{option.name}}</div>-->
+    <!--</div>-->
+<!--</div>-->
 <div class="mui-content">
 
     <ul class="selector-group">
         <drop-down-menu options="timeTypeList" on-select="onSelect" model-name="'timeType'" selected="timeType"></drop-down-menu>
         <li class="selector-tab">
-            <label>2018-11-16</label>
+            <label>{{dateName}}</label>
             <button style="position: absolute;top:0;width: 100%;height: 100%;left: 0;background-color: transparent;border: none;"
-                    id="datePicker" data-options='{"timeType": "year"}'></button>
+                    id="datePicker"></button>
         </li>
         <drop-down-menu options="calcMethodList" on-select="onSelect" model-name="'calcMethod'" default-value="'MAX'" selected="calcMethod"></drop-down-menu>
     </ul>
@@ -105,11 +117,39 @@
             </tbody>
         </table>
     </div>
+    <div class="page-alert-wrapper" ng-if="currentReport === null && !isLoading">
+        <div class="page-alert">
+            <i class="alert-icon no-task"></i>
+            <div class="alert-text info">未添加任何报表</div>
+        </div>
+    </div>
+    <div class="page-alert-wrapper" ng-if="isLoading">
+        <div class="page-alert">
+            <img src="../../img/page-loading.gif" class="loading-img">
+            <div class="alert-text info">正在加载...</div>
+        </div>
+    </div>
+    <div class="page-alert-wrapper" ng-if="loadingFailed">
+        <div class="page-alert">
+            <i class="alert-icon warning"></i>
+            <div class="alert-text info">加载失败，请检查网络</div>
+            <div class="alert-reload" ng-click="getDataList()">重新加载</div>
+        </div>
+    </div>
 </div>
 <script type="text/javascript" src="../../components/libs/jquery-2.1.4.js"></script>
 <script type="text/javascript" src="../../js/lib/datatables/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="../../js/lib/datatables/dataTables.fixedColumns.min.js"></script>
 <script type="text/javascript" src="../../js/lib/datatables/dataTables.fixedHeader.min.js"></script>
 <script src="../../components/moment.min.js"></script>
+<script src="../../components/mui/js/mui.min.js"></script>
+<script src="../../components/mui/js/mui.picker.min.js"></script>
+
+<script>
+
+    mui.init({
+        swipeBack:true //启用右滑关闭功能
+    });
+</script>
 </body>
 </html>
