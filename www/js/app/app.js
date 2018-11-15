@@ -114,6 +114,24 @@ app.service('userService', function ($rootScope) {
         return getStorageItem('company') ? JSON.parse(getStorageItem('company')) : null;
 
     };
+
+    this.getTaskCompanyId = function () {
+        // 获取任务时需要用到的用户id
+        var perms = JSON.parse(getStorageItem("user")).permissions;
+        for (var i=0; i<perms.length; i++) {
+            var auth = perms[i].authrity_name;
+            //运维公司
+            if (auth.indexOf("COMPANY_OPS_COMPANY_VIEWCOMPANY") === 0) {
+                return auth.substring("COMPANY_OPS_COMPANY_VIEWCOMPANY".length);
+            }
+            //用户公司
+            if (auth.indexOf("USER_COMPANY_USERUSER_COMPANY") === 0) {
+                return 'user' + auth.substring("USER_COMPANY_USERUSER_COMPANY".length);
+            }
+        }
+        return null;
+    };
+
     this.user = this.getUser();
     this.username = this.getUsername();
     this.password = this.getPassword();
@@ -502,4 +520,46 @@ app.controller('ImageZoomCtrl', function ($scope, $timeout, $stateParams) {
         $scope.headerVisible = !$scope.headerVisible;
     };
 
+});
+
+app.controller('BaseGalleryCtrl', function ($scope, $stateParams, $timeout) {
+    // $scope.canDelete = false;
+    // $scope.index = $stateParams.index;
+    // $scope.images = $stateParams.images;
+    $scope.show = false;
+
+    $scope.deleteImage = function() {       // 删除图片
+        var index = $("#slides .slidesjs-pagination a.active").parent().index();
+        if (index < 0) {
+            index = 0;
+        }
+        if ($scope.onDelete) {
+            $scope.onDelete(index);
+        }
+        history.back();
+    };
+
+
+    function initSlider() {
+        if ($scope.images.length>1){
+
+            var slide = $("#slides");
+            slide.slidesjs({
+                start: $scope.index,
+                width: window.screen.width,
+                play: {
+                    active: true,
+                    swap: true
+                }
+            });
+        }
+        $scope.$apply();
+    }
+
+    $timeout(initSlider, 100);
+
+
+    $scope.hide = function () {
+        history.back();
+    };
 });

@@ -27,51 +27,69 @@
                 <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
                     <!--<a href="javascript:void(0)" ng-click="openPage(scope, '/templates/site/kanban.html', {sn: currentSite.station.sn})" style="padding: 6px 0 0 0;">-->
                     <a ui-sref=".kanban({sn: currentSite.sn})" style="padding: 6px 0 0 0;">
-                        <span class="mui-icon icon icon-36 icon-kanban"></span>
+                        <span class="mui-icon icon icon-32 icon-kanban"></span>
                         <div class="mui-media-body">看板</div>
                     </a>
                 </li>
                 <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
                     <!--<a href="/templates/site/monitor-list.html?sn={{currentSite.station.sn}}" style="padding: 6px 0 0 0;">-->
                     <a ui-sref=".monitorList({sn: currentSite.sn})" style="padding: 6px 0 0 0;">
-                        <span class="mui-icon icon icon-36 icon-monitor"></span>
+                        <span class="mui-icon icon icon-32 icon-monitor"></span>
                         <div class="mui-media-body">画面</div>
                     </a>
                 </li>
                 <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
                     <a ui-sref=".monitorDevices({sn: currentSite.sn})" style="padding: 6px 0 0 0;">
-                        <span class="mui-icon icon icon-36 icon-device-monitor"></span>
+                        <span class="mui-icon icon icon-32 icon-device-monitor"></span>
                         <div class="mui-media-body">设备监测</div>
                     </a>
                 </li>
                 <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
                     <a ui-sref=".devicedocs({sn: currentSite.sn})" style="padding: 6px 0 0 0;">
-                        <span class="mui-icon icon icon-36 icon-archives"></span>
+                        <span class="mui-icon icon icon-32 icon-archives"></span>
                         <div class="mui-media-body">设备档案</div>
                     </a>
                 </li>
                 <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
                     <a ui-sref=".docs({sn: currentSite.sn})" style="padding: 6px 0 0 0;">
-                        <span class="mui-icon icon icon-36 icon-docs"></span>
+                        <span class="mui-icon icon icon-32 icon-docs"></span>
                         <div class="mui-media-body">电子档案</div>
                     </a>
                 </li>
                 <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
+                    <a ui-sref=".dtsList({sn: currentSite.sn})" style="padding: 6px 0 0 0;">
+                        <span class="mui-icon icon icon-32 icon-dashboard-dts"></span>
+                        <div class="mui-media-body">缺陷记录</div>
+                    </a>
+                </li>
+                <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
                     <a ui-sref=".reports({sn: currentSite.sn, name: currentSite.name})" style="padding: 6px 0 0 0;">
-                        <span class="mui-icon icon icon-36 icon-reports"></span>
+                        <span class="mui-icon icon icon-32 icon-reports"></span>
                         <div class="mui-media-body">月度报告</div>
                     </a>
                 </li>
                 <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
                     <a ui-sref=".securityReports({sn: currentSite.sn, name: currentSite.name})" style="padding: 6px 0 0 0;">
-                        <span class="mui-icon icon icon-36 icon-security"></span>
+                        <span class="mui-icon icon icon-32 icon-security"></span>
                         <div class="mui-media-body">安全评测</div>
                     </a>
                 </li>
                 <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
                     <a ui-sref=".poweroffReports({sn: currentSite.sn, name: currentSite.name})" style="padding: 6px 0 0 0;">
-                        <span class="mui-icon icon icon-36 icon-poweroff"></span>
+                        <span class="mui-icon icon icon-32 icon-poweroff"></span>
                         <div class="mui-media-body">停电维护</div>
+                    </a>
+                </li>
+                <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border" ng-hide="role === 'USER'">
+                    <a ui-sref=".historyLine({sn: currentSite.sn, name: currentSite.name})" style="padding: 6px 0 0 0;">
+                        <span class="mui-icon icon icon-32 icon-poweroff"></span>
+                        <div class="mui-media-body">历史曲线</div>
+                    </a>
+                </li>
+                <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border" ng-hide="role === 'USER'">
+                    <a ui-sref=".historyReport({sn: currentSite.sn, name: currentSite.name})" style="padding: 6px 0 0 0;">
+                        <span class="mui-icon icon icon-32 icon-poweroff"></span>
+                        <div class="mui-media-body">历史报表</div>
                     </a>
                 </li>
             </ul>
@@ -85,7 +103,13 @@
                 <ul class="mui-table-view no-border info-group" style="font-size: 14px;margin-top:0px;">
                     <li class="mui-table-view-cell">
                         <label class="title">站点地址</label>
-                        <span class="value">{{currentSite.address}}</span>
+                        <span class="value" ng-click="openMap()" ng-if="currentSite.longitude">
+                        {{currentSite.address}}
+                        <i class="icon icon-location" style="width: 18px; height: 18px; float: right"></i>
+                    </span>
+                        <span class="value" ng-if="!currentSite.longitude">
+                        {{currentSite.address}}
+                    </span>
                     </li>
                     <li class="mui-table-view-cell">
                         <label class="title">联系电话</label>

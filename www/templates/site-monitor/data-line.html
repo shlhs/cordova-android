@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>历史曲线</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <link rel="stylesheet" href="../../components/mui/css/mui.min.css">
+    <link rel="stylesheet" href="../../components/mui/css/mui.picker.min.css">
+    <link rel="stylesheet" href="../../css/my.css">
+    <link rel="stylesheet" href="../../css/iconfont/iconfont.css">
+    <script type="text/javascript" src="../../components/libs/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script type="text/javascript" src="../../components/angular-animate/angular-animate.js"></script>
+    <script type="text/javascript" src="../../components/angular-ui-router/release/stateEvents.min.js"></script>
+    <script type="text/javascript" src="../../js/app/utils.js"></script>
+    <script type="text/javascript" src="../../js/app/app.js"></script>
+    <script type="text/javascript" src="../../js/controller/site-monitor.js"></script>
+    <style>
+        .chart {
+            height: 200px;
+            width: 100%;
+            margin-bottom: 10px;
+            background-color: #fff;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body ng-app="myApp" ng-cloak ng-controller="SiteHistoryTrendCtrl" class="box-vertical-center timeType-{{timeType.id}}">
+<header class="mui-bar bg-header mui-segmented-control-vertical">
+    <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
+    <h1 class="mui-title">历史曲线</h1>
+</header>
+<div class="mui-content">
+    <ul class="selector-group">
+        <drop-down-menu options="timeTypeList" on-select="onSelect" model-name="'timeType'" selected="timeType"></drop-down-menu>
+        <li class="selector-tab" style="width: 20%;">
+            <label>{{dateName}}</label>
+            <button style="position: absolute;top:0;width: 100%;height: 100%;left: 0;background-color: transparent;border: none;"
+                    id="datePicker"></button>
+        </li>
+        <drop-down-menu options="calcMethodList" on-select="onSelect" model-name="'calcMethod'" default-value="'MAX'" selected="calcMethod"></drop-down-menu>
+    </ul>
+    <div class="card" ng-repeat="group in trendGroups" style="padding: 0;">
+        <div class="card-content" style="padding-top: 6px;">
+            <div class="mui-content-padded no-margin">
+                <div style="margin: 0 10px;padding-bottom: 6px;border-bottom: #f1f1f1 1px solid;text-align: center;color: #007aff;">{{group.name}}</div>
+                <div class="chart" id="chart{{group.id}}">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div ui-view class="page page-left"></div>
+<div class="page page-left" ui-view=""></div>
+<script src="../../components/fastclick-master/lib/fastclick.js"></script>
+<script src="../../js/my/notify.js"></script>
+<script src="../../components/highcharts/highcharts.js"></script>
+<script src="../../components/echart/echarts.common.min.js"></script>
+<script src="../../components/moment.min.js"></script>
+<script src="../../components/mui/js/mui.min.js"></script>
+<script src="../../components/mui/js/mui.picker.min.js"></script>
+
+<script>
+
+    mui.init({
+        swipeBack:true //启用右滑关闭功能
+    });
+</script>
+</body>
+</html>

@@ -150,6 +150,14 @@ app.controller('SiteListCtrl', function ($scope, $http, $state, scrollerService,
             {sitesTree: $scope.sitesTree, onSelect: $scope.chooseSite, selectedSn: $scope.currentSite.sn});
         // $state.go('.search', {sitesTree: $scope.sitesTree, onSelect: $scope.chooseSite, selectedSn: $scope.currentSite.sn});
     };
+
+    $scope.openMap = function () {
+        // location.href='/templates/map.html?name=' + $scope.currentSite.name + '&stationSn=' + $scope.currentSite.sn;
+        routerService.openPage($scope, '/templates/map.html', {
+            name: $scope.currentSite.name,
+            stationSn: $scope.currentSite.sn
+        });
+    };
 });
 
 app.controller('SiteTreeCtrl', function ($scope, $stateParams) {

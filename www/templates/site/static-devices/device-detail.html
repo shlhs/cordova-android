@@ -1,35 +1,23 @@
-<div ng-controller="StaticDeviceDetailCtrl">
-    <header class="mui-bar bg-header">
-        <a class="mui-icon mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
+<div class="page page-left" ng-controller="StaticDeviceDetailCtrl" style="background-color: #fff;">
+    <header class="mui-bar bg-header" style="height: 120px;box-shadow: none;">
+        <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="history.back()"></a>
         <h1 class="mui-title">{{device.name}}</h1>
+
     </header>
-    <div class="mui-content" ng-cloak>
-        <div ng-if="device.properties">
-            <div class="info-group properties-group">
-                <li ng-repeat="p in device.properties">
-                    <label class="title">{{p.name}}</label>
-                    <span class="value">{{p.value}}{{p.unit}}</span>
-                </li>
-            </div>
-        </div>
-        <div class="card no-padding" ng-repeat="item in device.items">
-            <div class="card-header device-detail-title">{{item.name}}</div>
-            <div class="card-content">
-                <div class="info-group properties-group">
-                    <li ng-repeat="p in item.properties">
-                        <label class="title">{{p.name}}</label>
-                        <span class="value">{{p.value}}{{p.unit}}</span>
-                    </li>
-                </div>
-                <div class="card" ng-repeat="sub in item.contains">
-                    <div class="card-header">{{sub.name}}</div>
-                    <div class="card-content">
-                        <ul  class="mui-table-view font-14 info-group">
-                            <li class="mui-table-view-cell" ng-repeat="c in sub.config">{{c.name}}</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <ul class="vertical-tabs" style="position: absolute; top: 50px;height: 70px;width: 100%;">
+        <li class="tab" ng-click="gotoOpsList()">
+            <span class="value">{{opsTaskCount}}</span>
+            <span class="name">运维次数</span>
+        </li>
+        <li class="tab" ng-click="gotoDtsList()">
+            <span class="value">{{unhandledDtsCount}}</span>
+            <span class="name">未解决缺陷</span>
+        </li>
+        <li class="tab" ng-click="gotoDtsList()">
+            <span class="value">{{closedDtsCount}}</span>
+            <span class="name">已解决缺陷</span>
+        </li>
+    </ul>
+    <div class="mui-content" ng-include="'/templates/site/static-devices/device-info-detail.html'" style="top: 120px;background-color: #fff;">
     </div>
 </div>

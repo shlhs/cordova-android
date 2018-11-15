@@ -3,7 +3,7 @@
 /*}*/
 
 .task-control .mui-bar-tab>a{
-    padding: 8px;
+    padding: 0px 2px 4px 2px;
 }
 .task-list{
     background-color: transparent;
@@ -27,6 +27,7 @@
     position: relative;
     /*padding-right: 80px;*/
     margin: 0;
+    padding-left: 21px;
 }
 .task-item .task-main{
     margin-bottom: 0px;
@@ -56,7 +57,7 @@
     font-family: 'PingFang-SC-Medium';
 }
 .sub-body .task-name{
-    padding: 10px 0px;
+    padding-top: 10px;
     font-size: 16px;
     color: #333333;
 }
@@ -85,8 +86,11 @@
 .timeout.task-status{
     color: red;
 }
-.task-item.closed .main-body{
-    background-color: rgba(143, 143, 143, 0.3);
+.timeout {
+    color: red;
+}
+.task-item.closed .main-body, .task-item.closed .sub-body{
+    background-color: rgba(241, 241, 241, 0.2);
 }
 .task-item.closed .task-status{
     color: #8f8f94;
@@ -466,6 +470,7 @@
 .mui-bar .mui-btn-block.task-btn {
     height: 40px;
     margin-bottom: 6px;
+    padding: 10px 0 8px 0;
 }
 .task-btn.mui-btn-primary{
     background-color: #03a9f4;
@@ -522,4 +527,81 @@
 }
 .mui-input-group .mui-input-row:after {
     background-color: rgb(226, 224, 224);
+}
+.mui-bar-tab>a:first-child {
+    padding-left: 4px;
+}
+.mui-bar-tab>a:last-child {
+    padding-right: 4px;
+}
+.xunjian-devices-area {
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    background-color: #fff;
+    margin-bottom: 10px;
+}
+.xunjian-devices-area {
+    text-align: center;
+}
+.xunjian-devices-area .item {
+    height: 80px;
+    float: left;
+    width: 50%;
+    padding-top: 16px;
+    position: relative;
+}
+.xunjian-devices-area .item:last-child:before {
+    content: '';
+    display: block;
+    width: 1px;
+    height: 44px;
+    background-color: #e8e8e8;
+    position: absolute;
+    left: 0;
+    top: 14px;
+}
+.xunjian-devices-area .name {
+    color: #666666;
+    font-size: 14px;
+    display: block;
+}
+.xunjian-devices-area .count {
+    color: #5177FD;
+    font-size: 24px;
+}
+.xunjian-devices-area button {
+    background-color: #fff;
+    border: #00A1EA 1px dotted;
+    border-radius: 20px;
+    padding: 8px 70px;
+    color: #4E82FD;
+    font-size: 16px;
+    margin-bottom: 12px;
+}
+.xunjian-devices-area.horizontal {
+    display: -webkit-box;
+    -webkit-box-orient: horizontal;
+    -webkit-box-pack: center;
+    -webkit-box-align: center;
+    height: 70px;
+}
+.xunjian-devices-area.horizontal .name {
+    color: #666666;
+    font-size: 14px;
+}
+.xunjian-devices-area.horizontal .count {
+    color: #5177FD;
+    font-size: 24px;
+    margin-left: 14px;
+}
+.xunjian-devices-area.horizontal button {
+    background-color: #E7E7E7;
+    border-radius: 12px;
+    border: none;
+    outline: none;
+    color: #666666;
+    font-size: 12px;
+    margin-left: 50px;
+    padding: 6px 30px;
+    margin-bottom: 0;
 }

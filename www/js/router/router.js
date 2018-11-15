@@ -141,6 +141,30 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
             },
             templateUrl: 'templates/maintenance-check/check-history.html'
         })
+        .state('index.dtsList', {
+            url: '/dts-list',
+            params: {
+                sn: null,
+                name: null
+            },
+            templateUrl: 'templates/dts/dts-list.html'
+        })
+        .state('index.historyLine', {
+            url: '/history-line',
+            params: {
+                sn: null,
+                name: null
+            },
+            templateUrl: 'templates/site-monitor/data-line.html'
+        })
+        .state('index.historyReport', {
+            url: '/history-report',
+            params: {
+                sn: null,
+                name: null
+            },
+            templateUrl: 'templates/site-monitor/data-history.html'
+        })
         ;
 
     // 设置相关
