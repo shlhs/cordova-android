@@ -165,7 +165,8 @@ app.controller('StaticDeviceDetailCtrl', function ($scope, $stateParams, ajax, r
     $scope.gotoOpsList = function () {
         // window.location.href = '/templates/task/task-list.html?device_sn=' + $scope.device.sn;
         routerService.openPage($scope, '/templates/task/task-list.html', {
-            device_sn: $scope.device.sn
+            station_sn: $scope.device.station_sn,
+            device: $scope.device
         });
     };
 

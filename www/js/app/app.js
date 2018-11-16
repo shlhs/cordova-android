@@ -24,10 +24,6 @@ app.controller('MainCtrl', function ($scope, $rootScope, userService, routerServ
     $scope.openPage = function(scope, template, params, config){
         routerService.openPage(scope, template, params, config);
     };
-
-    $scope.openTaskCreatePage = function () {
-        routerService.openPage($scope, '/templates/task/add-task.html');
-    };
 });
 
 var UserRole = {SuperUser: 'SUPERUSER', OpsAdmin: 'OPS_ADMIN', OpsOperator: 'OPS_OPERATOR', Normal: 'USER'};
@@ -271,8 +267,8 @@ app.service('ajax', function ($rootScope, platformService, userService, $http, c
 
     function request(option) {
         if (option.url.indexOf("http://") !== 0){
-            // option.url = platformService.host + option.url;
-            option.url = 'http://127.0.0.1:8099/v1' + option.url;
+            option.url = platformService.host + option.url;
+            // option.url = 'http://127.0.0.1:8099/v1' + option.url;
         }
         var headers = $.extend({
             Authorization: userService.getAccountToken(),

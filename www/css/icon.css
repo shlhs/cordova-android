@@ -51,6 +51,12 @@
 .icon-docs{
     background-image: url("../img/dashboard/icon-documents@2x.png");
 }
+.icon-history-line{
+    background-image: url("../img/dashboard/icon-history-line.png");
+}
+.icon-history-report{
+    background-image: url("../img/dashboard/icon-history-report.png");
+}
 .icon-more{
     background-image: url("../img/light/64X64/more.png");
 }

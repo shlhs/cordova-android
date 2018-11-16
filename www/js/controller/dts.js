@@ -324,18 +324,7 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
             success: function (data) {
                 $.notify.progressStop();
                 $.notify.info('创建成功');
-                history.back(); // 先杀掉创建页，再打开详情页
-                $timeout(function () {
-                    $scope.openPage($scope, '/templates/task/task-detail.html', {id: data.id});
-                    if ($scope.onCreateSucceed) {
-                        var record = {
-                            device_sn: $scope.device.sn,
-                            status: '有故障'
-                        };
-                        // onAndroidCb_updateDeviceRecord(JSON.stringify(record));     // 调用任务页更新设备状态
-                        $scope.onCreateSucceed(record);     // 调用回调，设置巡检设备状态
-                    }
-                }, 100);
+                notifyCreate(data.id);
             },error: function () {
                 $.notify.progressStop();
                 $.notify.error('创建失败');
@@ -343,6 +332,27 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
             }
         });
     };
+
+    function notifyCreate(taskId) {
+        if ($scope.onCreateSucceed) {
+            ajax.get({
+                url: '/opstasks',
+                data: {
+                    task_ids: taskId
+                },
+                success: function (data) {
+                    var task = data[0];
+                    $scope.onCreateSucceed(task);
+                    $scope.openPage($scope, '/templates/task/task-detail.html', {id: data.id}, {finish: true});
+                },
+                error: function () {
+                    $scope.openPage($scope, '/templates/task/task-detail.html', {id: data.id}, {finish: true});
+                }
+            });
+        } else {
+            $scope.openPage($scope, '/templates/task/task-detail.html', {id: data.id}, {finish: true});
+        }
+    }
 
     init();
 });
@@ -438,17 +448,28 @@ app.controller('DeviceDtsListCtrl', function ($scope, ajax, scrollerService, rou
     };
 
     $scope.openDtsCreatePage = function () {
-        // window.location.href = '/templates/dts/dts-create.html?station_sn=' + (stationSn || '') + '&device_sn=' + deviceSn;
         routerService.openPage($scope, '/templates/dts/dts-create.html', {
             station_sn: stationSn,
-            device_sn: deviceSn
+            device_sn: deviceSn,
+            onCreateSucceed: function (data) {
+                formatTaskStatusName(data);
+                data.isTimeout = $scope.taskTimeout(data);
+                $scope.updateTask(data);
+            }
         });
+    };
+    $scope.openTask = function (task) {
+        routerService.openPage($scope, '/templates/task/task-detail.html',
+            {
+                id: task.id,
+                onUpdate: $scope.updateTask
+            });
     };
 
     $scope.getDataList();
 });
 
-app.controller('StationDtsListCtrl', function ($scope, $rootScope, scrollerService, userService, ajax) {
+app.controller('StationDtsListCtrl', function ($scope, $rootScope, scrollerService, userService, ajax, routerService) {
     var stationSn = $scope.station_sn;
     $scope.TaskStatus = TaskStatus;
     $scope.tasks = [];
@@ -460,23 +481,23 @@ app.controller('StationDtsListCtrl', function ($scope, $rootScope, scrollerServi
         // 排序规则：未完成、待审批、已关闭，同样状态的按截止日期排序
         var stage1 = d1.stage_id;
         var stage2 = d2.stage_id;
-        var status1 = 0;        // 0:未完成，1：待审批，2：已关闭
-        var status2 = 0;        // 0:未完成，1：待审批，2：已关闭
+        var status1 = 0;        // 0:未完成，2：已关闭
+        var status2 = 0;        // 0:未完成，2：已关闭
         switch (stage1) {
             case TaskStatus.Closed:
                 status1 = 2;
                 break;
-            case TaskStatus.ToClose:
-                status1 = 1;
-                break;
+            // case TaskStatus.ToClose:
+            //     status1 = 1;
+            //     break;
         }
         switch (stage2) {
             case TaskStatus.Closed:
                 status2 = 2;
                 break;
-            case TaskStatus.ToClose:
-                status2 = 1;
-                break;
+            // case TaskStatus.ToClose:
+            //     status2 = 1;
+            //     break;
         }
         if (status1 !== status2) {
             return status1 - status2;
@@ -508,19 +529,7 @@ app.controller('StationDtsListCtrl', function ($scope, $rootScope, scrollerServi
                 var tasks = result, task = null;
                 for (var i in tasks){
                     task = tasks[i];
-                    formatTaskStatusName(task);
-                    switch (task.task_type_id) {
-                        case 8:
-                            task.dts_type = 'normal';
-                            break;
-                        case 9:
-                            task.dts_type = 'serious';
-                            break;
-                        case 10:
-                            task.dts_type = 'fatal';
-                            break;
-                    }
-                    task.isTimeout = $scope.taskTimeout(task);
+                    parseTaskData(task);
                 }
                 $scope.tasks = tasks;
                 $scope.$apply();
@@ -531,6 +540,45 @@ app.controller('StationDtsListCtrl', function ($scope, $rootScope, scrollerServi
                 $scope.$apply();
             }
         });
+    };
+    $scope.openTask = function (task) {
+        // location.href = '/templates/task/task-detail.html?id=' + taskId;
+        routerService.openPage($scope, '/templates/task/task-detail.html',
+            {
+                id: task.id,
+                onUpdate: $scope.updateTask
+            });
+    };
+
+    function parseTaskData(task) {
+        formatTaskStatusName(task);
+        switch (task.task_type_id) {
+            case 8:
+                task.dts_type = 'normal';
+                break;
+            case 9:
+                task.dts_type = 'serious';
+                break;
+            case 10:
+                task.dts_type = 'fatal';
+                break;
+        }
+        task.isTimeout = $scope.taskTimeout(task);
+        return task;
+
+    }
+
+    $scope.openDtsCreatePage = function () {
+        // window.location.href = '/templates/dts/dts-create.html?station_sn=' + (stationSn || '') + '&device_sn=' + (deviceSn || '');
+        routerService.openPage($scope, '/templates/dts/dts-create.html', {
+            station_sn: $scope.station_sn || '',
+            device_sn: $scope.device_sn || '',
+            onCreateSucceed: function (data) {
+                // 获取运维任务详情，并更新到列表中
+                parseTaskData(data);
+                $scope.updateTask(data);
+            }
+        })
     };
 
     $scope.updateTask = function (taskData) {
