@@ -471,6 +471,13 @@ app.controller('CompetitionTaskListCtrl', function ($scope, $rootScope, scroller
         $scope.$apply();
     };
 
+    $scope.openTask = function (task) {
+        $scope.openPage($scope, '/templates/task/task-detail.html', {
+            id: task.id,
+            onUpdate: $scope.afterGrabTask
+        });
+    };
+
     // $scope.getDataList();
 });
 

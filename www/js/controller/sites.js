@@ -154,7 +154,7 @@ app.controller('SiteListCtrl', function ($scope, $http, $state, scrollerService,
     $scope.openMap = function () {
         // location.href='/templates/map.html?name=' + $scope.currentSite.name + '&stationSn=' + $scope.currentSite.sn;
         routerService.openPage($scope, '/templates/map.html', {
-            name: $scope.currentSite.name,
+            stationName: $scope.currentSite.name,
             stationSn: $scope.currentSite.sn
         });
     };

@@ -19,9 +19,121 @@ var g_pvf_label_colors = {
     'v': 'rgba(138, 212, 199, 1)',
     'f': 'rgba(136, 169, 248, 1)',
 };
+
+app.directive('dropDownMenu', [function () {
+    return {
+        restrict: 'E',
+        templateUrl: 'templates/site-monitor/dropdown-menu.html',
+        scope: {
+            options: '=',
+            onSelect: '=',
+            modelName: '=',
+            defaultValue: '=',
+            selected: '='
+        },
+        replace: true,
+        controller:['$scope', '$attrs', function($scope, $attrs){
+            $scope.active = false;
+            $scope.selected = $scope.selected || {};
+
+            $scope.toggle = function () {
+                $scope.active = !$scope.active;
+                if ($scope.active) {
+                    var mark = $('<div style="position: fixed;background-color: transparent;width: 100%;height: 100%;top:60px;z-index: 1;left: 0;" ng-click="toggle()"></div>')
+                        .appendTo($scope.domEle);
+                } else {
+                    $scope.domEle.find('div:last').remove();
+                }
+            };
+
+            $scope.onClick = function ($event, id) {
+                if ($event) {
+                    $event.preventDefault();
+                    $event.stopPropagation();
+                }
+                for (var i=0; i<$scope.options.length; i++) {
+                    if ($scope.options[i].id === id) {
+                        $scope.selected = $scope.options[i];
+                        $scope.toggle();
+                        $scope.onSelect($scope.modelName, $scope.selected.id, $scope.selected.name);
+                        return false;
+                    }
+                }
+            };
+
+            if ($scope.defaultValue !== undefined) {
+                for (var i=0; i<$scope.options.length; i++) {
+                    if ($scope.options[i].id === $scope.defaultValue) {
+                        $scope.selected = $scope.options[i];
+                        break;
+                    }
+                }
+            } else if ($scope.options.length) {
+                $scope.selected = $scope.options[0];
+            }
+        }],
+        link: function (scope, element, attrs) {
+            console.log(element);
+            scope.domEle = element;
+        }
+    }
+}]);
+
+app.directive('historyTable', [function(){
+    return {
+        restrict: 'E',
+        templateUrl: 'templates/site-monitor/history-table-template.html',
+        replace: true,
+        scope: {
+            tableHeader: '=',
+            tableBodyData: '='
+        },
+        controller: ['$scope', '$attrs', function($scope, $attrs){
+            // var pageData = routerService.getNextPage();
+            // var params = pageData.params, config=pageData.config;
+            // if (params){
+            //     for (var key in params){
+            //         $scope[key] = params[key];
+            //     }
+            // }
+            // if (config.addHistory)
+            // {
+            //     routerService.addHistory($scope, $element);
+            // }
+            console.log('finish');
+        }]
+    };
+}]);
+
+app.directive('siteHistoryRepeatFinish',function(){
+    return {
+        link: function(scope,element,attr){
+            if(scope.$last == true){
+                setTimeout(function () {
+                    $.fn.dataTable.ext.errMode = 'none'; //不显示任何错误信息
+
+                    var table = $('#siteHistoryTable').DataTable( {
+                        searching: false,
+                        ordering: false,
+                        scrollY:        "500px",
+                        scrollX:        true,
+                        scrollCollapse: true,
+                        paging:         false,
+                        info: false,
+                        fixedColumns: {
+                            leftColumns: 1
+                        }
+                    } );
+                    scope.$parent.table = table;
+                }, 100);
+            }
+        }
+    }
+});
+
 // 历史曲线
-app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
-    var stationSn = GetQueryString("sn");
+app.controller('SiteHistoryTrendCtrl', function ($scope, $stateParams, ajax) {
+    var stationSn = $stateParams.sn;    // GetQueryString("sn");
     var pfvSettingsF = null;     // 用电电价
     var pfvSettingsR = null;     // 发电电价
     $scope.timeTypeList = [{
@@ -46,10 +158,10 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
     refreshDateShowName();
 
     $scope.isLoading = false;
-    function init() {
+    $scope.getDataList = function() {
         getStationInfo(stationSn);
         initDatePicker();
-    }
+    };
 
     $scope.onSelect = function (key, value, name) {
         if (key === 'timeType') {
@@ -75,6 +187,17 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
             }
             refreshDateShowName();
             $scope.calcMethod = $scope.calcMethodList[0];
+            // 给body加上timeType
+            var className = document.body.className;
+            if (className.indexOf('timeType') < 0) {
+                document.body.className = className + ' timeType-' + value + ' ';
+            } else {
+                var lastClassName = className.substring(className.indexOf('timeType'));
+                document.body.className = className.replace(lastClassName, 'timeType-' + value + ' ');
+            }
+
+            $scope.picker.dispose();
+            $scope.picker = null;
         }
         $scope[key] = {
             id: value,
@@ -145,12 +268,17 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
     }
 
     function getTrendGroupOfSite(sn) {
+        $scope.isLoading = true;
         ajax.get({
             url: '/stations/' + sn + '/trendgroups',
             success: function (response) {
+                $scope.isLoading = false;
                 $scope.trendGroups = response;
                 refreshData();
                 $scope.$apply();
+            },
+            error: function () {
+                $scope.isLoading = false;
             }
         })
     }
@@ -442,14 +570,13 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
         echartsObj.setOption(option);
     }
 
-    init();
+    $scope.getDataList();
 });
 
-
 // 历史报表
-app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
+app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax, $stateParams) {
 
-    var stationSn = GetQueryString("sn");
+    var stationSn = $stateParams.sn;  //GetQueryString("sn");
     $scope.timeTypeList = [{
         id: 'DAY',
         name: '按日'
@@ -474,10 +601,10 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
     $scope.isLoading = false;
     refreshDateShowName();
 
-    function init() {
+    $scope.getDataList = function() {
         getReports(stationSn);
         initDatePicker();
-    }
+    };
 
     function initDatePicker() {
 
@@ -590,6 +717,17 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
                 }];
             }
             $scope.calcMethod = $scope.calcMethodList[0];
+            // 给body加上timeType
+            var className = document.body.className;
+            if (className.indexOf('timeType') < 0) {
+                document.body.className = className + ' timeType-' + value + ' ';
+            } else {
+                var lastClassName = className.substring(className.indexOf('timeType'));
+                document.body.className = className.replace(lastClassName, 'timeType-' + value + ' ');
+            }
+
+            $scope.picker.dispose();
+            $scope.picker = null;
         }
         $scope[key] = {
             id: value,
@@ -855,173 +993,5 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
         return newLine;
     }
 
-    init();
-});
-
-app.directive('historyTable', [function(){
-    return {
-        restrict: 'E',
-        templateUrl: '/templates/site-monitor/history-table-template.html',
-        replace: true,
-        scope: {
-            tableHeader: '=',
-            tableBodyData: '='
-        },
-        controller: ['$scope', '$attrs', function($scope, $attrs){
-            // var pageData = routerService.getNextPage();
-            // var params = pageData.params, config=pageData.config;
-            // if (params){
-            //     for (var key in params){
-            //         $scope[key] = params[key];
-            //     }
-            // }
-            // if (config.addHistory)
-            // {
-            //     routerService.addHistory($scope, $element);
-            // }
-            console.log('finish');
-        }]
-    };
-}]);
-
-app.directive('dropDownMenu', function () {
-    return {
-        restrict: 'E',
-        templateUrl: '/templates/site-monitor/dropdown-menu.html',
-        scope: {
-            options: '=',
-            onSelect: '=',
-            modelName: '=',
-            defaultValue: '=',
-            selected: '='
-        },
-        replace: true,
-        controller:['$scope', '$attrs', function($scope, $attrs){
-            $scope.active = false;
-            $scope.selected = $scope.selected || {};
-
-            $scope.toggle = function () {
-                $scope.active = !$scope.active;
-                if ($scope.active) {
-                    var mark = $('<div style="position: fixed;background-color: transparent;width: 100%;height: 100%;top:60px;z-index: 1;left: 0;" ng-click="toggle()"></div>')
-                        .appendTo($scope.domEle);
-                } else {
-                    $scope.domEle.find('div:last').remove();
-                }
-            };
-
-            $scope.onClick = function ($event, id) {
-                if ($event) {
-                    $event.preventDefault();
-                    $event.stopPropagation();
-                }
-                for (var i=0; i<$scope.options.length; i++) {
-                    if ($scope.options[i].id === id) {
-                        $scope.selected = $scope.options[i];
-                        $scope.toggle();
-                        $scope.onSelect($scope.modelName, $scope.selected.id, $scope.selected.name);
-                        return false;
-                    }
-                }
-            };
-
-            if ($scope.defaultValue !== undefined) {
-                for (var i=0; i<$scope.options.length; i++) {
-                    if ($scope.options[i].id === $scope.defaultValue) {
-                        $scope.selected = $scope.options[i];
-                        break;
-                    }
-                }
-            } else if ($scope.options.length) {
-                $scope.selected = $scope.options[0];
-            }
-        }],
-        link: function (scope, element, attrs) {
-            console.log(element);
-            scope.domEle = element;
-        }
-    }
-});
-
-app.directive('dayDropDownMenu', function () {
-
-    return {
-        restrict: 'E',
-        templateUrl: '/templates/site-monitor/day-dropdown-menu.html',
-        scope: {
-            options: '=',
-            onSelect: '=',
-            modelName: '=',
-            defaultValue: '='
-        },
-        replace: true,
-        controller:['$scope', '$attrs', function($scope, $attrs){
-            $scope.active = false;
-            $scope.selected = {};
-
-            $scope.toggle = function () {
-                $scope.active = !$scope.active;
-                if ($scope.active) {
-                    var mark = $('<div style="position: fixed;background-color: transparent;width: 100%;height: 100%;top:60px;z-index: 1;left:0;" ng-click="toggle()"></div>')
-                        .appendTo($scope.domEle);
-                } else {
-                    $scope.domEle.find('div:last').remove();
-                }
-            };
-
-            $scope.onClick = function ($event, id) {
-                if ($event) {
-                    $event.preventDefault();
-                    $event.stopPropagation();
-                }
-                for (var i=0; i<$scope.options.length; i++) {
-                    if ($scope.options[i].id === id) {
-                        $scope.selected = $scope.options[i];
-                        $scope.toggle();
-                        $scope.onSelect($scope.modelName, $scope.selected.id, $scope.selected.name);
-                        return false;
-                    }
-                }
-            };
-
-            if ($scope.defaultValue !== undefined) {
-                for (var i=0; i<$scope.options.length; i++) {
-                    if ($scope.options[i].id === $scope.defaultValue) {
-                        $scope.selected = $scope.options[i];
-                        break;
-                    }
-                }
-            } else if ($scope.options.length) {
-                $scope.selected = $scope.options[0];
-            }
-        }],
-        link: function (scope, element, attrs) {
-            console.log(element);
-            scope.domEle = element;
-        }
-    }
-});
-
-app.directive('siteHistoryRepeatFinish',function(){
-    return {
-        link: function(scope,element,attr){
-            if(scope.$last == true){
-                setTimeout(function () {
-                        var table = $('#siteHistoryTable').DataTable( {
-                            searching: false,
-                            ordering: false,
-                            scrollY:        "500px",
-                            scrollX:        true,
-                            scrollCollapse: true,
-                            paging:         false,
-                            info: false,
-                            fixedColumns: {
-                                leftColumns: 1
-                            }
-                        } );
-                        scope.$parent.table = table;
-                }, 100);
-            }
-        }
-    }
+    $scope.getDataList();
 });
