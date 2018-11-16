@@ -86,6 +86,17 @@
             frames[i].postMessage('Bearer' + (getStorageItem('accountToken') || ''), '*');
         }
     }, false);
+
+    window.addEventListener('load', function() {
+        var textInput = document.querySelector('input');
+
+        FastClick.attach(document.body);
+        Array.prototype.forEach.call(document.getElementsByName('input'), function(testEl) {
+            testEl.addEventListener('click', function() {
+                textInput.focus();
+            }, false)
+        });
+    }, false);
 </script>
 </body>
 </html>
