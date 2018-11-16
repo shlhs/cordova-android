@@ -35,6 +35,10 @@
                     <label class="title">设备名称</label>
                     <span class="value">{{device.name}}</span>
                 </li>
+                <li ng-click="onClickEditDevice('设备类型', 'device_type')">
+                    <label class="title">设备类型</label>
+                    <span class="value">{{device.device_type}}</span>
+                </li>
                 <li ng-repeat="p in device.properties" ng-click="onClickEditProperty(device.properties, $index)">
                     <label class="title">{{p.name}}</label>
                     <span class="value">{{p.value}}{{p.unit}}</span>

@@ -1,4 +1,4 @@
-<div ng-cloak style="background-color: #fff;padding-bottom: 40px;padding-top: 10px;">
+<div ng-cloak style="background-color: #fff;padding-bottom: 40px;padding-top: 10px;height: 100%;">
     <div class="device-img-wrapper">
         <ul class="container">
             <li class="img device-img"
@@ -15,6 +15,10 @@
     </div>
     <div ng-if="device.properties">
         <div class="info-group properties-group">
+            <li>
+                <label class="title">设备类型</label>
+                <span class="value">{{device.device_type}}</span>
+            </li>
             <li ng-repeat="p in device.properties">
                 <label class="title">{{p.name}}</label>
                 <span class="value">{{p.value}}{{p.unit}}</span>

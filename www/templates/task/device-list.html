@@ -24,12 +24,12 @@
         </ul>
 
     </div>
-    <nav class="mui-bar mui-bar-tab" style="z-index: 0;" ng-if="canHandle">
-        <a class="mui-tab-item mui-active mui-segmented-control-vertical" href="#">
+    <nav class="mui-bar mui-bar-tab" style="z-index: 0;box-shadow: none;background-color: transparent;" ng-if="canHandle">
+        <a class="mui-tab-item mui-active mui-segmented-control-vertical" href="#" style="padding: 8px 2px 4px 4px;">
             <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-btn-outlined mui-control-item task-btn"
                     ng-click="setStatusOk()">确认运行良好</button>
         </a>
-        <a class="mui-tab-item mui-active mui-segmented-control-vertical" href="#">
+        <a class="mui-tab-item mui-active mui-segmented-control-vertical" href="#" style="padding: 8px 4px 4px 2px;">
             <button type="button" class="mui-btn mui-btn-danger mui-btn-block mui-btn-outlined mui-control-item task-btn"
                     style="border-color: #E54A59;background-color: #E54A59"
                     ng-click="openDtsPage()">提交缺陷</button>

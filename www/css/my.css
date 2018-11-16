@@ -347,6 +347,9 @@ header.mui-bar{
 .box-center{
     -webkit-box-pack: center;
 }
+.box-vertical-middle {
+    -webkit-box-align: center;
+}
 .flex-1{
     -webkit-box-flex: 1;
     display: block;
@@ -3074,4 +3077,17 @@ header .mui-title .dropdown-arrow:after {
 }
 .page-bottom {
    padding-bottom: 54px !important;
+}
+.static-device-list li {
+    padding-left: 10px;
+}
+.static-device-list .device-body {
+    border-bottom: #E6E6E6 1px solid;
+    width: calc(100% - 24px);
+    padding: 12px 12px 12px 8px;
+    position: relative;
+}
+.checkbox-square {
+    width: 26px;
+    height: 26px;
 }

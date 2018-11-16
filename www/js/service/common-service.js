@@ -357,7 +357,11 @@ app.directive('deviceTreeView',[function(){
             itemTemplateUrl: '@'
         },
         controller:['$scope', '$attrs', function($scope, $attrs){
-            $scope.treeData = formatToTreeData($scope.deviceList)[0].children;
+            if ($scope.deviceList.length) {
+                $scope.treeData = formatToTreeData($scope.deviceList)[0].children;
+            } else {
+                $scope.treeData = [];
+            }
             var lastSelected = null;
 
             function calcDeviceStatus() {

@@ -90,6 +90,7 @@ var apiLocation = {
 };
 
 
+
 function formatToTreeData(data) {
 
     function addToGroup(newItem, items, depth) {
@@ -109,6 +110,7 @@ function formatToTreeData(data) {
                 if (newItem.is_group) {
                     newItem.children = [];
                 }
+                newItem.path = item.path ? (item.path + '/' + item.name) : item.name;
                 newItem.text = newItem.name;
                 item.children.push(newItem);
                 if (maxDepth < depth + 1) {
@@ -213,4 +215,89 @@ function formatToTreeData(data) {
     // 根据父节点的indexs对树再次进行排序
     _indexs_sort(formatted[0]);
     return formatted;
+}
+
+
+var dtFormat = 'YYYY-MM-DD HH:mm:ss.000';
+
+/**
+ * 根据calcMethod表示的时间间隔，生成[startTime,entTime]直接的时间列表
+ * @param startTime
+ * @param endTime
+ * @param queryPeriod
+ */
+function createTimeList(startTime, endTime, queryPeriod) {
+    var startMoment = moment(startTime, dtFormat);
+    var endMoment = moment(endTime, dtFormat);
+    var timeList = [];
+    var resultFormat = 'YYYY-MM-DDTHH:mm:00.000';
+    if (queryPeriod === 'QUARTER' || queryPeriod === 'HALF_HOUR') {
+        var periodMinutes = queryPeriod === 'QUARTER' ? 15 : 30;
+        var minuteDiff = 0;
+        if (startMoment.minute() % periodMinutes !== 0) {
+            minuteDiff = periodMinutes - (startMoment.minute() % periodMinutes);
+        }
+        startMoment.add(minuteDiff, 'm');
+        var secondsDiff = endMoment.diff(startMoment, 'minutes');
+        startMoment.second(0).millisecond(0);
+        for (var i=0; i<=secondsDiff; i+=periodMinutes) {
+            timeList.push(startMoment.format(resultFormat));
+            startMoment.add(periodMinutes, 'm');
+        }
+    }
+    else if (queryPeriod === 'HOUR') {
+        startMoment.minute(0).second(0).millisecond(0);
+        var hoursDiff = endMoment.diff(startMoment, 'hours');
+        for (var i=0; i<=hoursDiff; i++) {
+            timeList.push(startMoment.format(resultFormat));
+            startMoment.add(1, 'h');
+        }
+    } else if (queryPeriod === 'DAY') {
+        var daysDiff = endMoment.diff(startMoment, 'days');
+        startMoment.hour(0).minute(0).second(0).millisecond(0);
+        for (var i=0; i<=daysDiff; i++) {
+            timeList.push(startMoment.format(resultFormat));
+            startMoment.add(1, 'd');
+        }
+    } else if (queryPeriod === 'MONTH') {
+        var monthsDiff = endMoment.diff(startMoment, 'months');
+        startMoment.day(1).hour(0).minute(0).second(0).millisecond(0);
+        for (var i=0; i<=monthsDiff; i++) {
+            timeList.push(startMoment.format(resultFormat));
+            startMoment.add(1, 'M');
+        }
+    }
+    timeList.forEach(function (t, i) {
+        timeList[i] = t + 'Z';
+    });
+    return timeList;
+}
+
+
+/**
+ * 将历史趋势数据进行补空
+ * 在查询历史趋势时，如果某个时间点设备没有上报，那么返回的结果中会缺少该时间点的数据，导致time_keys不连续。因此需要将缺少的时间点补全，并将缺少的数据设置为null
+ * @param startTime：数据的起始时间，与历史趋势接口中一致，格式：YYYY-MM-DD HH:mm:ss.SSS
+ * @param endTime：数据的终止时间，与历史趋势接口中一致，格式：YYYY-MM-DD HH:mm:ss.SSS
+ * @param queryPeriod：数据的查询时间间隔：DAY、HOUR、HALF_HOUR、QUARTER，与历史趋势接口中一致
+ * @param dataTimes：历史趋势接口返回的数据中的time_keys
+ * @param datas：历史趋势接口返回的数据的datas
+ * @return 返回补全后的时间与数据 {time_keys: [], datas: []}
+ */
+function fillTrendDataVacancy(startTime, endTime, queryPeriod, dataTimes, datas) {
+    var fullTimeKeys = createTimeList(startTime, endTime, queryPeriod);
+// 对子设备进行求和，作为全厂区的数据
+    var fullDatas = [];
+    fullTimeKeys.forEach(function(time, i) {    // 全厂区的数据列表
+        var index = dataTimes.indexOf(time);
+        if (index >= 0) {
+            fullDatas.push(datas[index]);
+        } else {
+            fullDatas.push(null);
+        }
+    });
+    return {
+        time_keys: fullTimeKeys,
+        datas: fullDatas,
+    };
 }

@@ -158,7 +158,14 @@ app.controller('SiteListCtrl', function ($scope, $http, $state, scrollerService,
             stationSn: $scope.currentSite.sn
         });
     };
+
+    $scope.openDtsList = function () {
+        routerService.openPage($scope, '/templates/dts/dts-list.html', {
+            station_sn: $scope.currentSite.sn
+        });
+    }
 });
+
 
 app.controller('SiteTreeCtrl', function ($scope, $stateParams) {
     // $scope.onSelect = $stateParams.onSelect;

@@ -135,30 +135,25 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
 
     function initMembers() {
         var userPicker = null;
-        ajax.get({
-            url: '/opscompanies/' + userService.getTaskCompanyId() + '/members',
-            success: function (data) {
-                $scope.memberList = data;
-                _format(data, 'account');
-                if (!userPicker){
-                    userPicker = new mui.PopPicker();
-                    var taskTypeButton = document.getElementById('handlerPicker');
-                    taskTypeButton.addEventListener('click', function(event) {
-                        userPicker.show(function(items) {
-                            $scope.handlerName = items[0].text;
-                            $scope.taskData.current_handler = items[0].value;
-                            $scope.$apply();
-                            // userResult.innerText = JSON.stringify(items[0]);
-                            //返回 false 可以阻止选择框的关闭
-                            //return false;
-                        });
-                    }, false);
-                }
-                userPicker.setData(data);
-            },
-            error: function () {
-                console.log('获取站点成员失败');
+        ajax.getCompanyMembers(function (data) {
+
+            $scope.memberList = data;
+            _format(data, 'account');
+            if (!userPicker){
+                userPicker = new mui.PopPicker();
+                var taskTypeButton = document.getElementById('handlerPicker');
+                taskTypeButton.addEventListener('click', function(event) {
+                    userPicker.show(function(items) {
+                        $scope.handlerName = items[0].text;
+                        $scope.taskData.current_handler = items[0].value;
+                        $scope.$apply();
+                        // userResult.innerText = JSON.stringify(items[0]);
+                        //返回 false 可以阻止选择框的关闭
+                        //return false;
+                    });
+                }, false);
             }
+            userPicker.setData(data);
         });
     }
 
@@ -203,6 +198,8 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
                 $scope.device.name = device.name;
                 history.back();
             }
+        }, {
+            hidePrev: false
         })
     };
 
@@ -327,23 +324,18 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
             success: function (data) {
                 $.notify.progressStop();
                 $.notify.info('创建成功');
-                if ($scope.isInPage) {
-                    history.back();
-                }
+                history.back(); // 先杀掉创建页，再打开详情页
                 $timeout(function () {
-                    var url = '/templates/task/task-detail.html?id=' + data.id +
-                        '&taskType=' + taskData.task_type_id + '&mother_task_id=' + taskId;
-                    if ($scope.isInPage) {
+                    $scope.openPage($scope, '/templates/task/task-detail.html', {id: data.id});
+                    if ($scope.onCreateSucceed) {
                         var record = {
                             device_sn: $scope.device.sn,
                             status: '有故障'
                         };
-                        onAndroidCb_updateDeviceRecord(JSON.stringify(record));     // 调用任务页更新设备状态
-                    } else {
-                        url += '&finishPage=1';
+                        // onAndroidCb_updateDeviceRecord(JSON.stringify(record));     // 调用任务页更新设备状态
+                        $scope.onCreateSucceed(record);     // 调用回调，设置巡检设备状态
                     }
-                    window.location.href = url;       // 设置finish=1，这样在Android端在打开新页面时，会将当前页finish掉
-                }, 300);
+                }, 100);
             },error: function () {
                 $.notify.progressStop();
                 $.notify.error('创建失败');
@@ -447,7 +439,10 @@ app.controller('DeviceDtsListCtrl', function ($scope, ajax, scrollerService, rou
 
     $scope.openDtsCreatePage = function () {
         // window.location.href = '/templates/dts/dts-create.html?station_sn=' + (stationSn || '') + '&device_sn=' + deviceSn;
-        routerService.openPage($scope, '/templates/dts/dts-create.html?station_sn=' + (stationSn || '') + '&device_sn=' + deviceSn);
+        routerService.openPage($scope, '/templates/dts/dts-create.html', {
+            station_sn: stationSn,
+            device_sn: deviceSn
+        });
     };
 
     $scope.getDataList();
