@@ -135,30 +135,25 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
 
     function initMembers() {
         var userPicker = null;
-        ajax.get({
-            url: '/opscompanies/' + userService.getTaskCompanyId() + '/members',
-            success: function (data) {
-                $scope.memberList = data;
-                _format(data, 'account');
-                if (!userPicker){
-                    userPicker = new mui.PopPicker();
-                    var taskTypeButton = document.getElementById('handlerPicker');
-                    taskTypeButton.addEventListener('click', function(event) {
-                        userPicker.show(function(items) {
-                            $scope.handlerName = items[0].text;
-                            $scope.taskData.current_handler = items[0].value;
-                            $scope.$apply();
-                            // userResult.innerText = JSON.stringify(items[0]);
-                            //返回 false 可以阻止选择框的关闭
-                            //return false;
-                        });
-                    }, false);
-                }
-                userPicker.setData(data);
-            },
-            error: function () {
-                console.log('获取站点成员失败');
+        ajax.getCompanyMembers(function (data) {
+
+            $scope.memberList = data;
+            _format(data, 'account');
+            if (!userPicker){
+                userPicker = new mui.PopPicker();
+                var taskTypeButton = document.getElementById('handlerPicker');
+                taskTypeButton.addEventListener('click', function(event) {
+                    userPicker.show(function(items) {
+                        $scope.handlerName = items[0].text;
+                        $scope.taskData.current_handler = items[0].value;
+                        $scope.$apply();
+                        // userResult.innerText = JSON.stringify(items[0]);
+                        //返回 false 可以阻止选择框的关闭
+                        //return false;
+                    });
+                }, false);
             }
+            userPicker.setData(data);
         });
     }
 

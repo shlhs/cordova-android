@@ -1,12 +1,16 @@
+function openDeviceFromQR(data) {   //根据扫码结果打开设备详情
+    var scope = $('div[ng-controller="StaticDevicesHomeCtrl"]').scope();
+    scope.gotoDevice({sn: data.sn});
+}
+
 app.controller('StaticDevicesHomeCtrl', function ($scope, ajax, routerService) {
     var stationSn = GetQueryString("sn");
-    var devices = [];       // 设备
     $scope.deviceDatas = [];
     $scope.isLoading = false;
     $scope.loadingFailed = false;
 
     $scope.gotoDevice = function(deviceData){
-        routerService.openPage($scope, '/templates/site/static-devices/device-detail.html', {device_id: deviceData.id, device_sn: deviceData.sn});
+        routerService.openPage($scope, '/templates/site/static-devices/device-detail.html', {device_sn: deviceData.sn});
     };
 
     $scope.getDataList = function() {
@@ -26,6 +30,11 @@ app.controller('StaticDevicesHomeCtrl', function ($scope, ajax, routerService) {
                 $scope.$apply();
             }
         })
+    };
+
+    $scope.startCaptureQR = function() {
+        // 扫描设备二维码
+        window.android && window.android.openQRCapturePage();
     };
 
     $scope.getDataList();
@@ -134,8 +143,15 @@ app.controller('StaticDeviceDetailCtrl', function ($scope, ajax, routerService, 
 
     function getDeviceInfo () {
         ajax.get({
-            url: '/staticdevices/' + $scope.device_id,
-            success: function (data) {
+            url: '/staticdevices/details',
+            data: {
+                sns: $scope.device_sn
+            },
+            success: function (response) {
+                if (!response || !response.length) {
+                    return;
+                }
+                var data = response[0];
                 if (data.properties) {
                     data.properties = JSON.parse(data.properties);
                     if (data.items) {
@@ -207,7 +223,7 @@ app.controller('StaticDeviceDetailCtrl', function ($scope, ajax, routerService, 
     $scope.startDeviceEditor = function () {
         routerService.openPage($scope, '/templates/site/static-devices/device-edit.html',
             {
-                id: $scope.device.id,
+                device_sn: $scope.device_sn,
                 onSave: function (data, photoLink) {
                     $.extend($scope.device, data);
                     $scope.device.device_photo_src_link = platformService.host + photoLink;
@@ -251,8 +267,15 @@ app.controller('StaticDeviceEditCtrl', function ($scope, ajax, routerService, pl
 
     $scope.getDataList = function () {
         ajax.get({
-            url: '/staticdevices/' + $scope.id,
-            success: function (data) {
+            url: '/staticdevices/details',
+            data: {
+                sns: $scope.device_sn
+            },
+            success: function (response) {
+                if (!response || !response.length) {
+                    return;
+                }
+                var data = response[0];
                 if (data.properties) {
                     data.properties = JSON.parse(data.properties);
                     if (data.items) {

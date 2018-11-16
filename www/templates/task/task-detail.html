@@ -160,7 +160,7 @@
                         <li ng-if="taskData.events.length">
                             <i class="icon icon-xs icon-event-red"></i><span style="color: rgb(250, 129, 12)">事件信息:{{taskData.events[0].name}}</span>
                         </li>
-                        <li ng-repeat="record in taskData.device_record">
+                        <li ng-repeat="record in taskData.device_record" ng-if="taskData.task_type_id !== 11">
                             <i class="icon icon-xs icon-device-grey mui-pull-left"></i>
                             <span class="mui-pull-left" style="color: rgb(141,140,143);">设备:</span>
                             <div class="device-list">
@@ -296,8 +296,8 @@
 <script src="../../components/mui/js/mui.min.js"></script>
 <script src="../../components/fastclick-master/lib/fastclick.js"></script>
 <script src="../../components/slides-playing/js/jquery.slides.js"></script>
-<script src="http://api.map.baidu.com/api?v=2.0&ak=ITbaaCqA7nMWRjEIycEpddoUW1AvZvRq"></script>
-<script src="../../components/baidu/map/MarkerManager-1.2.min.js"></script>
+<!--<script src="http://api.map.baidu.com/api?v=2.0&ak=ITbaaCqA7nMWRjEIycEpddoUW1AvZvRq"></script>-->
+<!--<script src="../../components/baidu/map/MarkerManager-1.2.min.js"></script>-->
 <script src="../../js/my/notify.js"></script>
 <script src="../../js/controller/static-devices.js"></script>
 <script src="../../components/mui/js/mui.picker.min.js"></script>
