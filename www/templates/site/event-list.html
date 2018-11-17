@@ -47,12 +47,12 @@
         <div class="scroll-wrapper" id="events" ng-if="!loadingFailed">
             <div class="mui-scroll" ng-if="!eventLoading && !loadingFailed">
                 <ul class="mui-table-view mui-table-view-striped mui-table-view-condensed event-list" ng-if="events.length" style="margin-top:0px;">
-                    <li class="mui-table-view-cell" ng-repeat="e in events">
+                    <li class="mui-table-view-cell" ng-repeat="e in events" data-id="{{e.id}}">
                         <div class="mui-table">
                             <div class="mui-table-cell mui-col-xs-12" ng-class="{'offline': e.status==0}">
                                 <label class="mui-ellipsis-2 event-title">{{ e.info }}
                                     <div class="close" ng-if="e.status != 0"
-                                         ng-click="postCheckEventAction($event, e.id)"><label></label></div>
+                                         ng-click="postCheckEventAction($event, e.id)">确认</div>
                                 </label>
                                 <h5 style="margin-top: 10px;"><span class="title">设备</span> ：{{ e.device_name }}</h5>
                                 <h5 style="margin: 10px 0 -2px 0;"><span class="title">时间</span> ：{{e.report_time}}</h5>

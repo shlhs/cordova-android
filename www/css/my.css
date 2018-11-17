@@ -4,6 +4,7 @@ html,body{
     padding: 0;
     margin: 0;
     background-color: #efeff4;
+    overflow: hidden;
 }
 * {
     padding: 0;
@@ -1906,7 +1907,7 @@ color: #a7a7a7;
 .event-list .event-task {
     position: absolute;
     bottom: 16px;
-    right: 14px;
+    right: 10px;
     width: 70px;
     height: 26px;
     border-radius: 13px;
@@ -1917,14 +1918,19 @@ color: #a7a7a7;
     font-size: 14px;
 }
 .event-list .close {float: right;
-    width: 28px;
-    height: 28px;
-    background: url(../img/icon/icon-event-close@2x.png) 50% no-repeat;
-    background-size: contain;
-    border: transparent 6px solid;
+    /*width: 28px;*/
+    /*height: 28px;*/
+    /*background: url(../img/icon/icon-event-close@2x.png) 50% no-repeat;*/
+    /*background-size: contain;*/
+    border: #007aff 1px solid;
     position: absolute;
     right: 8px;
-    top: 4px;
+    top: 50%;
+    margin-top: -13px;
+    padding: 0 4px;
+    color: #007aff;
+    font-weight: 400;
+    font-size: 14px;
 }
 .icon-report-download {
     position: absolute;

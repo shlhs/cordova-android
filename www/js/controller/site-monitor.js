@@ -457,13 +457,13 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
     var stationSn = GetQueryString("sn");
     $scope.timeTypeList = [{
         id: 'DAY',
-        name: '按日'
+        name: '日报'
     }, {
         id: 'MONTH',
-        name: '按月'
+        name: '月报'
     }, {
         id: 'YEAR',
-        name: '按年'
+        name: '年报'
     }];
     $scope.calcMethodList = [{
         id: 'MAX',
@@ -471,7 +471,7 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
     }];
     var currentDay = moment().format('YYYY-MM-DDTHH:mm:ss.000') + 'Z';
     $scope.calcMethod = $scope.calcMethodList[0];
-    $scope.timeType = {id: 'DAY', name: '按日'};
+    $scope.timeType = {id: 'DAY', name: '日报'};
     $scope.reportGroups = [];
     $scope.currentReport = null;
     $scope.reportDataInfo = [];
@@ -1012,19 +1012,20 @@ app.directive('siteHistoryRepeatFinish',function(){
         link: function(scope,element,attr){
             if(scope.$last == true){
                 setTimeout(function () {
-                        var table = $('#siteHistoryTable').DataTable( {
-                            searching: false,
-                            ordering: false,
-                            scrollY:        "500px",
-                            scrollX:        true,
-                            scrollCollapse: true,
-                            paging:         false,
-                            info: false,
-                            fixedColumns: {
-                                leftColumns: 1
-                            }
-                        } );
-                        scope.$parent.table = table;
+                    var height = screen.height - 172;
+                    var table = $('#siteHistoryTable').DataTable( {
+                        searching: false,
+                        ordering: false,
+                        scrollY:        height + 'px',
+                        scrollX:        true,
+                        scrollCollapse: true,
+                        paging:         false,
+                        info: false,
+                        fixedColumns: {
+                            leftColumns: 1
+                        }
+                    } );
+                    scope.$parent.table = table;
                 }, 100);
             }
         }

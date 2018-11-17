@@ -462,7 +462,7 @@ app.controller('EventListCtrl', function ($scope, $stateParams, scrollerService,
                 var cleared = [], newReports=[];
                 for (var i in result) {
                     result[i].report_time = formatTime(result[i].report_time);
-                    if (result[i].status_name !== 'CLEARED') {
+                    if (result[i].status_name !== '告警消除' && result[i].status_name !== 'CLEARED') {
                         $scope.unhandledEventCount += 1;
                         newReports.push(result[i]);
                     } else {
