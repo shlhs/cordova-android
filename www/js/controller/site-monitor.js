@@ -46,10 +46,10 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
     refreshDateShowName();
 
     $scope.isLoading = false;
-    function init() {
+    $scope.getDataList = function() {
         getStationInfo(stationSn);
         initDatePicker();
-    }
+    };
 
     $scope.onSelect = function (key, value, name) {
         if (key === 'timeType') {
@@ -145,12 +145,17 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
     }
 
     function getTrendGroupOfSite(sn) {
+        $scope.isLoading = true;
         ajax.get({
             url: '/stations/' + sn + '/trendgroups',
             success: function (response) {
+                $scope.isLoading = false;
                 $scope.trendGroups = response;
                 refreshData();
                 $scope.$apply();
+            },
+            error: function () {
+                $scope.isLoading = false;
             }
         })
     }
@@ -442,7 +447,7 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
         echartsObj.setOption(option);
     }
 
-    init();
+    $scope.getDataList();
 });
 
 
@@ -474,10 +479,10 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
     $scope.isLoading = false;
     refreshDateShowName();
 
-    function init() {
+    $scope.getDataList = function () {
         getReports(stationSn);
         initDatePicker();
-    }
+    };
 
     function initDatePicker() {
 
@@ -855,7 +860,7 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
         return newLine;
     }
 
-    init();
+    $scope.getDataList();
 });
 
 app.directive('historyTable', [function(){

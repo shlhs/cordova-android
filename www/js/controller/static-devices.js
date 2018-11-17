@@ -1,6 +1,11 @@
 function openDeviceFromQR(data) {   //根据扫码结果打开设备详情
-    var scope = $('div[ng-controller="StaticDevicesHomeCtrl"]').scope();
-    scope.gotoDevice({sn: data.sn});
+    alert('openDeviceFromQR:' + data);
+    var scope = $('[ng-controller="StaticDevicesHomeCtrl"]').scope();
+    if (scope) {
+        scope.gotoDevice({sn: JSON.parse(data).sn});
+    } else {
+        alert('cannot find scope');
+    }
 }
 
 app.controller('StaticDevicesHomeCtrl', function ($scope, ajax, routerService) {

@@ -369,17 +369,17 @@ app.controller('DeviceDtsListCtrl', function ($scope, ajax, scrollerService) {
             case TaskStatus.Closed:
                 status1 = 2;
                 break;
-            case TaskStatus.ToClose:
-                status1 = 1;
-                break;
+            // case TaskStatus.ToClose:
+            //     status1 = 1;
+            //     break;
         }
         switch (stage2) {
             case TaskStatus.Closed:
                 status2 = 2;
                 break;
-            case TaskStatus.ToClose:
-                status2 = 1;
-                break;
+            // case TaskStatus.ToClose:
+            //     status2 = 1;
+            //     break;
         }
         if (status1 !== status2) {
             return status1 - status2;
@@ -465,17 +465,17 @@ app.controller('StationDtsListCtrl', function ($scope, $rootScope, scrollerServi
             case TaskStatus.Closed:
                 status1 = 2;
                 break;
-            case TaskStatus.ToClose:
-                status1 = 1;
-                break;
+            // case TaskStatus.ToClose:
+            //     status1 = 1;
+            //     break;
         }
         switch (stage2) {
             case TaskStatus.Closed:
                 status2 = 2;
                 break;
-            case TaskStatus.ToClose:
-                status2 = 1;
-                break;
+            // case TaskStatus.ToClose:
+            //     status2 = 1;
+            //     break;
         }
         if (status1 !== status2) {
             return status1 - status2;

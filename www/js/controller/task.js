@@ -646,17 +646,17 @@ app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, us
             case TaskStatus.Closed:
                 status1 = 2;
                 break;
-            case TaskStatus.ToClose:
-                status1 = 1;
-                break;
+            // case TaskStatus.ToClose:
+            //     status1 = 1;
+            //     break;
         }
         switch (stage2) {
             case TaskStatus.Closed:
                 status2 = 2;
                 break;
-            case TaskStatus.ToClose:
-                status2 = 1;
-                break;
+            // case TaskStatus.ToClose:
+            //     status2 = 1;
+            //     break;
         }
         if (status1 !== status2) {
             return status1 - status2;
@@ -1384,7 +1384,7 @@ app.controller('TaskCloseRejectCtrl', function ($scope) {      //驳回关闭请
     };
 });
 
-app.controller('TaskCreateCtrl', function ($scope, $timeout, userService, ajax) {
+app.controller('TaskCreateCtrl', function ($scope, $timeout, userService, routerService, ajax) {
     $scope.stationName = null;
     $scope.taskTypeName = null;
     $scope.handlerName = null;
@@ -1393,6 +1393,7 @@ app.controller('TaskCreateCtrl', function ($scope, $timeout, userService, ajax) 
     $scope.linkEventId = GetQueryString("eventId");
     $scope.linkEventInfo = null;
     var isGrabTask = false;
+    var staticDevices = [];
 
     $scope.taskData = {
         events: [],
@@ -1485,30 +1486,27 @@ app.controller('TaskCreateCtrl', function ($scope, $timeout, userService, ajax) 
         $scope.taskData.devices = [];
         $scope.deviceName = null;
         ajax.get({
-            url: '/stations/' + station.sn + '/devices',
+            url: '/stations/' + station.sn + '/staticdevices',
             success: function (data) {
-                _format(data);
-                if (!devicePicker){
-                    devicePicker = new mui.PopPicker();
-                    var taskTypeButton = document.getElementById('devicePicker');
-                    taskTypeButton.addEventListener('click', function(event) {
-                        devicePicker.show(function(items) {
-                            $scope.deviceName = items[0].text;
-                            $scope.taskData.devices.push({id: items[0].id});
-                            $scope.$apply();
-                            // userResult.innerText = JSON.stringify(items[0]);
-                            //返回 false 可以阻止选择框的关闭
-                            //return false;
-                        });
-                    }, false);
-                }
-                devicePicker.setData(data);
+                staticDevices = data;
             },
             error: function (xhr, error, satus) {
                 console.log('get devices error');
             }
         });
     }
+
+    $scope.openDeviceSelector = function () {
+        // 打开设备选择页面
+        routerService.openPage($scope, '/templates/dts/device-select-page.html', {
+            deviceDatas: staticDevices,
+            onSelect: function (device) {
+                $scope.deviceName = device.name;
+                $scope.taskData.devices = [{id: device.id, sn: device.sn}];
+                history.back();
+            }
+        })
+    };
     
     function initTaskTypeList() {
         ajax.get({
@@ -1568,15 +1566,12 @@ app.controller('TaskCreateCtrl', function ($scope, $timeout, userService, ajax) 
             var _self = this;
             if(_self.picker) {
                 _self.picker.show(function (rs) {
-                    $scope.taskData.expect_complete_time = rs.text;
-                    _self.picker.dispose();
-                    _self.picker = null;
+                    $scope.taskData.expect_complete_time = rs.text + ':00';
                     $scope.$apply();
                 });
             } else {
                 var optionsJson = this.getAttribute('data-options') || '{}';
                 var options = JSON.parse(optionsJson);
-                options.type = 'month';
                 var id = this.getAttribute('id');
                 /*
                  * 首次显示时实例化组件
@@ -1586,8 +1581,8 @@ app.controller('TaskCreateCtrl', function ($scope, $timeout, userService, ajax) 
                 _self.picker = new mui.DtPicker(options);
                 _self.picker.show(function(rs) {
                     $scope.taskData.expect_complete_time = rs.text + ":00";
-                    _self.picker.dispose();
-                    _self.picker = null;
+                    // _self.picker.dispose();
+                    // _self.picker = null;
                     $scope.$apply();
                 });
             }

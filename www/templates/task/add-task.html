@@ -21,6 +21,8 @@
     <script type="text/javascript" src="../../components/angular-ui-router/release/stateEvents.min.js"></script>
     <script type="text/javascript" src="../../js/app/utils.js"></script>
     <script type="text/javascript" src="../../js/app/app.js"></script>
+    <script type="text/javascript" src="../../js/service/router-service.js"></script>
+    <script type="text/javascript" src="../../js/service/common-service.js"></script>
     <script type="text/javascript" src="../../js/controller/task.js"></script>
     <style>
         .mui-input-row label{
@@ -108,7 +110,7 @@
         <div class="mui-input-row">
             <label class="label">设备</label>
             <input type="text" style="position: absolute;" ng-model="deviceName" placeholder="可不填">
-            <button type="button" id='devicePicker' data-options='{}' class="btn mui-btn mui-btn-block">&nbsp;</button>
+            <button type="button" ng-click="openDeviceSelector()" data-options='{}' class="btn mui-btn mui-btn-block">&nbsp;</button>
         </div>
         <div class="mui-input-row">
             <label class="label">是否抢单任务</label>

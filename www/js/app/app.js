@@ -242,6 +242,22 @@ app.service('ajax', function ($rootScope, platformService, userService, $http) {
         });
     };
 
+    this.getCompanyMembers = function (callback) {
+        var companyId = userService.getTaskCompanyId();
+        var url = '/opscompanies/' + companyId + '/members';
+        if (companyId.indexOf('user') === 0) {
+            url = '/usercompanies/'+ companyId.substring(4) + '/members';
+        }
+        this.get({
+            url: url,
+            success: function (result) {
+                if (callback) {
+                    callback(result);
+                }
+            }
+        })
+    };
+
     function request(option) {
         if (option.url.indexOf("http://") !== 0){
             option.url = platformService.host + option.url;
