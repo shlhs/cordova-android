@@ -1012,6 +1012,7 @@ app.directive('siteHistoryRepeatFinish',function(){
         link: function(scope,element,attr){
             if(scope.$last == true){
                 setTimeout(function () {
+                    $.fn.dataTable.ext.errMode = 'none'; //不显示任何错误信息
                     var height = screen.height - 172;
                     var table = $('#siteHistoryTable').DataTable( {
                         searching: false,
