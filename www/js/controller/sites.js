@@ -154,6 +154,7 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
                         s.status = 'offline';
                         s.status_name = '离线';
                     }
+                    s.events_amount = s.unclosed_envet_amount > 99 ? '99+' : s.unclosed_envet_amount;
                     for (var i=0; i<sites.length; i++) {
                         if (sites[i].sn === s.station.sn) {
                             delete s['station'];
