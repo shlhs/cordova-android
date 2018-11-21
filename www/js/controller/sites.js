@@ -432,6 +432,7 @@ app.controller('SiteBaseInfoCtrl', function ($scope, $timeout, $stateParams, aja
 
 app.controller('EventListCtrl', function ($scope, $stateParams, scrollerService, userService, ajax) {
     $scope.sn = GetQueryString('sn');
+    var checked = GetQueryString('status') === '0' ? 0 : 1;
     $scope.isDevice = false;   // 是设备还是站点
     $scope.canCreateTask = userService.getUserRole() === UserRole.Normal ? false : true;
     var deviceSn = GetQueryString("deviceSn");
@@ -449,25 +450,38 @@ app.controller('EventListCtrl', function ($scope, $stateParams, scrollerService,
         function formatTime(d) {
             return d.substring(0, 10) + ' ' + d.substring(11, 19);
         }
-        var url = "/stations/" + $scope.sn + "/events";
+        var url = "/stations/events_with_page";
+        var params = {
+            page_start:0,
+            page_len: 500,
+            secho: 1,
+            status: checked
+        };
         if ($scope.isDevice){
-            url = "/stations/events?deviceSn=" + $scope.sn;
+            params.deviceSn = $scope.sn;
+        } else {
+            params.stationSn = $scope.sn;
         }
         $scope.loadingFailed = false;
         $scope.eventLoading = true;
         ajax.get({
             url: url,
+            data: params,
             cache: false,
             success: function(result) {
                 $scope.eventLoading = false;
                 var cleared = [], newReports=[];
-                for (var i in result) {
-                    result[i].report_time = formatTime(result[i].report_time);
-                    if (result[i].status_name !== '告警消除' && result[i].status_name !== 'CLEARED') {
+                var events = result.aaData;
+                for (var i in events) {
+                    events[i].report_time = formatTime(events[i].report_time);
+                    if (events[i].closed_time) {
+                        events[i].closed_time = formatTime(events[i].closed_time);
+                    }
+                    if (events[i].status_name !== '告警消除' && events[i].status_name !== 'CLEARED') {
                         $scope.unhandledEventCount += 1;
-                        newReports.push(result[i]);
+                        newReports.push(events[i]);
                     } else {
-                        cleared.push(result[i]);
+                        cleared.push(events[i]);
                     }
                 }
                 $scope.events = newReports.concat(cleared);

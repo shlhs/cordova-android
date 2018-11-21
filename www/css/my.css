@@ -1868,7 +1868,9 @@ color: #a7a7a7;
 }
 .event-list>li {
     margin: 6px 0;
-    background-color: rgb(247,247,247);
+    background-color: #fff;
+    border: #ededed 1px solid;
+    padding-bottom: 4px;
 }
 .event-list>li .event-title {
     background-color: rgb(255,255,255);

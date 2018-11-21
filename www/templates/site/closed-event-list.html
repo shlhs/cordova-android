@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>所有事件</title>
+    <title>历史事件</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -41,9 +41,7 @@
 <body class="box-vertical-center" ng-app="myApp" ng-controller="EventListCtrl">
     <header class="mui-bar bg-header">
         <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
-        <h1 class="mui-title">事件列表</h1>
-        <a class="mui-action-menu mui-icon mui-pull-right" style="font-size: 14px;line-height: 28px;color: #fff;margin-right: 6px;"
-           href="/templates/site/closed-event-list.html?status=0&sn={{sn}}">历史事件</a>
+        <h1 class="mui-title">历史事件</h1>
     </header>
     <div class="mui-content" ng-cloak>
         <div class="scroll-wrapper" id="events" ng-if="!loadingFailed">
@@ -54,18 +52,16 @@
                         <div>
                             <div style="font-size: 12px;color: #97969B;">
                                 {{e.device_name}}
-                                <label style="float: right">{{e.report_time}}</label>
+                                <label style="float: right;font-size: 10px;">{{e.report_time}}</label>
                             </div>
                             <div style="clear: both"></div>
                             <div style="color: #464662;font-size: 15px;margin: 3px 0 1px 0;font-weight: 500;" >
                                 {{e.info}}
                             </div>
-                            <div style="font-size: 13px;">
-                                <a style="color: #F47630;float: right;padding: 2px;"
-                                   ng-click="goToCreateTaskHtml($event, e.id, e.info)">发布任务</a>
-                                <a style="color: #6CAAD8;float: right;margin-right: 18px;padding: 2px;"
-                                   ng-click="postCheckEventAction($event, e.id)">确认</a>
-                                <div style="clear: both"></div>
+                            <div style="font-size: 13px;float: right;text-align: right;">
+                                <label style="color: #97969B;padding: 2px;"
+                                   ng-click="goToCreateTaskHtml($event, e.id, e.info)">告警消除</label>
+                                <div style="color: #97969B;font-size: 10px;line-height: 10px;margin-bottom: 4px;">{{e.closed_time}}</div>
                             </div>
                         </div>
                     </li>
