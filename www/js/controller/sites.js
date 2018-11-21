@@ -477,14 +477,17 @@ app.controller('EventListCtrl', function ($scope, $stateParams, scrollerService,
                     if (events[i].closed_time) {
                         events[i].closed_time = formatTime(events[i].closed_time);
                     }
-                    if (events[i].status_name !== '告警消除' && events[i].status_name !== 'CLEARED') {
+                    var statusName = events[i].status_name;
+                    if (statusName !== '告警消除' && statusName !== 'CLEARED') {
                         $scope.unhandledEventCount += 1;
                         newReports.push(events[i]);
                     } else {
                         cleared.push(events[i]);
                     }
-                    if (events[i].status_name === 'CLEARED') {
+                    if (statusName === 'CLEARED') {
                         events[i].status_name = '已确认';
+                    } else if (statusName === '告警消除') {
+                        events[i].status_name = '自动恢复';
                     }
                 }
                 $scope.events = newReports.concat(cleared);

@@ -49,20 +49,17 @@
                 <ul class="mui-table-view mui-table-view-striped mui-table-view-condensed event-list no-border"
                     ng-if="events.length" style="margin-top:0px;padding: 0 8px;">
                     <li class="mui-table-view-cell" ng-repeat="e in events" data-id="{{e.id}}" style="background-color: #fff;">
-                        <div>
-                            <div style="font-size: 12px;color: #97969B;">
-                                {{e.device_name}}
-                                <label style="float: right;font-size: 10px;">{{e.report_time}}</label>
-                            </div>
-                            <div style="clear: both"></div>
-                            <div style="color: #464662;font-size: 15px;margin: 3px 0 1px 0;font-weight: 500;" >
-                                {{e.info}}
-                            </div>
-                            <div style="font-size: 13px;float: right;text-align: right;">
-                                <label style="color: #97969B;padding: 2px;"
-                                   ng-click="goToCreateTaskHtml($event, e.id, e.info)">{{e.status_name}}</label>
-                                <div style="color: #97969B;font-size: 10px;line-height: 10px;margin-bottom: 4px;">{{e.closed_time}}</div>
-                            </div>
+                        <div class="event-title" ng-class="{'status-cleared': e.status_name==='自动恢复', 'status-handled': e.status_name==='已确认'}">
+                            {{e.report_time}}
+                            <label class="mui-pull-right" style="color:#97969B;">{{e.device_name}}</label>
+                        </div>
+                        <div class="info">
+                            {{e.info}}
+                        </div>
+                        <div class="mui-pull-right" style="text-align: right;">
+                            <label class="status-name"
+                               ng-click="goToCreateTaskHtml($event, e.id, e.info)">{{e.status_name}}</label>
+                            <div class="closed-time">{{e.closed_time}}</div>
                         </div>
                     </li>
                 </ul>

@@ -1873,33 +1873,38 @@ color: #a7a7a7;
     padding-bottom: 4px;
 }
 .event-list>li .event-title {
-    background-color: rgb(255,255,255);
-    color: rgb(35,35,35);
-    margin: -11px -15px 0 -15px;
-    min-height: 36px;
-    line-height: 24px;
-    padding-left: 20px;
-    font-weight: 400;
-    font-size: 16px;
+    color: #333;
+    font-size: 12px;
+    border-bottom: #EDEDED 1px solid;
+    padding-bottom: 4px;
+    margin-top: -4px;
     position: relative;
-    padding-right: 30px;
-    padding-top: 6px;
-    word-break: break-word;
 }
-.event-title:before {
-    position: absolute;
+.event-list>li .event-title.status-cleared:before {
     content: '';
     display: block;
-    left: 12px;
-    width: 2px;
-    top: 10px;
-    bottom: 10px;
-    background-color: rgb(87,164,247);
+    position: absolute;
+    left: -16px;
+    top: 3px;
+    width: 4px;
+    height: 12px;
+    background-color: #F47630;
 }
-.event-list .title {
-    color: rgb(35,35,35);
-    font-weight: 300;
+.event-list>li .event-title.status-handled:before {
+    content: '';
+    display: block;
+    position: absolute;
+    left: -16px;
+    top: 3px;
+    width: 4px;
+    height: 12px;
+    background-color: #6CAAD8;
+}
+.event-list .info {
+    color: #464662;
     font-size: 15px;
+    margin: 6px 0 1px 0;
+    font-weight: 500;
 }
 .event-list h5 {
     color: rgb(149,149,149);
@@ -1907,32 +1912,26 @@ color: #a7a7a7;
     font-size: 15px;
 }
 .event-list .event-task {
-    position: absolute;
-    bottom: 16px;
-    right: 10px;
-    width: 70px;
-    height: 26px;
-    border-radius: 13px;
-    border: rgb(244,118,48) 1px solid;
-    color: rgb(244,118,48);
-    text-align: center;
-    line-height: 26px;
-    font-size: 14px;
+    color: #F47630;
+    float: right;
+    padding: 2px;
 }
-.event-list .close {float: right;
-    /*width: 28px;*/
-    /*height: 28px;*/
-    /*background: url(../img/icon/icon-event-close@2x.png) 50% no-repeat;*/
-    /*background-size: contain;*/
-    border: #007aff 1px solid;
-    position: absolute;
-    right: 8px;
-    top: 50%;
-    margin-top: -13px;
-    padding: 0 4px;
-    color: #007aff;
-    font-weight: 400;
-    font-size: 14px;
+.event-list .close {
+    float: right;
+    color: #6CAAD8;
+    margin-right: 18px;
+    padding: 2px;
+}
+.event-list .closed-time {
+    color: #97969B;
+    font-size: 10px;
+    line-height: 10px;
+    margin-bottom: 4px;
+}
+.event-list .status-name {
+    color: #97969B;
+    padding: 2px;
+    font-size: 13px;
 }
 .icon-report-download {
     position: absolute;
