@@ -483,6 +483,9 @@ app.controller('EventListCtrl', function ($scope, $stateParams, scrollerService,
                     } else {
                         cleared.push(events[i]);
                     }
+                    if (events[i].status_name === 'CLEARED') {
+                        events[i].status_name = '已确认';
+                    }
                 }
                 $scope.events = newReports.concat(cleared);
                 cb && cb($scope.events);
