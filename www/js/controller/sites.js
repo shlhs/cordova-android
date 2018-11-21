@@ -26,7 +26,7 @@ app.controller('SiteListCtrl', function ($scope, $http, $state, scrollerService,
                     if (s.photo_src_link) {
                         s.site_image = platformService.getImageUrl(width, height, platformService.host + s.photo_src_link);
                     } else {
-                        s.site_image = '/img/site-default.png';
+                        s.site_image = 'img/site-default.png';
                     }
                     if (!s.is_group)
                     {
@@ -72,6 +72,7 @@ app.controller('SiteListCtrl', function ($scope, $http, $state, scrollerService,
                         s.status = 'offline';
                         s.status_name = '离线';
                     }
+                    s.events_amount = s.unclosed_envet_amount > 99 ? '99+' : s.unclosed_envet_amount;
                     for (var i=0; i<sites.length; i++) {
                         if (sites[i].sn === s.station.sn) {
                             delete s['station'];
@@ -253,7 +254,7 @@ app.controller('SiteBaseInfoCtrl', function ($scope, $timeout, $stateParams, aja
                     data.site_image = platformService.getImageUrl(width, height, platformService.host + data.photo_src_link);
                 }
                 else {
-                    data.site_image = '/img/background/site-default.png';
+                    data.site_image = 'img/background/site-default.png';
                 }
                 $scope.siteData = data;
                 getUnhandledEventCount(data);
@@ -301,7 +302,7 @@ app.controller('SiteBaseInfoCtrl', function ($scope, $timeout, $stateParams, aja
 
 
 app.controller('EventListCtrl', function ($scope, $stateParams, scrollerService, userService, ajax, routerService) {
-    $scope.sn = $stateParams.sn;
+    $scope.sn = $stateParams.sn || $scope.sn;
     $scope.isDevice = false;   // 是设备还是站点
     $scope.canCreateTask = userService.getUserRole() === UserRole.Normal ? false : true;
     var deviceSn = GetQueryString("deviceSn");
@@ -319,25 +320,41 @@ app.controller('EventListCtrl', function ($scope, $stateParams, scrollerService,
         function formatTime(d) {
             return d.substring(0, 10) + ' ' + d.substring(11, 19);
         }
-        var url = "/stations/" + $scope.sn + "/events";
+        var url = "/stations/events_with_page";
+        var params = {
+            page_start:0,
+            page_len: 500,
+            secho: 1,
+            status: $scope.status === undefined ? 1 : $scope.status
+        };
         if ($scope.isDevice){
-            url = "/stations/events?deviceSn=" + $scope.sn;
+            params.deviceSn = $scope.sn;
+        } else {
+            params.stationSn = $scope.sn;
         }
         $scope.loadingFailed = false;
         $scope.eventLoading = true;
         ajax.get({
             url: url,
+            data: params,
             cache: false,
             success: function(result) {
                 $scope.eventLoading = false;
                 var cleared = [], newReports=[];
-                for (var i in result) {
-                    result[i].report_time = formatTime(result[i].report_time);
-                    if (result[i].status_name !== 'CLEARED') {
+                var events = result.aaData;
+                for (var i in events) {
+                    events[i].report_time = formatTime(events[i].report_time);
+                    if (events[i].closed_time) {
+                        events[i].closed_time = formatTime(events[i].closed_time);
+                    }
+                    if (events[i].status_name !== '告警消除' && events[i].status_name !== 'CLEARED') {
                         $scope.unhandledEventCount += 1;
-                        newReports.push(result[i]);
+                        newReports.push(events[i]);
                     } else {
-                        cleared.push(result[i]);
+                        cleared.push(events[i]);
+                    }
+                    if (events[i].status_name === 'CLEARED') {
+                        events[i].status_name = '已确认';
                     }
                 }
                 $scope.events = newReports.concat(cleared);
@@ -355,7 +372,7 @@ app.controller('EventListCtrl', function ($scope, $stateParams, scrollerService,
         });
     };
 
-    $scope.getDataList();
+    setTimeout($scope.getDataList, 500);
 
     $scope.postCheckEventAction = function($event, eventId) {
         console.log("To check event: " + eventId);
@@ -406,6 +423,13 @@ app.controller('EventListCtrl', function ($scope, $stateParams, scrollerService,
         // window.location.href = '/templates/task/add-task.html?eventId=' + eventId + '&eventInfo=' + eventInfo;
         routerService.openPage($scope, '/templates/task/add-task.html', {linkEventId: eventId, linkEventInfo: eventInfo});
     };
+
+    $scope.openEventHistory = function () {
+        routerService.openPage($scope, '/templates/site/closed-event-list.html', {
+            sn: $scope.sn,
+            status: 0
+        });
+    }
 });
 
 

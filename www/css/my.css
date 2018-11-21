@@ -4,6 +4,7 @@ html,body{
     padding: 0;
     margin: 0;
     background-color: #efeff4;
+    overflow: hidden;
 }
 * {
     padding: 0;
@@ -229,6 +230,10 @@ header .mui-action-menu.add-task {
     line-height: 24px;
     color: #ffffff;
     font-size: 14px;
+}
+header .mui-icon-left-nav {
+    padding: 10px;
+    margin-left: -10px;
 }
 nav.bg-footer{
     background-color: #fff;
@@ -2023,7 +2028,9 @@ color: #a7a7a7;
 }
 .event-list>li {
     margin: 6px 0;
-    background-color: rgb(247,247,247);
+    background-color: #fff;
+    border: #ededed 1px solid;
+    padding-bottom: 4px;
 }
 .event-list>li .event-title {
     background-color: rgb(255,255,255);
@@ -2035,7 +2042,7 @@ color: #a7a7a7;
     font-weight: 400;
     font-size: 16px;
     position: relative;
-    padding-right: 30px;
+    padding-right: 50px;
     padding-top: 6px;
 }
 .event-title:before {
@@ -2071,15 +2078,15 @@ color: #a7a7a7;
     line-height: 26px;
     font-size: 14px;
 }
-.event-list .close {float: right;
-    width: 28px;
-    height: 28px;
-    background: url(../img/icon/icon-event-close@2x.png) 50% no-repeat;
-    background-size: contain;
-    border: transparent 6px solid;
+.event-list .close {
+    border: #007aff 1px solid;
     position: absolute;
     right: 8px;
-    top: 4px;
+    top: 6px;
+    padding: 0 4px;
+    color: #007aff;
+    font-weight: 400;
+    font-size: 14px;
 }
 .icon-report-download {
     position: absolute;

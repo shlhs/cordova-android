@@ -1056,7 +1056,7 @@ app.controller('HistoryVarCtrl', function ($scope, ajax, $timeout) {
 app.directive('treeView',[function(){
     return {
         restrict: 'E',
-        templateUrl: '/templates/site/device-monitor/tree-view.html',
+        templateUrl: 'templates/site/device-monitor/tree-view.html',
         scope: {
             treeData: '=',
             canChecked: '=',

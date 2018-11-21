@@ -4,12 +4,11 @@
             <header class="mui-bar bg-header bg-transparent" style="box-shadow: none;position: static;">
                 <a class=" mui-pull-left" ng-click="openSiteSelectPage()" ng-show="sites.length > 1">站点切换</a>
                 <h1 class="mui-title" style="font-size: 18px;left: 70px;right: 70px;">{{currentSite.name}}</h1>
-                <!--<a class="mui-pull-right" href="/templates/site/event-list.html?sn={{currentSite.station.sn}}">-->
-                <a class="mui-pull-right" ui-sref=".eventList({sn: currentSite.station.sn})" style="position: relative;margin-right: 8px;">
+                <a class="mui-pull-right" ui-sref=".eventList({sn: currentSite.sn})" style="position: relative;margin-right: 8px;">
                     <i class="icon white icon-events" style="width: 18px;height: 18px;">
                     </i>
                     <span class="mui-badge mui-badge-danger ng-binding ng-scope" ng-if="currentSite.unclosed_envet_amount" style="position: absolute; font-size: 9px; top: -8px; left: 10px; font-weight: 300;">
-                    {{currentSite.unclosed_envet_amount}}
+                    {{currentSite.events_amount}}
                     </span>
                 </a>
             </header>

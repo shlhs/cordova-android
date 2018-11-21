@@ -175,7 +175,10 @@
     font-size: 16px;
 }
 .task-type.ergent{
-    color: rgba(220, 3, 88, 0.71);
+    color: red;
+}
+.task-type.serious {
+    color: #FF8F00;
 }
 .steps{
     display: -webkit-box;

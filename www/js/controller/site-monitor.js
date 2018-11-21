@@ -112,10 +112,11 @@ app.directive('siteHistoryRepeatFinish',function(){
                 setTimeout(function () {
                     $.fn.dataTable.ext.errMode = 'none'; //不显示任何错误信息
 
+                    var height = screen.height - 172;
                     var table = $('#siteHistoryTable').DataTable( {
                         searching: false,
                         ordering: false,
-                        scrollY:        "500px",
+                        scrollY:        height + '[x',
                         scrollX:        true,
                         scrollCollapse: true,
                         paging:         false,
@@ -579,13 +580,13 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax, $state
     var stationSn = $stateParams.sn;  //GetQueryString("sn");
     $scope.timeTypeList = [{
         id: 'DAY',
-        name: '按日'
+        name: '日报'
     }, {
         id: 'MONTH',
-        name: '按月'
+        name: '月报'
     }, {
         id: 'YEAR',
-        name: '按年'
+        name: '年报'
     }];
     $scope.calcMethodList = [{
         id: 'MAX',
@@ -593,7 +594,7 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax, $state
     }];
     var currentDay = moment().format('YYYY-MM-DDTHH:mm:ss.000') + 'Z';
     $scope.calcMethod = $scope.calcMethodList[0];
-    $scope.timeType = {id: 'DAY', name: '按日'};
+    $scope.timeType = {id: 'DAY', name: '日报'};
     $scope.reportGroups = [];
     $scope.currentReport = null;
     $scope.reportDataInfo = [];

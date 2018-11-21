@@ -343,14 +343,14 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
                 success: function (data) {
                     var task = data[0];
                     $scope.onCreateSucceed(task);
-                    $scope.openPage($scope, '/templates/task/task-detail.html', {id: data.id}, {finish: true});
+                    $scope.openPage($scope, '/templates/task/task-detail.html', {id: taskId}, {finish: true});
                 },
                 error: function () {
-                    $scope.openPage($scope, '/templates/task/task-detail.html', {id: data.id}, {finish: true});
+                    $scope.openPage($scope, '/templates/task/task-detail.html', {id: taskId}, {finish: true});
                 }
             });
         } else {
-            $scope.openPage($scope, '/templates/task/task-detail.html', {id: data.id}, {finish: true});
+            $scope.openPage($scope, '/templates/task/task-detail.html', {id: taskId}, {finish: true});
         }
     }
 

@@ -16,8 +16,8 @@
     <link rel="stylesheet" href="css/setting.css">
     <link rel="stylesheet" href="css/my.css">
     <link rel="stylesheet" href="css/task.css">
-    <!--<script type="text/javascript" src="cordova.js"></script>-->
-    <!--<script type="text/javascript" src="cordova_plugins.js"></script>-->
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="cordova_plugins.js"></script>
     <script type="text/javascript" src="components/libs/jquery-2.1.4.js"></script>
     <script type="text/javascript" src="components/angular/angular.min.js"></script>
     <script type="text/javascript" src="components/angular-ui-router/release/angular-ui-router.min.js"></script>
@@ -87,16 +87,17 @@
         }
     }, false);
 
-    window.addEventListener('load', function() {
-        var textInput = document.querySelector('input');
-
-        FastClick.attach(document.body);
-        Array.prototype.forEach.call(document.getElementsByName('input'), function(testEl) {
-            testEl.addEventListener('click', function() {
-                textInput.focus();
-            }, false)
-        });
-    }, false);
+//    // 解决输入框单击无法focus的问题
+//    window.addEventListener('load', function() {
+//        var textInput = document.querySelector('input');
+//
+//        FastClick.attach(document.body);
+//        Array.prototype.forEach.call(document.getElementsByName('input'), function(testEl) {
+//            testEl.addEventListener('click', function() {
+//                textInput.focus();
+//            }, false)
+//        });
+//    }, false);
 </script>
 </body>
 </html>

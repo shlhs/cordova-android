@@ -3,7 +3,7 @@ function openDeviceFromQR(data) {   //根据扫码结果打开设备详情
     scope.gotoDevice({sn: data.sn});
 }
 
-app.controller('StaticDevicesHomeCtrl', function ($scope, ajax, $stateParams, $state, routerService) {
+app.controller('StaticDevicesHomeCtrl', function ($scope, ajax, $stateParams, $state, routerService, cordovaService) {
     var stationSn = $stateParams.sn;
     var devices = [];       // 设备
     $scope.deviceDatas = [];
@@ -32,8 +32,43 @@ app.controller('StaticDevicesHomeCtrl', function ($scope, ajax, $stateParams, $s
     };
 
     $scope.startCaptureQR = function() {
+        // $('body').css({'background-color': 'transparent', 'opacity': 0}).children().addClass('hide');
+        // $('html').css('background-color', 'transparent');
         // 扫描设备二维码
-        window.android && window.android.openQRCapturePage();
+        if (cordovaService.deviceReady) {
+            // cordova.plugins.barcodeScanner.scan(
+            //     function (result) {
+            //         alert("We got a barcode\n" +
+            //             "Result: " + result.text + "\n" +
+            //             "Format: " + result.format + "\n" +
+            //             "Cancelled: " + result.cancelled);
+            //     },
+            //     function (error) {
+            //         alert("Scanning failed: " + error);
+            //     }
+            // );
+
+            // Start a scan. Scanning will continue until something is detected or
+            // `QRScanner.cancelScan()` is called.
+            QRScanner.scan(displayContents);
+            QRScanner.show();
+
+            function displayContents(err, text){
+                if(err){
+                    // an error occurred, or the scan was canceled (error code `6`)
+                    alert('scan result:' + err);
+                } else {
+                    // The scan completed, display the contents of the QR code:
+                    alert(text);
+                }
+            }
+
+            // Make the webview transparent so the video preview is visible behind it.
+            // Be sure to make any opaque HTML elements transparent here to avoid
+            // covering the video.
+        } else if (window.android) {
+            window.android.openQRCapturePage();
+        }
     };
 
     setTimeout($scope.getDataList, 500);

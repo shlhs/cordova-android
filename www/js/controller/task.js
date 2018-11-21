@@ -832,7 +832,7 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
     }
     $scope.taskName = DtsTaskType.indexOf(taskType) >= 0 ? '缺陷' : '任务';
 
-    var id = $scope.id, username=userService.username;
+    var id = $scope.$parent.id, username=userService.username;
     $scope.taskData = {};
     var commentActionIndex = -1;     //
     $scope.description = null;
@@ -1527,6 +1527,8 @@ app.controller('TaskCreateCtrl', function ($scope, $stateParams, $timeout, route
                     $scope.taskData.devices = [{id: device.id, sn: device.sn}];
                     history.back();
                 }
+            }, {
+                hidePrev: false
             });
         }
     };

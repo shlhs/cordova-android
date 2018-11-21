@@ -578,7 +578,7 @@ app.controller('BaseGalleryCtrl', function ($scope, $stateParams, $timeout) {
 });
 
 
-app.controller('mapCtrl', function ($scope) {
+app.controller('mapCtrl', function ($scope, cordovaService) {
     var sn = $scope.stationSn;
 
     $scope.siteData = {};
@@ -608,7 +608,7 @@ app.controller('mapCtrl', function ($scope) {
                 $.notify.error('获取站点信息失败');
                 console.log('login fail');
             }
-        })
+        });
     }
 
     function drawMap(siteData) {
@@ -644,9 +644,10 @@ app.controller('mapCtrl', function ($scope) {
         }
 
         $scope.$apply();
-        apiLocation.start(function (longtitude, latitude) {
-            //如果获取不到用户的定位，则直接显示站点的位置
-            if (longtitude && latitude){
+        if (cordovaService.deviceReady) {
+            navigator.geolocation.getCurrentPosition(function (position) {
+                var longtitude = position.coords.longtitude;
+                var latitude = position.coords.latitude;
                 // 添加标注
                 var start = new BMap.Point(longtitude, latitude);
                 // 坐标转换
@@ -656,8 +657,11 @@ app.controller('mapCtrl', function ($scope) {
                     driving.search(data.points[0], end);
                     map.centerAndZoom(end, 15);                 // 初始化地图，设置中心点坐标和地图级别
                 });
-            }
-        });
+            }, function (error) {
+                console.log(error);
+            });
+
+        }
 
     }
 
