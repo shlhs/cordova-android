@@ -4,8 +4,8 @@
  * Created by liucaiyun on 2017/7/23.
  */
 
-var gPublicApiHost = 'http://47.104.75.86:8090';        // 公有云接口
-// var gPublicApiHost = 'http://222.175.5.94:8090';        // 信发
+// var gPublicApiHost = 'http://47.104.75.86:8090';        // 公有云接口
+var gPublicApiHost = 'http://222.175.5.94:8090';        // 信发
 
 // var gPublicApiHost = 'http://114.215.90.83:8090';
 
