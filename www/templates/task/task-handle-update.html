@@ -1,4 +1,3 @@
-
 <div class="inner-page" id="handlePage" ng-controller="TaskHandlerUpload">
     <header class="mui-bar mui-bar-transparent mui-segmented-control-vertical" style=" -webkit-box-shadow: none;box-shadow: none;position: relative;">
         <a class="mui-icon mui-pull-left mui-control-item" style="font-size: 18px;margin-left: 6px;color: #9e9e9e;top:10px;" ng-click="cancel()">取消</a>
@@ -10,17 +9,16 @@
                 <textarea rows="3" placeholder="请添加描述..." name="description" ng-model="description"></textarea>
             </div>
             <ul class="image-list" id="imageList">
-                <li class="image-item" ng-repeat="file in images">
+                <li class="image-item" ng-repeat="file in images" ng-click="openGallery($index)">
                     <div class="content">
-                        <a class="img-file" style="background-image: url({{file}})" ui-sref="task.update.gallery({index: $index+1, images: images, canDelete: true})"></a>
+                        <a class="img-file" style="background-image: url({{file}})"></a>
                     </div>
                 </li>
                 <li class="upload-item">
                     <div class="content">
                         <div class="image-uploader">
-                            <input class="add-btn" type="file" accept="image/*" name="upload" multiple ng-model="chosenFile" onchange="angular.element(this).scope().chooseImage(this.files)" ng-if="isPC">
-                            <input class="add-btn" type="file" accept="image/*" name="upload" multiple ng-model="chosenFile" ng-if="!isPC && !useMobileGallery">
-                            <input class="add-btn" name="upload" ng-model="chosenFile" ng-click="openMobileGallery()" ng-if="!isPC && useMobileGallery">
+                            <input class="add-btn" type="file" accept="image/*" name="upload" multiple ng-model="chosenFile" onchange="angular.element(this).scope().chooseImage(this.files)" ng-if="!useMobileGallery">
+                            <input class="add-btn" name="upload" ng-model="chosenFile" ng-click="openMobileGallery()" ng-if="useMobileGallery">
                         </div>
                     </div>
                 </li>

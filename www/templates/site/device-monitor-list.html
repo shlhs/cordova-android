@@ -69,14 +69,12 @@
 </head>
 <body class="box-vertical-center" ng-app="myApp" ng-controller="DeviceMonitorListCtrl">
     <header class="mui-bar bg-header">
-        <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
+        <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
         <h1 class="mui-title">设备监测</h1>
     </header>
-    <div class="mui-content" ng-cloak>
+    <div class="mui-content" ng-cloak style="padding-left: 8px;background-color: #fff;">
         <div class="scroll-wrapper" ng-if="!isLoading && !loadingFailed">
-            <div class="mui-scroll">
-                <device-tree-view device-list="deviceDatas" goto-device="gotoDevice"></device-tree-view>
-            </div>
+            <device-tree-view device-list="deviceDatas" click-callback="gotoDevice" show-status="true"></device-tree-view>
         </div>
         <div class="page-alert-wrapper" ng-if="isLoading">
             <div class="page-alert">

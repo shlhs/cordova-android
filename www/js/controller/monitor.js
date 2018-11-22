@@ -1,7 +1,7 @@
 "use strict";
 
 
-app.controller('MonitorListCtrl', function ($scope, $stateParams, scrollerService, ajax) {
+app.controller('MonitorListCtrl', function ($scope, $stateParams, platformService, scrollerService, ajax) {
     $scope.monitorScreens = [];
     $scope.monitorLoading = true;
     $scope.loadingFailed = false;
@@ -11,11 +11,23 @@ app.controller('MonitorListCtrl', function ($scope, $stateParams, scrollerServic
 
         $scope.loadingFailed = false;
         $scope.monitorLoading = true;
+        var graphHost = platformService.getGraphHost();
         ajax.get({
-            url: '/monitoringscreens/findByStationSn?sn=' + sn,
+            // url: '/monitoringscreens/findByStationSn?sn=' + sn,
+            url: graphHost + '/graphs/findByParentIndex?index='+sn,     // 新的监控画面接口
             success: function (data) {
                 $scope.monitorLoading = false;
-                $scope.monitorScreens = data;
+                $scope.monitorScreens = [];
+                data.forEach(function (item, i) {
+                    if (item.userVisible === 1) {
+                        if (item.type = 'KK') {
+                            item.mobile_screen_link = platformService.getGraphScreenUrl(item.sn);
+                        } else {
+                            item.mobile_screen_link = platformService.getOldMonitorScreenUrl(item.sn);
+                        }
+                        $scope.monitorScreens.push(item);
+                    }
+                });
                 scrollerService.initScroll('#monitors', $scope.getDataList);
                 $scope.$apply();
             },

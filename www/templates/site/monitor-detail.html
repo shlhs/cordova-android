@@ -50,9 +50,17 @@
 </div>
     <script src="../../components/fastclick-master/lib/fastclick.js"></script>
     <script src="../../js/my/notify.js"></script>
+    <script src="../../js/app/utils.js"></script>
     <script src="../../components/pinch-zoom-js/dist/underscore.js"></script>
     <script src="../../components/pinch-zoom-js/dist/pinch-zoom.js"></script>
     <script>
+
+        window.addEventListener('message', function(e) {
+            var frames = window.frames;
+            for(var i=0; i<frames.length; i++) {
+                frames[i].postMessage('Bearer' + (getStorageItem('accountToken') || ''), '*');
+            }
+        }, false);
         const url = location.search.substring(location.search.lastIndexOf('http://'));
         const iframe = document.getElementById('iframe');
         iframe.src = url;

@@ -122,7 +122,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                         }
                         haveChart = true;
                         needChartCount += 1;
-                        getTrendAnalysis(contentsResult[i].title, deviceVarSns, contentsResult[i].period, $scope.queryTime, contentsResult[i].pfvSettings);
+                        getTrendAnalysis(contentsResult[i].title, deviceVarSns, contentsResult[i].period, $scope.queryTime, contentsResult[i].pfvSettings, contentsResult[i].showType);
                     }else if(contentsResult[i].type === 'ratio-pie'){
                         var ratioPieData = [];
                         var unit = '';
@@ -578,7 +578,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
         });
     }
 
-    function getTrendAnalysis(name, deviceVarSns, period, queryTime, pfvSettings) {
+    function getTrendAnalysis(name, deviceVarSns, period, queryTime, pfvSettings, inputShowType) {
         var queryType = 'MONTH';
         if(period == 'current_day') {
             queryType = 'DAY';
@@ -586,6 +586,15 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
             queryType = 'YEAR';
         } else if(period == 'normal') {
             queryType = 'NORMAL';
+        }
+
+        var showType = 'line';
+        var boundaryGap = true;
+        if(inputShowType != null && inputShowType != '') {
+            showType = inputShowType;
+        }
+        if(showType == 'line') {
+            boundaryGap = false;
         }
 
         ajax.get({
@@ -617,11 +626,11 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
 
                 var chartDatas = [];
                 for(var j in data) {
-                    chartDatas.push({name: data[j].name+' '+data[j].unit, type:'line', data: data[j].datas, yAxisIndex: 0});
+                    chartDatas.push({name: data[j].name+' '+data[j].unit, type:showType, data: data[j].datas, yAxisIndex: 0});
                 }
 
                 var showPfvSetting = (period == 'current_day' || period == 'normal')&& (pfvSettings == 'pfv-settings-f' || pfvSettings == 'pfv-settings-r')
-                drawEchart(name, getTrendAnalysisEchartOption(showPfvSetting, pfvSettings, times, chartDatas));
+                drawEchart(name, getTrendAnalysisEchartOption(showPfvSetting, pfvSettings, times, chartDatas, boundaryGap));
             },
             error: function () {
                 paintFailed();
@@ -630,7 +639,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
         });
     }
 
-    function getTrendAnalysisEchartOption(showPfvSetting, pfvSettings, times, data) {
+    function getTrendAnalysisEchartOption(showPfvSetting, pfvSettings, times, data, boundaryGap) {
         var yAxis =[
             {
                 type: 'value'
@@ -784,7 +793,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
             },
             xAxis: {
                 type: 'category',
-                boundaryGap: false,
+                boundaryGap: boundaryGap,
                 data: times
             },
             yAxis: yAxis,
@@ -798,10 +807,10 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
             url: '/stations/' + $scope.sn,
             async: false,
             success: function (data) {
-                if(data.pfv_settings_f && data.pfv_settings_f != '') {
+                if(data.pfv_settings_f && data.pfv_settings_f != '' && data.pfv_settings_f != '[]') {
                     pfvSettingsF = JSON.parse(data.pfv_settings_f);
                 }
-                if(data.pfv_settings_r && data.pfv_settings_r != '') {
+                if(data.pfv_settings_r && data.pfv_settings_r != '' && data.pfv_settings_r != '[]') {
                     pfvSettingsR = JSON.parse(data.pfv_settings_r);
                 }
             },

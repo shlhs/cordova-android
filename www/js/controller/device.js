@@ -375,8 +375,8 @@ app.controller('DeviceTaskHistoryCtrl', function ($scope, ajax, scrollerService)
         $scope.showType = type;
     };
 
-    $scope.openTask = function (taskId) {
-        location.href = '/templates/task/task-detail.html?id=' + taskId;
+    $scope.openTask = function (task) {
+        location.href = '/templates/task/task-detail.html?id=' + task.id + '&taskType=' + task.task_type_id;
     };
 
     $scope.getDataList();
@@ -432,8 +432,8 @@ app.controller('DeviceTreeCommonCtrl', function ($scope, ajax) {
                 return;
             }
             if (item.indexs) {
-                const newChildren = [];
-                const childrenMap = {};
+                var newChildren = [];
+                var childrenMap = {};
                 item.children.forEach(function (n, i) {
                     childrenMap[n.id] = n;
                 });
@@ -1086,4 +1086,3 @@ app.directive('treeView',[function(){
         }]
     };
 }]);
-
