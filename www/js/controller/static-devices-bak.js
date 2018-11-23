@@ -7,7 +7,7 @@ app.controller('StaticDevicesHomeCtrl', function ($scope, ajax, routerService) {
         if (deviceData.is_group) {
             routerService.openPage($scope, '/templates/site/static-devices/sub-device-list.html', {groupData: deviceData});
         } else {
-            routerService.openPage($scope, '/templates/site/static-devices/device-detail.html', {device: deviceData});
+            routerService.openPage($scope, '/templates/site/static-devices/device-detail.html', {device_id: deviceData.id, device_sn: deviceData.sn});
         }
     };
 

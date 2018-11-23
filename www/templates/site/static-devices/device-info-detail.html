@@ -1,0 +1,50 @@
+<div ng-cloak style="background-color: #fff;padding-bottom: 40px;padding-top: 10px;height: 100%;">
+    <div class="device-img-wrapper">
+        <ul class="container">
+            <li class="img device-img"
+                style="background-image: url({{device.device_photo_src_link}});background-position: center;background-repeat: no-repeat; background-size: contain;">
+                <i class="icon icon-no-picture icon-36" ng-if="!device.device_photo_src_link"></i>
+                <div style="color: #999; font-size: 13px;margin-top: -4px;" ng-if="!device.device_photo_src_link">暂无图片</div>
+            </li>
+            <li class="img qr"
+                style="background-image: url({{device.qr_photo_src_link}});background-position: center;background-repeat: no-repeat; background-size: contain;">
+                <i class="icon icon-no-qr icon-36" ng-if="!device.qr_photo_src_link"></i>
+                <div style="color: #999; font-size: 13px;margin-top: -4px;" ng-if="!device.qr_photo_src_link">暂无二维码</div>
+            </li>
+        </ul>
+    </div>
+    <div ng-if="device.properties">
+        <div class="info-group properties-group">
+            <li>
+                <label class="title">设备类型</label>
+                <span class="value">{{device.device_type}}</span>
+            </li>
+            <li ng-repeat="p in device.properties">
+                <label class="title">{{p.name}}</label>
+                <span class="value">{{p.value}}{{p.unit}}</span>
+            </li>
+        </div>
+    </div>
+    <div class="card no-padding sub-device-card" ng-repeat="item in device.items">
+        <div class="card-header device-detail-title">{{item.name}}</div>
+        <div class="card-content">
+            <div class="info-group properties-group">
+                <li ng-repeat="p in item.properties">
+                    <label class="title">{{p.name}}</label>
+                    <span class="value">{{p.value}}{{p.unit}}</span>
+                </li>
+            </div>
+            <div class="card" ng-repeat="sub in item.contains">
+                <div class="card-header">{{sub.name}}</div>
+                <div class="card-content">
+                    <ul  class="mui-table-view font-14 info-group">
+                        <li class="mui-table-view-cell" ng-repeat="c in sub.config">{{c.name}}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="device-edit-btn" ng-click="startDeviceEditor()">
+        <i class="icon icon-24 icon-edit"></i>
+    </div>
+</div>

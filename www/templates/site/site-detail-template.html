@@ -3,14 +3,14 @@
     <div class="site-header">
         <header class="mui-bar bg-header bg-transparent" style="box-shadow: none;position: static;">
             <a class=" mui-pull-left site-popover" ng-click="openSiteSelectPage()" ng-show="sites.length > 1" ng-if="!isSiteDetail">站点选择</a>
-            <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()" ng-if="isSiteDetail"></a>
+            <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()" ng-if="isSiteDetail"></a>
             <h1 class="mui-title" style="font-size: 18px;left: 70px;right: 70px;">{{currentSite.name}}</h1>
             <a class="mui-pull-right" href="/templates/site/event-list.html?sn={{currentSite.sn}}" style="position: relative;margin-right: 8px;">
                 <i class="icon white icon-events" style="width: 18px;height: 18px;">
                 </i>
                 <span class="mui-badge mui-badge-danger" ng-if="currentSite.unclosed_envet_amount"
                       style="position: absolute;font-size: 9px;top:-8px;left: 10px;font-weight: 300;">
-                    {{currentSite.unclosed_envet_amount}}
+                    {{currentSite.events_amount}}
                 </span>
             </a>
         </header>
@@ -27,50 +27,68 @@
         <ul class="mui-table-view mui-grid-view mui-grid-9 no-border entrance-list">
             <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
                 <a href="/templates/site/kanban.html?sn={{currentSite.sn}}" style="padding: 6px 0 0 0;">
-                    <span class="mui-icon icon icon-36 icon-kanban"></span>
+                    <span class="mui-icon icon icon-32 icon-kanban"></span>
                     <div class="mui-media-body">看板</div>
                 </a>
             </li>
             <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
                 <a href="/templates/site/monitor-list.html?sn={{currentSite.sn}}" style="padding: 6px 0 0 0;">
-                    <span class="mui-icon icon icon-36 icon-monitor"></span>
+                    <span class="mui-icon icon icon-32 icon-monitor"></span>
                     <div class="mui-media-body">画面</div>
                 </a>
             </li>
             <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
                 <a href="/templates/site/device-monitor-list.html?sn={{currentSite.sn}}" style="padding: 6px 0 0 0;">
-                    <span class="mui-icon icon icon-36 icon-device-monitor"></span>
+                    <span class="mui-icon icon icon-32 icon-device-monitor"></span>
                     <div class="mui-media-body">设备监测</div>
                 </a>
             </li>
             <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
                 <a href="/templates/site/static-devices/device-home.html?sn={{currentSite.sn}}&name={{currentSite.name}}" style="padding: 6px 0 0 0;">
-                    <span class="mui-icon icon icon-36 icon-archives"></span>
+                    <span class="mui-icon icon icon-32 icon-archives"></span>
                     <div class="mui-media-body">设备档案</div>
                 </a>
             </li>
             <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
                 <a href="/templates/site/docs.html?sn={{currentSite.sn}}" style="padding: 6px 0 0 0;">
-                    <span class="mui-icon icon icon-36 icon-docs"></span>
+                    <span class="mui-icon icon icon-32 icon-docs"></span>
                     <div class="mui-media-body">电子档案</div>
                 </a>
             </li>
             <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
+                <a href="/templates/dts/dts-list.html?sn={{currentSite.sn}}" style="padding: 6px 0 0 0;">
+                    <span class="mui-icon icon icon-32 icon-dashboard-dts"></span>
+                    <div class="mui-media-body">缺陷记录</div>
+                </a>
+            </li>
+            <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
                 <a href="/templates/site/reports.html?sn={{currentSite.sn}}&name={{currentSite.name}}" style="padding: 6px 0 0 0;">
-                    <span class="mui-icon icon icon-36 icon-reports"></span>
+                    <span class="mui-icon icon icon-32 icon-reports"></span>
                     <div class="mui-media-body">月度报告</div>
                 </a>
             </li>
-            <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border" ng-hide="role === 'USER'">
+            <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
                 <a href="/templates/evaluate/evaluate-history.html?sn={{currentSite.sn}}&name={{currentSite.name}}" style="padding: 6px 0 0 0;">
-                    <span class="mui-icon icon icon-36 icon-security"></span>
+                    <span class="mui-icon icon icon-32 icon-security"></span>
                     <div class="mui-media-body">安全评测</div>
                 </a>
             </li>
-            <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border" ng-hide="role === 'USER'">
+            <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
                 <a href="/templates/maintenance-check/check-history.html?sn={{currentSite.sn}}&name={{currentSite.name}}" style="padding: 6px 0 0 0;">
-                    <span class="mui-icon icon icon-36 icon-poweroff"></span>
+                    <span class="mui-icon icon icon-32 icon-poweroff"></span>
                     <div class="mui-media-body">停电维护</div>
+                </a>
+            </li>
+            <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
+                <a href="/templates/site-monitor/data-line.html?sn={{currentSite.sn}}&name={{currentSite.name}}" style="padding: 6px 0 0 0;">
+                    <span class="mui-icon icon icon-32 icon-history-line"></span>
+                    <div class="mui-media-body">历史曲线</div>
+                </a>
+            </li>
+            <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
+                <a href="/templates/site-monitor/data-history.html?sn={{currentSite.sn}}&name={{currentSite.name}}" style="padding: 6px 0 0 0;">
+                    <span class="mui-icon icon icon-32 icon-history-report"></span>
+                    <div class="mui-media-body">历史报表</div>
                 </a>
             </li>
         </ul>

@@ -104,8 +104,9 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
                 $scope.isLoading = false;
                 var sites = [];
                 result.forEach(function (s) {
+                    var width = window.screen.width*3, height=Math.round(width/2);
                     if (s.photo_src_link) {
-                        s.site_image = platformService.getImageUrl(180, 180, platformService.host + s.photo_src_link);
+                        s.site_image = platformService.getImageUrl(width, height, platformService.host + s.photo_src_link);
                     } else {
                         s.site_image = '/img/site-default.png';
                     }
@@ -138,13 +139,13 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
                 $scope.isLoading = false;
                 var sites = $scope.sites;
                 result.forEach(function (s) {
-                    if (s.status === '') {
+                    if (s.communication_status == null || s.communication_status == '') {
                         s.status = 'unknown';
                         s.status_name = '未知';
-                    } else if (s.status === '1') {
-                        if (s.unclosed_envet_amount > 0) {
+                    } else if (s.communication_status == 1) {
+                        if (s.running_status == 1) {
                             s.status = 'abnormal';
-                            s.status_name = '异常';
+                            s.status_name = '故障';
                         } else {
                             s.status = 'normal';
                             s.status_name = '正常';
@@ -153,6 +154,7 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
                         s.status = 'offline';
                         s.status_name = '离线';
                     }
+                    s.events_amount = s.unclosed_envet_amount > 99 ? '99+' : s.unclosed_envet_amount;
                     for (var i=0; i<sites.length; i++) {
                         if (sites[i].sn === s.station.sn) {
                             delete s['station'];
@@ -245,7 +247,11 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
     $scope.openSiteSelectPage = function () {
         routerService.openPage($scope, '/templates/site/site-select-page.html',
             {treeData: $scope.sitesTree, onSelect: $scope.chooseSite, selectedSn: $scope.currentSite.sn})
-    }
+    };
+
+    $scope.openMap = function () {
+        location.href='/templates/map.html?name=' + $scope.currentSite.name + '&stationSn=' + $scope.currentSite.sn;
+    };
 });
 
 app.controller('SiteTreeCtrl', function ($scope) {
@@ -426,6 +432,7 @@ app.controller('SiteBaseInfoCtrl', function ($scope, $timeout, $stateParams, aja
 
 app.controller('EventListCtrl', function ($scope, $stateParams, scrollerService, userService, ajax) {
     $scope.sn = GetQueryString('sn');
+    var checked = GetQueryString('status') === '0' ? 0 : 1;
     $scope.isDevice = false;   // 是设备还是站点
     $scope.canCreateTask = userService.getUserRole() === UserRole.Normal ? false : true;
     var deviceSn = GetQueryString("deviceSn");
@@ -443,25 +450,44 @@ app.controller('EventListCtrl', function ($scope, $stateParams, scrollerService,
         function formatTime(d) {
             return d.substring(0, 10) + ' ' + d.substring(11, 19);
         }
-        var url = "/stations/" + $scope.sn + "/events";
+        var url = "/stations/events_with_page";
+        var params = {
+            page_start:0,
+            page_len: 500,
+            secho: 1,
+            status: checked
+        };
         if ($scope.isDevice){
-            url = "/stations/events?deviceSn=" + $scope.sn;
+            params.deviceSn = $scope.sn;
+        } else {
+            params.stationSn = $scope.sn;
         }
         $scope.loadingFailed = false;
         $scope.eventLoading = true;
         ajax.get({
             url: url,
+            data: params,
             cache: false,
             success: function(result) {
                 $scope.eventLoading = false;
                 var cleared = [], newReports=[];
-                for (var i in result) {
-                    result[i].report_time = formatTime(result[i].report_time);
-                    if (result[i].status_name !== 'CLEARED') {
+                var events = result.aaData;
+                for (var i in events) {
+                    events[i].report_time = formatTime(events[i].report_time);
+                    if (events[i].closed_time) {
+                        events[i].closed_time = formatTime(events[i].closed_time);
+                    }
+                    var statusName = events[i].status_name;
+                    if (statusName !== '告警消除' && statusName !== 'CLEARED') {
                         $scope.unhandledEventCount += 1;
-                        newReports.push(result[i]);
+                        newReports.push(events[i]);
                     } else {
-                        cleared.push(result[i]);
+                        cleared.push(events[i]);
+                    }
+                    if (statusName === 'CLEARED') {
+                        events[i].status_name = '已确认';
+                    } else if (statusName === '告警消除') {
+                        events[i].status_name = '自动恢复';
                     }
                 }
                 $scope.events = newReports.concat(cleared);
