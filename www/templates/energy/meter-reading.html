@@ -2,15 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>能源报表</title>
+    <title>抄表</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta http-equiv="Access-Control-Allow-Origin" content="*">
     <link rel="stylesheet" href="../../components/mui/css/mui.min.css">
     <link rel="stylesheet" href="../../components/mui/css/mui.picker.min.css">
-    <link rel="stylesheet" href="../../css/my.css">
     <link rel="stylesheet" href="../../css/iconfont/iconfont.css">
+    <link rel="stylesheet" href="../../css/my.css">
+    <link rel="stylesheet" type="text/css" href="../../js/lib/datatables/jquery.dataTables.min.css">
     <script type="text/javascript" src="../../components/libs/jquery-2.1.4.js"></script>
     <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
     <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
@@ -18,46 +19,73 @@
     <script type="text/javascript" src="../../components/angular-ui-router/release/stateEvents.min.js"></script>
     <script type="text/javascript" src="../../js/app/utils.js"></script>
     <script type="text/javascript" src="../../js/app/app.js"></script>
-    <script type="text/javascript" src="../../js/service/router-service.js"></script>
     <script type="text/javascript" src="../../js/controller/energy.js"></script>
     <style>
-        .chart {
-            height: 200px;
-            width: 100%;
-            margin-bottom: 10px;
+        table td, table th {
+            border-right: #e8e8e8 1px solid;
+            border-bottom: #e8e8e8 1px solid;
+            padding: 4px 8px;
+            font-weight: normal;
+            font-size: 14px;
+        }
+        table.dataTable thead th, table.dataTable thead td {
             background-color: #fff;
-            margin-top: 4px;
+            border-right: #ccc 1px solid;
+            border-bottom: #ccc 1px solid;
+            border-top: #ccc 1px solid;
+        }
+        table.dataTable thead th, table.dataTable thead td {
+            padding: 4px;
         }
     </style>
 </head>
 <body ng-app="myApp" ng-cloak ng-controller="EnergyMeterReadingCtrl" class="box-vertical-center">
 <header class="mui-bar bg-header mui-segmented-control-vertical">
     <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
-    <h1 class="mui-title">能源报表</h1>
+    <h1 class="mui-title">抄表</h1>
 </header>
-<div class="mui-content">
-    <ul class="selector-group">
-        <drop-down-menu options="timeTypeList" on-select="onSelect" model-name="'timeType'" selected="timeType"></drop-down-menu>
-        <li class="selector-tab" style="width: 20%;">
-            <label>{{dateName}}</label>
-            <button style="position: absolute;top:0;width: 100%;height: 100%;left: 0;background-color: transparent;border: none;"
-                    id="datePicker"></button>
-        </li>
-        <drop-down-menu options="calcMethodList" on-select="onSelect" model-name="'calcMethod'" default-value="'MAX'" selected="calcMethod"></drop-down-menu>
-    </ul>
-    <div class="card" ng-repeat="group in trendGroups" style="padding: 0;">
-        <div class="card-content" style="padding-top: 6px;">
-            <div class="mui-content-padded no-margin">
-                <div style="margin: 0 10px;padding-bottom: 6px;border-bottom: #f1f1f1 1px solid;text-align: center;color: #007aff;">{{group.name}}</div>
-                <div class="chart" id="chart{{group.id}}">
+<div class="mui-content" style="background-color: #fff;">
+    <div ng-if="!isLoading && categories.length">
+        <ul class="selector-group" id="tabs" style="background-color: transparent;padding: 0 10px;">
+            <li class="selector-tab" style="background-color: #F2F2F2;padding: 4px 20px 4px 0;height: 28px;">
+                <label>{{startDate.substring(0, 16)}}</label>
+                <button style="position: absolute;top:0;width: 100%;height: 100%;left: 0;background-color: transparent;border: none;height: 25px;"
+                        id="startDatePicker"></button>
+            </li>
+            <li class="selector-tab" style="width: 0;padding: 4px;">至</li>
+            <li class="selector-tab" style="background-color: #F2F2F2;padding: 4px 20px 4px 0;height: 28px;">
+                <label>{{endDate.substring(0, 16)}}</label>
+                <button style="position: absolute;top:0;width: 100%;height: 100%;left: 0;background-color: transparent;border: none;"
+                        id="endDatePicker"></button>
+            </li>
+        </ul>
+        <div class="card" style="padding: 0;">
+            <table class="stripe row-border order-column dataTable no-footer" style="border-bottom: none;">
+                <thead>
+                <th ng-repeat="item in tableHeader">
+                    {{item}}
+                </th>
+                </thead>
+                <tbody>
+                <tr ng-repeat="item in tableBodyData track by $index">
+                    <td ng-repeat="col in item track by $index">
+                        {{col}}
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="page-alert-wrapper" ng-if="!tableBodyData.length">
+                <div class="page-alert">
+                    <i class="alert-icon no-task"></i>
+                    <div class="alert-text info">未选择任何{{currentLabel.name}}</div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="page-alert-wrapper" ng-if="trendGroups.length === 0 && !isLoading">
-        <div class="page-alert">
+    <div class="page-alert-wrapper" ng-if="!isLoading && !categories.length">
+        <div class="page-alert" style="padding-top: 0;">
             <i class="alert-icon no-task"></i>
-            <div class="alert-text info">未配置任何曲线</div>
+            <div class="alert-text info">当前站点未配置抄表项</div>
         </div>
     </div>
     <div class="page-alert-wrapper" ng-if="isLoading">
@@ -75,8 +103,6 @@
     </div>
 </div>
 
-<div ui-view class="page page-left"></div>
-<div class="page page-left" ui-view=""></div>
 <script src="../../components/fastclick-master/lib/fastclick.js"></script>
 <script src="../../js/my/notify.js"></script>
 <script src="../../components/highcharts/highcharts.js"></script>

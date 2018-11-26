@@ -661,10 +661,10 @@ app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, us
         if (status1 !== status2) {
             return status1 - status2;
         }
-        if (d1.expect_complete_time > d2.expect_complete_time){
+        if (d1.create_time < d2.create_time){
             return 1;
         }
-        if (d1.expect_complete_time === d2.expect_complete_time){
+        if (d1.create_time === d2.create_time){
             return 0;
         }
         return -1;

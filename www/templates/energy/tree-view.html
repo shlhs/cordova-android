@@ -1,9 +1,19 @@
-<div class="site-tree" style="position: absolute; top: 0px;bottom:0;width:100%;overflow-y: auto;">
-    <ul class="tree-group">
-        <li class="tree-cell" ng-repeat="item in treeData"
-            ng-class="{'active': item.$$isExpend, 'collapse': !isLeaf(item), 'is-leaf': isLeaf(item)}"
-            ng-include="'/templates/energy/tree-item.html'"
-            ng-if="!item.unvisible"
-        ></li>
-    </ul>
-</div>
+<li class="selector-tab" ng-class="{active: active}">
+    <label ng-click="toggle()">{{labelName}}选择</label>
+    <div class="dropdown" style="position: fixed; top: 100px;">
+        <div class="site-tree" style="padding-bottom: 0px;" ng-if="datas.length">
+            <div style="text-align: right;border-bottom: rgba(230, 230, 230, 0.57) 1px solid;">
+                <button ng-click="toggle()" style="color: #586BF3;margin-bottom: 6px;">确定</button>
+            </div>
+            <ul class="tree-group checkbox-tree" ng-if="datas.length" style="max-height: 400px;overflow-y: auto;">
+                <li class="tree-cell" ng-repeat="item in datas"
+                    ng-class="{'active': item.$$isExpend, 'collapse': !isLeaf(item), 'is-leaf': isLeaf(item)}"
+                    ng-include="'/templates/energy/tree-item.html'"
+                    ng-if="!item.unvisible"
+                ></li>
+            </ul>
+        </div>
+        <div ng-if="!datas.length" style="color: #aaa;" ng-click="toggle()">没有配置项</div>
+    </div>
+    <div style="position: fixed;background-color: transparent;width: 100%;height: 100%;top:60px;z-index: 1;left: 0;" ng-if="active" ng-click="toggle()"></div>
+</li>

@@ -2428,6 +2428,7 @@ color: #a7a7a7;
     color: inherit;
     border-bottom: rgba(230, 230, 230, 0.57) 1px solid;
     padding: 12px 36px 12px 12px;
+    text-align: left;
 }
 .tree-cell .tree-group {
     display: none;
@@ -2488,6 +2489,34 @@ color: #a7a7a7;
     content: '\a600' !important;
     font-size: 22px !important;
  }
+.checkbox-tree .tree-cell>a {
+    position: relative;
+    padding-left: 24px;
+}
+.checkbox-tree .checkbox-square {
+    position: absolute;
+    left: 0;
+}
+.mui-checkbox .checkbox:before {
+    font-family: iconfont;
+    content: '\a601';
+    font-size: 20px;
+    display: inline-block;
+    color: #D0D4D8;
+}
+.mui-checkbox .checkbox.checked:before {
+    font-family: iconfont;
+    content: '\a600';
+    font-size: 20px;
+    display: inline-block;
+    color: #03a9f4;
+}
+.checkbox-tree .mui-checkbox .checkbox:before {
+    font-size: 16px;
+}
+.checkbox-tree .mui-checkbox .checkbox.checked:before {
+    font-size: 16px;
+}
 .mui-table-view.bd-border li {
     border-bottom: #E6E6E6 1px solid;
 }
@@ -2609,13 +2638,6 @@ color: #a7a7a7;
     padding: 12px 12px 12px 8px;
     position: relative;
 }
-.mui-checkbox .checkbox:before {
-    font-family: iconfont;
-    content: '\a601';
-    font-size: 20px;
-    display: inline-block;
-    color: #D0D4D8;
-}
 .static-device-list .status {
     position: absolute;
     right: 10px;
@@ -2638,13 +2660,6 @@ color: #a7a7a7;
     color: #2fca59;
 }
 
-.mui-checkbox .checkbox.checked:before {
-    font-family: iconfont;
-    content: '\a600';
-    font-size: 20px;
-    display: inline-block;
-    color: #03a9f4;
-}
 .toast {
     position: fixed;
     bottom: 14%;
@@ -2719,25 +2734,25 @@ color: #a7a7a7;
     cursor: pointer;
     position: relative;
 }
-.selector-tab label {
+.selector-tab>label {
     position: relative;
     color: #565656;
 }
-.selector-tab.active label {
+.selector-tab.active>label {
     color: #586BF3;
 }
-.selector-tab label:after {
+.selector-tab>label:after {
     content: '\a602';
     display: block;
     position: absolute;
     font-family: iconfont !important;
     color: #8B8B8B;
-    font-size: 14px;
+    font-size: 10px;
     right: -20px;
     top: 50%;
     margin-top: -10px;
 }
-.selector-tab.active label:after {
+.selector-tab.active>label:after {
     content: '\a603';
     color: #586BF3;
 }
@@ -2799,15 +2814,23 @@ color: #a7a7a7;
     float: none;
     display: block;
 }
-.mui-dtpicker-body>.mui-picker {
-    -webkit-box-flex: 1;
-    float: none;
+.timeType-MONTH .mui-picker, .timeType-MONTH .mui-dtpicker-title h5 {
+    width: 50%;
 }
-.timeType-MONTH [data-id=title-d], .timeType-MONTH [data-id=picker-d] {
+.timeType-MONTH [data-id=title-d] {
     display: none;
 }
-.timeType-YEAR [data-id=title-m],.timeType-YEAR [data-id=title-d], .timeType-YEAR [data-id=picker-m], .timeType-YEAR [data-id=picker-d] {
+.timeType-MONTH [data-id=picker-d] {
+    width: 1px !important;
+}
+.timeType-YEAR .mui-picker, .timeType-YEAR .mui-dtpicker-title h5 {
+    width: 100%;
+}
+.timeType-YEAR [data-id=title-m],.timeType-YEAR [data-id=title-d] {
     display: none;
+}
+.timeType-YEAR [data-id=picker-m], .timeType-YEAR [data-id=picker-d] {
+    width: 1px !important;;
 }
 header .mui-title .dropdown-arrow {
     position: relative;
