@@ -2764,7 +2764,7 @@ color: #a7a7a7;
     right: 0;
     z-index: 2;
     top: 37px;
-    box-shadow: 0 0 8px 4px rgba(241, 241, 241, 0.65);
+    box-shadow: 0 8px 8px 4px rgba(241, 241, 241, 0.65);
     border: #efefef 1px solid;
     display: none;
 }

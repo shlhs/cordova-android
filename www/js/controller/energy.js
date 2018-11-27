@@ -62,6 +62,7 @@ app.directive('energyConfigTree',[function(){
         replace: true,
         controller:['$scope', '$attrs', function($scope, $attrs){
             $scope.active = false;
+            var tmpChecked = {};        // 本次操作中被选中或被取消的选项
             $scope.toggle = function () {
                 $scope.active = !$scope.active;
                 if ($scope.active) {
@@ -69,10 +70,10 @@ app.directive('energyConfigTree',[function(){
                     expandAll($scope.datas);
                 }
                 else {
-                    $scope.domEle.find('div:last').remove();
                     // 当收起时，将当前已选通过回调回传
                     $scope.onOk();
                 }
+                tmpChecked = {};
             };
 
             function expandAll(datas) {
@@ -113,6 +114,12 @@ app.directive('energyConfigTree',[function(){
             $scope.onCheckItem = function ($event, item) {
                 $event.stopPropagation();
                 item.checked = !item.checked;
+                if (tmpChecked[item.path] !== undefined) {
+                    // 如果上一次记录过，则本次删除
+                    delete tmpChecked[item.path];
+                } else {
+                    tmpChecked[item.path] = item.checked;
+                }
             };
 
             $scope.onOk = function () {
@@ -134,6 +141,24 @@ app.directive('energyConfigTree',[function(){
                 });
                 $scope.onSelect && $scope.onSelect(checkedList);
             };
+
+            $scope.onCancel = function () {
+                function _restore(items) {
+                    items.forEach(function (item) {
+                        if (tmpChecked[item.path] !== undefined) {
+                            item.checked = !tmpChecked[item.path];
+                            delete tmpChecked[item.path];
+                        }
+                        if (item.children) {
+                            _restore(item.children);
+                        }
+                    });
+                }
+                // 取消，需要将本次勾选或取消的恢复
+                _restore($scope.datas);
+                tmpChecked = {};
+                $scope.active = false;
+            }
         }],
         link: function (scope, element, attrs) {
             console.log(element);
