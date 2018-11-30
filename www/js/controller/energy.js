@@ -721,3 +721,7 @@ app.directive('energyReportTableRepeatFinish',function(){
         }
     }
 });
+
+app.controller('EnergyStatistics', function ($scope, ajax, platformService) {
+
+});

@@ -9,7 +9,6 @@ function eventHandled() {
     scope.getDataList();
 }
 
-
 app.directive('siteTreeView',[function(){
     return {
         restrict: 'E',
@@ -87,7 +86,7 @@ app.directive('siteTreeView',[function(){
     };
 }]);
 
-app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, routerService, platformService, userService) {
+app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, routerService, platformService, userService, appStoreService) {
     $scope.sitesTree = [];
     $scope.sites = [];
     $scope.currentSite = {};
@@ -95,6 +94,7 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
     $scope.popup_visible = false;
     $scope.searchSiteResult = [];
     $scope.role = userService.getUserRole();
+    $scope.selectedApps = appStoreService.getSelectedApps();
 
     $scope.getDataList = function () {
         scrollerService.initScroll('#sites', $scope.getDataList);
@@ -176,6 +176,18 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
             }
         });
 
+    }
+
+    function getMenuDataOfStation(stationSn) {
+        ajax.get({
+            url: '/station/' + stationSn + '/menudata',
+            success: function (response) {
+                if (response && response.extend_js) {
+                    var menuData = JSON.parse(response.extend_js);
+                    
+                }
+            }
+        });
     }
 
     $scope.searchInputChange = function (input) {

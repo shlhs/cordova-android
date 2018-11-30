@@ -2330,8 +2330,11 @@ color: #a7a7a7;
     margin: 9px 0 !important;
     width: 20% !important;
 }
-.entrance-list .mui-media-body {
-    margin-top: 0px !important;
+.apps .mui-table-view.mui-grid-view .mui-table-view-cell .mui-media-body {
+    margin-top: -2px;
+}
+.apps .mui-grid-view.mui-grid-9 .mui-table-view-cell {
+    margin: 0;
 }
 .card .card-header.device-detail-title {
     height: 44px;
@@ -2845,3 +2848,39 @@ header .mui-title .dropdown-arrow:after {
     top: -10px;
 }
 
+.apps .mui-table-view.mui-grid-view .mui-table-view-cell .mui-media-body {
+    font-size: 12px;
+}
+.apps-selector .mui-grid-view.mui-grid-9 .mui-table-view-cell>a:not(.mui-btn) {
+    margin: 0 4px;
+    padding: 4px 0;
+    background-color: rgba(236, 236, 236, 0.55);
+    position: relative;
+}
+.apps-selector .app .btn-editor {
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 12px;
+    padding: 6px;
+    line-height: 12px;
+}
+.apps-selector .app .btn-editor.delete:before {
+    content: '\a610';
+    font-family: iconfont;
+    display: inline-block;
+    color: #e2533e;
+    font-size: 12px;
+    line-height: 12px;
+}
+.apps-selector .app .btn-editor.add:before {
+    content: '\a611';
+    font-family: iconfont;
+    display: inline-block;
+    color: #5092E3;
+    font-size: 12px;
+    line-height: 12px;
+}
+.apps.apps-selector .mui-grid-view.mui-grid-9 .mui-table-view-cell {
+    margin: 4px 0;
+}

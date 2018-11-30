@@ -2,6 +2,94 @@
 /**
  * Created by liucaiyun on 2017/5/4.
  */
+var gAppUpdateTime = '20181127 12:00';      // 上一次app更新的时间，如果用户app上保存的时间小于这个时间，则会给出红点的更新提示
+var gDefaultApps = [
+    {
+        name: '站点监控',
+        children: [
+            {
+                name: '站点看板',
+                icon: 'icon-kanban',
+                templateUrl: '/templates/site/kanban.html',
+                url: 'site-kanban',
+                defaultChecked: true
+            }, {
+                name: '画面',
+                icon: 'icon-monitor',
+                templateUrl: '/templates/site/monitor-list.html',
+                url: 'site-monitors',
+                defaultChecked: true
+            }, {
+                name: '设备监测',
+                icon: 'icon-device-monitor',
+                templateUrl: '/templates/site/device-monitor-list.html',
+                url: 'device-monitor',
+                defaultChecked: true
+            }, {
+                name: '设备档案',
+                icon: 'icon-archives',
+                templateUrl: '/templates/site/static-devices/device-home.html',
+                url: 'static-devices',
+                defaultChecked: true
+            }, {
+                name: '月度报告',
+                icon: 'icon-reports',
+                templateUrl: '/templates/site/reports.html',
+                url: 'monthly-report',
+                defaultChecked: true
+            }, {
+                name: '历史曲线',
+                icon: 'icon-history-line',
+                templateUrl: '/templates/site-monitor/data-line.html',
+                url: 'data-line',
+                defaultChecked: true
+            }, {
+                name: '历史报表',
+                icon: 'icon-history-report',
+                templateUrl: '/templates/site-monitor/data-history.html',
+                url: 'data-history',
+                defaultChecked: true
+            }
+        ]
+    }, {
+    name: '运维中心',
+    children: [
+        {
+            name: '缺陷记录',
+            icon: 'icon-dashboard-dts',
+            templateUrl: '/templates/dts/dts-list.html',
+            url: 'dts-list',
+            defaultChecked: true
+        }, {
+            name: '安全评测',
+            icon: 'icon-security',
+            templateUrl: '/templates/maintenance-check/check-history.html',
+            url: 'evaluate-security'
+        }, {
+            name: '停电维护',
+            icon: 'icon-poweroff',
+            templateUrl: '/templates/site/device-monitor-list.html',
+            url: 'poweroff-maintenance'
+        }
+    ]
+}, {
+    name: '能源管理',
+    children: [
+        {
+            name: '用能报表',
+            icon: 'icon-energy-history',
+            templateUrl: '/templates/energy/energy-report.html',
+            url: 'energy-report',
+            defaultChecked: true
+        }, {
+            name: '抄表',
+            icon: 'icon-energy-reading',
+            templateUrl: '/templates/energy/meter-reading.html',
+            url: 'energy-meter-reading'
+        }
+    ]
+}
+];
 var app = angular.module('myApp', ['ngAnimate', 'ui.router', 'ui.router.state.events']);
 
 app.run(function ($animate) {
@@ -16,13 +104,11 @@ app.run(function ($animate) {
 //     });
 // }]);
 
-
 app.controller('MainCtrl', function ($scope, $rootScope, userService) {
 
 });
 
 var UserRole = {SuperUser: 'SUPERUSER', OpsAdmin: 'OPS_ADMIN', OpsOperator: 'OPS_OPERATOR', Normal: 'USER'};
-
 
 app.service('userService', function ($rootScope) {
 
@@ -301,6 +387,80 @@ app.service('ajax', function ($rootScope, platformService, userService, $http) {
    }
 });
 
+app.service('appStoreService', function () {
+
+    this.getAllApps = function () {
+        return gDefaultApps;
+    };
+
+    this.getSelectedApps = function () {
+        var allApps = this.getAllApps();
+        var appsStr = getStorageItem('apps');
+        var apps = appsStr ? JSON.parse(appsStr) : null;
+        var selectedApps = [];
+        allApps.forEach(function (group) {
+            group.children.forEach(function (app) {
+                if (!apps) {
+                    // 如果第一次登录，那么使用默认配置
+                    app.selected = app.defaultChecked;
+                    if (app.selected) {
+                        selectedApps.push(app);
+                    }
+                } else {
+                    if (apps.indexOf(app.url) >= 0) {
+                        app.selected = true;
+                        selectedApps.push(app);
+                        return false;
+                    }
+                }
+            });
+        });
+        return selectedApps;
+    };
+
+    this.saveSelectedApps = function (apps) {
+        var urls = [];
+        apps.forEach(function (app) {
+            urls.push(app.url);
+        });
+        setStorageItem('apps', JSON.stringify(urls));
+    };
+
+    this.appHasUpdated = function () {
+        // app是否有更新
+        var appUpdateTime = getStorageItem("appUpdateTime");
+    }
+});
+
+app.controller('AppStoreCtrl', function ($scope, appStoreService) {
+    $scope.allApps = appStoreService.getAllApps();
+    $scope.selectedApps = appStoreService.getSelectedApps();
+    $scope.isEditing = false;
+
+    $scope.onAddOrDelete = function (app) {
+        if (app.selected) {
+            app.selected = false;
+            $scope.selectedApps.forEach(function (item, i) {
+                if (item.url === app.url) {
+                    $scope.selectedApps.splice(i ,1);
+                    return false;
+                }
+            });
+        } else {
+            app.selected = true;
+            $scope.selectedApps.push(app);
+        }
+    };
+
+    $scope.toggleEdit = function () {
+        $scope.isEditing = !$scope.isEditing;
+    };
+
+    $scope.onSave = function () {
+        appStoreService.saveSelectedApps($scope.selectedApps);
+        $scope.toggleEdit();
+    }
+});
 
 Date.prototype.format = function(fmt) {
     var o = {
