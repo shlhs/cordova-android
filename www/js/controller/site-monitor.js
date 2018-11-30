@@ -570,8 +570,19 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, $stateParams, ajax) {
         createChartSeriesForGroup(data, option);
         echartsObj.setOption(option);
     }
+    $scope.$on('$destroy', function (event) {
 
-    $scope.getDataList();
+        // 页面返回时去除body上的timeType类
+        var className = document.body.className;
+        var startIndex = className.indexOf('timeType');
+        if (startIndex >= 0) {
+            var lastClassName = className.substring(startIndex);
+            document.body.className = className.replace(lastClassName, ' ');
+        }
+        $.notify.progressStop();
+    });
+
+    setTimeout($scope.getDataList, 500);
 });
 
 // 历史报表
@@ -748,6 +759,8 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax, $state
         if (!$scope.currentReport) {
             return;
         }
+        $scope.isLoading = true;
+        $.notify.progressStart('', true);
         ajax.get({
             url: '/reportgroups/' + $scope.currentReport.id + '/datainfo',
             data: {
@@ -787,6 +800,13 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax, $state
                 });
                 calcDataBySetting($scope.reportSetting, response.data);
                 refreshTable();
+                $scope.isLoading = false;
+                $scope.$apply();
+                $.notify.progressStop();
+            },
+            error: function () {
+                $.notify.progressStop();
+                $scope.isLoading = false;
                 $scope.$apply();
             }
         })
@@ -993,6 +1013,17 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax, $state
         }
         return newLine;
     }
+    $scope.$on('$destroy', function (event) {
 
-    $scope.getDataList();
+        // 页面返回时去除body上的timeType类
+        var className = document.body.className;
+        var startIndex = className.indexOf('timeType');
+        if (startIndex >= 0) {
+            var lastClassName = className.substring(startIndex);
+            document.body.className = className.replace(lastClassName, ' ');
+        }
+        $.notify.progressStop();
+    });
+
+    setTimeout($scope.getDataList, 500);
 });

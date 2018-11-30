@@ -911,7 +911,17 @@ background-image: url("../img/light/64X64/profile.png");
 .mui-popup-backdrop.notify{
     background-color: transparent;
 }
-
+.mui-popup-backdrop.notify.in-center{
+    width: 0;
+    height: 0;
+}
+.mui-popup-backdrop.notify.in-center .mui-popup.mui-popup-in {
+    background-color: transparent;
+    color: #5f5f5f;
+}
+.mui-popup-backdrop.notify .mui-popup-inner:after {
+    display: none;
+}
 .mui-popup-backdrop.notify .mui-popup.mui-popup-in{
     color: #fff;
     background-color: #5a5a5a;
