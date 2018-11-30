@@ -112,11 +112,11 @@ app.directive('siteHistoryRepeatFinish',function(){
                 setTimeout(function () {
                     $.fn.dataTable.ext.errMode = 'none'; //不显示任何错误信息
 
-                    var height = screen.height - 172;
+                    var height = screen.height - 160;
                     var table = $('#siteHistoryTable').DataTable( {
                         searching: false,
                         ordering: false,
-                        scrollY:        height + '[x',
+                        scrollY:        height + 'px',
                         scrollX:        true,
                         scrollCollapse: true,
                         paging:         false,
@@ -197,8 +197,8 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, $stateParams, ajax) {
                 document.body.className = className.replace(lastClassName, 'timeType-' + value + ' ');
             }
 
-            $scope.picker.dispose();
-            $scope.picker = null;
+            // $scope.picker.dispose();
+            // $scope.picker = null;
         }
         $scope[key] = {
             id: value,
@@ -727,8 +727,8 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax, $state
                 document.body.className = className.replace(lastClassName, 'timeType-' + value + ' ');
             }
 
-            $scope.picker.dispose();
-            $scope.picker = null;
+            // $scope.picker.dispose();
+            // $scope.picker = null;
         }
         $scope[key] = {
             id: value,

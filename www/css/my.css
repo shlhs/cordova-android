@@ -3017,11 +3017,23 @@ div.pinch-zoom, div.pinch-zoom-container{
     -webkit-box-flex: 1;
     float: none;
 }
-.timeType-MONTH [data-id=title-d], .timeType-MONTH [data-id=picker-d] {
+.timeType-MONTH .mui-picker, .timeType-MONTH .mui-dtpicker-title h5 {
+    width: 50%;
+}
+.timeType-MONTH [data-id=title-d] {
     display: none;
 }
-.timeType-YEAR [data-id=title-m],.timeType-YEAR [data-id=title-d], .timeType-YEAR [data-id=picker-m], .timeType-YEAR [data-id=picker-d] {
+.timeType-MONTH [data-id=picker-d] {
+    width: 1px !important;
+}
+.timeType-YEAR .mui-picker, .timeType-YEAR .mui-dtpicker-title h5 {
+    width: 100%;
+}
+.timeType-YEAR [data-id=title-m],.timeType-YEAR [data-id=title-d] {
     display: none;
+}
+.timeType-YEAR [data-id=picker-m], .timeType-YEAR [data-id=picker-d] {
+    width: 1px !important;;
 }
 header .mui-title .dropdown-arrow {
     position: relative;
