@@ -74,37 +74,39 @@
     <h1 class="mui-title">能源报表</h1>
 </header>
 <div class="mui-content" style="background-color: #fff;">
-    <ul class="selector-group" id="tabs" style="background-color: transparent;padding: 0 10px;">
-        <drop-down-menu options="timeTypeList" on-select="onSelect" model-name="'timeType'" selected="timeType"
-                        style="background-color: #F2F2F2;padding: 4px 20px 4px 0;height: 28px;width: 50%;"></drop-down-menu>
-        <li class="selector-tab" style="background-color: #F2F2F2;padding: 4px 20px 4px 0;height: 28px;width: 50%;margin-left: 16px;">
-            <label>{{dateName}}</label>
-            <button style="position: absolute;top:0;width: 100%;height: 100%;left: 0;background-color: transparent;border: none;"
-                    id="datePicker"></button>
-        </li>
-    </ul>
-    <div class="card" style="padding: 0;" id="tableParent" energy-report-table-repeat-finish>
-        <table class="stripe row-border order-column dataTable no-footer" style="border-bottom: none;" id="energyReportTable">
-            <thead>
-                <tr>
-                    <th ng-repeat="item in tableHeader" energy-report-table-repeat-finish>
-                        {{item}}
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="item in tableBodyData track by $index">
-                    <td ng-repeat="col in item track by $index">
-                        {{col}}
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+    <div ng-if="!isLoading && currentLabel">
+        <ul class="selector-group" id="tabs" style="background-color: transparent;padding: 0 10px;">
+            <drop-down-menu options="timeTypeList" on-select="onSelect" model-name="'timeType'" selected="timeType"
+                            style="background-color: #F2F2F2;padding: 4px 20px 4px 0;height: 28px;width: 50%;"></drop-down-menu>
+            <li class="selector-tab" style="background-color: #F2F2F2;padding: 4px 20px 4px 0;height: 28px;width: 50%;margin-left: 16px;">
+                <label>{{dateName}}</label>
+                <button style="position: absolute;top:0;width: 100%;height: 100%;left: 0;background-color: transparent;border: none;"
+                        id="datePicker"></button>
+            </li>
+        </ul>
+        <div class="card" style="padding: 0;" id="tableParent" energy-report-table-repeat-finish>
+            <table class="stripe row-border order-column dataTable no-footer" style="border-bottom: none;" id="energyReportTable">
+                <thead>
+                    <tr>
+                        <th ng-repeat="item in tableHeader" energy-report-table-repeat-finish>
+                            {{item}}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="item in tableBodyData track by $index">
+                        <td ng-repeat="col in item track by $index">
+                            {{col}}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
     <div class="page-alert-wrapper" ng-if="!isLoading && !tableBodyData.length">
         <div class="page-alert">
             <i class="alert-icon no-task"></i>
-            <div class="alert-text info">未选择任何{{currentLabel.name}}</div>
+            <div class="alert-text info">{{currentLabel ? '未选择任何' + currentLabel.name : '当前未配置报表'}}</div>
         </div>
     </div>
     <div class="page-alert-wrapper" ng-if="isLoading">

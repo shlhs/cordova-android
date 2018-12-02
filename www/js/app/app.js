@@ -18,18 +18,21 @@ var gDefaultApps = [
                 icon: 'icon-monitor',
                 templateUrl: '/templates/site/monitor-list.html',
                 url: 'site-monitors',
+                sn: 'station-monitor/monitor-screen-v2',
                 defaultChecked: true
             }, {
                 name: '设备监测',
                 icon: 'icon-device-monitor',
                 templateUrl: '/templates/site/device-monitor-list.html',
                 url: 'device-monitor',
+                sn: 'station-monitor/device-monitor',
                 defaultChecked: true
             }, {
                 name: '设备档案',
                 icon: 'icon-archives',
                 templateUrl: '/templates/site/static-devices/device-home.html',
                 url: 'static-devices',
+                sn: 'station-monitor/device-documents',
                 defaultChecked: true
             }, {
                 name: '月度报告',
@@ -38,16 +41,25 @@ var gDefaultApps = [
                 url: 'monthly-report',
                 defaultChecked: true
             }, {
+                name: '电子档案',
+                icon: 'icon-docs',
+                templateUrl: '/templates/site/docs.html',
+                url: 'site-documents',
+                sn: 'station-monitor/device-documents',
+                defaultChecked: true
+            }, {
                 name: '历史曲线',
                 icon: 'icon-history-line',
                 templateUrl: '/templates/site-monitor/data-line.html',
                 url: 'data-line',
+                sn: 'station-monitor/data-line',
                 defaultChecked: true
             }, {
                 name: '历史报表',
                 icon: 'icon-history-report',
                 templateUrl: '/templates/site-monitor/data-history.html',
                 url: 'data-history',
+                sn: 'station-monitor/data-report-v2',
                 defaultChecked: true
             }
         ]
@@ -59,33 +71,48 @@ var gDefaultApps = [
             icon: 'icon-dashboard-dts',
             templateUrl: '/templates/dts/dts-list.html',
             url: 'dts-list',
+            sn: 'ops-management/defect-tasks',
             defaultChecked: true
         }, {
             name: '安全评测',
             icon: 'icon-security',
             templateUrl: '/templates/maintenance-check/check-history.html',
-            url: 'evaluate-security'
+            sn: 'ops-management',
+            url: 'evaluate-security',
+            defaultChecked: true
         }, {
             name: '停电维护',
             icon: 'icon-poweroff',
             templateUrl: '/templates/site/device-monitor-list.html',
-            url: 'poweroff-maintenance'
+            sn: 'ops-management',
+            url: 'poweroff-maintenance',
+            defaultChecked: true
         }
     ]
 }, {
     name: '能源管理',
     children: [
         {
+            name: '用能统计',
+            icon: 'icon-energy-statistics',
+            templateUrl: '/templates/energy/overview.html',
+            url: 'energy-overview',
+            sn: 'energy/overview',
+            defaultChecked: true
+        }, {
             name: '用能报表',
             icon: 'icon-energy-history',
             templateUrl: '/templates/energy/energy-report.html',
             url: 'energy-report',
+            sn: 'energy/report',
             defaultChecked: true
         }, {
             name: '抄表',
             icon: 'icon-energy-reading',
             templateUrl: '/templates/energy/meter-reading.html',
-            url: 'energy-meter-reading'
+            sn: 'energy/meter-reading',
+            url: 'energy-meter-reading',
+            defaultChecked: true
         }
     ]
 }
@@ -390,10 +417,41 @@ app.service('ajax', function ($rootScope, platformService, userService, $http) {
 app.service('appStoreService', function () {
 
     this.getAllApps = function () {
-        return gDefaultApps;
+        var enabledMenuSns = getMenuSns();
+        if (!enabledMenuSns) {
+            return gDefaultApps;
+        } else {
+            var appGroups = [];
+            gDefaultApps.forEach(function (group) {
+                var children = [];
+                group.children.forEach(function (child) {
+                    if (!child.sn) {    // sn为空，则说明所有人都有权限
+                        children.push(child);
+                    } else if (enabledMenuSns.indexOf(child.sn) >= 0) {
+                        children.push(child);
+                    }
+                });
+                if (children.length) {
+                    appGroups.push({
+                        name: group.name,
+                        children: children
+                    });
+                }
+            });
+            return appGroups;
+        }
     };
 
+    function getMenuSns() {
+        var menuStr = getStorageItem("menuSns");
+        if (!menuStr) {
+            return null;
+        }
+        return JSON.parse(menuStr);
+    }
+
     this.getSelectedApps = function () {
+        var enabledMenuSns = getMenuSns();
         var allApps = this.getAllApps();
         var appsStr = getStorageItem('apps');
         var apps = appsStr ? JSON.parse(appsStr) : null;
@@ -401,15 +459,29 @@ app.service('appStoreService', function () {
         allApps.forEach(function (group) {
             group.children.forEach(function (app) {
                 if (!apps) {
-                    // 如果第一次登录，那么使用默认配置
-                    app.selected = app.defaultChecked;
-                    if (app.selected) {
-                        selectedApps.push(app);
+                    if (app.defaultChecked) {
+                        if (app.sn && enabledMenuSns) {
+                            if (enabledMenuSns.indexOf(app.sn) >= 0) {
+                                app.selected = true;
+                                selectedApps.push(app);
+                            }
+                        } else {
+                            // 如果第一次登录，那么使用默认配置
+                            app.selected = true;
+                            selectedApps.push(app);
+                        }
                     }
                 } else {
                     if (apps.indexOf(app.url) >= 0) {
-                        app.selected = true;
-                        selectedApps.push(app);
+                        if (app.sn && enabledMenuSns) {
+                            if (enabledMenuSns.indexOf(app.sn) >= 0) {
+                                app.selected = true;
+                                selectedApps.push(app);
+                            }
+                        } else {
+                            app.selected = true;
+                            selectedApps.push(app);
+                        }
                         return false;
                     }
                 }

@@ -94,7 +94,7 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
     $scope.popup_visible = false;
     $scope.searchSiteResult = [];
     $scope.role = userService.getUserRole();
-    $scope.selectedApps = appStoreService.getSelectedApps();
+    $scope.selectedApps = [];
 
     $scope.getDataList = function () {
         scrollerService.initScroll('#sites', $scope.getDataList);
@@ -175,16 +175,36 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
                 $scope.$apply();
             }
         });
-
     }
 
-    function getMenuDataOfStation(stationSn) {
+    function getMenuDataOfStation() {
         ajax.get({
-            url: '/station/' + stationSn + '/menudata',
+            url: '/station/' + $scope.currentSite.sn + '/menudata',
             success: function (response) {
                 if (response && response.extend_js) {
                     var menuData = JSON.parse(response.extend_js);
-                    
+                    var menuSns = [];
+                    menuData.data.forEach(function (menuGroup) {
+                       if (menuGroup.enabled) {
+                           if (menuGroup.sn) {
+                               menuSns.push(menuGroup.sn);
+                           }
+                           if (menuGroup.children) {
+                               menuGroup.children.forEach(function (menu) {
+                                   if (menu.enabled && menu.sn) {
+                                       menuSns.push(menu.sn);
+                                   }
+                               });
+                           }
+                       }
+                    });
+                    setStorageItem("menuSns", JSON.stringify(menuSns));
+                    $scope.selectedApps = appStoreService.getSelectedApps();
+                    $scope.$apply();
+                } else {
+                    setStorageItem("menuSns", '');
+                    $scope.selectedApps = appStoreService.getSelectedApps();
+                    $scope.$apply();
                 }
             }
         });
@@ -228,6 +248,7 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
         $scope.searchSiteResult = $scope.sites;
         localStorage.setItem("currentSite", JSON.stringify(site));
         $scope.closePopover();
+        getMenuDataOfStation();
     };
 
     function getCurrentSite() {
@@ -239,6 +260,7 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
             for (var i=0; i<sites.length; i++) {
                 if (sites[i].sn === site.sn) {
                     $scope.currentSite = sites[i];
+                    getMenuDataOfStation();
                     return;
                 }
             }
@@ -247,6 +269,7 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
             if (!sites[i].is_group) {
                 $scope.currentSite = sites[i];
                 localStorage.setItem("currentSite", JSON.stringify($scope.currentSite));
+                getMenuDataOfStation();
                 break;
             }
         }
