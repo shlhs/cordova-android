@@ -2925,6 +2925,8 @@ header .mui-title .dropdown-arrow:after {
     float: left;
     display: inline-block;
     margin-right: 10px;
+    background: 50% no-repeat;
+    background-size: cover;
 }
 .energy-electric-body .content {
     display: -webkit-box;

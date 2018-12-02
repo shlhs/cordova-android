@@ -259,3 +259,9 @@
     width: 36px;
     height: 36px;
 }
+.icon-energy-month {
+    background-image: url("../img/energy-month.png");
+}
+.icon-energy-day {
+    background-image: url("../img/energy-day.png");
+}
