@@ -383,9 +383,9 @@ app.controller('EnergyMeterReadingCtrl', function ($scope, ajax, $compile, platf
                         });
                         if (value !== null) {
                             if (n.time === $scope.startDate) {
-                                rowData[1] = value;
+                                rowData[1] = value.toFixed(3);
                             } else if (n.time === $scope.endDate) {
-                                rowData[2] = value;
+                                rowData[2] = value.toFixed(3);
                             }
                         }
                     });
@@ -863,10 +863,22 @@ app.controller('EnergyOverviewCtrl', function ($scope, ajax, platformService, $c
     }
 
     $scope.onSelect = function (key, id, name) {
+        if (key === 'currentLabel') {
+            if ($scope.currentLabel.name !== name) {
+                if (name === '支路') {
+
+                    var html = '';
+                    var compileFn = $compile(html);
+                    var $dom = compileFn($scope);
+                    // 添加到文档中
+                    $dom.prependTo($('.mui-content'));
+                }
+            }
+        }
         $scope[key] = {id: id, name: name};
         if (key === 'timeType') {
             refreshDateShowName();
-        } else if (key === 'currentItem') {
+        } else if (key === 'labelItem') {
             $scope.currentItem = $scope.energyItems[id];
         } else {
             getItemsForLabel();
@@ -888,7 +900,6 @@ app.controller('EnergyOverviewCtrl', function ($scope, ajax, platformService, $c
 
 const ENERGY_LINE_COLORS = ['#41bed8','#fde664','#9283ea','#3cd3cb','#fe7979','#f9b344','#46be8a','#579fe4','#f37c54','#3995ea'];
 
-
 app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformService) {
     $scope.timeTypes = ['日', '月', '年'];
     $scope.timeType = '日';
@@ -897,7 +908,7 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
     $scope.electricData = {};
     $scope.categoryName = null;
     $scope.labelName = null;
-    $scope.hasConfig = true;
+    $scope.hasConfig = false;
 
     $scope.$on('$zhiluRefresh', function (event) {
         currentItem = $scope.$parent.currentItem;
@@ -913,7 +924,11 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
             $scope.hasConfig = false;
         }
     });
-    
+    $scope.$on('$otherRefresh', function (event) {      // 显示非支路时，不显示
+        $scope.hasConfig = false;
+    });
+
+
     function getTotalEnergyDegree() {
         // 获取一级支路今日总用能
         var sns = [];
@@ -1280,7 +1295,7 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
     $scope.categoryName = null;
     $scope.labelName = null;
     var timeFormat = 'YYYY-MM-DD HH:mm:ss.000';
-    $scope.hasConfig = true;
+    $scope.hasConfig = false;
 
     $scope.$on('$otherRefresh', function (event) {
         timeType = $scope.$parent.timeType.id;
@@ -1299,7 +1314,9 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
             $scope.hasConfig = false;
         }
     });
-
+    $scope.$on('$zhiluRefresh', function (event) {
+        $scope.hasConfig = false;
+    });
     function getStartAndEndTime() {      // 获取日/月/年的当前时间
         var now=moment().format(timeFormat), start, end;
         if (timeType === 'DAY') {
