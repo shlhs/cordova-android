@@ -778,12 +778,11 @@ app.controller('EnergyOverviewCtrl', function ($scope, ajax, platformService, $c
                 });
                 allEnergyItems = response.energyItems;
                 getItemsForLabel();
-                $scope.$apply();
                 if ($scope.currentLabel) {
                     var html = "<ul class='selector-group' style='border-bottom: #ececec 1px solid;'>" +
                         "<drop-down-menu options=\"categories\" on-select=\"onSelect\" model-name=\"'currentCategory'\" selected=\"currentCategory\"></drop-down-menu>" +
                         "<drop-down-menu options=\"labelNames\" on-select=\"onSelect\" model-name=\"'currentLabel'\" selected=\"currentLabel\"></drop-down-menu>" +
-                        "<drop-down-menu options=\"energyItems\" on-select=\"onSelect\" model-name=\"'labelItem'\" selected=\"labelItem\" ng-if=\"currentLabel.name==='支路'\"></drop-down-menu>" +
+                        "<drop-down-menu options=\"energyItems\" on-select=\"onSelect\" model-name=\"'labelItem'\" selected=\"currentItem\" ng-if=\"currentLabel.name==='支路'\"></drop-down-menu>" +
                         "</ul>";
                     var compileFn = $compile(html);
                     var $dom = compileFn($scope);
@@ -791,6 +790,7 @@ app.controller('EnergyOverviewCtrl', function ($scope, ajax, platformService, $c
                     $dom.prependTo($('.mui-content'));
                     refreshData();
                 }
+                $scope.$apply();
             },
             error: function () {
                 $scope.isLoading = false;
@@ -866,7 +866,7 @@ app.controller('EnergyOverviewCtrl', function ($scope, ajax, platformService, $c
         $scope[key] = {id: id, name: name};
         if (key === 'timeType') {
             refreshDateShowName();
-        } else if (key === 'labelItem') {
+        } else if (key === 'currentItem') {
             $scope.currentItem = $scope.energyItems[id];
         } else {
             getItemsForLabel();
@@ -893,15 +893,19 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
     $scope.timeTypes = ['日', '月', '年'];
     $scope.timeType = '日';
     var currentItem = null;
+    $scope.todayTotalDegree = 0;
     $scope.electricData = {};
     $scope.categoryName = null;
     $scope.labelName = null;
     $scope.hasConfig = true;
 
     $scope.$on('$zhiluRefresh', function (event) {
-        $scope.categoryName = $scope.$parent.currentCategory.name;
-        $scope.labelName = $scope.$parent.currentLabel.name;
         currentItem = $scope.$parent.currentItem;
+        $scope.labelName = $scope.$parent.currentLabel.name;
+        if ($scope.categoryName !== $scope.$parent.currentCategory.name) {
+            $scope.categoryName = $scope.$parent.currentCategory.name;
+            getTotalEnergyDegree();
+        }
         if (currentItem) {
             $scope.hasConfig = true;
             refreshData();
@@ -909,6 +913,30 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
             $scope.hasConfig = false;
         }
     });
+    
+    function getTotalEnergyDegree() {
+        // 获取一级支路今日总用能
+        var sns = [];
+        $scope.$parent.energyItems.forEach(function (item) {
+           if (item.level === 1) {
+               item.deviceVarSns.forEach(function (sn) {
+                   sns.push(sn);
+               });
+           }
+        });
+        fetchElectricDegree(sns, moment().format('YYYY-MM-DD 00:00:00.000'), moment().format('YYYY-MM-DD 23:59:59.000'), function (data) {
+            $scope.todayTotalDegree = data;
+            $scope.$apply();
+        });
+    }
+
+    $scope.getItemRate = function() {        // 获取支路用能占比
+        if (!$scope.todayTotalDegree || $scope.electricData.today === undefined) {
+            return '-';
+        } else {
+            return ($scope.electricData.today/$scope.todayTotalDegree*100).toFixed(1) + '%';
+        }
+    };
 
     function refreshData() {
         createElectricStatistics(currentItem);

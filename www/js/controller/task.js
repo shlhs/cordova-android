@@ -197,7 +197,7 @@ app.controller('TaskBaseCtrl', function ($scope, ajax, userService) {
     var stationSn = GetQueryString("sn");
     var deviceSn = GetQueryString("device_sn");     // 如果设备sn不为空，则获取的是设备的运维记录
     $scope.pageTitle = deviceSn ? '运维记录' : '所有任务';
-
+    $scope.hasOpsAuth = getStorageItem('ops-management') ? parseInt(getStorageItem('ops-management')) : 1;
     var map = null;
     $scope.openTask = function (task) {
         if (deviceSn && task.task_type_id === TaskTypes.Xunjian) {

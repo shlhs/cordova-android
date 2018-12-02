@@ -105,7 +105,15 @@
                             </div>
                         </div>
                     </div>
-                    <div></div>
+                    <div>
+                        <div class="progress" style="width: 100%;background-color: #EEEEEE;height: 8px;border-radius: 4px;margin-top: 6px;position: relative;">
+                            <div style="position: absolute;top:0; height: 8px;border-radius: 4px;background-color: #2ABB9B;width: {{getItemRate()}};"></div>
+                        </div>
+                        <div style="font-size: 12px;color: #333333;">
+                            <label>支路今日用能占比&nbsp;&nbsp;{{getItemRate()}}</label>
+                            <label class="mui-pull-right">{{currentCategory.name}}总用能&nbsp;&nbsp;{{todayTotalDegree}}kWh</label>
+                        </div>
+                    </div>
                 </div>
                 <div class="energy-electric-card" style="margin-top: 10px;">
                     <div class="energy-electric-body">
