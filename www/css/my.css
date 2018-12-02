@@ -1915,11 +1915,11 @@ color: #a7a7a7;
     color: #F47630;
     float: right;
     padding: 2px;
+    margin-left: 18px;
 }
 .event-list .close {
     float: right;
     color: #6CAAD8;
-    margin-right: 18px;
     padding: 2px;
 }
 .event-list .closed-time {

@@ -198,10 +198,12 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
                            }
                        }
                     });
+                    $scope.$emit('$onMenuUpdate', menuSns);
                     setStorageItem("menuSns", JSON.stringify(menuSns));
                     $scope.selectedApps = appStoreService.getSelectedApps();
                     $scope.$apply();
                 } else {
+                    $scope.$emit('$onMenuUpdate', null);
                     setStorageItem("menuSns", '');
                     $scope.selectedApps = appStoreService.getSelectedApps();
                     $scope.$apply();
@@ -470,6 +472,7 @@ app.controller('EventListCtrl', function ($scope, $stateParams, scrollerService,
     var checked = GetQueryString('status') === '0' ? 0 : 1;
     $scope.isDevice = false;   // 是设备还是站点
     $scope.canCreateTask = userService.getUserRole() === UserRole.Normal ? false : true;
+    $scope.hasOpsAuth = parseInt(getStorageItem('ops-management'));
     var deviceSn = GetQueryString("deviceSn");
     if (deviceSn){
         $scope.isDevice = true;

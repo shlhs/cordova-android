@@ -145,36 +145,16 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService) {
         angular.element('#' + tabName).addClass('mui-active').siblings().removeClass('mui-active');
     };
 
-
     function initMenu() {
-
-        // if (role === UserRole.OpsOperator || role === UserRole.OpsAdmin){
-        //     $scope.navMenus.push(
-        //         {
-        //             id: 'competition_tasks',
-        //             name: '抢单',
-        //             templateUrl: '/templates/task/task-competition-list.html',
-        //             icon: 'nav-task-grab'
-        //         },
-        //         {
-        //             id: 'my_tasks',
-        //             name: '我的待办',
-        //             templateUrl: '/templates/task/task-todo-list.html',
-        //             icon: 'nav-all-tasks'
-        //         }
-        //     );
-        // }
-        // else if (role === UserRole.SuperUser){
-        //     $scope.navMenus.push(
-        //         {
-        //             id: 'my_tasks',
-        //             name: '我的待办',
-        //             templateUrl: '/templates/task/task-todo-list.html',
-        //             icon: 'nav-all-tasks'
-        //         }
-        //     );
-        // }
         // 所有用户都可看到这两个页面
+        addMenuOfOps();
+        $timeout(function () {
+            $scope.chooseNav('sites', '站点监控');
+
+        }, 500);
+    }
+
+    function addMenuOfOps() {
         $scope.navMenus.push(
             {
                 id: 'competition_tasks',
@@ -189,11 +169,27 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService) {
                 icon: 'nav-all-tasks'
             }
         );
-        $timeout(function () {
-            $scope.chooseNav('sites', '站点监控');
-
-        }, 500);
+        setStorageItem('ops-management', 1);
     }
+
+    $scope.$on('$onMenuUpdate', function (event, menuSns) {
+        // 菜单权限刷新
+        // 判断是否包含ops-management权限
+        if (menuSns) {
+            if (menuSns.indexOf('ops-management') >= 0) {
+                if (!$scope.navMenus.length) {
+                    addMenuOfOps();
+                }
+            } else {
+                $scope.navMenus = [];
+                setStorageItem('ops-management', 0);
+            }
+        } else {
+            if (!$scope.navMenus.length) {
+                addMenuOfOps();
+            }
+        }
+    });
     initMenu();
 });
 
