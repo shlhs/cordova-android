@@ -145,36 +145,16 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService) {
         angular.element('#' + tabName).addClass('mui-active').siblings().removeClass('mui-active');
     };
 
-
     function initMenu() {
-
-        // if (role === UserRole.OpsOperator || role === UserRole.OpsAdmin){
-        //     $scope.navMenus.push(
-        //         {
-        //             id: 'competition_tasks',
-        //             name: '抢单',
-        //             templateUrl: '/templates/task/task-competition-list.html',
-        //             icon: 'nav-task-grab'
-        //         },
-        //         {
-        //             id: 'my_tasks',
-        //             name: '我的待办',
-        //             templateUrl: '/templates/task/task-todo-list.html',
-        //             icon: 'nav-all-tasks'
-        //         }
-        //     );
-        // }
-        // else if (role === UserRole.SuperUser){
-        //     $scope.navMenus.push(
-        //         {
-        //             id: 'my_tasks',
-        //             name: '我的待办',
-        //             templateUrl: '/templates/task/task-todo-list.html',
-        //             icon: 'nav-all-tasks'
-        //         }
-        //     );
-        // }
         // 所有用户都可看到这两个页面
+        addMenuOfOps();
+        $timeout(function () {
+            $scope.chooseNav('sites', '站点监控');
+
+        }, 500);
+    }
+
+    function addMenuOfOps() {
         $scope.navMenus.push(
             {
                 id: 'competition_tasks',
@@ -189,11 +169,27 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService) {
                 icon: 'nav-all-tasks'
             }
         );
-        $timeout(function () {
-            $scope.chooseNav('sites', '站点监控');
-
-        }, 500);
+        setStorageItem('ops-management', 1);
     }
+
+    $scope.$on('$onMenuUpdate', function (event, menuSns) {
+        // 菜单权限刷新
+        // 判断是否包含ops-management权限
+        if (menuSns) {
+            if (menuSns.indexOf('ops-management') >= 0) {
+                if (!$scope.navMenus.length) {
+                    addMenuOfOps();
+                }
+            } else {
+                $scope.navMenus = [];
+                setStorageItem('ops-management', 0);
+            }
+        } else {
+            if (!$scope.navMenus.length) {
+                addMenuOfOps();
+            }
+        }
+    });
     initMenu();
 });
 
@@ -201,7 +197,7 @@ app.controller('TaskBaseCtrl', function ($scope, ajax, userService) {
     var stationSn = GetQueryString("sn");
     var deviceSn = GetQueryString("device_sn");     // 如果设备sn不为空，则获取的是设备的运维记录
     $scope.pageTitle = deviceSn ? '运维记录' : '所有任务';
-
+    $scope.hasOpsAuth = getStorageItem('ops-management') ? parseInt(getStorageItem('ops-management')) : 1;
     var map = null;
     $scope.openTask = function (task) {
         if (deviceSn && task.task_type_id === TaskTypes.Xunjian) {
@@ -661,10 +657,10 @@ app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, us
         if (status1 !== status2) {
             return status1 - status2;
         }
-        if (d1.expect_complete_time > d2.expect_complete_time){
+        if (d1.create_time < d2.create_time){
             return 1;
         }
-        if (d1.expect_complete_time === d2.expect_complete_time){
+        if (d1.create_time === d2.create_time){
             return 0;
         }
         return -1;
