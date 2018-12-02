@@ -531,6 +531,11 @@ app.controller('AppStoreCtrl', function ($scope, appStoreService) {
     $scope.onSave = function () {
         appStoreService.saveSelectedApps($scope.selectedApps);
         $scope.toggleEdit();
+
+        // 回到
+        if (window.android) {
+            window.android.onJsCallbackForPrevPage('onAndroidCb_updateAppList', '');
+        }
     }
 });
 

@@ -86,6 +86,14 @@ app.directive('siteTreeView',[function(){
     };
 }]);
 
+function onAndroidCb_updateAppList() {
+    // 更新首页的app列表
+    var scope = angular.element('#siteHome').scope();
+    if (scope) {
+        scope.updateAppList();
+    }
+}
+
 app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, routerService, platformService, userService, appStoreService) {
     $scope.sitesTree = [];
     $scope.sites = [];
@@ -211,6 +219,11 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
             }
         });
     }
+
+    $scope.updateAppList = function() {
+        $scope.selectedApps = appStoreService.getSelectedApps();
+        $scope.$apply();
+    };
 
     $scope.searchInputChange = function (input) {
         var value = input.value.toLowerCase().trim();
