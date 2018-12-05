@@ -1,9 +1,9 @@
 "use strict";
 
 
-app.controller('MonitorListCtrl', function ($scope, $state, $stateParams, scrollerService, ajax, platformService) {
+app.controller('MonitorListCtrl', function ($scope, $state, routerService, scrollerService, ajax, platformService) {
     $scope.scope = $scope;
-    $scope.sn = $stateParams.sn;
+    // $scope.sn = $stateParams.sn;
     $scope.monitorScreens = [];
     $scope.monitorLoading = true;
     $scope.loadingFailed = false;
@@ -41,38 +41,38 @@ app.controller('MonitorListCtrl', function ($scope, $state, $stateParams, scroll
     };
 
     $scope.openMonitor = function (url) {
-        // openPage(scope, 'templates/site/monitor-detail.html', {url: url});
-        $state.go('.detail', {url: url});
+        routerService.openPage($scope, 'templates/site/monitor-detail.html', {url: url});
+        // $state.go('.detail', {url: url});
     };
 
     $scope.getDataList();
 });
 
 
-app.controller('MonitorDetailCtrl', function ($scope, $stateParams, cordovaService) {
-
-    setLandscape();
-    var url = $stateParams.url;
+app.controller('MonitorDetailCtrl', function ($scope, cordovaService) {
+    var url = $scope.url;
     var iframe = document.getElementById('iframe');
-
-    iframe.src = url;
-    $.notify.progressStart();
-    if (!/*@cc_on!@*/0) { //if not IE
-        iframe.onload = function(){
-            iframe.onload = null;
-            $.notify.progressStop();
-            // setLandscape();
-            // enableZoom();
-        };
-    } else {
-        iframe.onreadystatechange = function(){
-            if (iframe.readyState === "complete"){
+    setTimeout(function () {
+        setLandscape();
+        iframe.src = url;
+        $.notify.progressStart();
+        if (!/*@cc_on!@*/0) { //if not IE
+            iframe.onload = function(){
+                iframe.onload = null;
                 $.notify.progressStop();
-
+                // setLandscape();
                 // enableZoom();
-            }
-        };
-    }
+            };
+        } else {
+            iframe.onreadystatechange = function(){
+                if (iframe.readyState === "complete"){
+                    $.notify.progressStop();
+
+                    // enableZoom();
+                }
+            };
+        }
+    }, 500);
 
     function setLandscape() {
         // 设置横屏

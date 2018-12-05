@@ -3,11 +3,11 @@ function openDeviceFromQR(data) {   //根据扫码结果打开设备详情
     scope.gotoDevice({sn: data.sn});
 }
 
-app.controller('StaticDevicesHomeCtrl', function ($scope, ajax, $stateParams, $state, routerService, cordovaService) {
-    var stationSn = $stateParams.sn;
+app.controller('StaticDevicesHomeCtrl', function ($scope, ajax, $state, routerService, cordovaService) {
+    var stationSn = $scope.sn;
     var devices = [];       // 设备
     $scope.deviceDatas = [];
-    $scope.isLoading = false;
+    $scope.isLoading = true;
     $scope.loadingFailed = false;
 
     $scope.gotoDevice = function(deviceData){
@@ -21,6 +21,7 @@ app.controller('StaticDevicesHomeCtrl', function ($scope, ajax, $stateParams, $s
             url: '/stations/' + stationSn + '/staticdevices',
             success: function (data) {
                 $scope.isLoading = false;
+                $scope.loadingFailed = false;
                 $scope.deviceDatas = data;
                 $scope.$apply();
             }, error: function () {
@@ -192,7 +193,7 @@ app.controller('StaticDeviceDetailCtrl', function ($scope, $stateParams, ajax, r
     $scope.gotoDtsList = function () {
         routerService.openPage($scope, '/templates/site/static-devices/device-dts-history.html', {
             device_sn: $scope.device.sn,
-            station_sn: $scope.device.station_sn
+            sn: $scope.device.station_sn
         });
         // window.location.href = '/templates/site/static-devices/device-dts-history.html?device_sn=' + $scope.device.sn + '&station_sn=' + $scope.device.station_sn;
     };
@@ -200,7 +201,7 @@ app.controller('StaticDeviceDetailCtrl', function ($scope, $stateParams, ajax, r
     $scope.gotoOpsList = function () {
         // window.location.href = '/templates/task/task-list.html?device_sn=' + $scope.device.sn;
         routerService.openPage($scope, '/templates/task/task-list.html', {
-            station_sn: $scope.device.station_sn,
+            sn: $scope.device.station_sn,
             device: $scope.device
         });
     };

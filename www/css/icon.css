@@ -57,6 +57,18 @@
 .icon-history-report{
     background-image: url("../img/dashboard/icon-history-report.png");
 }
+.icon-energy-reading {
+    background-image: url("../img/dashboard/icon-energy-reading.png");
+}
+.icon-energy-history {
+    background-image: url("../img/dashboard/icon-energy-history.png");
+}
+.icon-energy-statistics {
+    background-image: url("../img/dashboard/icon-energy-statistics.png");
+}
+.icon-app-store {
+    background-image: url("../img/dashboard/icon-app-store.png");
+}
 .icon-more{
     background-image: url("../img/light/64X64/more.png");
 }

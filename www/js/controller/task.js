@@ -1391,13 +1391,16 @@ app.controller('TaskCreateCtrl', function ($scope, $stateParams, $timeout, route
     $scope.isGrabTask = false;
     var staticDevices = [];
 
+    var taskTypePicker = null;
+    var stationPicker = null;
+    var devicePicker = null;
+    var userPicker = null;
+    var datePicker = null;
     $scope.taskData = {
         station_sn: $scope.station_sn,
         devices: $scope.device ? [{id: $scope.device.id, sn: $scope.device.sn}] : [],
         events: []
     };
-    var devicePicker = null;
-    var userPicker = null;
     function init() {
         if($scope.linkEventId && $scope.linkEventId != '') {
             initLinkEvent();
@@ -1485,7 +1488,7 @@ app.controller('TaskCreateCtrl', function ($scope, $stateParams, $timeout, route
                 }
                 _format(stationList, 'sn');
                 // 初始化picker
-                var stationPicker = new mui.PopPicker();
+                stationPicker = new mui.PopPicker();
                 stationPicker.setData(stationList);
                 var showUserPickerButton = document.getElementById('stationPicker');
                 showUserPickerButton.addEventListener('click', function(event) {
@@ -1541,7 +1544,7 @@ app.controller('TaskCreateCtrl', function ($scope, $stateParams, $timeout, route
                 _format(data);
 
                 //普通示例
-                var taskTypePicker = new mui.PopPicker();
+                taskTypePicker = new mui.PopPicker();
                 taskTypePicker.setData(data);
                 var taskTypeButton = document.getElementById('taskTypePicker');
                 taskTypeButton.addEventListener('click', function(event) {
@@ -1587,9 +1590,8 @@ app.controller('TaskCreateCtrl', function ($scope, $stateParams, $timeout, route
     function initDatePicker() {
 
         document.getElementById('expectedTime').addEventListener('tap', function() {
-            var _self = this;
-            if(_self.picker) {
-                _self.picker.show(function (rs) {
+            if(datePicker) {
+                datePicker.show(function (rs) {
                     $scope.taskData.expect_complete_time = rs.text + ":00";
                     $scope.$apply();
                 });
@@ -1602,8 +1604,8 @@ app.controller('TaskCreateCtrl', function ($scope, $stateParams, $timeout, route
                  * 示例为了简洁，将 options 放在了按钮的 dom 上
                  * 也可以直接通过代码声明 optinos 用于实例化 DtPicker
                  */
-                _self.picker = new mui.DtPicker(options);
-                _self.picker.show(function(rs) {
+                datePicker = new mui.DtPicker(options);
+                datePicker.show(function(rs) {
                     $scope.taskData.expect_complete_time = rs.text + ":00";
                     $scope.$apply();
                 });
@@ -1693,6 +1695,24 @@ app.controller('TaskCreateCtrl', function ($scope, $stateParams, $timeout, route
             $scope.createTask();
         }
     };
+
+    $scope.$on('$destroy', function (event) {
+        if (taskTypePicker) {
+            taskTypePicker.dispose();
+        }
+        if (stationPicker) {
+            stationPicker.dispose();
+        }
+        if (devicePicker) {
+            devicePicker.dispose();
+        }
+        if (userPicker) {
+            userPicker.dispose();
+        }
+        if (datePicker) {
+            datePicker.dispose();
+        }
+    });
 
     init();
 });

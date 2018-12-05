@@ -34,6 +34,10 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
     $scope.useMobileGallery = window.android && window.android.openGallery;
     var staticDevices = [];
 
+    var taskTypePicker = null;
+    var datePicker = null;
+    var userPicker = null;
+
     // 先清除上一次选择的图片
     window.android && window.android.clearSelectedPhotos();
 
@@ -119,7 +123,7 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
             value: 10,
             text: '致命缺陷'
         }];
-        var taskTypePicker = new mui.PopPicker();
+        taskTypePicker = new mui.PopPicker();
         taskTypePicker.setData(taskTypes);
         var taskTypeButton = document.getElementById('taskTypePicker');
 
@@ -134,7 +138,6 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
     }
 
     function initMembers() {
-        var userPicker = null;
         ajax.getCompanyMembers(function (data) {
 
             $scope.memberList = data;
@@ -160,12 +163,9 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
     function initDatePicker() {
 
         document.getElementById('expectedTime').addEventListener('tap', function() {
-            var _self = this;
-            if(_self.picker) {
-                _self.picker.show(function (rs) {
+            if(datePicker) {
+                datePicker.show(function (rs) {
                     $scope.taskData.expect_complete_time = rs.text;
-                    _self.picker.dispose();
-                    _self.picker = null;
                     $scope.$apply();
                 });
             } else {
@@ -177,11 +177,9 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
                  * 示例为了简洁，将 options 放在了按钮的 dom 上
                  * 也可以直接通过代码声明 optinos 用于实例化 DtPicker
                  */
-                _self.picker = new mui.DtPicker(options);
-                _self.picker.show(function(rs) {
+                datePicker = new mui.DtPicker(options);
+                datePicker.show(function(rs) {
                     $scope.taskData.expect_complete_time = rs.text + ":00";
-                    _self.picker.dispose();
-                    _self.picker = null;
                     $scope.$apply();
                 });
             }
@@ -354,6 +352,18 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
         }
     }
 
+    $scope.$on('$destroy', function (event) {
+        if (taskTypePicker) {
+            taskTypePicker.dispose();
+        }
+        if (datePicker) {
+            datePicker.dispose();
+        }
+        if (userPicker) {
+            userPicker.dispose();
+        }
+    });
+
     init();
 });
 
@@ -470,7 +480,7 @@ app.controller('DeviceDtsListCtrl', function ($scope, ajax, scrollerService, rou
 });
 
 app.controller('StationDtsListCtrl', function ($scope, $rootScope, scrollerService, userService, ajax, routerService) {
-    var stationSn = $scope.station_sn;
+    var stationSn = $scope.sn;
     $scope.TaskStatus = TaskStatus;
     $scope.tasks = [];
     $scope.isLoading = true;

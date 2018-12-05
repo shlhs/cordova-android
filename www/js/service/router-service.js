@@ -2,22 +2,25 @@
 
 
 app.service('routerService', function ($timeout, $compile) {
-    var pages = [], pageLength=0, currentIndex=0;
+    var pages = [], pageLength=0, currentIndex=0, scopeList=[];
     var nextPage = {};      // 保存下一个页面的数据
     window.addEventListener('popstate', function () {
         if (!pageLength){
             return;
         }
-        // 显示前一个页面
-        if (pageLength>1){
-            pages[pageLength - 2].ele.show();
-        }else{
-            pages[0].ele.prevAll().show();
-        }
+        // // 显示前一个页面
+        // if (pageLength>1){
+        //     pages[pageLength - 2].ele.show();
+        // }else{
+        //     pages[0].ele.prevAll().show();
+        // }
+        pages[pages.length-1].ele.prevAll().show();
         var item = pages[currentIndex], element=item.ele;
         element.addClass('ng-leave');
         item.scope.$broadcast('$destroy');
         pages.splice(pageLength-1, 1);
+        scopeList.splice(scopeList.length-1, 1
+        );
         pageLength -= 1;
         currentIndex = pageLength - 1;
         element[0].addEventListener('webkitAnimationEnd', _animateEnd);
@@ -75,7 +78,13 @@ app.service('routerService', function ($timeout, $compile) {
         var compileFn = $compile(html);
         var $dom = compileFn(scope);
         // 添加到文档中
-        $dom.appendTo($('body'));
+        if (scopeList.length) {
+            $dom.appendTo(scopeList[scopeList.length-1].domEle);
+        } else {
+            $dom.appendTo($('body'));
+        }
+        // $dom.appendTo($('body'));
+        scopeList.push($dom.scope());
     };
 
     this._setNextPage = function (params, config) {
@@ -123,7 +132,10 @@ app.directive('routePage', ['$log', 'routerService', function($log, routerServic
         templateUrl: function (ele, attr) {
             return attr.template;
         },
-        scope: true     // scope隔离
+        scope: true,     // scope隔离,
+        link: function (scope, element, attrs) {
+            scope.domEle = element;
+        }
 
         // compile: function(element, attributes) {
         //     return {
@@ -157,6 +169,9 @@ app.directive('rootPage', ['$log', 'routerService', function($log, routerService
                     $scope[key] = decodeURIComponent(value);
                 }
             }
+        },
+        link: function (scope, element, attrs) {
+            scope.domEle = element;
         }
     };
 }]);

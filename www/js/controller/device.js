@@ -5,8 +5,7 @@
  */
 
 app.controller('DeviceListCtrl', function ($scope, ajax, scrollerService) {
-    var sn = GetQueryString('sn');
-    $scope.sn = sn;
+    var sn = $scope.sn;
     $scope.deviceList = [];
     $scope.faultDeviceList = [];
     $scope.deviceLoading = true;
@@ -567,9 +566,9 @@ app.controller('DeviceTreeCommonCtrl', function ($scope, ajax) {
     };
 });
 
-app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile, $stateParams, $state) {       // 检测设备列表页
+app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile, routerService) {       // 检测设备列表页
     // var stationSn = GetQueryString('sn');
-    var stationSn = $stateParams.sn;
+    var stationSn = $scope.sn;
     $scope.deviceDatas = [];
     $scope.treeData = [];
     var devices = [];       // 设备
@@ -676,9 +675,7 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile, $state
     }
 
     $scope.gotoDevice = function (deviceData) {
-        // location.href = '/templates/site/device-monitor.html?stationSn=' + stationSn + '&deviceSn=' + deviceData.sn + '&deviceName=' + deviceData.name;
-        $state.go('.detail', {sn: stationSn, deviceSn: deviceData.sn, deviceName: deviceData.name});
-        // $scope.openPage($scope, 'templates/site/device-monitor.html', {sn: deviceData.stationSn, deviceSn: deviceData.sn, deviceName: deviceData.name})
+        routerService.openPage($scope, 'templates/site/device-monitor.html', {sn: deviceData.stationSn, deviceSn: deviceData.sn, deviceName: deviceData.name})
     };
 
     $scope.getDataList();
@@ -689,9 +686,9 @@ app.controller('DeviceMonitorCtrl', function ($scope, ajax, $stateParams) {
     // $scope.stationSn = GetQueryString('stationSn');
     // $scope.deviceSn=GetQueryString('deviceSn');
     // $scope.deviceName = GetQueryString('deviceName');
-    $scope.stationSn = $stateParams.sn;
-    $scope.deviceSn = $stateParams.deviceSn;
-    $scope.deviceName = $stateParams.deviceName;
+    $scope.stationSn = $scope.sn;
+    $scope.deviceSn = $scope.deviceSn;
+    $scope.deviceName = $scope.deviceName;
     $scope.secondOptions = {
         '实时数据': [],
         '历史数据': []

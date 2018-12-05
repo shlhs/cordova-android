@@ -133,8 +133,8 @@ app.directive('siteHistoryRepeatFinish',function(){
 });
 
 // 历史曲线
-app.controller('SiteHistoryTrendCtrl', function ($scope, $stateParams, ajax) {
-    var stationSn = $stateParams.sn;    // GetQueryString("sn");
+app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
+    var stationSn = $scope.sn;    // GetQueryString("sn");
     var pfvSettingsF = null;     // 用电电价
     var pfvSettingsR = null;     // 发电电价
     $scope.timeTypeList = [{
@@ -579,6 +579,10 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, $stateParams, ajax) {
             var lastClassName = className.substring(startIndex);
             document.body.className = className.replace(lastClassName, ' ');
         }
+        if ($scope.picker) {
+            $scope.picker.dispose();
+            $scope.picker = null;
+        }
         $.notify.progressStop();
     });
 
@@ -586,9 +590,9 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, $stateParams, ajax) {
 });
 
 // 历史报表
-app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax, $stateParams) {
+app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
 
-    var stationSn = $stateParams.sn;  //GetQueryString("sn");
+    var stationSn = $scope.sn;  //GetQueryString("sn");
     $scope.timeTypeList = [{
         id: 'DAY',
         name: '日报'
@@ -612,6 +616,7 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax, $state
     $scope.reportSetting = {};
     $scope.isLoading = false;
     refreshDateShowName();
+    var taskTypePicker = null;
 
     $scope.getDataList = function() {
         getReports(stationSn);
@@ -679,7 +684,7 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax, $state
                             text: item.name
                         })
                     });
-                    var taskTypePicker = new mui.PopPicker();
+                    taskTypePicker = new mui.PopPicker();
                     taskTypePicker.setData(pickerData);
                     var taskTypeButton = document.getElementById('reportPicker');
                     taskTypeButton.addEventListener('click', function(event) {
@@ -1021,6 +1026,14 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax, $state
         if (startIndex >= 0) {
             var lastClassName = className.substring(startIndex);
             document.body.className = className.replace(lastClassName, ' ');
+        }
+        if ($scope.picker) {
+            $scope.picker.dispose();
+            $scope.picker = null;
+        }
+        if (taskTypePicker) {
+            taskTypePicker.dispose();
+            taskTypePicker = null;
         }
         $.notify.progressStop();
     });

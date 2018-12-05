@@ -3,7 +3,7 @@
 
 app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
     // $scope.sn = GetQueryString('sn');
-    $scope.sn = $stateParams.sn;
+    // $scope.sn = $stateParams.sn;
     $scope.hasData = true;
     $scope.isLoading = true;
     $scope.havaEventList = false;
