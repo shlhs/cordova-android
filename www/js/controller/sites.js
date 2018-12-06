@@ -94,7 +94,7 @@ function onAndroidCb_updateAppList() {
     }
 }
 
-app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, routerService, platformService, userService, appStoreService) {
+app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, routerService, platformService, userService, appStoreProvider) {
     $scope.sitesTree = [];
     $scope.sites = [];
     $scope.currentSite = {};
@@ -208,12 +208,12 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
                     });
                     $scope.$emit('$onMenuUpdate', menuSns);
                     setStorageItem("menuSns", JSON.stringify(menuSns));
-                    $scope.selectedApps = appStoreService.getSelectedApps();
+                    $scope.selectedApps = appStoreProvider.getSelectedApps();
                     $scope.$apply();
                 } else {
                     $scope.$emit('$onMenuUpdate', null);
                     setStorageItem("menuSns", '');
-                    $scope.selectedApps = appStoreService.getSelectedApps();
+                    $scope.selectedApps = appStoreProvider.getSelectedApps();
                     $scope.$apply();
                 }
             }
@@ -221,7 +221,7 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
     }
 
     $scope.updateAppList = function() {
-        $scope.selectedApps = appStoreService.getSelectedApps();
+        $scope.selectedApps = appStoreProvider.getSelectedApps();
         $scope.$apply();
     };
 
