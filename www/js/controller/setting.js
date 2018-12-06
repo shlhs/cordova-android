@@ -6,8 +6,8 @@ app.controller('SettingCtrl', function ($scope, platformService, userService, $s
     $scope.pwdError = '';
     $scope.user = userService.user;
     $scope.company = userService.company;
-    $scope.version = GetQueryString('version') || '0.0.0';
-    $scope.appName = GetQueryString('appName') || '快控电管家';
+    $scope.version = '1.0';
+    $scope.appName = 'INT-OMS';
 
     $scope.logout = function () {
         userService.setPassword('');
