@@ -371,7 +371,7 @@ app.controller('EventListCtrl', function ($scope, $stateParams, scrollerService,
     }
 
     $scope.events = [];
-    $scope.eventLoading = false;
+    $scope.eventLoading = true;
     $scope.loadingFailed = false;
     $scope.unhandledEventCount = 0;
 

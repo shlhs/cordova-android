@@ -1771,7 +1771,6 @@ app.controller('TaskDevicesHandlerCtrl', function ($scope, routerService, ajax) 
     }
 
     $scope.checkDevice = function ($event, sn) {
-        var index = $scope.checkedSns.indexOf(sn);
         $scope.device_record.forEach(function (d) {
             if (d.device_sn === sn) {
                 d.checked = !d.checked;
@@ -1862,6 +1861,7 @@ app.controller('TaskDevicesHandlerCtrl', function ($scope, routerService, ajax) 
             onCreateSucceed: function (taskData) {
                 record.status_name = 'danger';
                 record.status = '有故障';
+                $scope.recountFunc();
                 $scope.checkDevice(null, record.device_sn);
             }
         });
