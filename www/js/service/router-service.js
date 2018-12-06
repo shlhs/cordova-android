@@ -22,7 +22,6 @@ app.service('routerService', function ($timeout, $compile) {
         }else{
             pages[0].ele.prevAll().show();
         }
-        // pages[pages.length-1].ele.prevAll().show();
         var item = pages[currentIndex], element=item.ele;
         element.addClass('ng-leave');
         item.scope.$broadcast('$destroy');
@@ -48,7 +47,6 @@ app.service('routerService', function ($timeout, $compile) {
         element.addClass('ng-enter');
 
         function _animationEnd(event) {
-
             if (config && config.finish){   // 打开这个页面时，需要关闭前一个页面
                 toFinishPage = pages[currentIndex].ele;
                 pages[currentIndex] = data;
@@ -82,28 +80,29 @@ app.service('routerService', function ($timeout, $compile) {
             templateUrl = templateUrl.substring(1);
         }
         var html = "<route-page template=" + templateUrl;
-        this._setNextPage(params, config);
+        this._setNextPage(templateUrl, params, config);
         html += '></route-page>';
         var compileFn = $compile(html);
         var $dom = compileFn(scope);
         // 首次打开时将页面加到body中，其他时候打开时将页面加到上一级的文档中。 如果设置了config.finish=true，那么将页面加到上上级文档中
-        // if (scopeList.length && (!config || !config.finish)) {
-        //     $dom.appendTo(scopeList[scopeList.length-1].domEle);
-        // } else if (scopeList.length > 1 && config.finish) {
-        //     $dom.appendTo(scopeList[scopeList.length-2].domEle);
-        // } else {
-        //     $dom.appendTo($('body'));
-        // }
-        $dom.appendTo($('body'));
+        if (scopeList.length && (!config || !config.finish)) {
+            $dom.appendTo(scopeList[scopeList.length-1].domEle);
+        } else if (scopeList.length > 1 && config.finish) {
+            $dom.appendTo(scopeList[scopeList.length-2].domEle);
+        } else {
+            $dom.appendTo($('body'));
+        }
+        // $dom.appendTo($('body'));
     };
 
-    this._setNextPage = function (params, config) {
+    this._setNextPage = function (templateUrl, params, config) {
         config = $.extend({}, {
             hidePrev: true,      // 默认打开新页面时会隐藏前一页
             addHistory: true,    // 是否加到history中
             finish: false
         }, config);
         nextPage = {
+            templateUrl: templateUrl,
             params: params,
             config: config
         };

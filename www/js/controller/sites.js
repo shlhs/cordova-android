@@ -5,7 +5,7 @@
  */
 
 
-app.controller('SiteListCtrl', function ($scope, $http, $state, scrollerService, ajax, platformService, routerService, appStoreService) {
+app.controller('SiteListCtrl', function ($scope, $http, $state, scrollerService, ajax, platformService, routerService, appStoreProvider) {
     $scope.sites = [];
     $scope.sitesTree = [];
     $scope.currentSite = {};
@@ -120,12 +120,12 @@ app.controller('SiteListCtrl', function ($scope, $http, $state, scrollerService,
                     });
                     $scope.$emit('$onMenuUpdate', menuSns);
                     setStorageItem("menuSns", JSON.stringify(menuSns));
-                    $scope.selectedApps = appStoreService.getSelectedApps();
+                    $scope.selectedApps = appStoreProvider.getSelectedApps();
                     $scope.$apply();
                 } else {
                     $scope.$emit('$onMenuUpdate', null);
                     setStorageItem("menuSns", '');
-                    $scope.selectedApps = appStoreService.getSelectedApps();
+                    $scope.selectedApps = appStoreProvider.getSelectedApps();
                     $scope.$apply();
                 }
             }
@@ -133,7 +133,7 @@ app.controller('SiteListCtrl', function ($scope, $http, $state, scrollerService,
     }
 
     $scope.updateAppList = function() {
-        $scope.selectedApps = appStoreService.getSelectedApps();
+        $scope.selectedApps = appStoreProvider.getSelectedApps();
         $scope.$apply();
     };
 
@@ -145,7 +145,7 @@ app.controller('SiteListCtrl', function ($scope, $http, $state, scrollerService,
     };
 
     $scope.$on('onNotifyAppUpdate', function (event) {
-        $scope.selectedApps = appStoreService.getSelectedApps();
+        $scope.selectedApps = appStoreProvider.getSelectedApps();
     });
 
     $scope.gotoAppStore = function () {
