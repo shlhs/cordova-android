@@ -873,139 +873,10 @@ app.directive('historyTable', [function(){
             tableBodyData: '='
         },
         controller: ['$scope', '$attrs', function($scope, $attrs){
-            // var pageData = routerService.getNextPage();
-            // var params = pageData.params, config=pageData.config;
-            // if (params){
-            //     for (var key in params){
-            //         $scope[key] = params[key];
-            //     }
-            // }
-            // if (config.addHistory)
-            // {
-            //     routerService.addHistory($scope, $element);
-            // }
             console.log('finish');
         }]
     };
 }]);
-
-app.directive('dropDownMenu', function () {
-    return {
-        restrict: 'E',
-        templateUrl: '/templates/site-monitor/dropdown-menu.html',
-        scope: {
-            options: '=',
-            onSelect: '=',
-            modelName: '=',
-            defaultValue: '=',
-            selected: '='
-        },
-        replace: true,
-        controller:['$scope', '$attrs', function($scope, $attrs){
-            $scope.active = false;
-            $scope.selected = $scope.selected || {};
-
-            $scope.toggle = function () {
-                $scope.active = !$scope.active;
-                if ($scope.active) {
-                    var mark = $('<div style="position: fixed;background-color: transparent;width: 100%;height: 100%;top:60px;z-index: 1;left: 0;" ng-click="toggle()"></div>')
-                        .appendTo($scope.domEle);
-                } else {
-                    $scope.domEle.find('div:last').remove();
-                }
-            };
-
-            $scope.onClick = function ($event, id) {
-                if ($event) {
-                    $event.preventDefault();
-                    $event.stopPropagation();
-                }
-                for (var i=0; i<$scope.options.length; i++) {
-                    if ($scope.options[i].id === id) {
-                        $scope.selected = $scope.options[i];
-                        $scope.toggle();
-                        $scope.onSelect($scope.modelName, $scope.selected.id, $scope.selected.name);
-                        return false;
-                    }
-                }
-            };
-
-            if ($scope.defaultValue !== undefined) {
-                for (var i=0; i<$scope.options.length; i++) {
-                    if ($scope.options[i].id === $scope.defaultValue) {
-                        $scope.selected = $scope.options[i];
-                        break;
-                    }
-                }
-            } else if ($scope.options.length) {
-                $scope.selected = $scope.options[0];
-            }
-        }],
-        link: function (scope, element, attrs) {
-            console.log(element);
-            scope.domEle = element;
-        }
-    }
-});
-
-app.directive('dayDropDownMenu', function () {
-
-    return {
-        restrict: 'E',
-        templateUrl: '/templates/site-monitor/day-dropdown-menu.html',
-        scope: {
-            options: '=',
-            onSelect: '=',
-            modelName: '=',
-            defaultValue: '='
-        },
-        replace: true,
-        controller:['$scope', '$attrs', function($scope, $attrs){
-            $scope.active = false;
-            $scope.selected = {};
-
-            $scope.toggle = function () {
-                $scope.active = !$scope.active;
-                if ($scope.active) {
-                    var mark = $('<div style="position: fixed;background-color: transparent;width: 100%;height: 100%;top:60px;z-index: 1;left:0;" ng-click="toggle()"></div>')
-                        .appendTo($scope.domEle);
-                } else {
-                    $scope.domEle.find('div:last').remove();
-                }
-            };
-
-            $scope.onClick = function ($event, id) {
-                if ($event) {
-                    $event.preventDefault();
-                    $event.stopPropagation();
-                }
-                for (var i=0; i<$scope.options.length; i++) {
-                    if ($scope.options[i].id === id) {
-                        $scope.selected = $scope.options[i];
-                        $scope.toggle();
-                        $scope.onSelect($scope.modelName, $scope.selected.id, $scope.selected.name);
-                        return false;
-                    }
-                }
-            };
-
-            if ($scope.defaultValue !== undefined) {
-                for (var i=0; i<$scope.options.length; i++) {
-                    if ($scope.options[i].id === $scope.defaultValue) {
-                        $scope.selected = $scope.options[i];
-                        break;
-                    }
-                }
-            } else if ($scope.options.length) {
-                $scope.selected = $scope.options[0];
-            }
-        }],
-        link: function (scope, element, attrs) {
-            console.log(element);
-            scope.domEle = element;
-        }
-    }
-});
 
 app.directive('siteHistoryRepeatFinish',function(){
     return {
@@ -1013,19 +884,27 @@ app.directive('siteHistoryRepeatFinish',function(){
             if(scope.$last == true){
                 setTimeout(function () {
                     $.fn.dataTable.ext.errMode = 'none'; //不显示任何错误信息
-                    var height = screen.height - 172;
-                    var table = $('#siteHistoryTable').DataTable( {
+                    var height = screen.height - 154;
+                    // 如果宽度小于屏幕宽度，则不设置fixedColumns
+                    var $table = $('#siteHistoryTable');
+                    var config = {
                         searching: false,
                         ordering: false,
                         scrollY:        height + 'px',
                         scrollX:        true,
                         scrollCollapse: true,
                         paging:         false,
-                        info: false,
-                        fixedColumns: {
+                        info: false
+                    };
+                    var width = parseInt($table.css('width'));
+                    if (width <= screen.width) {
+                        $table.css('width', '100%');
+                    } else {
+                        config.fixedColumns = {
                             leftColumns: 1
-                        }
-                    } );
+                        };
+                    }
+                    var table = $table.DataTable(config);
                     scope.$parent.table = table;
                 }, 100);
             }
