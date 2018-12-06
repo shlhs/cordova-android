@@ -76,14 +76,14 @@ var gDefaultApps = [
         }, {
             name: '安全评测',
             icon: 'icon-security',
-            templateUrl: '/templates/maintenance-check/check-history.html',
+            templateUrl: '/templates/evaluate/evaluate-history.html',
             sn: 'ops-management',
             url: 'evaluate-security',
             defaultChecked: true
         }, {
             name: '停电维护',
             icon: 'icon-poweroff',
-            templateUrl: '/templates/site/device-monitor-list.html',
+            templateUrl: '/templates/maintenance-check/check-history.html',
             sn: 'ops-management',
             url: 'poweroff-maintenance',
             defaultChecked: true

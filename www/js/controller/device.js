@@ -19,7 +19,7 @@ app.controller('DeviceListCtrl', function ($scope, ajax, scrollerService) {
             cache: false,
             success: function(result) {
                 // 设置默认状态胃正常
-                for (var i in result){
+                for (var i=0; i<result.length; i++){
                     result[i].status = 'normal';
                     result[i].status_name = '正常';
                 }
@@ -650,16 +650,15 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile) {     
             success: function (data) {
                 var deviceData = null, device=null;
                 // 将实时数据写入设备列表中
-                var j = 0;
-                for (var i in data){
+                for (var i=0; i<data.length; i++){
                     deviceData = data[i];
-                    for (; j < deviceList.length; j++){
+                    for (var j=0; j < deviceList.length; j++){
                         if (deviceList[j].id === deviceData.device.id){
                             break;
                         }
                     }
                     if (j >= deviceList.length){
-                        break;
+                        continue;
                     }
                     device = deviceList[j];
                     device.communi_status = deviceData.communi_status;
