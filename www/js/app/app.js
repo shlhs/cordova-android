@@ -487,6 +487,14 @@ app.service('appStoreService', function () {
                 }
             });
         });
+        // 根据上一次选择结果，对selectedApps进行排序
+        if (apps) {
+            selectedApps.sort(function (app1, app2) {
+                var index1 = apps.indexOf(app1.url);
+                var index2 = apps.indexOf(app2.url);
+                return index1 - index2;
+            });
+        }
         return selectedApps;
     };
 
