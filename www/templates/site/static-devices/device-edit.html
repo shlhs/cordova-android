@@ -54,7 +54,7 @@
                 </label>
                 <a class="add-property-btn" ng-click="onClickAddProperty(item.properties)">添加属性</a>
             </div>
-            <div class="card-content">
+            <div class="card-content" style="padding-top: 0;margin-top: 8px;">
                 <div class="info-group properties-group is-edit" ng-if="item.properties && item.properties.length">
                     <li ng-repeat="p in item.properties" ng-click="onClickEditProperty(item.properties, $index)">
                         <label class="title">{{p.name}}</label>

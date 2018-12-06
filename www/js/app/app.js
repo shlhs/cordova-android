@@ -2,8 +2,6 @@
 /**
  * Created by liucaiyun on 2017/5/4.
  */
-
-
 var app = angular.module('myApp', ['ngAnimate', 'ui.router', 'ui.router.state.events']);
 
 app.run(function ($animate) {
@@ -24,6 +22,7 @@ app.controller('MainCtrl', function ($scope, $rootScope, userService, routerServ
     $scope.openPage = function(scope, template, params, config){
         routerService.openPage(scope, template, params, config);
     };
+
 });
 
 var UserRole = {SuperUser: 'SUPERUSER', OpsAdmin: 'OPS_ADMIN', OpsOperator: 'OPS_OPERATOR', Normal: 'USER'};
@@ -184,6 +183,10 @@ app.service('platformService', function () {
         return this.ipAddress + ":8096/v1"
     };
 
+    this.getDeviceMgmtHost = function () {
+        return this.ipAddress + ':8097';
+    };
+
     this.getImageThumbHost = function () {      // 获取图片压缩服务的地址
         // 格式为： http://ip:8888/unsafe
         if (this.ipAddress)
@@ -215,7 +218,6 @@ app.service('platformService', function () {
     this.ipAddress = this.host ? this.host.substring(0, this.host.indexOf(':', 5)) : '';
     this.thumbHost = this.getImageThumbHost();
 });
-
 
 app.service('ajax', function ($rootScope, platformService, userService, $http, cordovaService) {
     var host = platformService.host;
@@ -303,7 +305,6 @@ app.service('ajax', function ($rootScope, platformService, userService, $http, c
        return request(option);
    }
 });
-
 
 Date.prototype.format = function(fmt) {
     var o = {
@@ -492,12 +493,12 @@ var imageHandler = {
 /**
  * 图片缩放控制器
  */
-app.controller('ImageZoomCtrl', function ($scope, $timeout, $stateParams) {
+app.controller('ImageZoomCtrl', function ($scope, $timeout) {
     $scope.menuVisible = false;
     $scope.header = null;
     $scope.headerVisible = false;
-    $scope.link = $stateParams.link;
-    $scope.name = $stateParams.name;
+    // $scope.link = $stateParams.link;
+    // $scope.name = $stateParams.name;
     imagesLoaded('#zoomTarget', function (e) {
 
         new RTP.PinchZoom($("#zoomTarget"), {});

@@ -5,8 +5,7 @@
  */
 
 app.controller('DeviceListCtrl', function ($scope, ajax, scrollerService) {
-    var sn = GetQueryString('sn');
-    $scope.sn = sn;
+    var sn = $scope.sn;
     $scope.deviceList = [];
     $scope.faultDeviceList = [];
     $scope.deviceLoading = true;
@@ -19,7 +18,7 @@ app.controller('DeviceListCtrl', function ($scope, ajax, scrollerService) {
             cache: false,
             success: function(result) {
                 // 设置默认状态胃正常
-                for (var i in result){
+                for (var i=0; i<result.length; i++){
                     result[i].status = 'normal';
                     result[i].status_name = '正常';
                 }
@@ -567,9 +566,9 @@ app.controller('DeviceTreeCommonCtrl', function ($scope, ajax) {
     };
 });
 
-app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile, $stateParams, $state) {       // 检测设备列表页
+app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile, routerService) {       // 检测设备列表页
     // var stationSn = GetQueryString('sn');
-    var stationSn = $stateParams.sn;
+    var stationSn = $scope.sn;
     $scope.deviceDatas = [];
     $scope.treeData = [];
     var devices = [];       // 设备
@@ -650,16 +649,15 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile, $state
             success: function (data) {
                 var deviceData = null, device=null;
                 // 将实时数据写入设备列表中
-                var j = 0;
-                for (var i in data){
+                for (var i=0; i<data.length; i++){
                     deviceData = data[i];
-                    for (; j < deviceList.length; j++){
+                    for (var j = 0; j < deviceList.length; j++){
                         if (deviceList[j].id === deviceData.device.id){
                             break;
                         }
                     }
                     if (j >= deviceList.length){
-                        break;
+                        continue;
                     }
                     device = deviceList[j];
                     device.communi_status = deviceData.communi_status;
@@ -676,9 +674,7 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile, $state
     }
 
     $scope.gotoDevice = function (deviceData) {
-        // location.href = '/templates/site/device-monitor.html?stationSn=' + stationSn + '&deviceSn=' + deviceData.sn + '&deviceName=' + deviceData.name;
-        $state.go('.detail', {sn: stationSn, deviceSn: deviceData.sn, deviceName: deviceData.name});
-        // $scope.openPage($scope, 'templates/site/device-monitor.html', {sn: deviceData.stationSn, deviceSn: deviceData.sn, deviceName: deviceData.name})
+        routerService.openPage($scope, 'templates/site/device-monitor.html', {sn: deviceData.stationSn, deviceSn: deviceData.sn, deviceName: deviceData.name})
     };
 
     $scope.getDataList();
@@ -689,9 +685,9 @@ app.controller('DeviceMonitorCtrl', function ($scope, ajax, $stateParams) {
     // $scope.stationSn = GetQueryString('stationSn');
     // $scope.deviceSn=GetQueryString('deviceSn');
     // $scope.deviceName = GetQueryString('deviceName');
-    $scope.stationSn = $stateParams.sn;
-    $scope.deviceSn = $stateParams.deviceSn;
-    $scope.deviceName = $stateParams.deviceName;
+    $scope.stationSn = $scope.sn;
+    $scope.deviceSn = $scope.deviceSn;
+    $scope.deviceName = $scope.deviceName;
     $scope.secondOptions = {
         '实时数据': [],
         '历史数据': []

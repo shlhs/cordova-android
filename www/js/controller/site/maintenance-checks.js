@@ -11,9 +11,9 @@ app.controller('MaintenanceBaseCtrl', function ($scope, $compile) {
     load();
 });
 
-app.controller('MaintenanceCheckHistoryCtrl', function ($scope, $stateParams, ajax, routerService) {
-    var sn = $stateParams.sn;
-    $scope.stationName = $stateParams.name;
+app.controller('MaintenanceCheckHistoryCtrl', function ($scope, ajax, routerService) {
+    var sn = $scope.sn;
+    $scope.stationName = $scope.name;
     $scope.history = [];
     $scope.isLoading = false;
     $scope.loadingFailed = false;
@@ -43,7 +43,7 @@ app.controller('MaintenanceCheckHistoryCtrl', function ($scope, $stateParams, aj
                 $scope.$apply();
             }
         });
-    }
+    };
 
     $scope.addReport = function (data) {
         $scope.history.unshift(data);

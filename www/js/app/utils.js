@@ -218,6 +218,7 @@ function formatToTreeData(data) {
 }
 
 
+
 var dtFormat = 'YYYY-MM-DD HH:mm:ss.000';
 
 /**
@@ -226,11 +227,11 @@ var dtFormat = 'YYYY-MM-DD HH:mm:ss.000';
  * @param endTime
  * @param queryPeriod
  */
-function createTimeList(startTime, endTime, queryPeriod) {
+function createTimeList(startTime, endTime, queryPeriod, timeFormat) {
     var startMoment = moment(startTime, dtFormat);
     var endMoment = moment(endTime, dtFormat);
     var timeList = [];
-    var resultFormat = 'YYYY-MM-DDTHH:mm:00.000';
+    var resultFormat = timeFormat || 'YYYY-MM-DDTHH:mm:00.000';
     if (queryPeriod === 'QUARTER' || queryPeriod === 'HALF_HOUR') {
         var periodMinutes = queryPeriod === 'QUARTER' ? 15 : 30;
         var minuteDiff = 0;
@@ -267,9 +268,11 @@ function createTimeList(startTime, endTime, queryPeriod) {
             startMoment.add(1, 'M');
         }
     }
-    timeList.forEach(function (t, i) {
-        timeList[i] = t + 'Z';
-    });
+    if (!timeFormat) {
+        timeList.forEach(function (t, i) {
+            timeList[i] = t + 'Z';
+        });
+    }
     return timeList;
 }
 
@@ -284,8 +287,8 @@ function createTimeList(startTime, endTime, queryPeriod) {
  * @param datas：历史趋势接口返回的数据的datas
  * @return 返回补全后的时间与数据 {time_keys: [], datas: []}
  */
-function fillTrendDataVacancy(startTime, endTime, queryPeriod, dataTimes, datas) {
-    var fullTimeKeys = createTimeList(startTime, endTime, queryPeriod);
+function fillTrendDataVacancy(startTime, endTime, queryPeriod, dataTimes, datas, timeFormat) {
+    var fullTimeKeys = createTimeList(startTime, endTime, queryPeriod, timeFormat);
 // 对子设备进行求和，作为全厂区的数据
     var fullDatas = [];
     fullTimeKeys.forEach(function(time, i) {    // 全厂区的数据列表
@@ -299,5 +302,48 @@ function fillTrendDataVacancy(startTime, endTime, queryPeriod, dataTimes, datas)
     return {
         time_keys: fullTimeKeys,
         datas: fullDatas,
+    };
+}
+
+function fillVacancyAndSumTrendData(startTime, endTime, queryPeriod, multiDatas, timeFormat) {
+    var fullTimeKeys = createTimeList(startTime, endTime, queryPeriod, timeFormat);
+// 对子设备进行求和，作为全厂区的数据
+    var multiFullDatas = [];
+    multiDatas.forEach(function (data) {
+        var fullDatas = [];
+        var dataTimes = data.time_keys, datas=data.datas;
+        fullTimeKeys.forEach(function(time, i) {    // 全厂区的数据列表
+            var index = dataTimes.indexOf(time);
+            if (index >= 0) {
+                fullDatas.push(datas[index]);
+            } else {
+                fullDatas.push(null);
+            }
+        });
+        multiFullDatas.push(fullDatas);
+    });
+    var sumDatas = [];
+    fullTimeKeys.forEach(function (t) {
+        sumDatas.push(null);
+    });
+    // 求和
+    multiFullDatas.forEach(function (datas) {
+        datas.forEach(function (d, i) {
+            if (sumDatas[i] === null) {
+                sumDatas[i] = d;
+            } else {
+                sumDatas[i] += d;
+            }
+        })
+    });
+    // 保留数据小数点后两位
+    sumDatas.forEach(function (d, i) {
+        if (d) {
+            sumDatas[i] = parseFloat(d.toFixed(2));
+        }
+    });
+    return {
+        time_keys: fullTimeKeys,
+        datas: sumDatas,
     };
 }
