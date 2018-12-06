@@ -844,6 +844,9 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
     var innerPageQuery=null,historyState = [];    // 浏览器历史状态
     $scope.actions = [];
 
+    var userPicker = null;
+
+
     var companyId = userService.getTaskCompanyId();
     function updateUserActions() {      // 更新用户的操作权限
         if (taskData.current_handler !== username){
@@ -1196,7 +1199,7 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
                 d['text'] = d[nameKey];
             }
         }
-        var userPicker = null;
+        userPicker = null;
         ajax.getCompanyMembers(function (data) {
 
             // 去掉当前处理人
@@ -1244,7 +1247,13 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
             }
         });
         $scope.checkedDeviceCount = checkedCount;
-    }
+    };
+
+    $scope.$on('$destroy', function (event) {
+       if (userPicker) {
+           userPicker.dispose();
+       }
+    });
 });
 
 function importImage(imageData) {    // 从Android读取的图片

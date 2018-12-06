@@ -18,9 +18,9 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
     var taskId = GetQueryString("task_id") || $scope.task_id || '';
     $scope.device = {
         sn: GetQueryString('device_sn') || $scope.device_sn,
-        station_sn: GetQueryString('station_sn') || $scope.station_sn,
-        name: GetQueryString('name') || $scope.name,
-        path: GetQueryString('path') || $scope.path
+        station_sn: GetQueryString('station_sn') || $scope.sn,
+        name: null,
+        path: null
     };
 
     $scope.isForDevice = $scope.device.sn ? true : false;
@@ -48,7 +48,8 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
         if (!$scope.device.sn && $scope.device.station_sn) {
             // 如果设备sn为空的话，则需要用户选择设备
             getStaticDevicesOfStation();
-        } else if ($scope.device.sn && !$scope.device.name) {
+        }
+        if ($scope.device.sn && !$scope.device.name) {
             // 如果只有设备sn，那么需要读取设备详情
             getDeviceDetail();
         }
@@ -369,8 +370,8 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
 
 // 设备缺陷记录
 app.controller('DeviceDtsListCtrl', function ($scope, ajax, scrollerService, routerService) {
-    var deviceSn = $scope.device_sn;    // GetQueryString('device_sn');
-    var stationSn = $scope.station_sn;  // GetQueryString('station_sn');
+    var deviceSn = $scope.device_sn;
+    var stationSn = $scope.sn;
     $scope.TaskStatus = TaskStatus;
     $scope.tasks = [];
     $scope.isLoading = true;
@@ -459,7 +460,7 @@ app.controller('DeviceDtsListCtrl', function ($scope, ajax, scrollerService, rou
 
     $scope.openDtsCreatePage = function () {
         routerService.openPage($scope, '/templates/dts/dts-create.html', {
-            station_sn: stationSn,
+            sn: stationSn,
             device_sn: deviceSn,
             onCreateSucceed: function (data) {
                 formatTaskStatusName(data);

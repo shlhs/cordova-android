@@ -223,7 +223,7 @@
     height: 28px !important;
 }
 .icon-delete {
-    background-image: url("../img/light/64X64/delete.png");
+    background-image: url("../img/dark/64X64/delete-circle-o.png");
 }
 .icon-search {
     background-image: url("../img/dark/32X32/search-grey.png");
@@ -254,4 +254,13 @@
 }
 .icon-dashboard-dts{
     background-image: url("../img/dashboard/icon-dts@2x.png");
+}
+.icon-camera-blue {
+    background-image: url(../img/dark/64X64/icon-camera-blue.png);
+}
+.icon-no-picture {
+    background-image: url(../img/dark/64X64/no-picture.png);
+}
+.icon-no-qr {
+    background-image: url(../img/dark/64X64/no-qr.png);
 }

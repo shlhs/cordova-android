@@ -491,6 +491,12 @@ app.controller('EventListCtrl', function ($scope, $stateParams, scrollerService,
             sn: $scope.sn,
             status: 0
         });
+    };
+
+    $scope.gotoEventListPage = function () {
+        routerService.openPage($scope, '/templates/site/event-list.html', {
+            sn: $scope.sn
+        });
     }
 });
 

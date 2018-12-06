@@ -183,8 +183,10 @@ app.controller('StaticDeviceDetailCtrl', function ($scope, $stateParams, ajax, r
             {
                 device_sn: $scope.device_sn,
                 onSave: function (data, photoLink) {
-                    $.extend($scope.device, data);
-                    $scope.device.device_photo_src_link = platformService.host + photoLink;
+                    $.extend($scope.device, data, {
+                        device_photo_src_link: photoLink ? (platformService.host + photoLink) : null,
+                        qr_photo_src_link: $scope.device.qr_photo_src_link
+                    });
                 }
             }
         );
@@ -453,13 +455,14 @@ app.controller('StaticDeviceEditCtrl', function ($scope, ajax, routerService, pl
             },
             success: function (response) {
                 $.notify.progressStop();
-                $.notify.info('更新成功');
+                $.notify.info('更新成功', 1000);
                 $scope.device = parseDeviceData(response);
                 if ($scope.onSave) {
                     $scope.onSave($scope.device, response.device_photo_src_link);
                 }
                 $scope.device.device_photo_src_link = null;      // 默认使用$scope.deviceImage显示图片
                 $scope.$apply();
+                setTimeout(pageBack, 1000);
             },
             error: function () {
                 $.notify.progressStop();

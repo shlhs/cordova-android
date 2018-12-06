@@ -111,20 +111,27 @@ app.directive('siteHistoryRepeatFinish',function(){
             if(scope.$last == true){
                 setTimeout(function () {
                     $.fn.dataTable.ext.errMode = 'none'; //不显示任何错误信息
-
-                    var height = screen.height - 160;
-                    var table = $('#siteHistoryTable').DataTable( {
+                    var height = screen.height - 154;
+                    // 如果宽度小于屏幕宽度，则不设置fixedColumns
+                    var $table = $('#siteHistoryTable');
+                    var config = {
                         searching: false,
                         ordering: false,
                         scrollY:        height + 'px',
                         scrollX:        true,
                         scrollCollapse: true,
                         paging:         false,
-                        info: false,
-                        fixedColumns: {
+                        info: false
+                    };
+                    var width = parseInt($table.css('width'));
+                    if (width <= screen.width) {
+                        $table.css('width', '100%');
+                    } else {
+                        config.fixedColumns = {
                             leftColumns: 1
-                        }
-                    } );
+                        };
+                    }
+                    var table = $table.DataTable(config);
                     scope.$parent.table = table;
                 }, 100);
             }

@@ -2474,6 +2474,32 @@ color: #a7a7a7;
     width: 24px;
     height: 24px;
 }
+.device-detail-title.is-edit {
+    padding-right: 30px;
+}
+.device-detail-title.is-edit label {
+    position: relative;
+    padding: 10px 0;
+}
+.device-detail-title.is-edit label .icon-delete {
+    position: absolute;
+    right: -32px;
+    top: 6px;
+    cursor: pointer;
+    border: transparent 4px solid;
+    width: 24px;
+    height: 24px;
+}
+.device-detail-title.is-edit {
+    clear: both;
+    content: '';
+    display: block;
+}
+.is-edit .add-property-btn {
+    float: right;
+    color: #4bd299;
+    cursor: pointer;
+}
 .sub-device-card .card-header{
     margin: -20px 0 -20px 0;
     border-bottom: none !important;
@@ -2507,17 +2533,10 @@ color: #a7a7a7;
     height: 44px;
     line-height: 44px;
     padding-left: 12px;
-    font-size: 18px;
+    font-size: 14px;
     color: rgb(51,51,51);
     border-bottom: rgba(220, 220, 220, 0.51) 1px solid;
 }
-
-
-
-
-
-
-
 .site-value .mui-icon {
     font-size: 14px;
     color: #007aff;
@@ -2863,13 +2882,23 @@ div.pinch-zoom, div.pinch-zoom-container{
 .text-normal {
     color: #2fca59;
 }
-
+.checkbox-tree .tree-cell>a {
+    position: relative;
+    padding-left: 24px;
+}
 .mui-checkbox .checkbox.checked:before {
     font-family: iconfont;
     content: '\a600';
     font-size: 20px;
     display: inline-block;
     color: #03a9f4;
+}
+.checkbox-tree .mui-checkbox .checkbox.checked:before {
+    font-size: 16px;
+}
+
+.checkbox-tree .mui-checkbox .checkbox:before {
+    font-size: 16px;
 }
 .toast {
     position: fixed;
@@ -2951,21 +2980,24 @@ div.pinch-zoom, div.pinch-zoom-container{
 .selector-tab.active label {
     color: #586BF3;
 }
-.selector-tab label:after {
+.selector-tab>label:after {
     content: '\a602';
     display: block;
     position: absolute;
     font-family: iconfont !important;
     color: #8B8B8B;
-    font-size: 14px;
+    font-size: 10px;
     right: -20px;
     top: 50%;
     margin-top: -10px;
 }
-.selector-tab.active label:after {
+.selector-tab.active>label:after {
     content: '\a603';
     color: #586BF3;
-    display: none;
+}
+.checkbox-tree .checkbox-square {
+    position: absolute;
+    left: 0;
 }
 .dropdown {
     background-color: #fff;

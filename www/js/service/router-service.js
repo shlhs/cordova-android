@@ -1,6 +1,14 @@
 "use strict";
 
-
+/**
+ * @param scope  调用该接口的scope
+ * @param templateUrl  页面链接
+ * @param dataParam    页面使用的数据参数，在打开的页面中使用$scope调用
+ * @param config       调用时可配置的参数
+ *              1）finish: 打开新页面时是否删除上一页，default: false
+ *              2）hidePrev：打开新页面时是否隐藏上一页，default: true
+ *              3）addHistory: 新页面是否可使用返回键关闭，default：true
+ */
 app.service('routerService', function ($timeout, $compile) {
     var pages = [], pageLength=0, currentIndex=0, scopeList=[];
     var nextPage = {};      // 保存下一个页面的数据
@@ -8,19 +16,18 @@ app.service('routerService', function ($timeout, $compile) {
         if (!pageLength){
             return;
         }
-        // // 显示前一个页面
-        // if (pageLength>1){
-        //     pages[pageLength - 2].ele.show();
-        // }else{
-        //     pages[0].ele.prevAll().show();
-        // }
-        pages[pages.length-1].ele.prevAll().show();
+        // 显示前一个页面
+        if (pageLength>1){
+            pages[pageLength - 2].ele.show();
+        }else{
+            pages[0].ele.prevAll().show();
+        }
+        // pages[pages.length-1].ele.prevAll().show();
         var item = pages[currentIndex], element=item.ele;
         element.addClass('ng-leave');
         item.scope.$broadcast('$destroy');
         pages.splice(pageLength-1, 1);
-        scopeList.splice(scopeList.length-1, 1
-        );
+        scopeList.splice(scopeList.length-1, 1);
         pageLength -= 1;
         currentIndex = pageLength - 1;
         element[0].addEventListener('webkitAnimationEnd', _animateEnd);
@@ -45,9 +52,11 @@ app.service('routerService', function ($timeout, $compile) {
             if (config && config.finish){   // 打开这个页面时，需要关闭前一个页面
                 toFinishPage = pages[currentIndex].ele;
                 pages[currentIndex] = data;
+                scopeList[currentIndex] = data.scope;
                 addNewHistory = false;
             }else{
                 pages.push(data);
+                scopeList.push(data.scope);
                 pageLength += 1;
                 currentIndex = pageLength - 1;
             }
@@ -77,20 +86,22 @@ app.service('routerService', function ($timeout, $compile) {
         html += '></route-page>';
         var compileFn = $compile(html);
         var $dom = compileFn(scope);
-        // 添加到文档中
-        if (scopeList.length) {
-            $dom.appendTo(scopeList[scopeList.length-1].domEle);
-        } else {
-            $dom.appendTo($('body'));
-        }
-        // $dom.appendTo($('body'));
-        scopeList.push($dom.scope());
+        // 首次打开时将页面加到body中，其他时候打开时将页面加到上一级的文档中。 如果设置了config.finish=true，那么将页面加到上上级文档中
+        // if (scopeList.length && (!config || !config.finish)) {
+        //     $dom.appendTo(scopeList[scopeList.length-1].domEle);
+        // } else if (scopeList.length > 1 && config.finish) {
+        //     $dom.appendTo(scopeList[scopeList.length-2].domEle);
+        // } else {
+        //     $dom.appendTo($('body'));
+        // }
+        $dom.appendTo($('body'));
     };
 
     this._setNextPage = function (params, config) {
         config = $.extend({}, {
             hidePrev: true,      // 默认打开新页面时会隐藏前一页
-            addHistory: true    // 是否加到history中
+            addHistory: true,    // 是否加到history中
+            finish: false
         }, config);
         nextPage = {
             params: params,
