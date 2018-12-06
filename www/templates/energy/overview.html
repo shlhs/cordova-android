@@ -74,7 +74,7 @@
     <h1 class="mui-title">用能统计</h1>
 </header>
 <div class="mui-content" style="background-color: #fff;">
-    <ul class="selector-group" style="background-color: transparent;padding: 0 10px;" ng-show="currentLabel.name !== '支路'">
+    <ul class="selector-group" style="background-color: transparent;padding: 0 10px;" ng-show="currentLabel && currentLabel.name !== '支路'">
         <ul class="time-type-group">
             <li class="time-type" ng-repeat="type in timeTypeList" ng-click="onSelect('timeType', type.id, type.name)"
                 ng-class="{'active': type.id===timeType.id}" style="padding: 5px 20px 2px 20px;">{{type.name}}</li>
@@ -202,6 +202,12 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+    <div class="page-alert-wrapper" ng-if="!isLoading && !currentLabel">
+        <div class="page-alert">
+            <i class="alert-icon no-task"></i>
+            <div class="alert-text info">当前未配置</div>
         </div>
     </div>
     <div class="page-alert-wrapper" ng-if="isLoading">

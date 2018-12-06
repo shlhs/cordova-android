@@ -777,8 +777,8 @@ app.controller('EnergyOverviewCtrl', function ($scope, ajax, platformService, $c
                     }
                 });
                 allEnergyItems = response.energyItems;
-                getItemsForLabel();
                 if ($scope.currentLabel) {
+                    getItemsForLabel();
                     var html = "<ul class='selector-group' style='border-bottom: #ececec 1px solid;'>" +
                         "<drop-down-menu options=\"categories\" on-select=\"onSelect\" model-name=\"'currentCategory'\" selected=\"currentCategory\"></drop-down-menu>" +
                         "<drop-down-menu options=\"labelNames\" on-select=\"onSelect\" model-name=\"'currentLabel'\" selected=\"currentLabel\"></drop-down-menu>" +
