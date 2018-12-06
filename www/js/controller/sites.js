@@ -223,7 +223,13 @@ app.controller('SiteListCtrl', function ($scope, $http, $state, scrollerService,
         routerService.openPage($scope, '/templates/dts/dts-list.html', {
             station_sn: $scope.currentSite.sn
         });
-    }
+    };
+
+    $scope.openEventListPage = function () {
+        routerService.openPage($scope, '/templates/site/event-list.html', {
+            sn: $scope.currentSite.sn
+        });
+    };
 });
 
 
@@ -360,8 +366,8 @@ app.controller('SiteBaseInfoCtrl', function ($scope, $timeout, $stateParams, aja
 });
 
 
-app.controller('EventListCtrl', function ($scope, $stateParams, scrollerService, userService, ajax, routerService) {
-    $scope.sn = $stateParams.sn || $scope.sn;
+app.controller('EventListCtrl', function ($scope, scrollerService, userService, ajax, routerService) {
+    $scope.sn = $scope.sn;
     $scope.isDevice = false;   // 是设备还是站点
     $scope.canCreateTask = userService.getUserRole() === UserRole.Normal ? false : true;
     var deviceSn = GetQueryString("deviceSn");
