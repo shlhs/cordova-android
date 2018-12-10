@@ -85,14 +85,14 @@ app.service('routerService', function ($timeout, $compile) {
         var compileFn = $compile(html);
         var $dom = compileFn(scope);
         // 首次打开时将页面加到body中，其他时候打开时将页面加到上一级的文档中。 如果设置了config.finish=true，那么将页面加到上上级文档中
-        if (scopeList.length && (!config || !config.finish)) {
-            $dom.appendTo(scopeList[scopeList.length-1].domEle);
-        } else if (scopeList.length > 1 && config.finish) {
-            $dom.appendTo(scopeList[scopeList.length-2].domEle);
-        } else {
-            $dom.appendTo($('body'));
-        }
-        // $dom.appendTo($('body'));
+        // if (scopeList.length && (!config || !config.finish)) {
+        //     $dom.appendTo(scopeList[scopeList.length-1].domEle);
+        // } else if (scopeList.length > 1 && config.finish) {
+        //     $dom.appendTo(scopeList[scopeList.length-2].domEle);
+        // } else {
+        //     $dom.appendTo($('body'));
+        // }
+        $dom.appendTo($('body'));
     };
 
     this._setNextPage = function (templateUrl, params, config) {
