@@ -5,7 +5,7 @@
             <ul class="tree-group checkbox-tree" ng-if="datas.length">
                 <li class="tree-cell" ng-repeat="item in datas"
                     ng-class="{'active': item.$$isExpend, 'collapse': !isLeaf(item), 'is-leaf': isLeaf(item)}"
-                    ng-include="'/templates/energy/tree-item.html'"
+                    ng-include="'templates/energy/tree-item.html'"
                     ng-if="!item.unvisible"
                 ></li>
             </ul>
