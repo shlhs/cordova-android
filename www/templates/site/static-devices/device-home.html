@@ -1,12 +1,19 @@
 
-<div ng-controller="StaticDevicesHomeCtrl">
+<div ng-controller="StaticDevicesHomeCtrl" class="page page-left">
     <header class="mui-bar bg-header">
         <a class="mui-icon mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
         <h1 class="mui-title">设备档案</h1>
+        <!--<a ng-click="startCaptureQR()" class="mui-action-menu mui-icon mui-pull-right"><i class="header-icon white icon-scan"></i></a>-->
     </header>
-    <div class="mui-content" ng-cloak>
+    <div class="mui-content" ng-cloak style="background-color: #fff;">
         <div ng-if="!isLoading && !loadingFailed">
-            <device-tree-view device-list="deviceDatas" goto-device="gotoDevice"></device-tree-view>
+            <device-tree-view device-list="deviceDatas" click-callback="gotoDevice"></device-tree-view>
+            <div class="page-alert-wrapper" ng-if="deviceDatas.length <= 1">
+                <div class="page-alert">
+                    <i class="alert-icon nodata"></i>
+                    <div class="alert-text info">设备档案为空</div>
+                </div>
+            </div>
         </div>
         <div class="page-alert-wrapper" ng-if="isLoading">
             <div class="page-alert">
@@ -22,5 +29,4 @@
             </div>
         </div>
     </div>
-    <div ui-view class="page page-left"></div>
 </div>

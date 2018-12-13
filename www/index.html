@@ -9,6 +9,7 @@
     <meta http-equiv="Access-Control-Allow-Origin" content="*">
     <link rel="stylesheet" href="components/mui/css/mui.min.css">
     <link rel="stylesheet" href="components/mui/css/mui.picker.min.css">
+    <link rel="stylesheet" href="css/iconfont/iconfont.css">
     <link rel="stylesheet" href="css/icon.css">
     <link rel="stylesheet" href="css/animate.css">
     <link rel="stylesheet" href="components/mui/css/icons-extra.css">
@@ -16,7 +17,6 @@
     <link rel="stylesheet" href="css/my.css">
     <link rel="stylesheet" href="css/task.css">
     <script type="text/javascript" src="cordova.js"></script>
-    <!--<script type="text/javascript" src="js/index.js"></script>-->
     <script type="text/javascript" src="cordova_plugins.js"></script>
     <script type="text/javascript" src="components/libs/jquery-2.1.4.js"></script>
     <script type="text/javascript" src="components/angular/angular.min.js"></script>
@@ -27,10 +27,12 @@
     <script type="text/javascript" src="js/lib/jwt/jsrsasign-all-min.js"></script>
     <script type="text/javascript" src="js/app/utils.js"></script>
     <script type="text/javascript" src="js/app/app.js"></script>
+    <script type="text/javascript" src="js/controller/appstore.js"></script>
     <script type="text/javascript" src="js/router/router.js"></script>
     <script type="text/javascript" src="js/service/router-service.js"></script>
     <script type="text/javascript" src="js/service/file.service.js"></script>
     <script type="text/javascript" src="js/service/common-service.js"></script>
+
 
 <body class="box-vertical-center" ng-app="myApp" ng-controller="MainCtrl">
 <div ui-view="" style="width: 100%;height: 100%;overflow: hidden;">
@@ -41,7 +43,6 @@
 <script src="components/dropload-gh-pages/dist/dropload.min.js"></script>
 <script src="components/handlebars-v4.0.10.js"></script>
 <script type="text/javascript" src="js/controller/login.js"></script>
-<script src="components/handlebars-v4.0.10.js"></script>
 <script type="text/javascript" src="js/controller/login.js"></script>
 <script type="text/javascript" src="js/controller/task.js"></script>
 <script type="text/javascript" src="js/controller/sites.js"></script>
@@ -52,6 +53,7 @@
 <script src="js/controller/kanban.js"></script>
 <script type="text/javascript" src="js/controller/site/security_evaluate.js"></script>
 <script type="text/javascript" src="js/controller/site/maintenance-checks.js"></script>
+<script type="text/javascript" src="js/controller/dts.js"></script>
 <script src="components/moment.min.js"></script>
 <script src="components/highcharts/highcharts.js"></script>
 <script src="components/echart/echarts.common.min.js"></script>
@@ -64,8 +66,13 @@
 <script type="text/javascript" src="js/lib/pinchzoom/pinch-zoom.umd.js"></script>
 <script type="text/javascript" src="js/lib/imagesloaded-master/imagesloaded.pkgd.min.js"></script>
 <script type="text/javascript" src="js/lib/circleChart.es5.min.js"></script>
+<script type="text/javascript" src="js/controller/site-monitor.js"></script>
+<script type="text/javascript" src="js/lib/datatables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="js/lib/datatables/dataTables.fixedColumns.min.js"></script>
+<script type="text/javascript" src="js/lib/datatables/dataTables.fixedHeader.min.js"></script>
 <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=ITbaaCqA7nMWRjEIycEpddoUW1AvZvRq"></script>
 <script type="text/javascript" src="components/baidu/map/MarkerManager-1.2.min.js"></script>
+<script type="text/javascript" src="js/controller/energy.js"></script>
 
 <script>
 //     mui.init({
@@ -80,6 +87,18 @@
             frames[i].postMessage('Bearer' + (getStorageItem('accountToken') || ''), '*');
         }
     }, false);
+
+//    // 解决输入框单击无法focus的问题
+//    window.addEventListener('load', function() {
+//        var textInput = document.querySelector('input');
+//
+//        FastClick.attach(document.body);
+//        Array.prototype.forEach.call(document.getElementsByName('input'), function(testEl) {
+//            testEl.addEventListener('click', function() {
+//                textInput.focus();
+//            }, false)
+//        });
+//    }, false);
 </script>
 </body>
 </html>

@@ -4,12 +4,11 @@
             <header class="mui-bar bg-header bg-transparent" style="box-shadow: none;position: static;">
                 <a class=" mui-pull-left" ng-click="openSiteSelectPage()" ng-show="sites.length > 1">站点切换</a>
                 <h1 class="mui-title" style="font-size: 18px;left: 70px;right: 70px;">{{currentSite.name}}</h1>
-                <!--<a class="mui-pull-right" href="/templates/site/event-list.html?sn={{currentSite.station.sn}}">-->
-                <a class="mui-pull-right" ui-sref=".eventList({sn: currentSite.station.sn})" style="position: relative;margin-right: 8px;">
+                <a class="mui-pull-right" ng-click="openEventListPage()" style="position: relative;margin-right: 8px;">
                     <i class="icon white icon-events" style="width: 18px;height: 18px;">
                     </i>
                     <span class="mui-badge mui-badge-danger ng-binding ng-scope" ng-if="currentSite.unclosed_envet_amount" style="position: absolute; font-size: 9px; top: -8px; left: 10px; font-weight: 300;">
-                    {{currentSite.unclosed_envet_amount}}
+                    {{currentSite.events_amount}}
                     </span>
                 </a>
             </header>
@@ -24,54 +23,16 @@
         </div>
         <div class="card round-card" style="padding: 4px 0 8px 0;">
             <ul class="mui-table-view mui-grid-view mui-grid-9 no-border entrance-list">
-                <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
-                    <!--<a href="javascript:void(0)" ng-click="openPage(scope, '/templates/site/kanban.html', {sn: currentSite.station.sn})" style="padding: 6px 0 0 0;">-->
-                    <a ui-sref=".kanban({sn: currentSite.sn})" style="padding: 6px 0 0 0;">
-                        <span class="mui-icon icon icon-36 icon-kanban"></span>
-                        <div class="mui-media-body">看板</div>
+                <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border" ng-repeat="app in selectedApps">
+                    <a href="javascript:;" ng-click="openAppPage(app)" style="padding: 6px 0 0 0;">
+                        <span class="mui-icon icon icon-32 {{app.icon}}"></span>
+                        <div class="mui-media-body">{{app.name}}</div>
                     </a>
                 </li>
                 <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
-                    <!--<a href="/templates/site/monitor-list.html?sn={{currentSite.station.sn}}" style="padding: 6px 0 0 0;">-->
-                    <a ui-sref=".monitorList({sn: currentSite.sn})" style="padding: 6px 0 0 0;">
-                        <span class="mui-icon icon icon-36 icon-monitor"></span>
-                        <div class="mui-media-body">画面</div>
-                    </a>
-                </li>
-                <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
-                    <a ui-sref=".monitorDevices({sn: currentSite.sn})" style="padding: 6px 0 0 0;">
-                        <span class="mui-icon icon icon-36 icon-device-monitor"></span>
-                        <div class="mui-media-body">设备监测</div>
-                    </a>
-                </li>
-                <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
-                    <a ui-sref=".devicedocs({sn: currentSite.sn})" style="padding: 6px 0 0 0;">
-                        <span class="mui-icon icon icon-36 icon-archives"></span>
-                        <div class="mui-media-body">设备档案</div>
-                    </a>
-                </li>
-                <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
-                    <a ui-sref=".docs({sn: currentSite.sn})" style="padding: 6px 0 0 0;">
-                        <span class="mui-icon icon icon-36 icon-docs"></span>
-                        <div class="mui-media-body">电子档案</div>
-                    </a>
-                </li>
-                <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
-                    <a ui-sref=".reports({sn: currentSite.sn, name: currentSite.name})" style="padding: 6px 0 0 0;">
-                        <span class="mui-icon icon icon-36 icon-reports"></span>
-                        <div class="mui-media-body">月度报告</div>
-                    </a>
-                </li>
-                <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
-                    <a ui-sref=".securityReports({sn: currentSite.sn, name: currentSite.name})" style="padding: 6px 0 0 0;">
-                        <span class="mui-icon icon icon-36 icon-security"></span>
-                        <div class="mui-media-body">安全评测</div>
-                    </a>
-                </li>
-                <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
-                    <a ui-sref=".poweroffReports({sn: currentSite.sn, name: currentSite.name})" style="padding: 6px 0 0 0;">
-                        <span class="mui-icon icon icon-36 icon-poweroff"></span>
-                        <div class="mui-media-body">停电维护</div>
+                    <a href="javascript:;" ng-click="gotoAppStore()" style="padding: 6px 0 0 0;">
+                        <span class="mui-icon icon icon-32 icon-app-store"></span>
+                        <div class="mui-media-body">更多</div>
                     </a>
                 </li>
             </ul>
@@ -85,7 +46,13 @@
                 <ul class="mui-table-view no-border info-group" style="font-size: 14px;margin-top:0px;">
                     <li class="mui-table-view-cell">
                         <label class="title">站点地址</label>
-                        <span class="value">{{currentSite.address}}</span>
+                        <span class="value" ng-click="openMap()" ng-if="currentSite.longitude">
+                        {{currentSite.address}}
+                        <i class="icon icon-location" style="width: 18px; height: 18px; float: right"></i>
+                    </span>
+                        <span class="value" ng-if="!currentSite.longitude">
+                        {{currentSite.address}}
+                    </span>
                     </li>
                     <li class="mui-table-view-cell">
                         <label class="title">联系电话</label>

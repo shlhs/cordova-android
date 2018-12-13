@@ -1,0 +1,16 @@
+<a href="javascript:;" class="mui-navigate-right" ng-click="warpCallback(item, $event);"
+   ng-class="{'is_leaf': !item.is_group, 'selected': item.sn === selectedSn}" href="#" >
+    <i class="node-group" ng-if="item.is_group"></i>
+    <i class="site-status {{item.status}}" ng-if="!item.is_group && showStatus"></i>
+    {{item.name}}
+    <label class="text-status warning" ng-if="item.hasTask">运维</label>
+    <label class="text-status danger" ng-if="item.hasDts">缺陷</label>
+</a>
+<ul class="tree-group" ng-if="item.is_group && item.children.length && !item.unvisible">
+    <li class="tree-cell" ng-repeat="item in item.children"
+        ng-class="{'active': item.$$isExpend, 'collapse': !isLeaf(item), 'is-leaf': isLeaf(item)}"
+        ng-include="'templates/site/device-tree/tree-item.html'"
+        ng-if="!item.unvisible"
+    >
+    </li>
+</ul>

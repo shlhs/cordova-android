@@ -1,11 +1,24 @@
 
 <div class="login-page" ng-controller="LoginCtrl">
-    <img class="main-icon" src="img/login/login-icon.png">
-    <div class="middle">
-        <div class="sub-title">实时监控</div>
-        <!--<div class="title">便捷监控 高效运维</div>-->
+    <div style="height: 100%;overflow: hidden;">
+        <img src="/img/welcome.png" style="height: 100%;" id="welcome_img">
     </div>
-    <div class="bottom">便捷监控 高效运维</div>
-    <img class="bottom-img" src="img/login/login-bottom-@2x.png">
     <div ng-controller="AutoLoginCtrl"></div>
+    <script>
+        $(function () {
+            var screenHeight = window.screen.height;
+            var screenWidth = window.screen.width;
+            var $img = $("#welcome_img");
+            var imageHeight = parseInt($img.css('height'));
+            var imageWidth = parseInt($img.css('width'));
+            if (imageWidth/imageHeight > screenWidth/screenHeight) {
+                // 如果图片比例更宽，那么以高度为准
+                var width = -(imageWidth * (screenHeight / imageHeight) - screenWidth) / 2;
+                $img.css({height: screenHeight+'px', 'margin-left': width + 'px'});
+            } else {
+                var height = -(imageHeight * (screenWidth / imageWidth) - screenHeight ) / 2;
+                $img.css({width: screenWidth+'px', 'margin-top': height + 'px'});
+            }
+        });
+    </script>
 </div>

@@ -1,25 +1,28 @@
 
-<div ng-controller="EventListCtrl">
+<div ng-controller="EventListCtrl" class="page-left page">
     <header class="mui-bar bg-header">
         <a class="mui-icon mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
         <h1 class="mui-title">所有事件</h1>
+        <a class="mui-action-menu mui-icon mui-pull-right" style="font-size: 14px;line-height: 28px;color: #fff;margin-right: 6px;"
+           ng-click="openEventHistory()">历史事件</a>
     </header>
     <div class="mui-content" ng-cloak>
         <div class="scroll-wrapper" id="events" ng-if="!loadingFailed">
             <div class="mui-scroll" ng-if="!eventLoading && !loadingFailed">
-                <ul class="mui-table-view mui-table-view-striped mui-table-view-condensed event-list" ng-if="events.length" style="margin-top:0px;">
-                    <li class="mui-table-view-cell" ng-repeat="e in events">
-                        <div class="mui-table">
-                            <div class="mui-table-cell mui-col-xs-12" ng-class="{'offline': e.status==0}">
-                                <label class="mui-ellipsis-2 event-title">{{ e.info }}
-                                    <div class="close" ng-if="e.status != 0"
-                                         ng-click="postCheckEventAction($event, e.id)"><label></label></div>
-                                </label>
-                                <h5 style="margin-top: 10px;"><span class="title">设备</span> ：{{ e.device_name }}</h5>
-                                <h5 style="margin: 10px 0 -2px 0;"><span class="title">时间</span> ：{{e.report_time}}</h5>
-                            </div>
-                            <div class="event-task" ng-if="e.status != 0 && canCreateTask"
-                                 ng-click="goToCreateTaskHtml($event, e.id, e.info)"><label>创建任务</label></div>
+                <ul class="mui-table-view mui-table-view-striped mui-table-view-condensed event-list no-border"
+                    ng-if="events.length" style="margin-top:0px;padding: 0 8px;">
+                    <li class="mui-table-view-cell" ng-repeat="e in events" data-id="{{e.id}}" style="background-color: #fff;">
+                        <div class="event-title">
+                            {{e.report_time}}
+                            <label class="mui-pull-right" style="color:#97969B;">{{e.device_name}}</label>
+                        </div>
+                        <div class="info">
+                            {{e.info}}
+                        </div>
+                        <div style="font-size: 13px;">
+                            <a class="event-task" ng-click="goToCreateTaskHtml($event, e.id, e.info)">发布任务</a>
+                            <a class="close" ng-click="postCheckEventAction($event, e.id)">确认</a>
+                            <div style="clear: both"></div>
                         </div>
                     </li>
                 </ul>
