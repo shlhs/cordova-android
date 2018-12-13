@@ -3296,4 +3296,9 @@ header .mui-title .dropdown-arrow:after {
     color: #FF550A;
     font-size: 14px;
 }
-
+.mui-dtpicker li>a {
+    color: #888 !important;
+}
+.mui-dtpicker li.highlight>a {
+    color: #222 !important;
+}
