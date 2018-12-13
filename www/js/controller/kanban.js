@@ -777,13 +777,20 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
             },
             legend: {
                 data: legendData,
-                bottom: -5
+                bottom: -5,
+                textStyle: {
+                    fontSize: 10,
+                    lineHeight: 14
+                },
+                pageIconSize: 10,
+                itemWidth: 15,
+                itemHeight: 10
             },
             grid: {
-                top: 22,
+                top: 10,
                 left: 4,
                 right: 2,
-                bottom: 20,
+                bottom: 25,
                 containLabel: true
             },
             toolbox: {
