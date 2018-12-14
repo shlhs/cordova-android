@@ -52,7 +52,7 @@ function formatEnergyTree(category, labelName, allEnergyItems) {
 app.directive('energyConfigTree',[function(){
     return {
         restrict: 'E',
-        templateUrl: '/templates/energy/tree-view.html',
+        templateUrl: 'templates/energy/tree-view.html',
         scope: {
             category: '=',
             labelName: '=',
@@ -170,7 +170,7 @@ app.directive('energyConfigTree',[function(){
 app.directive('energyTable', [function(){
     return {
         restrict: 'E',
-        templateUrl: '/templates/energy/meter-reading-table.html',
+        templateUrl: 'templates/energy/meter-reading-table.html',
         replace: true,
         scope: {
             tableHeader: '=',
@@ -711,7 +711,7 @@ app.controller('EnergyReportCtrl', function ($scope, ajax, $compile, platformSer
 app.directive('energyReportTable', [function(){
     return {
         restrict: 'E',
-        templateUrl: '/templates/energy/energy-report-table-template.html',
+        templateUrl: 'templates/energy/energy-report-table-template.html',
         replace: true,
         scope: {
             tableHeader: '=',
