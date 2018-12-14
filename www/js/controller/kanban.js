@@ -91,7 +91,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                                     tempVarData.name = processedValue.name;
                                 }
                                 // 将processed_value分解除值和单位
-                                if (processedValue.processed_value) {
+                                if (processedValue.processed_value ) {
                                     var value = parseFloat(processedValue.processed_value);
                                     tempVarData.value = value;
                                     if (processedValue.processed_value.length > String(value).length) {
@@ -99,7 +99,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                                     }
                                 }
                                 else {
-                                    tempVarData.value = processedValue.processed_value;
+                                    tempVarData.value = '--';
                                 }
                                 keyVarDatas.push(tempVarData);
                             } else {
@@ -311,7 +311,11 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                     if(!data || data.length == 0) {
                         return;
                     }
-                    resultValue = data[0].data+data[0].unit;
+                    if (data[0].data === null) {
+                        resultValue = '';
+                    } else {
+                        resultValue = data[0].data+data[0].unit;
+                    }
                     g_devicevar_unit_map[deviceSn] = data[0].unit;
                 },
                 error: function () {
