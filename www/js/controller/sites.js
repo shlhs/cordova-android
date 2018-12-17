@@ -118,13 +118,13 @@ app.controller('SiteListCtrl', function ($scope, $http, $state, scrollerService,
                             }
                         }
                     });
+                    appStoreProvider.setMenuSns(menuSns);
                     $scope.$emit('$onMenuUpdate', menuSns);
-                    setStorageItem("menuSns", JSON.stringify(menuSns));
                     $scope.selectedApps = appStoreProvider.getSelectedApps();
                     $scope.$apply();
                 } else {
-                    $scope.$emit('$onMenuUpdate', null);
-                    setStorageItem("menuSns", '');
+                    appStoreProvider.setMenuSns(null);
+                    $scope.$emit('$onMenuUpdate', menuSns);
                     $scope.selectedApps = appStoreProvider.getSelectedApps();
                     $scope.$apply();
                 }
@@ -366,10 +366,11 @@ app.controller('SiteBaseInfoCtrl', function ($scope, $timeout, $stateParams, aja
 });
 
 
-app.controller('EventListCtrl', function ($scope, scrollerService, userService, ajax, routerService) {
+app.controller('EventListCtrl', function ($scope, scrollerService, userService, ajax, routerService, appStoreProvider) {
     $scope.sn = $scope.sn;
     $scope.isDevice = false;   // 是设备还是站点
     $scope.canCreateTask = userService.getUserRole() === UserRole.Normal ? false : true;
+    $scope.hasOpsAuth = appStoreProvider.hasOpsAuth();
     var deviceSn = GetQueryString("deviceSn");
     if (deviceSn){
         $scope.isDevice = true;

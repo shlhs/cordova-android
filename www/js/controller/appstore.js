@@ -11,17 +11,34 @@ app.provider('appStoreProvider', function () {
             getAllApps: getAllApps,
             getSelectedApps: getSelectedApps,
             saveSelectedApps: saveSelectedApps,
-            appHasUpdated: appHasUpdated
+            appHasUpdated: appHasUpdated,
+            setMenuSns: setMenuSns,     // 设置最新的菜单
+            hasOpsAuth: hasOpsAuth      // 用户是否有运维权限
         }
     };
 
     function getAllApps() {
+        // 如果没有运维权限，则将运维菜单从defaultApps去除
+        var userHasOpsAuth = hasOpsAuth();
+        var originApps = [];
+        defaultApps.forEach(function (group) {
+           var children = [];
+           group.children.forEach(function (app) {
+               if (!userHasOpsAuth && app.sn && app.sn.indexOf('ops-management') >= 0) {
+                   return;
+               }
+               children.push(app);
+           });
+           if (children.length) {
+               originApps.push($.extend({}, group, {children: children}));
+           }
+        });
         var enabledMenuSns = getMenuSns();
         if (!enabledMenuSns) {
-            return defaultApps;
+            return originApps;
         } else {
             var appGroups = [];
-            defaultApps.forEach(function (group) {
+            originApps.forEach(function (group) {
                 var children = [];
                 group.children.forEach(function (child) {
                     if (!child.sn) {    // sn为空，则说明所有人都有权限
@@ -49,14 +66,40 @@ app.provider('appStoreProvider', function () {
         return JSON.parse(menuStr);
     }
 
+    function setMenuSns(sns) {
+        if (sns && sns.length) {
+            setStorageItem("menuSns", JSON.stringify(sns));
+        } else {
+            setStorageItem("menuSns", '');
+        }
+        if (!sns || sns.indexOf('ops-management') >= 0) {
+            setStorageItem("ops-management", 1);
+        } else {
+            setStorageItem('ops-management', 0);
+        }
+    }
+
+    function hasOpsAuth() {
+        var value = getStorageItem('ops-management');
+        if (value === null || value === '1') {
+            return true;
+        }
+        return false;
+    }
+
     function getSelectedApps() {
         var enabledMenuSns = getMenuSns();
         var allApps = getAllApps();
         var appsStr = getStorageItem('apps');
         var apps = appsStr ? JSON.parse(appsStr) : null;
+        var userHasOpsAuth = hasOpsAuth();
         var selectedApps = [];
         allApps.forEach(function (group) {
             group.children.forEach(function (app) {
+                // // 如果没有运维菜单权限，不管配置里是否有，都不添加
+                // if (!userHasOpsAuth && app.sn && app.sn.indexOf('ops-management') >= 0) {
+                //     return;
+                // }
                 if (!apps) {
                     if (app.defaultChecked) {
                         if (app.sn && enabledMenuSns) {
@@ -148,13 +191,14 @@ app.config(['appStoreProviderProvider', function (appStoreServiceProvider) {
                     icon: 'icon-reports',
                     templateUrl: '/templates/site/reports.html',
                     url: 'monthly-report',
+                    sn: 'station-monitor/month-report',
                     defaultChecked: true
                 }, {
                     name: '电子档案',
                     icon: 'icon-docs',
                     templateUrl: '/templates/site/docs.html',
                     url: 'site-documents',
-                    sn: 'station-monitor/device-documents',
+                    sn: 'station-monitor/e-file',
                     defaultChecked: true
                 }, {
                     name: '历史曲线',
