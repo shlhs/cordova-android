@@ -681,11 +681,12 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile) {     
     $scope.getDataList();
 });
 
-app.controller('DeviceMonitorCtrl', function ($scope, ajax) {
+app.controller('DeviceMonitorCtrl', function ($scope, ajax, appStoreProvider) {
     $scope.isLoading = true;
     $scope.stationSn = GetQueryString('stationSn');
     $scope.deviceSn=GetQueryString('deviceSn');
     $scope.deviceName = GetQueryString('deviceName');
+    $scope.hasOpsAuth = appStoreProvider.hasOpsAuth();
     $scope.secondOptions = {
         '实时数据': [],
         '历史数据': []

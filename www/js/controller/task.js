@@ -127,7 +127,7 @@ app.service('Permission', function (userService, UserRole) {      // 权限服�
     };
 });
 
-app.controller('HomeCtrl', function ($scope, $timeout, userService) {
+app.controller('HomeCtrl', function ($scope, $timeout, userService, appStoreProvider) {
     var role = userService.getUserRole();
     $scope.viewName = '';
     $scope.tabName = 'sites';
@@ -147,7 +147,7 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService) {
 
     function initMenu() {
         // 所有用户都可看到这两个页面
-        addMenuOfOps();
+        // addMenuOfOps();
         $timeout(function () {
             $scope.chooseNav('sites', '站点监控');
 
@@ -169,20 +169,18 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService) {
                 icon: 'nav-all-tasks'
             }
         );
-        setStorageItem('ops-management', 1);
     }
 
     $scope.$on('$onMenuUpdate', function (event, menuSns) {
         // 菜单权限刷新
         // 判断是否包含ops-management权限
         if (menuSns) {
-            if (menuSns.indexOf('ops-management') >= 0) {
+            if (appStoreProvider.hasOpsAuth()) {
                 if (!$scope.navMenus.length) {
                     addMenuOfOps();
                 }
             } else {
                 $scope.navMenus = [];
-                setStorageItem('ops-management', 0);
             }
         } else {
             if (!$scope.navMenus.length) {
@@ -193,11 +191,11 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService) {
     initMenu();
 });
 
-app.controller('TaskBaseCtrl', function ($scope, ajax, userService) {
+app.controller('TaskBaseCtrl', function ($scope, ajax, userService, appStoreProvider) {
     var stationSn = GetQueryString("sn");
     var deviceSn = GetQueryString("device_sn");     // 如果设备sn不为空，则获取的是设备的运维记录
     $scope.pageTitle = deviceSn ? '运维记录' : '所有任务';
-    $scope.hasOpsAuth = getStorageItem('ops-management') ? parseInt(getStorageItem('ops-management')) : 1;
+    $scope.hasOpsAuth = appStoreProvider.hasOpsAuth();
     var map = null;
     $scope.openTask = function (task) {
         if (deviceSn && task.task_type_id === TaskTypes.Xunjian) {
