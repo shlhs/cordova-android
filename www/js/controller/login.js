@@ -207,9 +207,9 @@ app.controller('AutoLoginCtrl', function ($scope, $timeout, userService, platfor
             }, 1500);
         }
     };
-    if (window.android && window.android.checkWebVersion) {
-        // 启动时先检测web版本并升级
-        window.android.checkWebVersion();
-    }
+    // if (window.android && window.android.checkWebVersion) {
+    //     // 启动时先检测web版本并升级
+    //     window.android.checkWebVersion();
+    // }
     $scope.autoLogin();
 });
