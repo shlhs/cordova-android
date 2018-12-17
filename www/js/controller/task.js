@@ -206,18 +206,12 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, ajax, $state
     $scope.$on('$onMenuUpdate', function (event, menuSns) {
         // 菜单权限刷新
         // 判断是否包含ops-management权限
-        if (menuSns) {
-            if (appStoreProvider.hasOpsAuth()) {
-                if (!$scope.navMenus.length) {
-                    addMenuOfOps();
-                }
-            } else {
-                $scope.navMenus = [];
-            }
-        } else {
+        if (appStoreProvider.hasOpsAuth()) {
             if (!$scope.navMenus.length) {
                 addMenuOfOps();
             }
+        } else {
+            $scope.navMenus = [];
         }
     });
     initMenu();
