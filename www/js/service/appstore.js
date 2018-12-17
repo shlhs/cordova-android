@@ -80,10 +80,11 @@ app.provider('appStoreProvider', function () {
     }
 
     function hasOpsAuth() {
-        var value = getStorageItem('ops-management');
-        if (value === null || value === '1') {
-            return true;
-        }
+        // 默认没有运维菜单
+        // var value = getStorageItem('ops-management');
+        // if (value === null || value === '1') {
+        //     return true;
+        // }
         return false;
     }
 
