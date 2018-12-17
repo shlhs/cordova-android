@@ -128,7 +128,7 @@ app.service('Permission', function (userService, UserRole) {      // 权限服�
     };
 });
 
-app.controller('HomeCtrl', function ($scope, $timeout, userService, ajax, $state, $rootScope, Permission) {
+app.controller('HomeCtrl', function ($scope, $timeout, userService, ajax, $state, $rootScope, Permission, appStoreProvider) {
 
     var company = userService.company;
     var map = null;
@@ -179,34 +179,53 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, ajax, $state
         // }
 
         // 不做权限控制
-        $scope.navMenus.push(
-            {
-                id: 'competition_tasks',
-                name: '抢单',
-                templateUrl: 'templates/task/task-competition-list.html',
-                icon: 'nav-task-grab'
-            },
-            {
-                id: 'my_tasks',
-                name: '我的待办',
-                templateUrl: 'templates/task/task-todo-list.html',
-                icon: 'nav-all-tasks'
-            }
-        );
+        // addMenuOfOps();
         $timeout(function () {
             $scope.chooseNav('sites', '站点监控');
 
         }, 500);
     }
+
+    function addMenuOfOps() {
+        $scope.navMenus.push(
+            {
+                id: 'competition_tasks',
+                name: '抢单',
+                templateUrl: '/templates/task/task-competition-list.html',
+                icon: 'nav-task-grab'
+            },
+            {
+                id: 'my_tasks',
+                name: '我的待办',
+                templateUrl: '/templates/task/task-todo-list.html',
+                icon: 'nav-all-tasks'
+            }
+        );
+    }
+
+    $scope.$on('$onMenuUpdate', function (event, menuSns) {
+        // 菜单权限刷新
+        // 判断是否包含ops-management权限
+        if (menuSns) {
+            if (appStoreProvider.hasOpsAuth()) {
+                if (!$scope.navMenus.length) {
+                    addMenuOfOps();
+                }
+            } else {
+                $scope.navMenus = [];
+            }
+        } else {
+            if (!$scope.navMenus.length) {
+                addMenuOfOps();
+            }
+        }
+    });
     initMenu();
-    // $rootScope.login(function () {
-    //     var menu = $scope.navMenus[0];
-    //     $scope.chooseNav(menu.id, menu.name);
-    // });
 });
 
-app.controller('TaskBaseCtrl', function ($scope, ajax, userService, routerService) {
+app.controller('TaskBaseCtrl', function ($scope, ajax, userService, routerService, appStoreProvider) {
     var map = null;
+    $scope.hasOpsAuth = appStoreProvider.hasOpsAuth();
     // var stationSn = GetQueryString("sn");
     // var deviceSn = GetQueryString("device_sn");     // 如果设备sn不为空，则获取的是设备的运维记录
 

@@ -11,7 +11,9 @@ app.provider('appStoreProvider', function () {
             getAllApps: getAllApps,
             getSelectedApps: getSelectedApps,
             saveSelectedApps: saveSelectedApps,
-            appHasUpdated: appHasUpdated
+            appHasUpdated: appHasUpdated,
+            setMenuSns: setMenuSns,     // 设置最新的菜单
+            hasOpsAuth: hasOpsAuth      // 用户是否有运维权限
         }
     };
 
@@ -47,6 +49,27 @@ app.provider('appStoreProvider', function () {
             return null;
         }
         return JSON.parse(menuStr);
+    }
+
+    function setMenuSns(sns) {
+        if (sns && sns.length) {
+            setStorageItem("menuSns", JSON.stringify(sns));
+        } else {
+            setStorageItem("menuSns", '');
+        }
+        if (!sns || sns.indexOf('ops-management') >= 0) {
+            setStorageItem("ops-management", 1);
+        } else {
+            setStorageItem('ops-management', 0);
+        }
+    }
+
+    function hasOpsAuth() {
+        var value = getStorageItem('ops-management');
+        if (value === null || value === '1') {
+            return true;
+        }
+        return false;
     }
 
     function getSelectedApps() {
