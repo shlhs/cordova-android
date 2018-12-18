@@ -47,13 +47,26 @@
             </div>
         </div>
     </div>
+    <div style="position: fixed;right: 6px;top: 6px;width: 36px;height: 36px;padding: 6px;" onclick="pageBack()">
+        <div style="background-color: rgba(232, 232, 232, 0.65);opacity: 0.7;width: 24px;height: 24px;">
+            <img src="/img/light/64X64/close.png" style="width: 16px;height: 16px;margin: 4px 0 0 4px;display: inline-block;">
+        </div>
+    </div>
 </div>
-    <script src="../../components/fastclick-master/lib/fastclick.js"></script>
+    <!--<script src="../../components/fastclick-master/lib/fastclick.js"></script>-->
     <script src="../../js/my/notify.js"></script>
     <script src="../../js/app/utils.js"></script>
     <script src="../../components/pinch-zoom-js/dist/underscore.js"></script>
     <script src="../../components/pinch-zoom-js/dist/pinch-zoom.js"></script>
     <script>
+
+        function pageBack() {
+            if (window.android){
+                location.href = '/app/home';
+            }else{
+                history.back();
+            }
+        }
 
         window.addEventListener('message', function(e) {
             var frames = window.frames;
@@ -61,8 +74,9 @@
                 frames[i].postMessage('Bearer' + (getStorageItem('accountToken') || ''), '*');
             }
         }, false);
-        const url = location.search.substring(location.search.lastIndexOf('http://'));
-        const iframe = document.getElementById('iframe');
+        var url = location.search.substring(location.search.lastIndexOf('http://'));
+        url += "&mobile=1";
+        var iframe = document.getElementById('iframe');
         iframe.src = url;
         $.notify.progressStart();
         if (!/*@cc_on!@*/0) { //if not IE

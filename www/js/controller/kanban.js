@@ -97,7 +97,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                                     }
                                 }
                                 else {
-                                    tempVarData.value = processedValue.processed_value;
+                                    tempVarData.value = '--';
                                 }
                                 keyVarDatas.push(tempVarData);
                             } else {
@@ -311,7 +311,11 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                     if(!data || data.length == 0) {
                         return;
                     }
-                    resultValue = data[0].data+data[0].unit;
+                    if (data[0].data === null) {
+                        resultValue = '';
+                    } else {
+                        resultValue = data[0].data+data[0].unit;
+                    }
                     g_devicevar_unit_map[deviceSn] = data[0].unit;
                 },
                 error: function () {
@@ -777,13 +781,20 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
             },
             legend: {
                 data: legendData,
-                bottom: -5
+                bottom: -5,
+                textStyle: {
+                    fontSize: 10,
+                    lineHeight: 14
+                },
+                pageIconSize: 10,
+                itemWidth: 15,
+                itemHeight: 10
             },
             grid: {
-                top: 22,
+                top: 15,
                 left: 4,
                 right: 2,
-                bottom: 20,
+                bottom: 25,
                 containLabel: true
             },
             toolbox: {

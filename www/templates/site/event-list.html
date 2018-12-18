@@ -22,6 +22,7 @@
     <script type="text/javascript" src="../../components/angular-ui-router/release/stateEvents.min.js"></script>
     <script type="text/javascript" src="../../js/app/utils.js"></script>
     <script type="text/javascript" src="../../js/app/app.js"></script>
+    <script type="text/javascript" src="../../js/service/appstore.js"></script>
     <script type="text/javascript" src="../../js/controller/device.js"></script>
     <script type="text/javascript" src="../../js/service/common-service.js"></script>
     <style>
@@ -59,7 +60,7 @@
                             {{e.info}}
                         </div>
                         <div style="font-size: 13px;">
-                            <a class="event-task" ng-click="goToCreateTaskHtml($event, e.id, e.info)">发布任务</a>
+                            <a class="event-task" ng-click="goToCreateTaskHtml($event, e.id, e.info)" ng-if="hasOpsAuth">发布任务</a>
                             <a class="close" ng-click="postCheckEventAction($event, e.id)">确认</a>
                             <div style="clear: both"></div>
                         </div>

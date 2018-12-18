@@ -7,9 +7,6 @@
 // var gPublicApiHost = 'http://47.104.75.86:8090';        // 公有云接口
 var gPublicApiHost = 'http://47.97.167.195:8090';        // 因泰来接口
 
-// var gPublicApiHost = 'http://114.215.90.83:8090';
-
-
 app.controller('LoginCtrl', function ($scope, $timeout, platformService, userService, $state, $http, ajax) {
     $scope.error = '';
     var platform = null;
@@ -210,9 +207,9 @@ app.controller('AutoLoginCtrl', function ($scope, $timeout, userService, platfor
             }, 1500);
         }
     };
-    if (window.android && window.android.checkWebVersion) {
-        // 启动时先检测web版本并升级
-        window.android.checkWebVersion();
-    }
+    // if (window.android && window.android.checkWebVersion) {
+    //     // 启动时先检测web版本并升级
+    //     window.android.checkWebVersion();
+    // }
     $scope.autoLogin();
 });

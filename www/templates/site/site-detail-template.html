@@ -23,72 +23,18 @@
             </div>
         </div>
     </div>
-    <div class="card round-card" style="padding: 4px 0 8px 0;">
-        <ul class="mui-table-view mui-grid-view mui-grid-9 no-border entrance-list">
-            <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
-                <a href="/templates/site/kanban.html?sn={{currentSite.sn}}" style="padding: 6px 0 0 0;">
-                    <span class="mui-icon icon icon-32 icon-kanban"></span>
-                    <div class="mui-media-body">看板</div>
+    <div class="card round-card apps" style="padding: 4px 0 8px 0;">
+        <ul class="mui-table-view mui-grid-view mui-grid-9 no-border entrance-list" style="background-color: transparent;border-radius: 0;">
+            <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border" ng-repeat="app in selectedApps">
+                <a href="{{app.templateUrl}}?sn={{currentSite.sn}}&name={{currentSite.name}}" style="padding: 6px 0 0 0;">
+                    <span class="mui-icon icon icon-32 {{app.icon}}"></span>
+                    <div class="mui-media-body">{{app.name}}</div>
                 </a>
             </li>
             <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
-                <a href="/templates/site/monitor-list.html?sn={{currentSite.sn}}" style="padding: 6px 0 0 0;">
-                    <span class="mui-icon icon icon-32 icon-monitor"></span>
-                    <div class="mui-media-body">画面</div>
-                </a>
-            </li>
-            <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
-                <a href="/templates/site/device-monitor-list.html?sn={{currentSite.sn}}" style="padding: 6px 0 0 0;">
-                    <span class="mui-icon icon icon-32 icon-device-monitor"></span>
-                    <div class="mui-media-body">设备监测</div>
-                </a>
-            </li>
-            <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
-                <a href="/templates/site/static-devices/device-home.html?sn={{currentSite.sn}}&name={{currentSite.name}}" style="padding: 6px 0 0 0;">
-                    <span class="mui-icon icon icon-32 icon-archives"></span>
-                    <div class="mui-media-body">设备档案</div>
-                </a>
-            </li>
-            <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
-                <a href="/templates/site/docs.html?sn={{currentSite.sn}}" style="padding: 6px 0 0 0;">
-                    <span class="mui-icon icon icon-32 icon-docs"></span>
-                    <div class="mui-media-body">电子档案</div>
-                </a>
-            </li>
-            <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
-                <a href="/templates/dts/dts-list.html?sn={{currentSite.sn}}" style="padding: 6px 0 0 0;">
-                    <span class="mui-icon icon icon-32 icon-dashboard-dts"></span>
-                    <div class="mui-media-body">缺陷记录</div>
-                </a>
-            </li>
-            <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
-                <a href="/templates/site/reports.html?sn={{currentSite.sn}}&name={{currentSite.name}}" style="padding: 6px 0 0 0;">
-                    <span class="mui-icon icon icon-32 icon-reports"></span>
-                    <div class="mui-media-body">月度报告</div>
-                </a>
-            </li>
-            <!--<li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">-->
-                <!--<a href="/templates/evaluate/evaluate-history.html?sn={{currentSite.sn}}&name={{currentSite.name}}" style="padding: 6px 0 0 0;">-->
-                    <!--<span class="mui-icon icon icon-32 icon-security"></span>-->
-                    <!--<div class="mui-media-body">安全评测</div>-->
-                <!--</a>-->
-            <!--</li>-->
-            <!--<li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">-->
-                <!--<a href="/templates/maintenance-check/check-history.html?sn={{currentSite.sn}}&name={{currentSite.name}}" style="padding: 6px 0 0 0;">-->
-                    <!--<span class="mui-icon icon icon-32 icon-poweroff"></span>-->
-                    <!--<div class="mui-media-body">停电维护</div>-->
-                <!--</a>-->
-            <!--</li>-->
-            <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
-                <a href="/templates/site-monitor/data-line.html?sn={{currentSite.sn}}&name={{currentSite.name}}" style="padding: 6px 0 0 0;">
-                    <span class="mui-icon icon icon-32 icon-history-line"></span>
-                    <div class="mui-media-body">历史曲线</div>
-                </a>
-            </li>
-            <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
-                <a href="/templates/site-monitor/data-history.html?sn={{currentSite.sn}}&name={{currentSite.name}}" style="padding: 6px 0 0 0;">
-                    <span class="mui-icon icon icon-32 icon-history-report"></span>
-                    <div class="mui-media-body">历史报表</div>
+                <a href="/templates/app-store/app-store.html" style="padding: 6px 0 0 0;">
+                    <span class="mui-icon icon icon-32 icon-app-store"></span>
+                    <div class="mui-media-body">更多</div>
                 </a>
             </li>
         </ul>

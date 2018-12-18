@@ -158,7 +158,7 @@
                             <a class="link" href="javascript:;" ng-click="openMap()" ng-if="taskData.station_sn">{{taskData.station_name}}</a>
                         </li>
                         <li ng-if="taskData.events.length">
-                            <i class="icon icon-xs icon-event-red"></i><span style="color: rgb(250, 129, 12)">事件信息:{{taskData.events[0].name}}</span>
+                            <i class="icon icon-xs icon-event-red"></i><span style="color: rgb(250, 129, 12)">事件信息:</span>{{taskData.events[0].info}}
                         </li>
                         <li ng-repeat="record in taskData.device_record" ng-if="taskData.task_type_id !== 11">
                             <i class="icon icon-xs icon-device-grey mui-pull-left"></i>

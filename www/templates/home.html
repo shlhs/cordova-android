@@ -17,6 +17,7 @@
     <script type="text/javascript" src="../components/angular-ui-router/release/stateEvents.min.js"></script>
     <script type="text/javascript" src="../js/app/utils.js"></script>
     <script type="text/javascript" src="../js/app/app.js"></script>
+    <script type="text/javascript" src="../js/service/appstore.js"></script>
     <script type="text/javascript" src="../js/service/common-service.js"></script>
     <script type="text/javascript" src="../js/service/router-service.js"></script>
     <script type="text/javascript" src="../js/router/router.js"></script>
@@ -33,28 +34,6 @@
         }
         input {
             color: #000;
-        }
-        .mui-grid-view.mui-grid-9 .mui-media .mui-icon {
-            font-size: 1.6em;
-            position: relative;
-            padding: 0;
-            margin: 0;
-        }
-        .mui-grid-view.mui-grid-9 {
-            border: 0;
-        }
-        .mui-grid-view.mui-grid-9 .mui-media {
-            border: 0;
-        }
-        .mui-table-view.mui-grid-view .mui-table-view-cell .mui-media-body {
-            font-size: 12px;
-        }
-        .red{
-            color: red !important;
-        }
-        .mui-grid-view.mui-grid-9 {
-            background-color: transparent;
-            border-radius: 0;
         }
         .site-list .mui-card:nth-child(odd){
             background: -webkit-gradient(linear, 0 0, 0 bottom, from(#CFD9DF), to(#E2EBF0));
@@ -101,7 +80,7 @@
         <span class="mui-tab-label">{{menu.name}}</span>
     </a>
     <a class="mui-tab-item" href="javascript:void(0)" ng-click="chooseNav('setting', '我')" ng-class="{'mui-active': tabName==='setting'}">
-        <span class="mui-icon nav-icon nav-all-tasks"></span>
+        <span class="mui-icon nav-icon nav-setting"></span>
         <span class="mui-tab-label">我的</span>
     </a>
 </nav>

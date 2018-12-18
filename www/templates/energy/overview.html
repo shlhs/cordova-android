@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用能统计</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <link rel="stylesheet" href="../../components/mui/css/mui.min.css">
+    <link rel="stylesheet" href="../../components/mui/css/mui.picker.min.css">
+    <link rel="stylesheet" href="../../css/iconfont/iconfont.css">
+    <link rel="stylesheet" href="../../css/my.css">
+    <link rel="stylesheet" type="text/css" href="../../js/lib/datatables/jquery.dataTables.min.css">
+    <script type="text/javascript" src="../../components/libs/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script type="text/javascript" src="../../components/angular-animate/angular-animate.js"></script>
+    <script type="text/javascript" src="../../components/angular-ui-router/release/stateEvents.min.js"></script>
+    <script type="text/javascript" src="../../js/app/utils.js"></script>
+    <script type="text/javascript" src="../../js/app/app.js"></script>
+    <script type="text/javascript" src="../../js/controller/energy.js"></script>
+    <style>
+        th { white-space: nowrap; }
+        div.dataTables_wrapper {
+            width: 100%;
+            margin: 0 auto;
+        }
+        table.dataTable.no-footer {
+            border-bottom: none;
+        }
+        table.dataTable thead th, table.dataTable thead td {
+            border-bottom: none;
+        }
+        .dataTables_wrapper.no-footer .dataTables_scrollBody {
+            border-bottom: none;
+        }
+        table.dataTable thead th, table.dataTable thead td {
+            background-color: #fff;
+            border-right: #ccc 1px solid;
+            border-bottom: #ccc 1px solid;
+            border-top: #ccc 1px solid;
+        }
+        table.dataTable.row-border tbody th, table.dataTable.row-border tbody td, table.dataTable.display tbody th, table.dataTable.display tbody td {
+            border-right: #ccc 1px solid;
+            text-align: center;
+        }
+        table tr td:first-child, tr th:first-child {
+            width: 70px;
+        }
+        table td, table th {
+            border-right: #ddd 1px solid;
+            padding: 4px 8px;
+            font-weight: normal;
+            font-size: 14px;
+        }
+        table tr:last-child td {
+            border-bottom: #ddd 1px solid;
+        }
+        table th {
+            background-color: #f1f1f1;
+        }
+        table tbody tr:nth-child(even) td {
+            background-color: #f1f1f1;
+        }
+        table tbody tr:nth-child(odd) td {
+            background-color: #fff;
+        }
+    </style>
+</head>
+<body ng-app="myApp" ng-cloak ng-controller="EnergyOverviewCtrl" class="box-vertical-center timeType-{{timeType.id}}">
+<header class="mui-bar bg-header mui-segmented-control-vertical">
+    <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
+    <h1 class="mui-title">用能统计</h1>
+</header>
+<div class="mui-content" style="background-color: #fff;">
+    <ul class="selector-group" style="background-color: transparent;padding: 0 10px;" ng-show="currentLabel && currentLabel.name !== '支路'">
+        <ul class="time-type-group">
+            <li class="time-type" ng-repeat="type in timeTypeList" ng-click="onSelect('timeType', type.id, type.name)"
+                ng-class="{'active': type.id===timeType.id}" style="padding: 5px 20px 2px 20px;">{{type.name}}</li>
+        </ul>
+        <li class="selector-tab" style="background-color: #F2F2F2;padding: 4px 20px 4px 0;height: 28px;width: 50%;margin-left: 16px;">
+            <label>{{dateName}}</label>
+            <button style="position: absolute;top:0;width: 100%;height: 100%;left: 0;background-color: transparent;border: none;"
+                    id="datePicker"></button>
+        </li>
+    </ul>
+    <div ng-show="!isLoading && currentLabel">
+        <div ng-show="currentLabel.name === '支路'" ng-controller="EnergyOverviewZhiluCtrl">
+            <div ng-if="hasConfig">
+                <div class="energy-electric-card">
+                    <div class="energy-electric-body">
+                        <i class="icon-media" style="background-image: url('/img/energy-day.png')"></i>
+                        <div class="content">
+                            <div class="now">
+                                <label class="value">{{electricData.today}}</label>
+                                <label class="desp">本日用电(kWh)</label>
+                            </div>
+                            <div class="history">
+                                <label class="value">{{electricData.yesterday}}</label>
+                                <label class="desp">昨日同期</label>
+                            </div>
+                            <div class="rate {{electricData.dayTrend}}">
+                                <i class="iconfont" ng-class="electricData.dayTrend === 'down' ? 'anticon-arrowdown' : 'anticon-arrow-up'"></i>{{electricData.dayRate}}%
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="progress" style="width: 100%;background-color: #EEEEEE;height: 8px;border-radius: 4px;margin-top: 6px;position: relative;">
+                            <div style="position: absolute;top:0; height: 8px;border-radius: 4px;background-color: #2ABB9B;width: {{getItemRate()}};"></div>
+                        </div>
+                        <div style="font-size: 12px;color: #333333;">
+                            <label>支路今日用能占比&nbsp;&nbsp;{{getItemRate()}}</label>
+                            <label class="mui-pull-right">{{currentCategory.name}}总用能&nbsp;&nbsp;{{todayTotalDegree}}kWh</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="energy-electric-card" style="margin-top: 10px;">
+                    <div class="energy-electric-body">
+                        <i class="icon-media" style="background-image: url('/img/energy-month.png')"></i>
+                        <div class="content">
+                            <div class="now">
+                                <label class="value">{{electricData.month}}</label>
+                                <label class="desp">本月用电(kWh)</label>
+                            </div>
+                            <div class="history">
+                                <label class="value">{{electricData.lastMonth}}</label>
+                                <label class="desp">上月同期</label>
+                            </div>
+                            <div class="rate {{electricData.monthTrend}}">
+                                <i class="iconfont" ng-class="electricData.monthTrend === 'down' ? 'anticon-arrowdown' : 'anticon-arrow-up'"></i>{{electricData.monthRate}}%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" style="padding: 0;margin-top: 8px;">
+                    <div class="card-header" style="padding-left: 12px;padding-bottom: 0;">
+                        <i class="iconfont anticon-zhihuiyongdian" style="color: #507CFD;margin-right: 4px;"></i>支路今日用能曲线
+                    </div>
+                    <div id="zhilu_trend1" style="width: 100%;height: 200px;"></div>
+                </div>
+                <div class="card" style="padding: 0;">
+                    <div class="card-header" style="padding-left: 12px;padding-bottom: 0;">
+                        <i class="iconfont anticon-shuju2" style="color: #507CFD;margin-right: 4px;"></i>支路用能趋势
+                        <ul class="time-type-group mui-pull-right">
+                            <li class="time-type" ng-repeat="type in timeTypes" ng-click="onSelectTimeType(type)"
+                                ng-class="{'active': type===timeType}">{{type}}</li>
+                        </ul>
+                    </div>
+                    <div class="card-content no-padding">
+                        <div id="zhilu_trend2" style="width: 100%;height: 200px;"></div>
+                    </div>
+                </div>
+            </div>
+            <div ng-if="!hasConfig">
+                <div class="page-alert-wrapper">
+                    <div class="page-alert">
+                        <i class="alert-icon no-task"></i>
+                        <div class="alert-text info">当前没有配置{{categoryName + '-' + labelName}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div ng-show="currentLabel.name !== '支路'" ng-controller="EnergyOverviewOtherCtrl">
+            <div ng-if="hasConfig">
+                <div class="card" style="padding: 0;">
+                    <div class="card-header" style="padding-left: 12px;padding-bottom: 0;">
+                        <i class="iconfont anticon-energy-fenxiang" style="color: #507CFD;margin-right: 4px;"></i>{{labelName}}用能占比
+                    </div>
+                    <div id="chart_pie1" style="width: 100%;height: 150px;"></div>
+                </div>
+                <div class="card" style="padding: 0;">
+                    <div class="card-header" style="padding-left: 12px;padding-bottom: 0;">
+                        <i class="iconfont anticon-shuju11" style="color: #507CFD;margin-right: 4px;"></i>{{labelName}}用能增幅前五名
+                    </div>
+                    <div id="chart_bar1" style="width: 100%;height: 150px;"></div>
+                </div>
+                <div class="card" style="padding: 0;">
+                    <div class="card-header" style="padding-left: 12px;padding-bottom: 0;">
+                        <i class="iconfont anticon-shuju11" style="color: #507CFD;margin-right: 4px;"></i>{{labelName}}用能前五名
+                    </div>
+                    <div id="chart_bar2" style="width: 100%;height: 150px;"></div>
+                </div>
+                <div class="card" style="padding: 0;">
+                    <div class="card-header" style="padding-left: 12px;padding-bottom: 0;position: absolute;">
+                        <i class="iconfont anticon-shuju11" style="color: #507CFD;margin-right: 4px;"></i>{{labelName}}用能环比
+                    </div>
+                    <div id="chart_bar3" style="width: 100%;height: 180px;"></div>
+                </div>
+                <div class="card" style="padding: 0;">
+                    <div class="card-header" style="padding-left: 12px;padding-bottom: 0;">
+                        <i class="iconfont anticon-shuju2" style="color: #507CFD;margin-right: 4px;"></i>{{labelName}}用能趋势
+                    </div>
+                    <div id="chart_bar4" style="width: 100%;height: 200px;"></div>
+                </div>
+            </div>
+            <div ng-if="!hasConfig">
+                <div class="page-alert-wrapper">
+                    <div class="page-alert">
+                        <i class="alert-icon no-task"></i>
+                        <div class="alert-text info">当前没有配置{{categoryName + '-' + labelName}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="page-alert-wrapper" ng-if="!isLoading && !currentLabel">
+        <div class="page-alert">
+            <i class="alert-icon no-task"></i>
+            <div class="alert-text info">当前未配置</div>
+        </div>
+    </div>
+    <div class="page-alert-wrapper" ng-if="isLoading">
+        <div class="page-alert">
+            <img src="../../img/page-loading.gif" class="loading-img">
+            <div class="alert-text info">正在加载...</div>
+        </div>
+    </div>
+    <div class="page-alert-wrapper" ng-if="loadingFailed">
+        <div class="page-alert">
+            <i class="alert-icon warning"></i>
+            <div class="alert-text info">加载失败，请检查网络</div>
+            <div class="alert-reload" ng-click="getDataList()">重新加载</div>
+        </div>
+    </div>
+</div>
+
+<div ui-view class="page page-left"></div>
+<div class="page page-left" ui-view=""></div>
+<script src="../../components/fastclick-master/lib/fastclick.js"></script>
+<script src="../../js/my/notify.js"></script>
+<script src="../../components/moment.min.js"></script>
+<script src="../../components/mui/js/mui.min.js"></script>
+<script src="../../components/mui/js/mui.picker.min.js"></script>
+<script src="../../components/echart/echarts.common.min.js"></script>
+</body>
+</html>
