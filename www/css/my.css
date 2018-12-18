@@ -2759,6 +2759,12 @@ color: #a7a7a7;
     content: '\a603';
     color: #586BF3;
 }
+.selector-tab.disabled>label{
+    color: #aaaaaa;
+}
+.selector-tab.disabled>label:after{
+    color: #aaaaaa;
+}
 .dropdown {
     background-color: #fff;
     position: absolute;
