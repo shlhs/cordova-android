@@ -939,6 +939,7 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
                });
            }
         });
+        $scope.todayTotalDegree = null;
         fetchElectricDegree(sns, moment().format('YYYY-MM-DD 00:00:00.000'), moment().format('YYYY-MM-DD 23:59:59.000'), function (data) {
             $scope.todayTotalDegree = data;
             $scope.$apply();
@@ -974,14 +975,20 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
                 calcmethod: 'MAX,MIN'
             },
             success: function (data) {
-                var total = 0;
+                var total = null;
                 // 将最大-最小=总电量
                 data.forEach(function (item) {
                     if (item.max_value_data !== null && item.min_value_data !== null) {
-                        total += (item.max_value_data - item.min_value_data);
+                        if (total === total) {
+                            total = item.max_value_data - item.min_value_data;
+                        } else {
+                            total += (item.max_value_data - item.min_value_data);
+                        }
                     }
                 });
-                callback(parseFloat(total.toFixed(2)));
+                if (total !== null) {
+                    callback(parseFloat(total.toFixed(2)));
+                }
             }
         });
     }
@@ -1011,6 +1018,14 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
         var lastMonth = [moment().subtract(1, 'month').format('YYYY-MM-01 00:00:00.000'), moment().subtract(1, 'month').format('YYYY-MM-DD HH:mm:ss.000')];
         $scope.electricData = {};
         var sns = item.deviceVarSns;
+        $scope.electricData = {
+            today: '-',
+            yesterday: '-',
+            month: '-',
+            lastMonth: '-',
+            dayRate: '-',
+            monthRate: '-'
+        };
         fetchElectricDegree(sns, today[0], today[1], function (data) {
             $scope.electricData['today'] = data;
             _calcDayRate();
@@ -1030,7 +1045,7 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
 
         function _calcDayRate() {
             var value1 = $scope.electricData['today'], value2 = $scope.electricData['yesterday'];
-            if (value1 !== undefined && value2 !== undefined) {
+            if (value1 !== '-' && value2 !== '-') {
                 if (value2 === 0) {
                     $scope.electricData['dayRate'] = '-';
                 } else {
@@ -1044,7 +1059,7 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
 
         function _calcMonthRate() {
             var value1 = $scope.electricData['month'], value2 = $scope.electricData['lastMonth'];
-            if (value1 !== undefined && value2 !== undefined) {
+            if (value1 !== '-' && value2 !== '-') {
                 if (value2 === 0) {
                     $scope.electricData['monthRate'] = '-';
                 } else {
