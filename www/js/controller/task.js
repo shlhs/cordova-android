@@ -191,13 +191,13 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, ajax, $state
             {
                 id: 'competition_tasks',
                 name: '抢单',
-                templateUrl: '/templates/task/task-competition-list.html',
+                templateUrl: 'templates/task/task-competition-list.html',
                 icon: 'nav-task-grab'
             },
             {
                 id: 'my_tasks',
                 name: '我的待办',
-                templateUrl: '/templates/task/task-todo-list.html',
+                templateUrl: 'templates/task/task-todo-list.html',
                 icon: 'nav-all-tasks'
             }
         );
