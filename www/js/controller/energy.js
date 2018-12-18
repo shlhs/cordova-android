@@ -966,18 +966,22 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
 
     function fetchElectricDegree(sns, startTime, endTime, callback) {
         ajax.get({
-            url: platformService.getDeviceMgmtHost() + '/variables/data/electricaldegreeandcharge',
+            url: platformService.getDeviceMgmtHost() + '/variables/data/summarized',
             data: {
                 sns: sns.join(','),
                 startTime: startTime,
-                endTime: endTime
+                endTime: endTime,
+                calcmethod: 'MAX,MIN'
             },
             success: function (data) {
                 var total = 0;
+                // 将最大-最小=总电量
                 data.forEach(function (item) {
-                    total += item.all_degree;
+                    if (item.max_value_data !== null && item.min_value_data !== null) {
+                        total += (item.max_value_data - item.min_value_data);
+                    }
                 });
-                callback(total);
+                callback(parseFloat(total.toFixed(2)));
             }
         });
     }
