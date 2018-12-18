@@ -1,11 +1,12 @@
 <div class="page page-left" style="background-color: #fff;">
-    <img class="login-icon" src="img/login/login-icon.png">
+    <div style="height: 100%;overflow: hidden;position: fixed; left: 0; top: 0;width: 100%;">
+        <img src="img/login-bg.jpeg" style="height: 100%;" id="login_bg">
+    </div>
     <div class="login-area" ng-controller="LoginCtrl">
         <div class="login-form">
             <div class="form-item">
                 <label>平台</label>
                 <input type="text" placeholder="请输入平台编号" ng-model="platformCode" ng-change="inputChange('platformCode')"></div>
-            <!--<div class="error">{{platformError}}</div>-->
             <div class="form-item">
                 <label>用户名</label>
                 <input type="text" ng-model="username" ng-change="inputChange('username')" placeholder="请输入账号">
@@ -24,4 +25,21 @@
             </div>
         </div>
     </div>
+    <script>
+        $(function () {
+            var screenHeight = window.screen.height;
+            var screenWidth = window.screen.width;
+            var $img = $("#login_bg");
+            var imageHeight = parseInt($img.css('height'));
+            var imageWidth = parseInt($img.css('width'));
+            if (imageWidth/imageHeight > screenWidth/screenHeight) {
+                // 如果图片比例更宽，那么以高度为准
+                var width = -(imageWidth * (screenHeight / imageHeight) - screenWidth) / 2;
+                $img.css({height: screenHeight+'px', 'margin-left': width + 'px'});
+            } else {
+                var height = -(imageHeight * (screenWidth / imageWidth) - screenHeight ) / 2;
+                $img.css({width: screenWidth+'px', 'margin-top': height + 'px'});
+            }
+        });
+    </script>
 </div>

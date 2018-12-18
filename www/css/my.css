@@ -74,12 +74,11 @@ html,body{
     left: 0;
     width: 100%;
     bottom: 40px;
-    margin-top: 15%;
+    position: absolute;
 }
 .login-area .form-item {
-    border-bottom: rgb(232,232,232) 1px solid;
     box-sizing: border-box;
-    margin: 0 44px;
+    margin: 10px 44px;
     position: relative;
 }
 .login-area .form-item label {
@@ -87,17 +86,18 @@ html,body{
     font-size: 18px;
     position: absolute;
     left: 0;
-    top: 15px;
+    line-height: 36px;
+    margin-left: 10px;
 }
 .login-area .form-item input {
     outline: none;
     border: none;
     margin: 0;
     width: 100%;
-    font-size: 18px;
+    font-size: 16px;
     padding: 0 0 0 84px;
     line-height: 22px;
-    height: 48px;
+    height: 36px;
 }
 .login-area input::-webkit-input-placeholder {
     /* placeholder颜色  */
@@ -110,10 +110,10 @@ html,body{
 .login-btn {
     background-color: rgb(195,227,249);
     border-radius: 4px;
-    margin: 42px 4% 0 4%;
+    margin: 28px 44px 0;
     box-sizing: border-box;
-    height: 48px;
-    line-height: 48px;
+    height: 42px;
+    line-height: 42px;
     text-align: center;
     font-size: 18px;
     color: #fff;
@@ -129,7 +129,8 @@ html,body{
     background-size: 100% 100%;
     position: absolute;
     right: 6px;
-    top: 12px;
+    top: 50%;
+    margin-top: -10px;
 }
 .login-area .form-item .password-can-seen {
     width: 20px;
@@ -139,7 +140,8 @@ html,body{
     background-size: 100% 100%;
     position: absolute;
     right: 6px;
-    top: 12px;
+    top: 50%;
+    margin-top: -10px;
 }
 @media screen and (max-height: 600px) {
     .login-icon {
