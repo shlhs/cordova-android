@@ -29,7 +29,8 @@ app.directive('dropDownMenu', [function () {
             onSelect: '=',
             modelName: '=',
             defaultValue: '=',
-            selected: '='
+            selected: '=',
+            disabled: '='
         },
         replace: true,
         controller:['$scope', '$attrs', function($scope, $attrs){
@@ -37,6 +38,9 @@ app.directive('dropDownMenu', [function () {
             $scope.selected = $scope.selected || {};
 
             $scope.toggle = function () {
+                if ($scope.disabled) {
+                    return;
+                }
                 $scope.active = !$scope.active;
                 if ($scope.active) {
                     var mark = $('<div style="position: fixed;background-color: transparent;width: 100%;height: 100%;top:60px;z-index: 1;left: 0;" ng-click="toggle()"></div>')

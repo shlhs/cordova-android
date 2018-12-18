@@ -2995,6 +2995,13 @@ div.pinch-zoom, div.pinch-zoom-container{
     content: '\a603';
     color: #586BF3;
 }
+.selector-tab.disabled>label{
+    color: #aaaaaa;
+}
+.selector-tab.disabled>label:after{
+    color: #aaaaaa;
+}
+
 .checkbox-tree .checkbox-square {
     position: absolute;
     left: 0;
