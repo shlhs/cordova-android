@@ -1,4 +1,4 @@
-<li class="selector-tab" ng-click="toggle()" ng-class="{active: active}">
+<li class="selector-tab" ng-click="toggle()" ng-class="{active: active, disabled: disabled}">
     <label>{{options.length ? selected.name : '&nbsp;'}}</label>
     <div class="dropdown">
         <div ng-repeat="option in options" ng-class="{active: option.id === selected.id}"

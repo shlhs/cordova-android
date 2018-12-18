@@ -780,9 +780,9 @@ app.controller('EnergyOverviewCtrl', function ($scope, ajax, platformService, $c
                 if ($scope.currentLabel) {
                     getItemsForLabel();
                     var html = "<ul class='selector-group' style='border-bottom: #ececec 1px solid;'>" +
-                        "<drop-down-menu options=\"categories\" on-select=\"onSelect\" model-name=\"'currentCategory'\" selected=\"currentCategory\"></drop-down-menu>" +
-                        "<drop-down-menu options=\"labelNames\" on-select=\"onSelect\" model-name=\"'currentLabel'\" selected=\"currentLabel\"></drop-down-menu>" +
-                        "<drop-down-menu options=\"energyItems\" on-select=\"onSelect\" model-name=\"'labelItem'\" selected=\"currentItem\" ng-if=\"currentLabel.name==='支路'\"></drop-down-menu>" +
+                        "<drop-down-menu options=\"categories\" on-select=\"onSelect\" model-name=\"'currentCategory'\" selected=\"currentCategory\" style=\"width: 25%\"></drop-down-menu>" +
+                        "<drop-down-menu options=\"labelNames\" on-select=\"onSelect\" model-name=\"'currentLabel'\" selected=\"currentLabel\" style=\"width: 25%\"></drop-down-menu>" +
+                        "<drop-down-menu options=\"energyItems\" on-select=\"onSelect\" model-name=\"'labelItem'\" selected=\"currentItem\" style=\"width: 50%\" disabled=\"currentLabel.name !== '支路'\"></drop-down-menu>" +
                         "</ul>";
                     var compileFn = $compile(html);
                     var $dom = compileFn($scope);
@@ -817,7 +817,11 @@ app.controller('EnergyOverviewCtrl', function ($scope, ajax, platformService, $c
         items.forEach(function (item, i) {
             $scope.energyItems.push($.extend({}, item, {name: item.aliasName, id: i}));
         });
-        $scope.currentItem = items.length ? items[0] : null;
+        if (labelName === '支路') {
+            $scope.currentItem = items.length ? items[0] : null;
+        } else {
+            $scope.currentItem = {name: '所有' + labelName, id: ''};
+        }
     }
 
     function initDatePicker() {
@@ -1362,13 +1366,21 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
 
     function fetchElectricDegree(sns, startTime, endTime, callback) {
         ajax.get({
-            url: platformService.getDeviceMgmtHost() + '/variables/data/electricaldegreeandcharge',
+            url: platformService.getDeviceMgmtHost() + '/variables/data/summarized',
             data: {
                 sns: sns.join(','),
                 startTime: startTime,
-                endTime: endTime
+                endTime: endTime,
+                calcmethod: 'MAX,MIN'
             },
             success: function (data) {
+                data.forEach(function (item) {
+                   if (item.max_value_data !== null && item.min_value_data !== null) {
+                       item.all_degree = parseFloat((item.max_value_data - item.min_value_data).toFixed(2));
+                   } else {
+                       item.all_degree = 0;
+                   }
+                });
                 callback(data);
             }
         });
@@ -1441,8 +1453,8 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
                         text: total + '\nkWh',
                         textStyle: {
                             fontFamily: 'Microsoft YaHei',
-                            fontSize: 14,
-                            color: '#666666',
+                            fontSize: 12,
+                            color: '#818181',
                         },
                         x: 'center',
                         y: 'center',
@@ -1458,7 +1470,7 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
                     {
                         avoidLabelOverlap: false,
                         hoverAnimation: true, //设置饼图默认的展开样式
-                        radius: ['55%', '80%'],
+                        radius: ['55%', '75%'],
                         name: 'pie',
                         type: 'pie',
                         selectedMode: 'single',
@@ -1469,9 +1481,16 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
                             emphasis: {
                                 shadowBlur: 10,
                                 shadowOffsetX: 0,
-                                shadowColor: 'rgba(0, 0, 0, 0.5)',
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
                             },
                         },
+                        label: {
+                            fontSize: 10
+                        },
+                        labelLine: {
+                            length: 5,
+                            length2: 5
+                        }
                     },
                 ],
             };
