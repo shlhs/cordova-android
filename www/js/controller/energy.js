@@ -1023,7 +1023,7 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
                 // 将最大-最小=总电量
                 data.forEach(function (item) {
                     if (item.max_value_data !== null && item.min_value_data !== null) {
-                        if (total === total) {
+                        if (total === null) {
                             total = item.max_value_data - item.min_value_data;
                         } else {
                             total += (item.max_value_data - item.min_value_data);
@@ -1097,8 +1097,8 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
                     $scope.electricData['dayRate'] = (Math.abs(rate)).toFixed(1);
                     $scope.electricData['dayTrend'] = rate > 0 ? 'up' : 'down';
                 }
-                $scope.$apply();
             }
+            $scope.$apply();
         }
 
         function _calcMonthRate() {
@@ -1111,8 +1111,8 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
                     $scope.electricData['monthRate'] = (Math.abs(rate)).toFixed(1);
                     $scope.electricData['monthTrend'] = rate > 0 ? 'up' : 'down';
                 }
-                $scope.$apply();
             }
+            $scope.$apply();
         }
     }
     
