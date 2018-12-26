@@ -4,8 +4,8 @@
  * Created by liucaiyun on 2017/7/23.
  */
 
-var gPublicApiHost = 'http://47.104.75.86:8090';        // 公有云接口
-// var gPublicApiHost = 'http://47.97.167.195:8090';        // 因泰来接口
+// var gPublicApiHost = 'http://47.104.75.86:8090';        // 公有云接口
+var gPublicApiHost = 'http://47.99.183.219:8090';        // 电无忧
 
 app.controller('LoginCtrl', function ($scope, $timeout, platformService, userService, $state, $http, ajax) {
     $scope.error = '';
