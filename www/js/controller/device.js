@@ -867,10 +867,10 @@ app.controller('VarRealtimeCtrl', function ($scope, ajax) {
                 if (type === '状态量') {   // 状态量
                     data.forEach(function (n) {
                         if (n.data > 0) {
-                            n.value = n.var.one_meaning ? n.var.one_meaning : 'OFF';
+                            n.value = n.var.one_meaning ? n.var.one_meaning : 'ON';
                             n.status = 'danger';
                         } else {
-                            n.value = n.var.zero_meaning ? n.var.zero_meaning : 'ON';
+                            n.value = n.var.zero_meaning ? n.var.zero_meaning : 'OFF';
                             n.status = 'normal';
                         }
                     });
