@@ -3015,3 +3015,33 @@ header .mui-title .dropdown-arrow:after {
 /*.chart .spin-loading:before {*/
     /*content: '\a618';*/
 /*}*/
+.write-var-list {
+    background-color: transparent;
+}
+.write-var-list>li {
+    background-color: #fff;
+    margin-bottom: 8px;
+}
+.write-var-list .value {
+    float: right;
+    margin-right: 40px;
+    color: #888;
+}
+.write-var-list .edit {
+    position: absolute;
+    right: 12px;
+    padding: 11px;
+    top: 0;
+}
+.write-var-list .mui-switch:before {
+    content: attr(data-beforeContent);
+}
+.write-var-list .mui-switch {
+    transition-duration: 0.2s;
+    position: absolute;
+    right: 12px;
+    top: 6px;
+}
+.write-var-list .mui-switch .mui-switch-handle {
+    /*transition-duration: 0.2s;*/
+}
