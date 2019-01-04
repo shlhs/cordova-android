@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="../../css/iconfont/iconfont.css">
     <link rel="stylesheet" href="../../css/my.css">
     <link rel="stylesheet" href="../../css/icon.css">
+    <link rel="stylesheet" href="../../css/animate.css">
     <link rel="stylesheet" type="text/css" href="../../js/lib/datatables/jquery.dataTables.min.css">
     <script type="text/javascript" src="../../components/libs/jquery-2.1.4.js"></script>
     <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
@@ -35,7 +36,7 @@
             <!--<i class="iconfont anticon-pailie video-list-switcher" ng-if="listType==='row'" ng-click="switchListType()"></i>-->
             <!--<i class="iconfont anticon-list video-list-switcher" ng-if="listType==='col'" ng-click="switchListType()"></i>-->
         <!--</div>-->
-        <ul class="ipc-list" ng-class="{row: listType === 'row', col: listType === 'col'}">
+        <ul class="ipc-list" ng-class="{row: listType === 'row', col: listType === 'col'}" style="padding-top: 4px;">
             <li ng-repeat="ipc in ipcs">
                 <div class="ipc-wrapper">
                     <div class="bracket"></div>
@@ -75,5 +76,7 @@
 </div>
 <script type="text/javascript" src="../../components/libs/jquery-2.1.4.js"></script>
 <script src="../../js/my/notify.js"></script>
+<script src="../../components/moment.min.js"></script>
+<script src="../../components/slides-playing/js/jquery.slides.js"></script>
 </body>
 </html>

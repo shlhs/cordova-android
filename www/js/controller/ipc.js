@@ -1,9 +1,9 @@
-app.config(['$sceDelegateProvider',function($sceDelegateProvider) {
-    $sceDelegateProvider.resourceUrlWhitelist([
-        'self',
-        'http://114.215.90.83:10810/**'
-    ]);
-}]);
+// app.config(['$sceDelegateProvider',function($sceDelegateProvider) {
+//     $sceDelegateProvider.resourceUrlWhitelist([
+//         'self',
+//         'http://114.215.90.83:10810/**'
+//     ]);
+// }]);
 
 function onVideoPause(ipcId) {       // 暂停视频播放
     var scope = angular.element("#videoMonitor").scope();
@@ -83,7 +83,11 @@ app.controller('VideoMonitorCtrl', function ($scope, $timeout, platformService, 
     };
 
     $scope.openCaptureRecordPage = function () {
-        location.href = '/templates/video-monitor/ipc-record-history.html?sn=' + $scope.sn;
+        routerService.openPage($scope, '/templates/video-monitor/ipc-record-history.html', {
+            sn: $scope.sn
+        }, {
+            hidePrev: false
+        });
     };
 
     $scope.switchListType = function () {
@@ -138,7 +142,7 @@ app.controller('VideoMonitorSnapConfirmCtrl', function ($scope, platformService,
 });
 
 app.controller('IpcRecordHistoryCtrl', function ($scope, platformService, $timeout, ajax, routerService) {
-    $scope.sn = GetQueryString("sn");
+    // $scope.sn = GetQueryString("sn");
     $scope.records = [];
     $scope.isLoading = false;
     var isSavingRecords = [];
@@ -188,7 +192,7 @@ app.controller('IpcRecordHistoryCtrl', function ($scope, platformService, $timeo
                 isSavingRecords.forEach(function (recordId) {
                     refreshRecordStatus(recordId);
                 });
-            }, 3000);
+            }, 2000);
         }
     }
 
@@ -280,7 +284,7 @@ app.controller('IpcPicRecordDetailCtrl', function ($scope, platformService, ajax
 
     function startRefreshInterval() {
         if (refreshInterval === null) {
-            refreshInterval = setInterval(getRecordDetail, 3000);
+            refreshInterval = setInterval(getRecordDetail, 2000);
         }
     }
 
