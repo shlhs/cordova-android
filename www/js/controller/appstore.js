@@ -180,6 +180,13 @@ app.config(['appStoreProviderProvider', function (appStoreServiceProvider) {
                     sn: 'station-monitor/device-monitor',
                     defaultChecked: true
                 }, {
+                    name: '视频监控',
+                    icon: 'icon-video-monitor',
+                    templateUrl: '/templates/video-monitor/video-monitor.html',
+                    url: 'video-monitor',
+                    sn: 'station-monitor/video-monitor',
+                    defaultChecked: true
+                }, {
                     name: '设备档案',
                     icon: 'icon-archives',
                     templateUrl: '/templates/site/static-devices/device-home.html',

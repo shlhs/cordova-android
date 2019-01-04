@@ -45,9 +45,13 @@ function IsPC()
 }
 
 
-function GetQueryString(name)
+function GetQueryString(name, url)
 {
-    var search = window.location.search.substring(1), params = search.split('&');
+    var search = window.location.search;
+    if (url) {
+        search = url.substring(url.indexOf('?'));
+    }
+    var search = search.substring(1), params = search.split('&');
     var index, param;
     for (var i=0; i<params.length; i++){
         param = params[i];

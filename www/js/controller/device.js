@@ -680,11 +680,8 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile, router
     $scope.getDataList();
 });
 
-app.controller('DeviceMonitorCtrl', function ($scope, ajax, $stateParams) {
+app.controller('DeviceMonitorCtrl', function ($scope, ajax, routerService) {
     $scope.isLoading = true;
-    // $scope.stationSn = GetQueryString('stationSn');
-    // $scope.deviceSn=GetQueryString('deviceSn');
-    // $scope.deviceName = GetQueryString('deviceName');
     $scope.stationSn = $scope.sn;
     $scope.deviceSn = $scope.deviceSn;
     $scope.deviceName = $scope.deviceName;
@@ -818,8 +815,205 @@ app.controller('DeviceMonitorCtrl', function ($scope, ajax, $stateParams) {
         });
     }
 
+    $scope.openRemoteControlPage = function () {
+        routerService.openPage($scope, '/templates/site/device-monitor/remote-control.html', {
+            device_sn: $scope.deviceSn
+        });
+    };
+
     getDeviceVars();
 
+});
+
+app.controller('DeviceRemoteControlCtrl', function ($scope, $interval, routerService, platformService, ajax) {
+    $scope.varList = [];
+    $scope.confirmVisible = false;
+    $scope.controlObj = null;
+    $scope.isLoading = true;
+    var refreshInterval = null;
+
+    function getWriteVarList() {
+        $scope.isLoading = true;
+        ajax.get({
+            url: platformService.getDeviceMgmtHost() + '/management/devices/' + $scope.device_sn + '/variables',
+            data: {
+                rw: 3
+            },
+            success: function (response) {
+                $scope.isLoading = false;
+                // 状态量在前，模拟量在后
+                $scope.varList = response.data.sort(function (v1, v2) {
+                    if (v1.type === v2.type) {
+                        return 0;
+                    }
+                    if (v1.type === 'Analog' && v2.type === 'Digital') {
+                        return 1;
+                    }
+                    return -1;
+                });
+                // 修改状态量的0/1描述
+                $scope.varList.forEach(function (v) {
+                    if (v.type === 'Digital') {
+                        v.one_meaning = v.one_meaning || 'ON';
+                        v.zero_meaning = v.zero_meaning || 'OFF';
+                    }
+
+                });
+                getRealTimeData();
+                if (refreshInterval === null) {
+                    refreshInterval = $interval(getRealTimeData, 4000);
+                }
+                $scope.$apply();
+            },
+            error: function () {
+                $scope.isLoading = false;
+                $.notify.error('获取可控变量失败');
+            }
+        });
+    }
+
+    function getRealTimeData() {        // 获取变量的实时值
+        var sns = [];
+        $scope.varList.forEach(function (n) {
+            sns.push(n.sn);
+        });
+        var url = "/devicevars/getrealtimevalues";
+        ajax.get({
+            url: url,
+            data: {sns: sns.join(",")},
+            success: function(data) {
+                $scope.varList.forEach(function (v) {
+                    var exist = false;
+                    for (var i=0; i<data.length; i++) {
+                        if (data[i].var.sn === v.sn) {
+                            v.value = (data[i].data === null ? '' : data[i].data) + (data[i].unit || '');
+                            exist = true;
+                            break;
+                        }
+                    }
+                    if (!exist) {
+                        v.value = null;
+                    }
+                });
+                $scope.$apply();
+            }
+        });
+    }
+
+    $scope.onToggleSwitcher = function (v) {     // 变量开关
+        if (v.value === 1) {
+            v.value = 0;
+        } else {
+            v.value = 1;
+        }
+        var controlObj = {
+            sn: v.sn,
+            value: v.value,
+            name: v.name,
+            action: 'yaokong-act',
+            type: 'Digital',
+            actionName: v.value ? v.zero_meaning : v.one_meaning
+        };
+        showConfirmModal(controlObj);
+    };
+
+    $scope.onEditAnalog = function (v) {        // 遥设
+        var controlObj = {
+            sn: v.sn,
+            name: v.name,
+            action: 'yaoshe-act',
+            type: 'Analog'
+        };
+        showConfirmModal(controlObj);
+    };
+
+    function showConfirmModal(controlObj) {
+        routerService.openPage($scope, '/templates/site/device-monitor/remote-control-confirm-modal.html', {
+            controlObj: controlObj,
+            onCancel: function () {
+                // 取消下发，将值恢复
+                if (controlObj.type === 'Digital') {
+                    for (var i=0; i<$scope.varList.length; i++) {
+                        if ($scope.varList[i].sn === controlObj.sn) {
+                            $scope.varList[i].value = !$scope.varList[i].value;
+                            break;
+                        }
+                    }
+                }
+                history.back();
+            },
+            onConfirm: function (newValue) {
+                confirmControl(controlObj, newValue);
+            }
+        }, {
+            hidePrev: false
+        });
+    }
+
+    function confirmControl(controlObj, newValue) {
+        ajax.post({
+            url: platformService.getDeviceMgmtHost() + '/notification/value_changed',
+            data: {
+                type: controlObj.action,
+                variable_sn: controlObj.sn,
+                variable_value: controlObj.type === 'Digital' ? controlObj.value : newValue
+            },
+            success: function (response) {
+                if (response && response.code === 200) {
+                    $.notify.info('成功下发');
+                    history.back();
+                } else {
+                    $.notify.error('下发失败');
+                }
+            },
+            error: function () {
+                $.notify.error('下发失败');
+            }
+        })
+    }
+
+    $scope.$on('$destroy',function(){
+        if (refreshInterval !== null) {
+            $interval.cancel(refreshInterval);
+        }
+    });
+
+    getWriteVarList();
+});
+
+app.controller('DeviceRemoteControlConfirmCtrl', function ($scope) {
+    $scope.okEnable = $scope.controlObj.type === 'Digital' ? true : false;
+    $scope.error = '';
+    $scope.inputValid = true;
+    var newValue = '';
+
+    $scope.onInputValidate = function (value) {
+        newValue = value;
+        $scope.error = '';
+    };
+
+    function isNumber(val) {
+        var regPos = /^\d+(\.\d+)?$/; //非负浮点数
+        var regNeg = /^(-(([0-9]+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*)))$/; //负浮点数
+        if(regPos.test(val) || regNeg.test(val)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    $scope.confirm = function () {
+        if ($scope.controlObj.type === 'Analog') {
+            if (!newValue) {
+                $scope.error = '请输入需要设置的值';
+                return;
+            } else if (!isNumber(newValue)) {
+                $scope.error = '请输入数字';
+                return;
+            }
+        }
+        $scope.onConfirm(newValue);
+    }
 });
 
 
