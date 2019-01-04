@@ -12,7 +12,7 @@ function onVideoPause(ipcId) {       // 暂停视频播放
     }
 }
 
-app.controller('VideoMonitorCtrl', function ($scope, $timeout, platformService, ajax) {
+app.controller('VideoMonitorCtrl', function ($scope, $timeout, platformService, ajax, routerService) {
     $scope.sn = GetQueryString("sn");
     $scope.ipcs = [];
     $scope.isLoading = false;
@@ -82,15 +82,59 @@ app.controller('VideoMonitorCtrl', function ($scope, $timeout, platformService, 
         $scope.$apply();
     };
 
+    $scope.openCaptureRecordPage = function () {
+        location.href = '/templates/video-monitor/ipc-record-history.html?sn=' + $scope.sn;
+    };
+
     $scope.switchListType = function () {
         $scope.listType = $scope.listType === 'col' ? 'row' : 'col';
     };
 
-    $scope.openSnalModal = function () {
-
+    $scope.openSnapModal = function () {
+        var ipcIds = [];
+        $scope.ipcs.forEach(function (t) {
+            ipcIds.push(t.id);
+        });
+        routerService.openPage($scope, '/templates/video-monitor/snap-desp-modal.html', {
+            stationSn: $scope.sn,
+            ipcIds: ipcIds,
+            onSuccess: function () {
+                $scope.openCaptureRecordPage();
+            },
+        }, {
+            hidePrev: false,
+        });
     };
 
     $timeout($scope.getIpcList, 500);
+});
+
+app.controller('VideoMonitorSnapConfirmCtrl', function ($scope, platformService, ajax) {
+    var newValue = '';
+
+    $scope.onInputValidate = function (value) {
+        newValue = value;
+    };
+
+    $scope.confirm = function () {
+        $scope.onCancel();
+        ajax.post({
+            url: platformService.getIpcServiceHost() + '/ipc/capturePic/' + $scope.stationSn + '?name=' + newValue + '&ipcIds=' + $scope.ipcIds.join(','),
+            headers: {
+                Accept: "application/json; charset=utf-8"
+            },
+            success: function () {
+                $scope.onSuccess();
+            },
+            error: function () {
+                $.notify.error('远程巡检失败');
+            }
+        })
+    };
+
+    $scope.onCancel = function () {
+        history.back();
+    }
 });
 
 app.controller('IpcRecordHistoryCtrl', function ($scope, platformService, $timeout, ajax, routerService) {

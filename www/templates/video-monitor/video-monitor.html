@@ -19,6 +19,7 @@
     <script type="text/javascript" src="../../components/angular-animate/angular-animate.js"></script>
     <script type="text/javascript" src="../../components/angular-ui-router/release/stateEvents.min.js"></script>
     <script type="text/javascript" src="../../js/app/app.js"></script>
+    <script type="text/javascript" src="../../js/service/router-service.js"></script>
     <script type="text/javascript" src="../../js/app/utils.js"></script>
     <script type="text/javascript" src="../../js/controller/ipc.js"></script>
 </head>
@@ -26,9 +27,7 @@
 <header class="mui-bar bg-header mui-segmented-control-vertical">
     <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
     <h1 class="mui-title">视频监控</h1>
-    <a class="mui-action-menu mui-icon mui-pull-right" style="font-size: 16px;line-height: 28px;color: #fff;"
-        href="/templates/video-monitor/ipc-record-history.html?sn={{sn}}"
-    >巡检记录</a>
+    <a class="mui-action-menu mui-icon mui-pull-right" style="font-size: 16px;line-height: 28px;color: #fff;" ng-click="openCaptureRecordPage()">巡检记录</a>
 </header>
 <div class="mui-content" style="padding-bottom: 100px;">
     <div ng-if="!isLoading">
@@ -56,7 +55,7 @@
         <div class="float-bottom-btn2" ng-click="switchListType()">
             <i class="iconfont" ng-class="{'anticon-list': listType==='col', 'anticon-pailie': listType==='row'}"></i>
         </div>
-        <div class="float-bottom-btn" ng-click="openSnalModal()">
+        <div class="float-bottom-btn" ng-click="openSnapModal()">
             <i class="iconfont anticon-camera"></i>
         </div>
     </div>

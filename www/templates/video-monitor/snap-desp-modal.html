@@ -1,0 +1,16 @@
+<div class="page page-fade" ng-controller="VideoMonitorSnapConfirmCtrl">
+    <div class="mui-popup property-editor-popup" style="display: block;opacity: 1;">
+        <div class="mui-popup-inner">
+            <div class="form-group">
+                <label style="color: #333;">进行远程巡检：将保存每个摄像头的当前画面</label>
+                <input type="text" ng-model="newValue" ng-change="onInputValidate(newValue)" placeholder="您可以为本次巡检添加备注" style="font-size: 14px;">
+                <div style="color: red;font-size: 12px;">{{error}}</div>
+            </div>
+        </div>
+        <div class="mui-popup-buttons">
+            <a class="mui-popup-button" ng-click="onCancel()" style="color: #848484;">取消</a>
+            <a class="mui-popup-button" ng-click="confirm()" style="color: #439AF2;">开始巡检</a>
+        </div>
+    </div>
+    <div class="mui-popup-backdrop mui-active" style="display: block;"></div>
+</div>
