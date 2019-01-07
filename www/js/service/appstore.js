@@ -185,7 +185,7 @@ app.config(['appStoreProviderProvider', function (appStoreServiceProvider) {
                     templateUrl: '/templates/video-monitor/video-monitor.html',
                     url: 'video-monitor',
                     sn: 'station-monitor/video-monitor',
-                    defaultChecked: true
+                    defaultChecked: false
                 }, {
                     name: '设备档案',
                     icon: 'icon-archives',
