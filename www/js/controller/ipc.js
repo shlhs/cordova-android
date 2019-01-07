@@ -1,9 +1,9 @@
-// app.config(['$sceDelegateProvider',function($sceDelegateProvider) {
-//     $sceDelegateProvider.resourceUrlWhitelist([
-//         'self',
-//         'http://114.215.90.83:10810/**'
-//     ]);
-// }]);
+app.config(['$sceDelegateProvider',function($sceDelegateProvider) {
+    $sceDelegateProvider.resourceUrlWhitelist([
+        'self',
+        'http://hls.open.ys7.com/**'
+    ]);
+}]);
 
 function onVideoPause(ipcId) {       // 暂停视频播放
     var scope = angular.element("#videoMonitor").scope();
@@ -15,7 +15,7 @@ function onVideoPause(ipcId) {       // 暂停视频播放
 app.controller('VideoMonitorCtrl', function ($scope, $timeout, platformService, ajax, routerService) {
     $scope.sn = GetQueryString("sn");
     $scope.ipcs = [];
-    $scope.isLoading = false;
+    $scope.isLoading = true;
     $scope.loadingFailed = false;
     $scope.listType = 'row';
 
@@ -45,7 +45,7 @@ app.controller('VideoMonitorCtrl', function ($scope, $timeout, platformService, 
                         ipc.online = true;
                     }
                     if (ipc.type === 'YS7') {
-                        ipc.streamUrl = '/templates/video-monitor/iframe/ys7-player.html?url=' + ipc.liveAddress + '&autoplay&ipcId=' + ipc.id;
+                        ipc.streamUrl = '/templates/video-monitor/iframe/kk-player.html?url=' + ipc.liveAddress + '&autoplay&ipcId=' + ipc.id;
                     } else {
                         // 从liveAddress中解析出flv视频地址
                         var liveAddress = ipc.liveAddress;
@@ -144,7 +144,7 @@ app.controller('VideoMonitorSnapConfirmCtrl', function ($scope, platformService,
 app.controller('IpcRecordHistoryCtrl', function ($scope, platformService, $timeout, ajax, routerService) {
     // $scope.sn = GetQueryString("sn");
     $scope.records = [];
-    $scope.isLoading = false;
+    $scope.isLoading = true;
     var isSavingRecords = [];
     var refreshInterval = null;
 

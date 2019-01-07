@@ -257,7 +257,7 @@
       // 最后使用flash
       if(isMobile || isNativeSupportHls){
         this.log('使用原生video');
-        this.video.style.heght = this.opt.height = Number(this.opt.width.replace(/px$/g, '')) * 9 / 16 + 'px';
+        this.video.style.heght = this.opt.height = Number((this.opt.width).toString().replace(/px$/g, '')) * 9 / 16 + 'px';
         this.initVideoEvent();
       }else{
         if(isHttps){

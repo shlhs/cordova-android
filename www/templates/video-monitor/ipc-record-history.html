@@ -1,6 +1,6 @@
 <div class="page page-left" ng-controller="IpcRecordHistoryCtrl">
     <header class="mui-bar bg-header header-bg-light">
-        <a class="mui-icon  mui-icon-left-nav mui-pull-left btn-back" onclick="pageBack()"></a>
+        <a class="mui-icon  mui-icon-left-nav mui-pull-left btn-back" onclick="history.back()"></a>
         <h1 class="mui-title">巡检记录</h1>
     </header>
     <div class="mui-content" style="background-color: #fff;">
@@ -17,6 +17,14 @@
                     </div>
                 </li>
             </ul>
+        </div>
+        <div class="page-alert-wrapper" ng-if="!isLoading && !records.length">
+            <div class="page-alert">
+                <div class="page-alert">
+                    <i class="alert-icon nodata"></i>
+                    <div class="alert-text info">无远程巡检记录</div>
+                </div>
+            </div>
         </div>
         <div class="page-alert-wrapper" ng-if="isLoading">
             <div class="page-alert">
