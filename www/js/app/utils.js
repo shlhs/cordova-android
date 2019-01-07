@@ -266,7 +266,7 @@ function createTimeList(startTime, endTime, queryPeriod, timeFormat) {
         }
     } else if (queryPeriod === 'MONTH') {
         var monthsDiff = endMoment.diff(startMoment, 'months');
-        startMoment.day(1).hour(0).minute(0).second(0).millisecond(0);
+        startMoment.date(1).hour(0).minute(0).second(0).millisecond(0);
         for (var i=0; i<=monthsDiff; i++) {
             timeList.push(startMoment.format(resultFormat));
             startMoment.add(1, 'M');
