@@ -255,6 +255,8 @@
       // 如果是手机浏览器环境,或者原生支持HLS播放的,直接使用video标签播放
       // 否则尝试使用hls.js播放，
       // 最后使用flash
+
+        isMobile = false;   // 刘彩云修改，默认不使用移动端模式
       if(isMobile || isNativeSupportHls){
         this.log('使用原生video');
         this.video.style.heght = this.opt.height = Number((this.opt.width).toString().replace(/px$/g, '')) * 9 / 16 + 'px';

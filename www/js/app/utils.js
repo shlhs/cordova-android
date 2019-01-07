@@ -84,9 +84,9 @@ var apiLocation = {
         this.callback = cb;
         window.android && window.android.startLocation();
     },
-    setLocation: function (longtitude, latitude) {
+    setLocation: function (longtitude, latitude, error) {
         if (this.callback){
-            this.callback(longtitude, latitude);
+            this.callback(longtitude, latitude, error);
             this.callback = null;
         }
     }
