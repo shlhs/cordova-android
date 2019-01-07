@@ -88,17 +88,10 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                                 } else {
                                     tempVarData.name = processedValue.name;
                                 }
-                                // 将processed_value分解除值和单位
-                                if (processedValue.processed_value) {
-                                    var value = parseFloat(processedValue.processed_value);
-                                    tempVarData.value = value;
-                                    if (processedValue.processed_value.length > String(value).length) {
-                                        tempVarData.unit = processedValue.processed_value.substring(String(value).length);
-                                    }
-                                }
-                                else {
-                                    tempVarData.value = '--';
-                                }
+
+                                tempVarData.value = processedValue.processed_value;
+                                tempVarData.unit = processedValue.unit;
+                                
                                 keyVarDatas.push(tempVarData);
                             } else {
                                 keyStaticDatas.push({'name': processedValue.name, 'value': processedValue.processed_value});
@@ -277,7 +270,9 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                 }
             });
         } else if(tempType == 'device-data') {
-            tempValue = getDeviceVarData(tempContent.varInfo.deviceVarSn, queryTime, tempContent.period, tempContent.calcMethod);
+            var tempRes = getDeviceVarData(tempContent.varInfo.deviceVarSn, queryTime, tempContent.period, tempContent.calcMethod);
+            tempValue = tempRes.value;
+            processedValue.unit = tempRes.unit;
         }
         processedValue.processed_value = tempValue;
 
@@ -285,25 +280,25 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
     }
 
     function getDeviceVarData(deviceSn, queryTime, queryPeriod, calcMethod){
+        var res = {'value': '', unit: ''};
         if(deviceSn == null || deviceSn == '') {
             console.warn('no deviceSn for getDeviceVarData');
-            return '';
+            return res;
         }
         if(queryTime == null || queryTime == '') {
             console.warn('no queryTime for getDeviceVarData');
-            return '';
+            return res;
         }
         if(queryPeriod == null || queryPeriod == '') {
             console.warn('no queryPeriod for getDeviceVarData');
-            return '';
+            return res;
         }
         if(calcMethod == null || calcMethod == '') {
             console.warn('no calcMethod for getDeviceVarData');
-            return '';
+            return res;
         }
 
         if(queryPeriod == 'real_time') {
-            var resultValue = '';
             ajax.get({
                 url: '/devicevars/getrealtimevalues?sns=' + deviceSn,
                 async: false,
@@ -311,18 +306,28 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                     if(!data || data.length == 0) {
                         return;
                     }
-                    if (data[0].data === null) {
-                        resultValue = '';
-                    } else {
-                        resultValue = data[0].data+data[0].unit;
+                    var tempValue = data[0].data;
+                    if(tempValue != null) {
+                        //  type: "Digital"   one_meaning: "闭合 ON 红色"  zero_meaning: "断开 OFF 绿色"
+                        if(data[0].var.type == 'Digital') {
+                            if(tempValue == 0) {
+                                res.value = '<div style="background-color: #08b762; color: white;padding: 0px 6px; border-radius: 4px; width: fit-content;">'+data[0].var.zero_meaning ? data[0].var.zero_meaning : 'OFF' +'</div>';
+                            }
+                            if(tempValue == 1) {
+                                res.value = '<div style="background-color: #e00202; color: white;padding: 0px 6px; border-radius: 4px; width: fit-content;">'+data[0].var.one_meaning ? data[0].var.one_meaning : 'ON' +'</div>';
+                            }
+                        } else {
+                            res.value = tempValue;
+                            res.unit = data[0].unit || ''
+                        }
                     }
-                    g_devicevar_unit_map[deviceSn] = data[0].unit;
+                    g_devicevar_unit_map[deviceSn] = data[0].unit || '';
                 },
                 error: function () {
                     console.warn('获取设备变量实时值失败 '+deviceSn);
                 }
             });
-            return resultValue;
+            return res;
         }
 
 

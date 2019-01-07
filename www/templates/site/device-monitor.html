@@ -62,9 +62,10 @@
 <header class="mui-bar bg-header">
     <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
     <h1 class="mui-title">{{deviceName}}</h1>
-    <a href="/templates/task/add-task.html" class="mui-action-menu mui-icon mui-pull-right" ng-if="hasOpsAuth"><i class="header-icon white icon-add"></i></a>
+    <!--<a href="/templates/task/add-task.html" class="mui-action-menu mui-icon mui-pull-right" ng-if="hasOpsAuth"><i class="header-icon white icon-add"></i></a>-->
+    <a href="/templates/site/device-monitor/remote-control.html?device_sn={{deviceSn}}"
+       class="mui-action-menu mui-icon mui-pull-right" style="color: #fff;font-size: 14px;line-height: 24px;">控制中心</a>
 </header>
-<div ng-include="'../../templates/top-menu.html'"></div>
 <div class="mui-content" ng-cloak style="background-color: #fff;">
     <div class="cascade-selector" style="top: 60px;" ng-class="{'collapse': collapse[0] || collapse[1]}">
         <div class="selector-mask"  ng-if="collapse[0] || collapse[1]" ng-click="toggleCollapse(-1)" style="top: 105px;"></div>
