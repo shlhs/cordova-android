@@ -45,7 +45,7 @@ app.controller('VideoMonitorCtrl', function ($scope, $timeout, platformService, 
                         ipc.online = true;
                     }
                     if (ipc.type === 'YS7') {
-                        ipc.streamUrl = '/templates/video-monitor/iframe/kk-player.html?url=' + ipc.liveAddress + '&autoplay&ipcId=' + ipc.id;
+                        ipc.streamUrl = '/templates/video-monitor/iframe/ys7-player.html?url=' + ipc.liveAddress + '&autoplay&ipcId=' + ipc.id;
                     } else {
                         // 从liveAddress中解析出flv视频地址
                         var liveAddress = ipc.liveAddress;
