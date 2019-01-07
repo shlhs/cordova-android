@@ -263,7 +263,7 @@ function createTimeList(startTime, endTime, queryPeriod, timeFormat) {
         }
     } else if (queryPeriod === 'MONTH') {
         var monthsDiff = endMoment.diff(startMoment, 'months');
-        startMoment.day(1).hour(0).minute(0).second(0).millisecond(0);
+        startMoment.date(1).hour(0).minute(0).second(0).millisecond(0);
         for (var i=0; i<=monthsDiff; i++) {
             timeList.push(startMoment.format(resultFormat));
             startMoment.add(1, 'M');
@@ -308,7 +308,7 @@ function fillTrendDataVacancy(startTime, endTime, queryPeriod, dataTimes, datas,
 
 function fillVacancyAndSumTrendData(startTime, endTime, queryPeriod, multiDatas, timeFormat) {
     var fullTimeKeys = createTimeList(startTime, endTime, queryPeriod, timeFormat);
-// 对子设备进行求和，作为全厂区的数据
+    // 对子设备进行求和，作为全厂区的数据
     var multiFullDatas = [];
     multiDatas.forEach(function (data) {
         var fullDatas = [];
