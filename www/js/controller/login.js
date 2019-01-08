@@ -135,8 +135,7 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
                 }
                 if (window.android){
                     window.android.loginSuccess();
-                }else{
-                    // location.href = '/templates/home.html?finishPage=1';
+                } else{
                     $state.go('index');
                 }
             },

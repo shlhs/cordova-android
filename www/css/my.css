@@ -473,6 +473,9 @@ header.mui-bar{
     height: 100%;
     opacity: 0;
     display: inline-block;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 .image-item .img-file{
     float: left;

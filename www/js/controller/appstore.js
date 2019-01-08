@@ -309,10 +309,6 @@ app.controller('AppStoreCtrl', function ($scope, appStoreProvider) {
         appStoreProvider.saveSelectedApps($scope.selectedApps);
         $scope.toggleEdit();
 
-        // 回到
-        if (window.android) {
-            window.android.onJsCallbackForPrevPage('onAndroidCb_updateAppList', '');
-        }
         $scope.$emit('onNotifyAppUpdate');
     }
 });

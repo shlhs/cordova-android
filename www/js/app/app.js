@@ -23,6 +23,9 @@ app.controller('MainCtrl', function ($scope, $rootScope, userService, routerServ
         routerService.openPage(scope, template, params, config);
     };
 
+    $scope.$on('onBaseTaskUpdate', function (event, taskData) {
+        $scope.$broadcast('onTaskUpdate', taskData);
+    });
 });
 
 var UserRole = {SuperUser: 'SUPERUSER', OpsAdmin: 'OPS_ADMIN', OpsOperator: 'OPS_OPERATOR', Normal: 'USER'};
