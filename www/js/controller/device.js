@@ -1026,7 +1026,7 @@ app.controller('VarRealtimeCtrl', function ($scope, ajax) {
     $scope.isLoading = false;
     var interval = null;
 
-    $scope.$on('$onRealtimeTypeChanged', function (event, realtimeItem) {
+    var typeChangeListener = $scope.$on('$onRealtimeTypeChanged', function (event, realtimeItem) {
 
         $scope.realtime = realtimeItem;
         $scope.realtimeType = realtimeItem.name;
@@ -1036,7 +1036,7 @@ app.controller('VarRealtimeCtrl', function ($scope, ajax) {
         }
     });
 
-    $scope.$on('$onHistoryVarChanged', function (event) {
+    var varChangeListener = $scope.$on('$onHistoryVarChanged', function (event) {
         if (interval) {
             clearInterval(interval);
             interval = null;
@@ -1083,6 +1083,10 @@ app.controller('VarRealtimeCtrl', function ($scope, ajax) {
         if (null != interval) {
             clearInterval(interval);
         }
+        typeChangeListener();
+        typeChangeListener = null;
+        varChangeListener();
+        varChangeListener = null;
     })
 });
 
@@ -1093,7 +1097,7 @@ app.controller('HistoryVarCtrl', function ($scope, ajax, $timeout) {
     $scope.timeRange = 'DAY';
     $scope.isLoading = false;
 
-    $scope.$on('$onHistoryVarChanged', function (event, dataItem) {
+    var varChangeListener = $scope.$on('$onHistoryVarChanged', function (event, dataItem) {
         if (dataItem)
         {
             $scope.currentGroup = dataItem;
@@ -1241,6 +1245,11 @@ app.controller('HistoryVarCtrl', function ($scope, ajax, $timeout) {
     //     }
     //
     // })
+
+    $scope.$on('$destroy', function (event) {
+        varChangeListener();
+        varChangeListener = null;
+    });
 });
 
 app.directive('treeView',[function(){

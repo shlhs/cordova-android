@@ -969,7 +969,7 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
     $scope.labelName = null;
     $scope.hasConfig = false;
 
-    $scope.$on('$zhiluRefresh', function (event) {
+    var zhiluRefreshListener = $scope.$on('$zhiluRefresh', function (event) {
         currentItem = $scope.$parent.currentItem;
         $scope.labelName = $scope.$parent.currentLabel.name;
         if ($scope.categoryName !== $scope.$parent.currentCategory.name) {
@@ -983,10 +983,16 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
             $scope.hasConfig = false;
         }
     });
-    $scope.$on('$otherRefresh', function (event) {      // 显示非支路时，不显示
+    var otherRefreshListener = $scope.$on('$otherRefresh', function (event) {      // 显示非支路时，不显示
         $scope.hasConfig = false;
     });
 
+    $scope.$on('$destroy', function (event) {
+        otherRefreshListener();
+        otherRefreshListener = null;
+        zhiluRefreshListener();
+        zhiluRefreshListener = null;
+    });
 
     function getTotalEnergyDegree() {
         // 获取一级支路今日总用能
@@ -1381,7 +1387,7 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
         5: false
     };
 
-    $scope.$on('$otherRefresh', function (event) {
+    var otherRefreshListener = $scope.$on('$otherRefresh', function (event) {
         timeType = $scope.$parent.timeType.id;
         energyItems = $scope.$parent.energyItems;
         currentDate = $scope.$parent.dateName;
@@ -1398,9 +1404,17 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
             $scope.hasConfig = false;
         }
     });
-    $scope.$on('$zhiluRefresh', function (event) {
+    var zhiluRefreshListener = $scope.$on('$zhiluRefresh', function (event) {
         $scope.hasConfig = false;
     });
+
+    $scope.$on('$destroy', function (event) {
+        otherRefreshListener();
+        otherRefreshListener = null;
+        zhiluRefreshListener();
+        zhiluRefreshListener = null;
+    });
+
     function getStartAndEndTime() {      // 获取日/月/年的当前时间
         var now=moment().format(timeFormat), start, end;
         if (timeType === 'DAY') {

@@ -174,7 +174,7 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, ajax, $state
         );
     }
 
-    $scope.$on('$onMenuUpdate', function (event, menuSns) {
+    var menuUpdateListener = $scope.$on('$onMenuUpdate', function (event, menuSns) {
         // 菜单权限刷新
         // 判断是否包含ops-management权限
         if (appStoreProvider.hasOpsAuth()) {
@@ -184,6 +184,11 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, ajax, $state
         } else {
             $scope.navMenus = [];
         }
+    });
+
+    $scope.$on('$destroy', function (event) {
+        menuUpdateListener();
+        menuUpdateListener = null;
     });
     initMenu();
 });
@@ -437,7 +442,13 @@ app.controller('CompetitionTaskListCtrl', function ($scope, $rootScope, scroller
         });
     };
 
-    $scope.$on('onTaskUpdate', function (event, taskData) {
+    $scope.openTask = function (task) {
+        $scope.openPage($scope, '/templates/task/task-detail.html', {
+            id: task.id
+        });
+    };
+
+    var taskUpdateListener = $scope.$on('onTaskUpdate', function (event, taskData) {
         var task = null;
         var exist = false;
         for (var i in $scope.tasks){
@@ -455,11 +466,10 @@ app.controller('CompetitionTaskListCtrl', function ($scope, $rootScope, scroller
         }
     });
 
-    $scope.openTask = function (task) {
-        $scope.openPage($scope, '/templates/task/task-detail.html', {
-            id: task.id
-        });
-    };
+    $scope.$on('$destroy', function (event) {
+        taskUpdateListener();
+        taskUpdateListener = null;
+    });
 
 });
 
@@ -541,12 +551,6 @@ app.controller('TaskTodoListCtrl', function ($scope, $rootScope, scrollerService
         });
     };
 
-    $scope.$on('onTaskUpdate', function (event, task) {
-        formatTaskStatusName(task);
-        task.isTimeout = $scope.taskTimeout(task);
-        $scope.updateTask(task);
-    });
-
     $scope.openTaskCreatePage = function () {
         routerService.openPage($scope, '/templates/task/add-task.html');
     };
@@ -620,6 +624,17 @@ app.controller('TaskTodoListCtrl', function ($scope, $rootScope, scrollerService
     $scope.gotoTaskHistory = function () {
         $scope.openPage($scope, '/templates/task/task-list.html');
     };
+
+    var taskUpdateListener = $scope.$on('onTaskUpdate', function (event, task) {
+        formatTaskStatusName(task);
+        task.isTimeout = $scope.taskTimeout(task);
+        $scope.updateTask(task);
+    });
+
+    $scope.$on('$destroy', function (event) {
+        taskUpdateListener();
+        taskUpdateListener = null;
+    });
 });
 
 app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, userService, routerService, ajax) {
@@ -724,10 +739,15 @@ app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, us
         });
     };
 
-    $scope.$on('onTaskUpdate', function (event, task) {
+    var taskUpdateListener = $scope.$on('onTaskUpdate', function (event, task) {
         formatTaskStatusName(task);
         task.isTimeout = $scope.taskTimeout(task);
         $scope.updateTask(task);
+    });
+
+    $scope.$on('$destroy', function (event) {
+        taskUpdateListener();
+        taskUpdateListener = null;
     });
 
     $scope.openTaskCreatePage = function () {
@@ -1077,11 +1097,6 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
             });
         }
     };
-
-    $scope.$on('onGrabTask', function (event, taskData) {
-        updateTaskInfo(taskData);
-        $scope.$emit('onBaseTaskUpdate', taskData);
-    });
 
     $scope.openMap = function () {
         location.href='map.html?id=' + $scope.taskData.id + '&name=' + $scope.taskData.station_name;
@@ -1751,10 +1766,10 @@ app.controller('TaskDevicesHandlerCtrl', function ($scope, routerService, ajax) 
         });
     };
 
-    $scope.$on('onBaseTaskUpdate', function (event, taskData) {
+    var taskUpdateListener = $scope.$on('onTaskUpdate', function (event, taskData) {
         for (var i=0; i<$scope.device_record.length; i++) {
             var record = $scope.device_record[i];
-            if (r.checked && r.device_sn === taskData.device_sn) {
+            if (record.checked && taskData.device_record.length && record.device_sn === taskData.device_record[0].device_sn) {
                 record.status_name = 'danger';
                 record.status = '有故障';
                 $scope.recountFunc();
@@ -1762,6 +1777,11 @@ app.controller('TaskDevicesHandlerCtrl', function ($scope, routerService, ajax) 
                 break;
             }
         }
+    });
+
+    $scope.$on('$destroy', function (event) {
+        taskUpdateListener();
+        taskUpdateListener = null;
     });
 
     $scope.openDtsPage = function () {

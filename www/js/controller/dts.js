@@ -340,7 +340,7 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
             },
             success: function (data) {
                 var task = data[0];
-                $scope.$emit('onDtsCreate', task);
+                $scope.$emit('onBaseTaskUpdate', task);
                 $scope.openPage($scope, '/templates/task/task-detail.html', {id: taskId}, {finish: true});
             },
             error: function () {
@@ -464,17 +464,15 @@ app.controller('DeviceDtsListCtrl', function ($scope, ajax, scrollerService, rou
         });
     };
 
-    $scope.$on('onTaskUpdate', function (event, data) {
+    var taskUpdateListener = $scope.$on('onTaskUpdate', function (event, data) {
         formatTaskStatusName(data);
         data.isTimeout = $scope.taskTimeout(data);
         $scope.updateTask(data);
     });
 
-    $scope.$on('onDtsCreate', function (event, data) {
-        formatTaskStatusName(data);
-        data.isTimeout = $scope.taskTimeout(data);
-        $scope.updateTask(data);
-
+    $scope.$on('$destroy', function (event) {
+        taskUpdateListener();
+        taskUpdateListener = null;
     });
 
     $scope.openTask = function (task) {
@@ -592,16 +590,6 @@ app.controller('StationDtsListCtrl', function ($scope, $rootScope, scrollerServi
         });
     };
 
-    $scope.$on('onDtsCreate', function (event, data) {
-        parseTaskData(data);
-        $scope.updateTask(data);
-    });
-
-    $scope.$on('onTaskUpdate', function (event, data) {
-        parseTaskData(data);
-        $scope.updateTask(data);
-    });
-
     $scope.updateTask = function (taskData) {
         // 如果不是缺陷，则返回
         if (DtsTaskType.indexOf(taskData.task_type_id) < 0) {
@@ -622,6 +610,17 @@ app.controller('StationDtsListCtrl', function ($scope, $rootScope, scrollerServi
         // $scope.tasks.sort(sortDts);
         $scope.$apply();
     };
+
+    var taskUpdateListener = $scope.$on('onTaskUpdate', function (event, data) {
+        parseTaskData(data);
+        $scope.updateTask(data);
+    });
+
+    $scope.$on('$destroy', function (event) {
+        taskUpdateListener();
+        taskUpdateListener = null;
+        console.log('station dts destroy');
+    });
 
     $scope.getDataList();
 });
