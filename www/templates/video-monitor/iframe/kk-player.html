@@ -19,12 +19,14 @@
 <script type="text/javascript" src="/components/easy-player/easy-player-element.min.js"></script>
 <script>
     var player = document.getElementById('player');
+    var isPlaying = false;
     player.addEventListener('pause', function () {
         console.log('pause');
-        window.parent && window.parent.onVideoPause(ipcId);
+        window.parent && window.parent.onVideoPause && window.parent.onVideoPause(ipcId);
     });
     player.addEventListener('play', function () {
         console.log('play');
+        isPlaying = true;
     });
     player.addEventListener('snapOutside', function () {
         console.log('snapOutside')
@@ -32,6 +34,24 @@
     player.addEventListener('snapInside', function () {
         console.log('snapInside');
     });
+    player.addEventListener('message', function () {
+        console.log('message');
+    });
+    // 设置超时时间，如果30s后还没开始播放，则暂停播放
+//    setTimeout(function () {
+//        if (!isPlaying) {
+//            if( document.createEvent )
+//            {
+//                var evObj = document.createEvent('HTMLEvents');
+//                evObj.initEvent( 'pause', true, false );
+//                player.dispatchEvent(evObj);
+//            }
+//            else if( document.createEventObject )
+//            {
+//                player.fireEvent('pause');
+//            }
+//        }
+//    }, 20000);
 </script>
 </body>
 </html>

@@ -5,18 +5,14 @@
     <a class="mui-action-menu mui-icon mui-pull-right" style="font-size: 16px;line-height: 28px;color: #fff;" ng-click="openCaptureRecordPage()">巡检记录</a>
 </header>
 <div class="mui-content" style="padding-bottom: 100px;">
-    <div ng-if="!isLoading">
-        <!--<div class="row">-->
-            <!--<i class="iconfont anticon-pailie video-list-switcher" ng-if="listType==='row'" ng-click="switchListType()"></i>-->
-            <!--<i class="iconfont anticon-list video-list-switcher" ng-if="listType==='col'" ng-click="switchListType()"></i>-->
-        <!--</div>-->
+    <div ng-if="!isLoading && ipcs.length" >
         <ul class="ipc-list" ng-class="{row: listType === 'row', col: listType === 'col'}" style="padding-top: 4px;">
             <li ng-repeat="ipc in ipcs">
                 <div class="ipc-wrapper">
                     <div class="bracket"></div>
-                    <div class="img" ng-switch="ipc.type">
+                    <div class="img">
                         <iframe class="img" src="{{ipc.streamUrl}}" allowFullScreen width="100%" height="100%" ng-if="ipc.startPlay"></iframe>
-                        <img class="img" ng-src="{{ipc.snapUrl}}" ng-if="!ipc.startPlay" ng-click="startPlay(ipc)" ng-class="{'offline': !ipc.online}">
+                        <img class="img" ng-src="{{ipc.snapUrl}}" ng-if="!ipc.startPlay" ng-class="{'offline': !ipc.online}">
                         <a class="play" ng-if="!ipc.startPlay && ipc.online" ng-click="startPlay(ipc)"><i class="iconfont anticon-play"></i></a>
                     </div>
                 </div>
@@ -32,6 +28,14 @@
         </div>
         <div class="float-bottom-btn" ng-click="openSnapModal()">
             <i class="iconfont anticon-camera"></i>
+        </div>
+    </div>
+    <div class="page-alert-wrapper" ng-if="!isLoading && !ipcs.length">
+        <div class="page-alert">
+            <div class="page-alert">
+                <i class="alert-icon nodata"></i>
+                <div class="alert-text info">未关联摄像头</div>
+            </div>
         </div>
     </div>
     <div class="page-alert-wrapper" ng-if="isLoading">

@@ -1895,7 +1895,7 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
                 queryPeriod = 'DAY';
                 break;
             case 'YEAR':
-                startTime = currentDate + '-01-01 00:00:00.000';
+                startTime = currentDate + '-01-03 00:00:00.000';
                 endTime = currentDate + '-12-31 23:59:59.000';
                 queryPeriod = 'MONTH';
                 break;

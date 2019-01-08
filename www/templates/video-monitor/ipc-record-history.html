@@ -18,6 +18,14 @@
                 </li>
             </ul>
         </div>
+        <div class="page-alert-wrapper" ng-if="!isLoading && !records.length">
+            <div class="page-alert">
+                <div class="page-alert">
+                    <i class="alert-icon nodata"></i>
+                    <div class="alert-text info">无远程巡检记录</div>
+                </div>
+            </div>
+        </div>
         <div class="page-alert-wrapper" ng-if="isLoading">
             <div class="page-alert">
                 <img src="../../img/page-loading.gif" class="loading-img">
