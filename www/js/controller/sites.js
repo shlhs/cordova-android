@@ -376,12 +376,12 @@ app.controller('SiteBaseInfoCtrl', function ($scope, $timeout, $stateParams, aja
     $scope.getDataList();
 });
 
-
 app.controller('EventListCtrl', function ($scope, scrollerService, userService, ajax, routerService, appStoreProvider) {
     $scope.sn = $scope.sn;
     $scope.isDevice = false;   // 是设备还是站点
     $scope.canCreateTask = userService.getUserRole() === UserRole.Normal ? false : true;
     $scope.hasOpsAuth = appStoreProvider.hasOpsAuth();
+    var totalEventCount = 0;
     var deviceSn = GetQueryString("deviceSn");
     if (deviceSn){
         $scope.isDevice = true;
@@ -438,6 +438,7 @@ app.controller('EventListCtrl', function ($scope, scrollerService, userService, 
                     }
                 }
                 $scope.events = newReports.concat(cleared);
+                totalEventCount = result.iTotalRecords;
                 cb && cb($scope.events);
                 scrollerService.initScroll("#events", $scope.getDataList);
                 $scope.$apply();
@@ -477,7 +478,8 @@ app.controller('EventListCtrl', function ($scope, scrollerService, userService, 
                     }
                 }
                 // 通知首页数据修改站的事件个数
-                $scope.$emit('onEventCountRefresh', $scope.sn, $scope.events.length);
+                totalEventCount -= 1;
+                $scope.$emit('onEventCountRefresh', $scope.sn, totalEventCount);
                 $scope.$apply();
             },
             error: function (data) {
