@@ -179,6 +179,16 @@ app.directive('energyTable', [function(){
     };
 }]);
 
+function distinctVarSns(sns) {      // 变量sn去重
+    var tmpSns = [];
+    sns.forEach(function (sn) {
+        if (tmpSns.indexOf(sn) < 0) {
+            tmpSns.push(sn);
+        }
+    });
+    return tmpSns;
+}
+
 app.controller('EnergyMeterReadingCtrl', function ($scope, ajax, $compile, platformService) {
     var stationSn = $scope.sn;
     $scope.categories = [];
@@ -248,7 +258,9 @@ app.controller('EnergyMeterReadingCtrl', function ($scope, ajax, $compile, platf
         var sns = [];
         items.forEach(function (item) {
             item.deviceVarSns.forEach(function (sn) {
-                sns.push(sn);
+                if (sns.indexOf(sn) < 0) {
+                    sns.push(sn);
+                }
             });
         });
         if (!sns.length) {
@@ -344,7 +356,9 @@ app.controller('EnergyMeterReadingCtrl', function ($scope, ajax, $compile, platf
         var sns = [];
         selectedItems.forEach(function (item) {
             item.deviceVarSns.forEach(function (sn) {
-                sns.push(sn);
+                if (sns.indexOf(sn) < 0) {
+                    sns.push(sn);
+                }
             });
         });
         if (!$scope.currentLabel) {
@@ -369,7 +383,7 @@ app.controller('EnergyMeterReadingCtrl', function ($scope, ajax, $compile, platf
                     var rowData = [item.aliasName, '-', '-', '-', '-'];
                     response.forEach(function (n) {
                         var value = null;
-                        item.deviceVarSns.forEach(function (sn) {
+                        distinctVarSns(item.deviceVarSns).forEach(function (sn) {
                             if (n.values[sn] !== null && n.values[sn] !== undefined) {
                                 if (value === null) {
                                     value = n.values[sn];
@@ -802,9 +816,9 @@ app.controller('EnergyOverviewCtrl', function ($scope, ajax, platformService, $c
                 if ($scope.currentLabel) {
                     getItemsForLabel();
                     var html = "<ul class='selector-group' style='border-bottom: #ececec 1px solid;'>" +
-                        "<drop-down-menu options=\"categories\" on-select=\"onSelect\" model-name=\"'currentCategory'\" selected=\"currentCategory\"></drop-down-menu>" +
-                        "<drop-down-menu options=\"labelNames\" on-select=\"onSelect\" model-name=\"'currentLabel'\" selected=\"currentLabel\"></drop-down-menu>" +
-                        "<drop-down-menu options=\"energyItems\" on-select=\"onSelect\" model-name=\"'labelItem'\" selected=\"currentItem\" ng-if=\"currentLabel.name==='支路'\"></drop-down-menu>" +
+                        "<drop-down-menu options=\"categories\" on-select=\"onSelect\" model-name=\"'currentCategory'\" selected=\"currentCategory\" style=\"width: 25%\"></drop-down-menu>" +
+                        "<drop-down-menu options=\"labelNames\" on-select=\"onSelect\" model-name=\"'currentLabel'\" selected=\"currentLabel\" style=\"width: 25%\"></drop-down-menu>" +
+                        "<drop-down-menu options=\"energyItems\" on-select=\"onSelect\" model-name=\"'labelItem'\" selected=\"currentItem\" style=\"width: 50%\" disabled=\"currentLabel.name !== '支路'\"></drop-down-menu>" +
                         "</ul>";
                     var compileFn = $compile(html);
                     var $dom = compileFn($scope);
@@ -839,7 +853,11 @@ app.controller('EnergyOverviewCtrl', function ($scope, ajax, platformService, $c
         items.forEach(function (item, i) {
             $scope.energyItems.push($.extend({}, item, {name: item.aliasName, id: i}));
         });
-        $scope.currentItem = items.length ? items[0] : null;
+        if (labelName === '支路') {
+            $scope.currentItem = items.length ? items[0] : null;
+        } else {
+            $scope.currentItem = {name: '所有' + labelName, id: ''};
+        }
     }
 
     function initDatePicker() {
@@ -1007,18 +1025,28 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
 
     function fetchElectricDegree(sns, startTime, endTime, callback) {
         ajax.get({
-            url: platformService.getDeviceMgmtHost() + '/variables/data/electricaldegreeandcharge',
+            url: platformService.getDeviceMgmtHost() + '/variables/data/summarized',
             data: {
                 sns: sns.join(','),
                 startTime: startTime,
-                endTime: endTime
+                endTime: endTime,
+                calcmethod: 'MAX,MIN'
             },
             success: function (data) {
-                var total = 0;
+                var total = null;
+                // 将最大-最小=总电量
                 data.forEach(function (item) {
-                    total += item.all_degree;
+                    if (item.max_value_data !== null && item.min_value_data !== null) {
+                        if (total === null) {
+                            total = item.max_value_data - item.min_value_data;
+                        } else {
+                            total += (item.max_value_data - item.min_value_data);
+                        }
+                    }
                 });
-                callback(total);
+                if (total !== null) {
+                    callback(parseFloat(total.toFixed(2)));
+                }
             }
         });
     }
@@ -1048,6 +1076,14 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
         var lastMonth = [moment().subtract(1, 'month').format('YYYY-MM-01 00:00:00.000'), moment().subtract(1, 'month').format('YYYY-MM-DD HH:mm:ss.000')];
         $scope.electricData = {};
         var sns = item.deviceVarSns;
+        $scope.electricData = {
+            today: '-',
+            yesterday: '-',
+            month: '-',
+            lastMonth: '-',
+            dayRate: '-',
+            monthRate: '-'
+        };
         fetchElectricDegree(sns, today[0], today[1], function (data) {
             $scope.electricData['today'] = data;
             _calcDayRate();
@@ -1067,7 +1103,7 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
 
         function _calcDayRate() {
             var value1 = $scope.electricData['today'], value2 = $scope.electricData['yesterday'];
-            if (value1 !== undefined && value2 !== undefined) {
+            if (value1 !== '-' && value2 !== '-') {
                 if (value2 === 0) {
                     $scope.electricData['dayRate'] = '-';
                 } else {
@@ -1075,13 +1111,13 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
                     $scope.electricData['dayRate'] = (Math.abs(rate)).toFixed(1);
                     $scope.electricData['dayTrend'] = rate > 0 ? 'up' : 'down';
                 }
-                $scope.$apply();
             }
+            $scope.$apply();
         }
 
         function _calcMonthRate() {
             var value1 = $scope.electricData['month'], value2 = $scope.electricData['lastMonth'];
-            if (value1 !== undefined && value2 !== undefined) {
+            if (value1 !== '-' && value2 !== '-') {
                 if (value2 === 0) {
                     $scope.electricData['monthRate'] = '-';
                 } else {
@@ -1089,8 +1125,8 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
                     $scope.electricData['monthRate'] = (Math.abs(rate)).toFixed(1);
                     $scope.electricData['monthTrend'] = rate > 0 ? 'up' : 'down';
                 }
-                $scope.$apply();
             }
+            $scope.$apply();
         }
     }
     
@@ -1337,6 +1373,13 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
     $scope.labelName = null;
     var timeFormat = 'YYYY-MM-DD HH:mm:ss.000';
     $scope.hasConfig = false;
+    $scope.loadingStatus = {
+        1: false,
+        2: false,
+        3: false,
+        4: false,
+        5: false
+    };
 
     $scope.$on('$otherRefresh', function (event) {
         timeType = $scope.$parent.timeType.id;
@@ -1384,13 +1427,21 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
 
     function fetchElectricDegree(sns, startTime, endTime, callback) {
         ajax.get({
-            url: platformService.getDeviceMgmtHost() + '/variables/data/electricaldegreeandcharge',
+            url: platformService.getDeviceMgmtHost() + '/variables/data/summarized',
             data: {
                 sns: sns.join(','),
                 startTime: startTime,
-                endTime: endTime
+                endTime: endTime,
+                calcmethod: 'MAX, MIN'
             },
             success: function (data) {
+                data.forEach(function (item) {
+                    if (item.max_value_data !== null && item.min_value_data !== null) {
+                        item.all_degree = parseFloat((item.max_value_data - item.min_value_data).toFixed(2));
+                    } else {
+                        item.all_degree = 0;
+                    }
+                });
                 callback(data);
             }
         });
@@ -1431,7 +1482,10 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
             }
         });
         var times = getStartAndEndTime();
+        $scope.loadingStatus[1] = true;
         fetchElectricDegree(sns, times[0], times[1], function (data) {
+            $scope.loadingStatus[1] = false;
+            $scope.$apply();
             var total = 0;
             var varValue = {};
             data.forEach(function (item) {
@@ -1463,8 +1517,8 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
                         text: total + '\nkWh',
                         textStyle: {
                             fontFamily: 'Microsoft YaHei',
-                            fontSize: 14,
-                            color: '#666666',
+                            fontSize: 12,
+                            color: '#818181',
                         },
                         x: 'center',
                         y: 'center',
@@ -1480,7 +1534,7 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
                     {
                         avoidLabelOverlap: false,
                         hoverAnimation: true, //设置饼图默认的展开样式
-                        radius: ['55%', '80%'],
+                        radius: ['55%', '75%'],
                         name: 'pie',
                         type: 'pie',
                         selectedMode: 'single',
@@ -1494,6 +1548,13 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
                                 shadowColor: 'rgba(0, 0, 0, 0.5)',
                             },
                         },
+                        label: {
+                            fontSize: 10
+                        },
+                        labelLine: {
+                            length: 5,
+                            length2: 5
+                        }
                     },
                 ],
             };
@@ -1516,7 +1577,7 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
     function _groupDegrees(data) {
         var varDegreeMap = {};
         data.forEach(function (item) {
-            varDegreeMap[item.device_var_sn] = item.all_degree;
+            varDegreeMap[item.sn] = item.all_degree;
         });
         var itemDegreeMap = [];
         energyItems.forEach(function (item) {
@@ -1536,11 +1597,14 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
         var sns = getAllSnsOfItems();
         var currentDegreeMap = null, historyDegreeMap = null;
         var times = getStartAndEndTime(), lastTimes=getLinkRelativeStartAndEndTime();
+        $scope.loadingStatus[2] = true;
         fetchElectricDegree(sns, times[0], times[1], function (data) {
             currentDegreeMap = _groupDegrees(data);
             _paint();
         });
         fetchElectricDegree(sns, lastTimes[0], lastTimes[1], function (data) {
+            $scope.loadingStatus[2] = false;
+            $scope.$apply();
             historyDegreeMap = _groupDegrees(data);
             _paint();
         });
@@ -1630,7 +1694,10 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
         var sns = getAllSnsOfItems();
         var currentDegreeMap = null, historyDegreeMap = null;
         var times = getStartAndEndTime();
+        $scope.loadingStatus[3] = true;
         fetchElectricDegree(sns, times[0], times[1], function (data) {
+            $scope.loadingStatus[3] = false;
+            $scope.$apply();
             currentDegreeMap = _groupDegrees(data);
             _paint();
         });
@@ -1705,11 +1772,14 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
 
         var currentDegreeMap = null, historyDegreeMap = null;
         var times = getStartAndEndTime(), lastTimes=getLinkRelativeStartAndEndTime();
+        $scope.loadingStatus[4] = true;
         fetchElectricDegree(sns, times[0], times[1], function (data) {
             currentDegreeMap = _groupDegrees(data);
             _paint();
         });
         fetchElectricDegree(sns, lastTimes[0], lastTimes[1], function (data) {
+            $scope.loadingStatus[4] = false;
+            $scope.$apply();
             historyDegreeMap = _groupDegrees(data);
             _paint();
         });
@@ -1825,7 +1895,7 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
                 queryPeriod = 'DAY';
                 break;
             case 'YEAR':
-                startTime = currentDate + '-01-01 00:00:00.000';
+                startTime = currentDate + '-01-03 00:00:00.000';
                 endTime = currentDate + '-12-31 23:59:59.000';
                 queryPeriod = 'MONTH';
                 break;
@@ -1845,7 +1915,10 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
                     break;
             }
         });
+        $scope.loadingStatus[5] = true;
         fetchElectricTrend(sns, startTime, endTime, queryPeriod, function (datas) {
+            $scope.loadingStatus[5] = false;
+            $scope.$apply();
             _paint(times, datas);
         });
 

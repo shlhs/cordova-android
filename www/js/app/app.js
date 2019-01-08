@@ -214,6 +214,11 @@ app.service('platformService', function () {
         return this.thumbHost + '/' + width + 'x' + height + '/' + imageUrl;
     };
 
+    this.getIpcServiceHost = function () {
+        // return this.ipAddress + ':8095/v1';
+        return 'http://114.215.90.83:8095/v1';
+    };
+
     this.host = this.getHost();
     this.ipAddress = this.host ? this.host.substring(0, this.host.indexOf(':', 5)) : '';
     this.thumbHost = this.getImageThumbHost();

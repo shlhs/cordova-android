@@ -1,0 +1,39 @@
+
+<div class="page page-left" ng-controller="DeviceRemoteControlCtrl">
+<header class="mui-bar bg-header">
+    <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
+    <h1 class="mui-title">设备控制中心</h1>
+</header>
+<div class="mui-content" ng-cloak>
+    <div class="mui-card-content" ng-if="!isLoading && varList.length">
+        <ul class="mui-table-view write-var-list no-border">
+            <li class="mui-table-view-cell mui-media" ng-repeat="v in varList">
+                <div class="mui-media-body mui-ellipsis" ng-if="v.type==='Analog'">
+                    {{v.name}}
+                    <p class="value">{{v.value}}</p>
+                    <a class="iconfont anticon-edit edit" ng-click="onEditAnalog(v)"></a>
+                </div>
+                <div class="mui-media-body mui-ellipsis" ng-if="v.type==='Digital'">
+                    {{v.name}}
+                    <div class="mui-switch" style="transition-duration: 0.2s;" data-beforeContent="{{v.value===1 ? v.zero_meaning : v.one_meaning}}"
+                         ng-click="onToggleSwitcher(v)" ng-class="{'mui-active': v.value===1}">
+                        <div class="mui-switch-handle" style="transition-duration: 0.2s;"></div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="page-alert-wrapper" ng-if="varList.length==0 && !isLoading">
+        <div class="page-alert">
+            <i class="alert-icon nodata"></i>
+            <div class="alert-text info">设备没有可写变量</div>
+        </div>
+    </div>
+    <div class="page-alert-wrapper" ng-if="isLoading">
+        <div class="page-alert">
+            <img src="../../../img/page-loading.gif" class="loading-img">
+            <div class="alert-text info">正在加载...</div>
+        </div>
+    </div>
+</div>
+</div>

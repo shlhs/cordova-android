@@ -5,6 +5,7 @@
  */
 
 var gPublicApiHost = 'http://47.104.75.86:8090';     // 公有云
+// var gPublicApiHost = 'http://47.97.167.195:8090';
 
 app.controller('LoginCtrl', function ($scope, $timeout, platformService, userService, $state, $http, ajax, cordovaService) {
     $scope.error = '';

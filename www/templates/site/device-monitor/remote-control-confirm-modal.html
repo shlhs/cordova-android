@@ -1,0 +1,19 @@
+<div class="page page-fade" ng-controller="DeviceRemoteControlConfirmCtrl">
+    <div class="mui-popup property-editor-popup" style="display: block;opacity: 1;">
+        <div class="mui-popup-inner">
+            <div class="form-group" ng-if="controlObj.type==='Analog'">
+                <label>设置变量【{{controlObj.name}}】的值为：</label>
+                <input type="text" ng-model="newValue" ng-change="onInputValidate(newValue)">
+                <div style="color: red;font-size: 12px;">{{error}}</div>
+            </div>
+            <div class="form-group" ng-if="controlObj.type==='Digital'">
+                <label style="color: #333;">确认对变量【{{controlObj.name}}】进行：{{controlObj.actionName}} 操作吗？</label>
+            </div>
+        </div>
+        <div class="mui-popup-buttons">
+            <a class="mui-popup-button" ng-click="onCancel()" style="color: #848484;">取消</a>
+            <a class="mui-popup-button" ng-click="confirm()" style="color: #439AF2;">确定</a>
+        </div>
+    </div>
+    <div class="mui-popup-backdrop mui-active" style="display: block;"></div>
+</div>
