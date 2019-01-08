@@ -573,27 +573,13 @@ app.controller('EventListCtrl', function ($scope, $stateParams, scrollerService,
             },
             success: function (data) {
                 $.notify.progressStop();
-                $.notify.info("事件已确认");
-                // 将已确认的事件移至后面
-                var oldIndex = 0;
+                $.notify.info("事件已确认", 800);
+                // 将已确认的事件从列表中删除
                 for (var i=0; i<$scope.events.length; i++) {
                     if ($scope.events[i].id === data.id) {
                         $scope.events.splice(i, 1);
-                        oldIndex = i > 0 ? i-1 :0;
                         break;
                     }
-                }
-                var inserted = false;
-                for (var i=oldIndex; i<$scope.events.length; i++) {
-                    if ($scope.events[i].status_name === 'CLEARED') {
-                        // 插到前面
-                        $scope.events.splice(i, 0, data);
-                        inserted = true;
-                        break;
-                    }
-                }
-                if (!inserted) {
-                    $scope.events.push(data);
                 }
                 // 确认事件后，需要在首页更新事件信息
                 window.android && window.android.onJsCallbackForPrevPage('eventHandled', '');
