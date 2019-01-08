@@ -333,24 +333,20 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
     };
 
     function notifyCreate(taskId) {
-        if ($scope.onCreateSucceed) {
-            ajax.get({
-                url: '/opstasks',
-                data: {
-                    task_ids: taskId
-                },
-                success: function (data) {
-                    var task = data[0];
-                    $scope.onCreateSucceed(task);
-                    $scope.openPage($scope, '/templates/task/task-detail.html', {id: taskId}, {finish: true});
-                },
-                error: function () {
-                    $scope.openPage($scope, '/templates/task/task-detail.html', {id: taskId}, {finish: true});
-                }
-            });
-        } else {
-            $scope.openPage($scope, '/templates/task/task-detail.html', {id: taskId}, {finish: true});
-        }
+        ajax.get({
+            url: '/opstasks',
+            data: {
+                task_ids: taskId
+            },
+            success: function (data) {
+                var task = data[0];
+                $scope.$emit('onDtsCreate', task);
+                $scope.openPage($scope, '/templates/task/task-detail.html', {id: taskId}, {finish: true});
+            },
+            error: function () {
+                $scope.openPage($scope, '/templates/task/task-detail.html', {id: taskId}, {finish: true});
+            }
+        });
     }
 
     $scope.$on('$destroy', function (event) {
@@ -442,6 +438,9 @@ app.controller('DeviceDtsListCtrl', function ($scope, ajax, scrollerService, rou
     };
 
     $scope.updateTask = function (taskData) {
+        if (DtsTaskType.indexOf(taskData.task_type_id) < 0 || !taskData.device_record.length || taskData.device_record[0].device_sn !== deviceSn) {
+            return;
+        }
         // 查找任务是否存在
         var exist = false;
         for (var i in $scope.tasks){
@@ -461,19 +460,27 @@ app.controller('DeviceDtsListCtrl', function ($scope, ajax, scrollerService, rou
     $scope.openDtsCreatePage = function () {
         routerService.openPage($scope, '/templates/dts/dts-create.html', {
             sn: stationSn,
-            device_sn: deviceSn,
-            onCreateSucceed: function (data) {
-                formatTaskStatusName(data);
-                data.isTimeout = $scope.taskTimeout(data);
-                $scope.updateTask(data);
-            }
+            device_sn: deviceSn
         });
     };
+
+    $scope.$on('onTaskUpdate', function (event, data) {
+        formatTaskStatusName(data);
+        data.isTimeout = $scope.taskTimeout(data);
+        $scope.updateTask(data);
+    });
+
+    $scope.$on('onDtsCreate', function (event, data) {
+        formatTaskStatusName(data);
+        data.isTimeout = $scope.taskTimeout(data);
+        $scope.updateTask(data);
+
+    });
+
     $scope.openTask = function (task) {
         routerService.openPage($scope, '/templates/task/task-detail.html',
             {
-                id: task.id,
-                onUpdate: $scope.updateTask
+                id: task.id
             });
     };
 
@@ -553,11 +560,9 @@ app.controller('StationDtsListCtrl', function ($scope, $rootScope, scrollerServi
         });
     };
     $scope.openTask = function (task) {
-        // location.href = '/templates/task/task-detail.html?id=' + taskId;
         routerService.openPage($scope, '/templates/task/task-detail.html',
             {
-                id: task.id,
-                onUpdate: $scope.updateTask
+                id: task.id
             });
     };
 
@@ -583,16 +588,25 @@ app.controller('StationDtsListCtrl', function ($scope, $rootScope, scrollerServi
         // window.location.href = '/templates/dts/dts-create.html?station_sn=' + (stationSn || '') + '&device_sn=' + (deviceSn || '');
         routerService.openPage($scope, '/templates/dts/dts-create.html', {
             station_sn: $scope.station_sn || '',
-            device_sn: $scope.device_sn || '',
-            onCreateSucceed: function (data) {
-                // 获取运维任务详情，并更新到列表中
-                parseTaskData(data);
-                $scope.updateTask(data);
-            }
-        })
+            device_sn: $scope.device_sn || ''
+        });
     };
 
+    $scope.$on('onDtsCreate', function (event, data) {
+        parseTaskData(data);
+        $scope.updateTask(data);
+    });
+
+    $scope.$on('onTaskUpdate', function (event, data) {
+        parseTaskData(data);
+        $scope.updateTask(data);
+    });
+
     $scope.updateTask = function (taskData) {
+        // 如果不是缺陷，则返回
+        if (DtsTaskType.indexOf(taskData.task_type_id) < 0) {
+            return;
+        }
         // 查找任务是否存在
         var exist = false;
         for (var i in $scope.tasks){
