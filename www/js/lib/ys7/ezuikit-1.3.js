@@ -59,7 +59,8 @@
   // 当前页面是否是https协议
   var isHttps = location.protocol === 'https:' ? true : false;
   // 是否为移动端
-  var isMobile = !!navigator.userAgent.match(/(iPhone|iPod|iPad|Android|ios|SymbianOS)/i);
+  // var isMobile = !!navigator.userAgent.match(/(iPhone|iPod|iPad|Android|ios|SymbianOS)/i);
+  var isMobile = false;   // 刘彩云修改，设置isMobile恒为false
   var testVideo = document.createElement('video');
   // 是否支持video标签和addEventListener方法（主要为了区别ie8）
   var isModernBrowser = !!testVideo.canPlayType && !!window.addEventListener;
@@ -255,8 +256,6 @@
       // 如果是手机浏览器环境,或者原生支持HLS播放的,直接使用video标签播放
       // 否则尝试使用hls.js播放，
       // 最后使用flash
-
-        isMobile = false;   // 刘彩云修改，默认不使用移动端模式
       if(isMobile || isNativeSupportHls){
         this.log('使用原生video');
         this.video.style.heght = this.opt.height = Number((this.opt.width).toString().replace(/px$/g, '')) * 9 / 16 + 'px';
