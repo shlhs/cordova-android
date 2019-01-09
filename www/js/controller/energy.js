@@ -111,9 +111,20 @@ app.directive('energyConfigTree',[function(){
                 item.$$isExpend = !item.$$isExpend;
             };
 
+            function checkChildrenOfGroup(item) {
+                if (item.isLeaf) {
+                    return;
+                }
+                item.children.forEach(function (child) {
+                    child.checked = item.checked;
+                    checkChildrenOfGroup(child);
+                });
+            }
+
             $scope.onCheckItem = function ($event, item) {
                 $event.stopPropagation();
                 item.checked = !item.checked;
+                checkChildrenOfGroup(item);
                 if (tmpChecked[item.path] !== undefined) {
                     // 如果上一次记录过，则本次删除
                     delete tmpChecked[item.path];

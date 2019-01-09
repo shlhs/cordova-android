@@ -3177,3 +3177,24 @@ header .mui-title .dropdown-arrow:after {
     content: '';
     clear: both;
 }
+.mui-switch.status-on .mui-switch-handle {
+    background-color: #e00202 !important;
+    box-shadow: 0 2px 5px rgba(245, 30, 30, 0.4) !important;
+}
+.mui-switch.status-off .mui-switch-handle {
+    /*border-color: #4cd964 !important;;*/
+    background-color: #4cd964 !important;
+    box-shadow: 0 2px 5px rgba(100, 255, 126, 0.46);
+}
+.mui-switch.no-color {
+    border-color: #ddd !important;
+    background-color: #fff !important;
+}
+.mui-switch.no-color:before {
+    color: #999;
+    right: 10px;
+}
+.mui-switch.mui-active.no-color:before {
+    color: #999;
+    left: 10px;
+}

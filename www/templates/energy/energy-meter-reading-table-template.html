@@ -1,4 +1,4 @@
-<table class="stripe row-border order-column dataTable no-footer" style="border-bottom: none;" id="meterReadingTable">
+<table class="stripe row-border order-column dataTable no-footer" style="border-bottom: none;" id="meterReadingTable" ng-show="tableBodyData.length">
     <thead>
     <tr>
         <th ng-repeat="item in tableHeader track by $index" energy-meter-reading-table-repeat-finish="">
