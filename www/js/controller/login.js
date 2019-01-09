@@ -87,13 +87,16 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
             },
             crossDomain: true,
             success: function (data) {
-
                 var result = KJUR.jws.JWS.verify(data.token, 'zjlhstest');
                 if (result) {
                     userService.setAccountToken(data.token);
                     getUserInfo();
                 } else {
                     toast('用户名或密码错误');
+                    if ($scope.isAutoLogin) {
+                        userService.setPassword('');
+                        $state.go('login');
+                    }
                 }
             },
             error :function () {
@@ -171,8 +174,8 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
             if (!platform){
                 if ($scope.isAutoLogin){
                     userService.setPassword('');
-                    location.href = 'login.html';
-                }else{
+                    $state.go('login');
+                } else{
                     $scope.enable = true;
                     toast('平台编号错误');
                     $scope.$apply();
@@ -186,7 +189,7 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
         }).catch(function () {
             if ($scope.isAutoLogin){
                 userService.setPassword('');
-                location.href = '/templates/login.html';
+                $state.go('login');
                 $scope.enable = false;
             }else{
                 $scope.enable = true;

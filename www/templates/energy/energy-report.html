@@ -50,7 +50,7 @@
     <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
     <h1 class="mui-title">能源报表</h1>
 </header>
-<div class="mui-content" style="background-color: #fff;">
+<div class="mui-content" style="background-color: #fff;" id="energy_report_body">
     <div ng-if="!isLoading && currentLabel">
         <ul class="selector-group" id="tabs" style="background-color: transparent;padding: 0 10px;">
             <drop-down-menu options="timeTypeList" on-select="onSelect" model-name="'timeType'" selected="timeType"
@@ -88,7 +88,7 @@
     </div>
     <div class="page-alert-wrapper" ng-if="isLoading">
         <div class="page-alert">
-            <img src="../../img/page-loading.gif" class="loading-img">
+            <i class="alert-icon loading-spinner"></i>
             <div class="alert-text info">正在加载...</div>
         </div>
     </div>

@@ -212,7 +212,7 @@ app.controller('EnergyMeterReadingCtrl', function ($scope, ajax, $compile, platf
     $scope.startDate = moment().set('minute', 0).set('second', 0).set('millisecond', 0).subtract('d', 1).format('YYYY-MM-DD HH:mm:ss.000');
     $scope.tableHeader = [];
     $scope.tableBodyData = [];
-    $scope.isLoading = false;
+    $scope.isLoading = true;
     var variableUnits = {};     // 变量sn与单位的对应关系
     var allEnergyItems = [];
     var selectedItems = [];
@@ -252,7 +252,7 @@ app.controller('EnergyMeterReadingCtrl', function ($scope, ajax, $compile, platf
                     var compileFn = $compile(html);
                     var $dom = compileFn($scope);
                     // 添加到文档中
-                    $dom.prependTo($('.mui-content'));
+                    $dom.prependTo($('#meter_reading_body'));
                     refreshData();
                     initDatePicker();
                 }
@@ -451,7 +451,7 @@ app.controller('EnergyMeterReadingCtrl', function ($scope, ajax, $compile, platf
 app.directive('energyMeterReadingTable', [function(){
     return {
         restrict: 'E',
-        templateUrl: '/templates/energy/energy-meter-reading-table-template.html',
+        templateUrl: 'templates/energy/energy-meter-reading-table-template.html',
         replace: true,
         scope: {
             tableHeader: '=',
@@ -512,7 +512,7 @@ app.controller('EnergyReportCtrl', function ($scope, ajax, $compile, platformSer
     $scope.timeType = {id: 'DAY', name: '日报表'};
     $scope.tableHeader = [];
     $scope.tableBodyData = [];
-    $scope.isLoading = false;
+    $scope.isLoading = true;
     var allEnergyItems = [];
     var selectedItems = [];
 
@@ -555,7 +555,7 @@ app.controller('EnergyReportCtrl', function ($scope, ajax, $compile, platformSer
                     var compileFn = $compile(html);
                     var $dom = compileFn($scope);
                     // 添加到文档中
-                    $dom.prependTo($('.mui-content'));
+                    $dom.prependTo($('#energy_report_body'));
                     refreshData();
                     setTimeout(initDatePicker, 200);
                 }
@@ -839,7 +839,7 @@ app.controller('EnergyOverviewCtrl', function ($scope, ajax, platformService, $c
     $scope.currentLabel = null;
     $scope.energyItems = [];
     $scope.currentItem = null;
-    $scope.isLoading = false;
+    $scope.isLoading = true;
     var currentDay = moment().format('YYYY-MM-DD 00:00:00.000');
     $scope.timeTypeList = [{
         id: 'DAY',
