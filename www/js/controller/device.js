@@ -902,10 +902,10 @@ app.controller('DeviceRemoteControlCtrl', function ($scope, $interval, routerSer
     }
 
     $scope.onToggleSwitcher = function (v) {     // 变量开关
-        if (v.value === 1) {
-            v.value = 0;
+        if (v.value === '1') {
+            v.value = '0';
         } else {
-            v.value = 1;
+            v.value = '1';
         }
         var controlObj = {
             sn: v.sn,
@@ -913,7 +913,7 @@ app.controller('DeviceRemoteControlCtrl', function ($scope, $interval, routerSer
             name: v.name,
             action: 'yaokong-act',
             type: 'Digital',
-            actionName: v.value ? v.zero_meaning : v.one_meaning
+            actionName: v.value === '1' ? v.one_meaning : v.zero_meaning
         };
         showConfirmModal(controlObj);
     };
@@ -1002,7 +1002,7 @@ app.controller('DeviceRemoteControlConfirmCtrl', function ($scope, ajax, platfor
             data: {
                 type: controlObj.action,
                 variable_sn: controlObj.sn,
-                variable_value: newValue,
+                variable_value: controlObj.type === 'Digital' ? controlObj.value : newValue,
                 pwd: pwd
             },
             success: function (response) {
