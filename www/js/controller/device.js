@@ -680,12 +680,13 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile) {     
     $scope.getDataList();
 });
 
-app.controller('DeviceMonitorCtrl', function ($scope, ajax, appStoreProvider) {
+app.controller('DeviceMonitorCtrl', function ($scope, ajax, appStoreProvider, userService) {
     $scope.isLoading = true;
     $scope.stationSn = GetQueryString('stationSn');
     $scope.deviceSn=GetQueryString('deviceSn');
     $scope.deviceName = GetQueryString('deviceName');
-    $scope.hasOpsAuth = appStoreProvider.hasOpsAuth();
+    // $scope.hasOpsAuthMenu = appStoreProvider.hasOpsAuth();
+    $scope.canControl = userService.getUserRole() === UserRole.OpsAdmin || userService.getUserRole() === UserRole.OpsOperator;
     $scope.secondOptions = {
         '实时数据': [],
         '历史数据': []
@@ -885,7 +886,7 @@ app.controller('DeviceRemoteControlCtrl', function ($scope, $interval, routerSer
                    var exist = false;
                    for (var i=0; i<data.length; i++) {
                        if (data[i].var.sn === v.sn) {
-                           v.value = (data[i].data === null ? '' : data[i].data) + (data[i].unit || '');
+                           v.value = (data[i].data === null ? 1 : data[i].data) + (data[i].unit || '');
                            exist = true;
                            break;
                        }
@@ -928,47 +929,10 @@ app.controller('DeviceRemoteControlCtrl', function ($scope, $interval, routerSer
 
     function showConfirmModal(controlObj) {
         routerService.openPage($scope, '/templates/site/device-monitor/remote-control-confirm-modal.html', {
-            controlObj: controlObj,
-            onCancel: function () {
-                // 取消下发，将值恢复
-                if (controlObj.type === 'Digital') {
-                    for (var i=0; i<$scope.varList.length; i++) {
-                        if ($scope.varList[i].sn === controlObj.sn) {
-                            $scope.varList[i].value = !$scope.varList[i].value;
-                            break;
-                        }
-                    }
-                }
-                history.back();
-            },
-            onConfirm: function (newValue) {
-                confirmControl(controlObj, newValue);
-            }
+            controlObj: controlObj
         }, {
             hidePrev: false
         });
-    }
-
-    function confirmControl(controlObj, newValue) {
-        ajax.post({
-            url: platformService.getDeviceMgmtHost() + '/notification/value_changed',
-            data: {
-                type: controlObj.action,
-                variable_sn: controlObj.sn,
-                variable_value: controlObj.type === 'Digital' ? controlObj.value : newValue
-            },
-            success: function (response) {
-                if (response && response.code === 200) {
-                    $.notify.info('成功下发');
-                    history.back();
-                } else {
-                    $.notify.error('下发失败');
-                }
-            },
-            error: function () {
-                $.notify.error('下发失败');
-            }
-        })
     }
 
     $scope.$on('$destroy',function(){
@@ -980,15 +944,26 @@ app.controller('DeviceRemoteControlCtrl', function ($scope, $interval, routerSer
     getWriteVarList();
 });
 
-app.controller('DeviceRemoteControlConfirmCtrl', function ($scope) {
+app.controller('DeviceRemoteControlConfirmCtrl', function ($scope, ajax, platformService) {
     $scope.okEnable = $scope.controlObj.type === 'Digital' ? true : false;
     $scope.error = '';
+    $scope.isSubmitting = false;
     $scope.inputValid = true;
     var newValue = '';
+    var pwd = '';
 
     $scope.onInputValidate = function (value) {
         newValue = value;
         $scope.error = '';
+    };
+
+    $scope.onPwdChange = function (value) {
+        pwd = value;
+        $scope.error = '';
+    };
+
+    $scope.onCancel = function () {
+        history.back();
     };
 
     function isNumber(val) {
@@ -1002,6 +977,10 @@ app.controller('DeviceRemoteControlConfirmCtrl', function ($scope) {
     }
 
     $scope.confirm = function () {
+        if (!pwd) {
+            $scope.error = '请输入密码';
+            return;
+        }
         if ($scope.controlObj.type === 'Analog') {
             if (!newValue) {
                 $scope.error = '请输入需要设置的值';
@@ -1011,7 +990,42 @@ app.controller('DeviceRemoteControlConfirmCtrl', function ($scope) {
                 return;
             }
         }
-        $scope.onConfirm(newValue);
+        postControl();
+    };
+
+    function postControl() {
+        var controlObj = $scope.controlObj;
+        $scope.isSubmitting = true;
+        ajax.post({
+            url: platformService.getDeviceMgmtHost() + '/notification/value_changed',
+            data: {
+                type: controlObj.action,
+                variable_sn: controlObj.sn,
+                variable_value: newValue,
+                pwd: pwd
+            },
+            success: function (response) {
+                if (response) {
+                    if (response.code === 200) {
+                        $.notify.info('成功下发');
+                        $scope.onCancel();
+                    } else {
+                        $scope.isSubmitting = false;
+                        $scope.error = '密码错误';
+                        $scope.$apply();
+                    }
+                } else {
+                    $scope.isSubmitting = false;
+                    $scope.error = '下发失败';
+                    $scope.$apply();
+                }
+            },
+            error: function () {
+                $scope.isSubmitting = false;
+                $scope.error = '下发失败';
+                $scope.$apply();
+            }
+        })
     }
 });
 
