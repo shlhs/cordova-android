@@ -1,0 +1,33 @@
+<div class="page page-fade" ng-controller="IpcPicRecordDetailCtrl">
+    <header class="mui-bar bg-header header-bg-light">
+        <a class="mui-icon  mui-icon-left-nav mui-pull-left btn-back" onclick="pageBack()"></a>
+        <h1 class="mui-title">{{record.createTime}}</h1>
+    </header>
+    <div class="mui-content" style="background-color: #F6FAFD;">
+        <div style="font-size: 14px;color: #333;margin: 4px 0 6px 18px;">{{createTime}}
+            <span ng-if="record.status !== '0'" class="mui-pull-right" style="font-size: 12px;color: #aaa;margin-right: 12px;">正在保存({{record.downCount}}/{{record.allCount}})</span>
+        </div>
+        <div style="font-size: 16px;color: #333;margin-left: 18px;" ng-if="record.name">{{record.name}}</div>
+        <ul class="ipc-list col" style="margin-top: 12px;">
+            <li ng-repeat="img in images" ng-click="openGallery($index)">
+                <div class="ipc-wrapper">
+                    <div class="bracket"></div>
+                    <img class="img" ng-src="{{img}}">
+                </div>
+            </li>
+        </ul>
+        <div class="page-alert-wrapper" ng-if="isLoading">
+            <div class="page-alert">
+                <i class="alert-icon loading-spinner"></i>
+                <div class="alert-text info">正在加载...</div>
+            </div>
+        </div>
+        <div class="page-alert-wrapper" ng-if="loadingFailed">
+            <div class="page-alert">
+                <i class="alert-icon warning"></i>
+                <div class="alert-text info">加载失败，请检查网络</div>
+                <div class="alert-reload" ng-click="getIpcList()">重新加载</div>
+            </div>
+        </div>
+    </div>
+</div>

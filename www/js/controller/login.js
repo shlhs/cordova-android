@@ -6,6 +6,13 @@
 // var gPublicApiHost = 'http://47.104.75.86:8090';        // 公有云接口
 var gPublicApiHost = 'http://47.97.167.195:8090';       // 因泰来
 
+function onFinishVersionCheck() {
+    var scope = angular.element('div[ng-controller="AutoLoginCtrl"]').scope();
+    if (scope) {
+        scope.autoLogin();
+    }
+}
+
 app.controller('LoginCtrl', function ($scope, $timeout, platformService, userService, $state, $http, ajax, cordovaService) {
     $scope.error = '';
     var platform = null;
@@ -79,13 +86,16 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
             },
             crossDomain: true,
             success: function (data) {
-
                 var result = KJUR.jws.JWS.verify(data.token, 'zjlhstest');
                 if (result) {
                     userService.setAccountToken(data.token);
                     getUserInfo();
                 } else {
                     toast('用户名或密码错误');
+                    if ($scope.isAutoLogin) {
+                        userService.setPassword('');
+                        $state.go('login');
+                    }
                 }
             },
             error :function () {
@@ -132,12 +142,7 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
                 } else{
                     userService.saveCompany([]);
                 }
-                if (window.android){
-                    window.android.loginSuccess();
-                }else{
-                    // location.href = '/templates/home.html?finishPage=1';
-                    $state.go('index');
-                }
+                $scope.gotoHome();
             },
             error: function (xhr, status, error) {
                 $scope.isLogin = false;
@@ -146,6 +151,10 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
             }
         });
     }
+
+    $scope.gotoHome = function() {
+        $state.go('index');
+    };
 
     // 平台查询start
     $scope.platformError = '';
@@ -164,8 +173,8 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
             if (!platform){
                 if ($scope.isAutoLogin){
                     userService.setPassword('');
-                    location.href = 'login.html';
-                }else{
+                    $state.go('login');
+                } else{
                     $scope.enable = true;
                     toast('平台编号错误');
                     $scope.$apply();
@@ -179,7 +188,7 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
         }).catch(function () {
             if ($scope.isAutoLogin){
                 userService.setPassword('');
-                location.href = '/templates/login.html';
+                $state.go('login');
                 $scope.enable = false;
             }else{
                 $scope.enable = true;
@@ -187,7 +196,7 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
                 $scope.$apply();
             }
         });
-    };
+    }
     // 平台查询end
 
 });
@@ -209,5 +218,10 @@ app.controller('AutoLoginCtrl', function ($scope, $timeout, $state, userService,
         }
     };
 
-    $scope.autoLogin();
+    // 先检查版本是否有更新
+    if (window.android) {
+        window.android && window.android.checkVersion && window.android.checkVersion();
+    } else {
+        $scope.autoLogin();
+    }
 });

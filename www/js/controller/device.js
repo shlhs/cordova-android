@@ -680,14 +680,12 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile, router
     $scope.getDataList();
 });
 
-app.controller('DeviceMonitorCtrl', function ($scope, ajax, $stateParams) {
+app.controller('DeviceMonitorCtrl', function ($scope, ajax, routerService, userService) {
     $scope.isLoading = true;
-    // $scope.stationSn = GetQueryString('stationSn');
-    // $scope.deviceSn=GetQueryString('deviceSn');
-    // $scope.deviceName = GetQueryString('deviceName');
     $scope.stationSn = $scope.sn;
     $scope.deviceSn = $scope.deviceSn;
     $scope.deviceName = $scope.deviceName;
+    $scope.canControl = userService.getUserRole() === UserRole.OpsAdmin || userService.getUserRole() === UserRole.OpsOperator;
     $scope.secondOptions = {
         '实时数据': [],
         '历史数据': []
@@ -818,8 +816,218 @@ app.controller('DeviceMonitorCtrl', function ($scope, ajax, $stateParams) {
         });
     }
 
+    $scope.openRemoteControlPage = function () {
+        routerService.openPage($scope, '/templates/site/device-monitor/remote-control.html', {
+            device_sn: $scope.deviceSn
+        });
+    };
+
     getDeviceVars();
 
+});
+
+app.controller('DeviceRemoteControlCtrl', function ($scope, $interval, routerService, platformService, ajax) {
+    $scope.varList = [];
+    $scope.confirmVisible = false;
+    $scope.controlObj = null;
+    $scope.isLoading = true;
+    var refreshInterval = null;
+
+    function getWriteVarList() {
+        $scope.isLoading = true;
+        ajax.get({
+            url: platformService.getDeviceMgmtHost() + '/management/devices/' + $scope.device_sn + '/variables',
+            data: {
+                rw: 3
+            },
+            success: function (response) {
+                $scope.isLoading = false;
+                // 状态量在前，模拟量在后
+                $scope.varList = response.data.sort(function (v1, v2) {
+                    if (v1.type === v2.type) {
+                        return 0;
+                    }
+                    if (v1.type === 'Analog' && v2.type === 'Digital') {
+                        return 1;
+                    }
+                    return -1;
+                });
+                // 修改状态量的0/1描述
+                $scope.varList.forEach(function (v) {
+                    if (v.type === 'Digital') {
+                        v.one_meaning = v.one_meaning || 'ON';
+                        v.zero_meaning = v.zero_meaning || 'OFF';
+                    }
+
+                });
+                getRealTimeData();
+                if (refreshInterval === null) {
+                    refreshInterval = $interval(getRealTimeData, 4000);
+                }
+                $scope.$apply();
+            },
+            error: function () {
+                $scope.isLoading = false;
+                $.notify.error('获取可控变量失败');
+            }
+        });
+    }
+
+    function getRealTimeData() {        // 获取变量的实时值
+        var sns = [];
+        $scope.varList.forEach(function (n) {
+            sns.push(n.sn);
+        });
+        var url = "/devicevars/getrealtimevalues";
+        ajax.get({
+            url: url,
+            data: {sns: sns.join(",")},
+            success: function(data) {
+                $scope.varList.forEach(function (v) {
+                    var exist = false;
+                    for (var i=0; i<data.length; i++) {
+                        if (data[i].var.sn === v.sn) {
+                            v.value = (data[i].data === null ? 1 : data[i].data) + (data[i].unit || '');
+                            exist = true;
+                            break;
+                        }
+                    }
+                    if (!exist) {
+                        v.value = null;
+                    }
+                });
+                $scope.$apply();
+            }
+        });
+    }
+
+    $scope.onToggleSwitcher = function (v) {     // 变量开关
+        if (v.value === '1') {
+            v.value = '0';
+        } else {
+            v.value = '1';
+        }
+        var controlObj = {
+            sn: v.sn,
+            value: v.value,
+            name: v.name,
+            action: 'yaokong-act',
+            type: 'Digital',
+            actionName: v.value === '1' ? v.one_meaning : v.zero_meaning
+        };
+        showConfirmModal(controlObj);
+    };
+
+    $scope.onEditAnalog = function (v) {        // 遥设
+        var controlObj = {
+            sn: v.sn,
+            name: v.name,
+            action: 'yaoshe-act',
+            type: 'Analog'
+        };
+        showConfirmModal(controlObj);
+    };
+
+    function showConfirmModal(controlObj) {
+        routerService.openPage($scope, '/templates/site/device-monitor/remote-control-confirm-modal.html', {
+            controlObj: controlObj
+        }, {
+            hidePrev: false
+        });
+    }
+
+    $scope.$on('$destroy',function(){
+        if (refreshInterval !== null) {
+            $interval.cancel(refreshInterval);
+        }
+    });
+
+    getWriteVarList();
+});
+
+app.controller('DeviceRemoteControlConfirmCtrl', function ($scope, ajax, platformService) {
+    $scope.okEnable = $scope.controlObj.type === 'Digital' ? true : false;
+    $scope.error = '';
+    $scope.isSubmitting = false;
+    $scope.inputValid = true;
+    var newValue = '';
+    var pwd = '';
+
+    $scope.onInputValidate = function (value) {
+        newValue = value;
+        $scope.error = '';
+    };
+
+    $scope.onPwdChange = function (value) {
+        pwd = value;
+        $scope.error = '';
+    };
+
+    $scope.onCancel = function () {
+        history.back();
+    };
+
+    function isNumber(val) {
+        var regPos = /^\d+(\.\d+)?$/; //非负浮点数
+        var regNeg = /^(-(([0-9]+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*)))$/; //负浮点数
+        if(regPos.test(val) || regNeg.test(val)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    $scope.confirm = function () {
+        if (!pwd) {
+            $scope.error = '请输入密码';
+            return;
+        }
+        if ($scope.controlObj.type === 'Analog') {
+            if (!newValue) {
+                $scope.error = '请输入需要设置的值';
+                return;
+            } else if (!isNumber(newValue)) {
+                $scope.error = '请输入数字';
+                return;
+            }
+        }
+        postControl();
+    };
+
+    function postControl() {
+        var controlObj = $scope.controlObj;
+        $scope.isSubmitting = true;
+        ajax.post({
+            url: platformService.getDeviceMgmtHost() + '/notification/value_changed',
+            data: {
+                type: controlObj.action,
+                variable_sn: controlObj.sn,
+                variable_value: controlObj.type === 'Digital' ? controlObj.value : newValue,
+                pwd: pwd
+            },
+            success: function (response) {
+                if (response) {
+                    if (response.code === 200) {
+                        $.notify.info('成功下发');
+                        $scope.onCancel();
+                    } else {
+                        $scope.isSubmitting = false;
+                        $scope.error = '密码错误';
+                        $scope.$apply();
+                    }
+                } else {
+                    $scope.isSubmitting = false;
+                    $scope.error = '下发失败';
+                    $scope.$apply();
+                }
+            },
+            error: function () {
+                $scope.isSubmitting = false;
+                $scope.error = '下发失败';
+                $scope.$apply();
+            }
+        })
+    }
 });
 
 
@@ -832,7 +1040,7 @@ app.controller('VarRealtimeCtrl', function ($scope, ajax) {
     $scope.isLoading = false;
     var interval = null;
 
-    $scope.$on('$onRealtimeTypeChanged', function (event, realtimeItem) {
+    var typeChangeListener = $scope.$on('$onRealtimeTypeChanged', function (event, realtimeItem) {
 
         $scope.realtime = realtimeItem;
         $scope.realtimeType = realtimeItem.name;
@@ -842,7 +1050,7 @@ app.controller('VarRealtimeCtrl', function ($scope, ajax) {
         }
     });
 
-    $scope.$on('$onHistoryVarChanged', function (event) {
+    var varChangeListener = $scope.$on('$onHistoryVarChanged', function (event) {
         if (interval) {
             clearInterval(interval);
             interval = null;
@@ -865,10 +1073,10 @@ app.controller('VarRealtimeCtrl', function ($scope, ajax) {
                 if (type === '状态量') {   // 状态量
                     data.forEach(function (n) {
                         if (n.data > 0) {
-                            n.value = n.var.one_meaning ? n.var.one_meaning : 'OFF';
+                            n.value = n.var.one_meaning ? n.var.one_meaning : 'ON';
                             n.status = 'danger';
                         } else {
-                            n.value = n.var.zero_meaning ? n.var.zero_meaning : 'ON';
+                            n.value = n.var.zero_meaning ? n.var.zero_meaning : 'OFF';
                             n.status = 'normal';
                         }
                     });
@@ -889,6 +1097,14 @@ app.controller('VarRealtimeCtrl', function ($scope, ajax) {
         if (null != interval) {
             clearInterval(interval);
         }
+        if (typeChangeListener) {
+            typeChangeListener();
+            typeChangeListener = null;
+        }
+        if (varChangeListener) {
+            varChangeListener();
+            varChangeListener = null;
+        }
     })
 });
 
@@ -899,7 +1115,7 @@ app.controller('HistoryVarCtrl', function ($scope, ajax, $timeout) {
     $scope.timeRange = 'DAY';
     $scope.isLoading = false;
 
-    $scope.$on('$onHistoryVarChanged', function (event, dataItem) {
+    var varChangeListener = $scope.$on('$onHistoryVarChanged', function (event, dataItem) {
         if (dataItem)
         {
             $scope.currentGroup = dataItem;
@@ -1047,6 +1263,13 @@ app.controller('HistoryVarCtrl', function ($scope, ajax, $timeout) {
     //     }
     //
     // })
+
+    $scope.$on('$destroy', function (event) {
+        if (varChangeListener) {
+            varChangeListener();
+            varChangeListener = null;
+        }
+    });
 });
 
 app.directive('treeView',[function(){

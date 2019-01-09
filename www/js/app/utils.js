@@ -24,12 +24,8 @@ Date.prototype.Format = function (fmt) { //author: meizz
 };
 
 function pageBack() {
-    if (window.android){
-        location.href = '/app/home';
-    }else{
-        history.back();
-        return false;
-    }
+    history.back();
+    return false;
 }
 
 function IsPC()
@@ -45,9 +41,13 @@ function IsPC()
 }
 
 
-function GetQueryString(name)
+function GetQueryString(name, url)
 {
-    var search = window.location.search.substring(1), params = search.split('&');
+    var search = window.location.search;
+    if (url) {
+        search = url.substring(url.indexOf('?'));
+    }
+    var search = search.substring(1), params = search.split('&');
     var index, param;
     for (var i=0; i<params.length; i++){
         param = params[i];
@@ -62,7 +62,7 @@ function GetQueryString(name)
 function setStorageItem(key, value) {
     if (window.android){
         window.android.saveSetting(key, value);
-    }else{
+    } else{
         window.localStorage.setItem(key, value);
     }
     // window.localStorage.setItem(key, value);
@@ -262,7 +262,7 @@ function createTimeList(startTime, endTime, queryPeriod, timeFormat) {
         }
     } else if (queryPeriod === 'MONTH') {
         var monthsDiff = endMoment.diff(startMoment, 'months');
-        startMoment.day(1).hour(0).minute(0).second(0).millisecond(0);
+        startMoment.date(1).hour(0).minute(0).second(0).millisecond(0);
         for (var i=0; i<=monthsDiff; i++) {
             timeList.push(startMoment.format(resultFormat));
             startMoment.add(1, 'M');

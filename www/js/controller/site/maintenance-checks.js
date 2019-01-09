@@ -180,8 +180,6 @@ app.controller("MaintenanceCheckRecordItemCtrl", function ($scope, ajax, routerS
                         $scope.$parent.addReport($scope.recordData);
                     }
                     $scope.$apply();
-                    // 调用Android接口
-                    window.android && window.android.onJsCallbackForPrevPage('setTaskReportId', data.id);
                 },
                 error: function (xhr, status, error) {
                     $.notify.progressStop();

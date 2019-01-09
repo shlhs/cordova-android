@@ -144,10 +144,6 @@ app.controller('SiteListCtrl', function ($scope, $http, $state, scrollerService,
         });
     };
 
-    $scope.$on('onNotifyAppUpdate', function (event) {
-        $scope.selectedApps = appStoreProvider.getSelectedApps();
-    });
-
     $scope.gotoAppStore = function () {
         routerService.openPage($scope, '/templates/app-store/app-store.html');
     };
@@ -230,6 +226,28 @@ app.controller('SiteListCtrl', function ($scope, $http, $state, scrollerService,
             sn: $scope.currentSite.sn
         });
     };
+
+    var appUpdateListener = $scope.$on('onNotifyAppUpdate', function (event) {
+        $scope.selectedApps = appStoreProvider.getSelectedApps();
+    });
+
+    var eventCountRefreshListener = $scope.$on('onEventCountRefresh', function ($event, stationSn, eventCount) {      // 事件确认通知
+        for (var i=0; i<$scope.sites.length; i++) {
+            var s = $scope.sites[i];
+            if (s.sn === stationSn) {
+                s.unclosed_envet_amount = eventCount;
+                s.events_amount = s.unclosed_envet_amount > 99 ? '99+' : s.unclosed_envet_amount;
+                break;
+            }
+        }
+    });
+
+    $scope.$on('$destroy', function (event) {
+        appUpdateListener();
+        appUpdateListener = null;
+        eventCountRefreshListener();
+        eventCountRefreshListener = null;
+    })
 });
 
 
@@ -365,12 +383,12 @@ app.controller('SiteBaseInfoCtrl', function ($scope, $timeout, $stateParams, aja
     $scope.getDataList();
 });
 
-
 app.controller('EventListCtrl', function ($scope, scrollerService, userService, ajax, routerService, appStoreProvider) {
     $scope.sn = $scope.sn;
     $scope.isDevice = false;   // 是设备还是站点
     $scope.canCreateTask = userService.getUserRole() === UserRole.Normal ? false : true;
     $scope.hasOpsAuth = appStoreProvider.hasOpsAuth();
+    var totalEventCount = 0;
     var deviceSn = GetQueryString("deviceSn");
     if (deviceSn){
         $scope.isDevice = true;
@@ -427,6 +445,7 @@ app.controller('EventListCtrl', function ($scope, scrollerService, userService, 
                     }
                 }
                 $scope.events = newReports.concat(cleared);
+                totalEventCount = result.iTotalRecords;
                 cb && cb($scope.events);
                 scrollerService.initScroll("#events", $scope.getDataList);
                 $scope.$apply();
@@ -457,27 +476,17 @@ app.controller('EventListCtrl', function ($scope, scrollerService, userService, 
             success: function (data) {
                 $.notify.progressStop();
                 $.notify.info("事件已确认");
-                // 将已确认的事件移至后面
+                // 将已确认的事件从列表中删除
                 var oldIndex = 0;
                 for (var i=0; i<$scope.events.length; i++) {
                     if ($scope.events[i].id === data.id) {
                         $scope.events.splice(i, 1);
-                        oldIndex = i > 0 ? i-1 :0;
                         break;
                     }
                 }
-                var inserted = false;
-                for (var i=oldIndex; i<$scope.events.length; i++) {
-                    if ($scope.events[i].status_name === 'CLEARED') {
-                        // 插到前面
-                        $scope.events.splice(i, 0, data);
-                        inserted = true;
-                        break;
-                    }
-                }
-                if (!inserted) {
-                    $scope.events.push(data);
-                }
+                // 通知首页数据修改站的事件个数
+                totalEventCount -= 1;
+                $scope.$emit('onEventCountRefresh', $scope.sn, totalEventCount);
                 $scope.$apply();
             },
             error: function (data) {

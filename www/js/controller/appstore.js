@@ -179,7 +179,16 @@ app.config(['appStoreProviderProvider', function (appStoreServiceProvider) {
                     url: 'device-monitor',
                     sn: 'station-monitor/device-monitor',
                     defaultChecked: true
-                }, {
+                },
+                // {
+                //     name: '视频监控',
+                //     icon: 'icon-video-monitor',
+                //     templateUrl: '/templates/video-monitor/video-monitor.html',
+                //     url: 'video-monitor',
+                //     sn: 'station-monitor/video-monitor',
+                //     defaultChecked: true
+                // },
+                {
                     name: '设备档案',
                     icon: 'icon-archives',
                     templateUrl: '/templates/site/static-devices/device-home.html',
@@ -300,10 +309,6 @@ app.controller('AppStoreCtrl', function ($scope, appStoreProvider) {
         appStoreProvider.saveSelectedApps($scope.selectedApps);
         $scope.toggleEdit();
 
-        // 回到
-        if (window.android) {
-            window.android.onJsCallbackForPrevPage('onAndroidCb_updateAppList', '');
-        }
         $scope.$emit('onNotifyAppUpdate');
     }
 });

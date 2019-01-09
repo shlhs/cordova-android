@@ -169,7 +169,7 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
     var currentDay = moment().format('YYYY-MM-DDT00:00:00.000') + 'Z';
     refreshDateShowName();
 
-    $scope.isLoading = false;
+    $scope.isLoading = true;
     $scope.getDataList = function() {
         getStationInfo(stationSn);
         initDatePicker();
