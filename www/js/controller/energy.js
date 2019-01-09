@@ -1489,7 +1489,7 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
             var total = 0;
             var varValue = {};
             data.forEach(function (item) {
-                varValue[item.device_var_sn] = item.all_degree;
+                varValue[item.sn] = item.all_degree;
                 total += item.all_degree;
             });
             // 按项统计

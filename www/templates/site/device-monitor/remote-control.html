@@ -15,8 +15,8 @@
                 </div>
                 <div class="mui-media-body mui-ellipsis" ng-if="v.type==='Digital'">
                     {{v.name}}
-                    <div class="mui-switch" style="transition-duration: 0.2s;" data-beforeContent="{{v.value===1 ? v.zero_meaning : v.one_meaning}}"
-                         ng-click="onToggleSwitcher(v)" ng-class="{'mui-active': v.value===1}">
+                    <div class="mui-switch" style="transition-duration: 0.2s;" data-beforeContent="{{v.value==='1' ? v.zero_meaning : v.one_meaning}}"
+                         ng-click="onToggleSwitcher(v)" ng-class="{'mui-active': v.value==='1'}">
                         <div class="mui-switch-handle" style="transition-duration: 0.2s;"></div>
                     </div>
                 </div>
