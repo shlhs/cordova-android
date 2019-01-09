@@ -24,12 +24,8 @@ Date.prototype.Format = function (fmt) { //author: meizz
 };
 
 function pageBack() {
-    if (window.android){
-        location.href = '/app/home';
-    }else{
-        history.back();
-        return false;
-    }
+    history.back();
+    return false;
 }
 
 function IsPC()
@@ -66,7 +62,7 @@ function GetQueryString(name, url)
 function setStorageItem(key, value) {
     if (window.android){
         window.android.saveSetting(key, value);
-    }else{
+    } else{
         window.localStorage.setItem(key, value);
     }
     // window.localStorage.setItem(key, value);

@@ -1,0 +1,16 @@
+<table class="stripe row-border order-column dataTable no-footer" style="border-bottom: none;" id="meterReadingTable" ng-show="tableBodyData.length">
+    <thead>
+    <tr>
+        <th ng-repeat="item in tableHeader track by $index" energy-meter-reading-table-repeat-finish="">
+            {{item}}
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-repeat="item in tableBodyData track by $index">
+        <td ng-repeat="col in item track by $index">
+            {{col}}
+        </td>
+    </tr>
+    </tbody>
+</table>

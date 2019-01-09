@@ -144,21 +144,6 @@ app.controller('SiteListCtrl', function ($scope, $http, $state, scrollerService,
         });
     };
 
-    $scope.$on('onNotifyAppUpdate', function (event) {
-        $scope.selectedApps = appStoreProvider.getSelectedApps();
-    });
-
-    $scope.$on('onEventCountRefresh', function ($event, stationSn, eventCount) {      // 事件确认通知
-        for (var i=0; i<$scope.sites.length; i++) {
-            var s = $scope.sites[i];
-            if (s.sn === stationSn) {
-                s.unclosed_envet_amount = eventCount;
-                s.events_amount = s.unclosed_envet_amount > 99 ? '99+' : s.unclosed_envet_amount;
-                break;
-            }
-        }
-    });
-
     $scope.gotoAppStore = function () {
         routerService.openPage($scope, '/templates/app-store/app-store.html');
     };
@@ -241,6 +226,28 @@ app.controller('SiteListCtrl', function ($scope, $http, $state, scrollerService,
             sn: $scope.currentSite.sn
         });
     };
+
+    var appUpdateListener = $scope.$on('onNotifyAppUpdate', function (event) {
+        $scope.selectedApps = appStoreProvider.getSelectedApps();
+    });
+
+    var eventCountRefreshListener = $scope.$on('onEventCountRefresh', function ($event, stationSn, eventCount) {      // 事件确认通知
+        for (var i=0; i<$scope.sites.length; i++) {
+            var s = $scope.sites[i];
+            if (s.sn === stationSn) {
+                s.unclosed_envet_amount = eventCount;
+                s.events_amount = s.unclosed_envet_amount > 99 ? '99+' : s.unclosed_envet_amount;
+                break;
+            }
+        }
+    });
+
+    $scope.$on('$destroy', function (event) {
+        appUpdateListener();
+        appUpdateListener = null;
+        eventCountRefreshListener();
+        eventCountRefreshListener = null;
+    })
 });
 
 

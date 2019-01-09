@@ -94,8 +94,8 @@
                     <li class="upload-item">
                         <div class="content">
                             <div class="image-uploader">
-                                <input class="add-btn" type="file" accept="image/*" name="upload" multiple onchange="angular.element(this).scope().chooseImage(this.files)" ng-if="!useMobileGallery">
-                                <input class="add-btn" name="upload" ng-model="chosenFile" ng-click="openMobileGallery()" ng-if="useMobileGallery">
+                                <input class="add-btn" type="file" accept="image/*" unselectable name="upload" multiple onchange="angular.element(this).scope().chooseImage(this.files)" ng-if="!useMobileGallery">
+                                <input class="add-btn" name="upload" ng-model="chosenFile" unselectable ng-click="openMobileGallery()" ng-if="useMobileGallery">
                             </div>
                         </div>
                     </li>

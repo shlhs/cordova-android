@@ -111,9 +111,20 @@ app.directive('energyConfigTree',[function(){
                 item.$$isExpend = !item.$$isExpend;
             };
 
+            function checkChildrenOfGroup(item) {
+                if (item.isLeaf) {
+                    return;
+                }
+                item.children.forEach(function (child) {
+                    child.checked = item.checked;
+                    checkChildrenOfGroup(child);
+                });
+            }
+
             $scope.onCheckItem = function ($event, item) {
                 $event.stopPropagation();
                 item.checked = !item.checked;
+                checkChildrenOfGroup(item);
                 if (tmpChecked[item.path] !== undefined) {
                     // 如果上一次记录过，则本次删除
                     delete tmpChecked[item.path];
@@ -367,6 +378,7 @@ app.controller('EnergyMeterReadingCtrl', function ($scope, ajax, $compile, platf
         $scope.tableHeader = [$scope.currentLabel.name+'名称', $scope.startDate.substring(0, 16), $scope.endDate.substring(0, 16), '差值', '单位'];
         $scope.tableBodyData = [];
         if (!sns.length) {
+            refreshTable();
             return;
         }
         ajax.get({
@@ -409,6 +421,7 @@ app.controller('EnergyMeterReadingCtrl', function ($scope, ajax, $compile, platf
                     $scope.tableBodyData.push(rowData);
                 });
                 $scope.$apply();
+                refreshTable();
             },
             error: function () {
                 $.notify.error('获取数据失败');
@@ -416,10 +429,65 @@ app.controller('EnergyMeterReadingCtrl', function ($scope, ajax, $compile, platf
         });
     }
 
+    function refreshTable() {
+        var table = $("#meterReadingTable").DataTable();
+        if (table) {
+            table.destroy(true);
+            table = null;
+            var html = "<energy-meter-reading-table table-header='tableHeader' table-body-data='tableBodyData'></energy-meter-reading-table>";
+            var compileFn = $compile(html);
+            var $dom = compileFn($scope);
+            // 添加到文档中
+            $dom.appendTo($('#tableParent'));
+        }
+    }
+
     // initDatePicker();
     setTimeout(function () {
         getConfig(stationSn);
     }, 500);
+});
+
+app.directive('energyMeterReadingTable', [function(){
+    return {
+        restrict: 'E',
+        templateUrl: '/templates/energy/energy-meter-reading-table-template.html',
+        replace: true,
+        scope: {
+            tableHeader: '=',
+            tableBodyData: '='
+        },
+        controller: ['$scope', '$attrs', function($scope, $attrs){
+            console.log('finish');
+        }]
+    };
+}]);
+
+app.directive('energyMeterReadingTableRepeatFinish',function(){
+    return {
+        link: function(scope,element,attr){
+            if(scope.$last == true){
+                setTimeout(function () {
+                    $.fn.dataTable.ext.errMode = 'none'; //不显示任何错误信息
+                    var height = screen.height - 210;
+                    var table = $('#meterReadingTable').DataTable( {
+                        searching: false,
+                        ordering: false,
+                        scrollY:        height + 'px',
+                        scrollX:        true,
+                        scrollCollapse: true,
+                        paging:         false,
+                        info: false,
+                        fixedRows: false,
+                        fixedColumns: {
+                            leftColumns: 1
+                        }
+                    } );
+                    // scope.$parent.table = table;
+                }, 100);
+            }
+        }
+    }
 });
 
 app.controller('EnergyReportCtrl', function ($scope, ajax, $compile, platformService) {
@@ -969,7 +1037,7 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
     $scope.labelName = null;
     $scope.hasConfig = false;
 
-    $scope.$on('$zhiluRefresh', function (event) {
+    var zhiluRefreshListener = $scope.$on('$zhiluRefresh', function (event) {
         currentItem = $scope.$parent.currentItem;
         $scope.labelName = $scope.$parent.currentLabel.name;
         if ($scope.categoryName !== $scope.$parent.currentCategory.name) {
@@ -983,10 +1051,20 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
             $scope.hasConfig = false;
         }
     });
-    $scope.$on('$otherRefresh', function (event) {      // 显示非支路时，不显示
+    var otherRefreshListener = $scope.$on('$otherRefresh', function (event) {      // 显示非支路时，不显示
         $scope.hasConfig = false;
     });
 
+    $scope.$on('$destroy', function (event) {
+        if (otherRefreshListener) {
+            otherRefreshListener();
+            otherRefreshListener = null;
+        }
+        if (zhiluRefreshListener) {
+            zhiluRefreshListener();
+            zhiluRefreshListener = null;
+        }
+    });
 
     function getTotalEnergyDegree() {
         // 获取一级支路今日总用能
@@ -1381,7 +1459,7 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
         5: false
     };
 
-    $scope.$on('$otherRefresh', function (event) {
+    var otherRefreshListener = $scope.$on('$otherRefresh', function (event) {
         timeType = $scope.$parent.timeType.id;
         energyItems = $scope.$parent.energyItems;
         currentDate = $scope.$parent.dateName;
@@ -1398,9 +1476,21 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
             $scope.hasConfig = false;
         }
     });
-    $scope.$on('$zhiluRefresh', function (event) {
+    var zhiluRefreshListener = $scope.$on('$zhiluRefresh', function (event) {
         $scope.hasConfig = false;
     });
+
+    $scope.$on('$destroy', function (event) {
+        if (otherRefreshListener) {
+            otherRefreshListener();
+            otherRefreshListener = null;
+        }
+        if (zhiluRefreshListener) {
+            zhiluRefreshListener();
+            zhiluRefreshListener = null;
+        }
+    });
+
     function getStartAndEndTime() {      // 获取日/月/年的当前时间
         var now=moment().format(timeFormat), start, end;
         if (timeType === 'DAY') {
