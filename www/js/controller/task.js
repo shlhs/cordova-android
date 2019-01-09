@@ -187,8 +187,10 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, ajax, $state
     });
 
     $scope.$on('$destroy', function (event) {
-        menuUpdateListener();
-        menuUpdateListener = null;
+        if (menuUpdateListener) {
+            menuUpdateListener();
+            menuUpdateListener = null;
+        }
     });
     initMenu();
 });
@@ -467,8 +469,10 @@ app.controller('CompetitionTaskListCtrl', function ($scope, $rootScope, scroller
     });
 
     $scope.$on('$destroy', function (event) {
-        taskUpdateListener();
-        taskUpdateListener = null;
+        if (taskUpdateListener) {
+            taskUpdateListener();
+            taskUpdateListener = null;
+        }
     });
 
 });
@@ -632,8 +636,10 @@ app.controller('TaskTodoListCtrl', function ($scope, $rootScope, scrollerService
     });
 
     $scope.$on('$destroy', function (event) {
-        taskUpdateListener();
-        taskUpdateListener = null;
+        if (taskUpdateListener) {
+            taskUpdateListener();
+            taskUpdateListener = null;
+        }
     });
 });
 
@@ -746,8 +752,10 @@ app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, us
     });
 
     $scope.$on('$destroy', function (event) {
-        taskUpdateListener();
-        taskUpdateListener = null;
+        if (taskUpdateListener) {
+            taskUpdateListener();
+            taskUpdateListener = null;
+        }
     });
 
     $scope.openTaskCreatePage = function () {
@@ -1780,8 +1788,10 @@ app.controller('TaskDevicesHandlerCtrl', function ($scope, routerService, ajax) 
     });
 
     $scope.$on('$destroy', function (event) {
-        taskUpdateListener();
-        taskUpdateListener = null;
+        if (taskUpdateListener) {
+            taskUpdateListener();
+            taskUpdateListener = null;
+        }
     });
 
     $scope.openDtsPage = function () {

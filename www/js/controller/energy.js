@@ -988,10 +988,14 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
     });
 
     $scope.$on('$destroy', function (event) {
-        otherRefreshListener();
-        otherRefreshListener = null;
-        zhiluRefreshListener();
-        zhiluRefreshListener = null;
+        if (otherRefreshListener) {
+            otherRefreshListener();
+            otherRefreshListener = null;
+        }
+        if (zhiluRefreshListener) {
+            zhiluRefreshListener();
+            zhiluRefreshListener = null;
+        }
     });
 
     function getTotalEnergyDegree() {
@@ -1409,10 +1413,14 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
     });
 
     $scope.$on('$destroy', function (event) {
-        otherRefreshListener();
-        otherRefreshListener = null;
-        zhiluRefreshListener();
-        zhiluRefreshListener = null;
+        if (otherRefreshListener) {
+            otherRefreshListener();
+            otherRefreshListener = null;
+        }
+        if (zhiluRefreshListener) {
+            zhiluRefreshListener();
+            zhiluRefreshListener = null;
+        }
     });
 
     function getStartAndEndTime() {      // 获取日/月/年的当前时间

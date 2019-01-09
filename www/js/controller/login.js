@@ -7,6 +7,13 @@
 var gPublicApiHost = 'http://47.104.75.86:8090';     // 公有云
 // var gPublicApiHost = 'http://47.97.167.195:8090';
 
+function onFinishVersionCheck() {
+    var scope = angular.element('div[ng-controller="AutoLoginCtrl"]').scope();
+    if (scope) {
+        scope.autoLogin();
+    }
+}
+
 app.controller('LoginCtrl', function ($scope, $timeout, platformService, userService, $state, $http, ajax, cordovaService) {
     $scope.error = '';
     var platform = null;
@@ -133,11 +140,7 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
                 } else{
                     userService.saveCompany([]);
                 }
-                if (window.android){
-                    window.android.loginSuccess();
-                } else{
-                    $state.go('index');
-                }
+                $scope.gotoHome();
             },
             error: function (xhr, status, error) {
                 $scope.isLogin = false;
@@ -146,6 +149,10 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
             }
         });
     }
+
+    $scope.gotoHome = function() {
+        $state.go('index');
+    };
 
     // 平台查询start
     $scope.platformError = '';
@@ -187,7 +194,7 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
                 $scope.$apply();
             }
         });
-    };
+    }
     // 平台查询end
 
 });
@@ -209,5 +216,10 @@ app.controller('AutoLoginCtrl', function ($scope, $timeout, $state, userService,
         }
     };
 
-    $scope.autoLogin();
+    // 先检查版本是否有更新
+    if (window.android) {
+        window.android && window.android.checkVersion && window.android.checkVersion();
+    } else {
+        $scope.autoLogin();
+    }
 });

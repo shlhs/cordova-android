@@ -471,8 +471,10 @@ app.controller('DeviceDtsListCtrl', function ($scope, ajax, scrollerService, rou
     });
 
     $scope.$on('$destroy', function (event) {
-        taskUpdateListener();
-        taskUpdateListener = null;
+        if (taskUpdateListener) {
+            taskUpdateListener();
+            taskUpdateListener = null;
+        }
     });
 
     $scope.openTask = function (task) {
@@ -617,8 +619,10 @@ app.controller('StationDtsListCtrl', function ($scope, $rootScope, scrollerServi
     });
 
     $scope.$on('$destroy', function (event) {
-        taskUpdateListener();
-        taskUpdateListener = null;
+        if (taskUpdateListener) {
+            taskUpdateListener();
+            taskUpdateListener = null;
+        }
         console.log('station dts destroy');
     });
 
