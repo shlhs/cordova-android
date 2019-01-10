@@ -2685,7 +2685,7 @@ table.monitor-table {
 }
 .monitor-table th,td{
     text-align: left;
-    height: 40px;
+    /*height: 40px;*/
     border-bottom: #eee 1px solid;
     font-size: 14px;
 }
@@ -3550,4 +3550,10 @@ header .mui-title .dropdown-arrow:after {
 .mui-switch.mui-active.no-color:before {
     color: #999;
     left: 10px;
+}
+table.dataTable thead th, table.dataTable thead td {
+    padding: 4px 4px;
+}
+table.dataTable tbody th, table.dataTable tbody td {
+    padding: 4px 4px;
 }
