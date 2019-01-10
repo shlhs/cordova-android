@@ -3198,3 +3198,9 @@ header .mui-title .dropdown-arrow:after {
     color: #999;
     left: 10px;
 }
+table.dataTable thead th, table.dataTable thead td {
+    padding: 4px 4px;
+}
+table.dataTable tbody th, table.dataTable tbody td {
+    padding: 4px 4px;
+}

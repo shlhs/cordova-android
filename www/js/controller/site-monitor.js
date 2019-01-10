@@ -450,8 +450,8 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
     $scope.getDataList();
 });
 
-
 // 历史报表
+var siteHistoryTableScrollHeight = 154;
 app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
 
     var stationSn = GetQueryString("sn");
@@ -511,6 +511,7 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
             }
         }, false);
     }
+
     function refreshDateShowName() {
         // 根据按日、按月、按年，显示当前时间的格式
         switch ($scope.timeType.id) {
@@ -584,6 +585,7 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
                 name: '平均值'
             }];
             $scope.calcMethod = $scope.calcMethodList[0];
+            refreshDateShowName();
         } else if (reportName.indexOf('日') >= 0){
             // 默认显示日报表
             $scope.timeType = {
@@ -595,6 +597,7 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
                 name: '瞬时值'
             }];
             $scope.calcMethod = $scope.calcMethodList[0];
+            refreshDateShowName();
         }
         if (reportName.indexOf('度') >=0 || reportName.indexOf('用量') >=0 || reportName.indexOf('流量') >= 0) {
             if ($scope.timeType.id !== 'DAY') {     // 只有月报、年报才有最大值
@@ -699,6 +702,21 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
         }
     }
 
+    function strlen(str){       // 获取字符串占位符，中文两位，英文一位
+        var len = 0;
+        for (var i=0; i<str.length; i++) {
+            var c = str.charCodeAt(i);
+            //单字节加1
+            if ((c >= 0x0001 && c <= 0x007e) || (0xff60<=c && c<=0xff9f)) {
+                len++;
+            }
+            else {
+                len+=2;
+            }
+        }
+        return len;
+    }
+
     function calcDataBySetting(setting, dataInfo) {
         if (!dataInfo || !dataInfo.length) {
             $scope.tableHeader = [];
@@ -730,13 +748,53 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
             name: '时间'
         }];       // 表头
         var dataList = [];      // 取出所有数据
+        var maxLine = 1;
+        // 取所有名称的最大行数
         dataInfo.forEach(function (data) {
-            tableHeader.push({
-                name : data.name,
-                unit: data.unit
-            });
+            var lines = 0;
+            if (strlen(data.name) < 10) {
+                lines = data.unit ? 2 : 1;
+            } else {
+                var name = data.name + (data.unit ? ('(' + data.unit+ ')') : '');
+                lines = Math.ceil(strlen(name) / 10);      // 计算一共有几行
+            }
+            if (lines > maxLine) {
+                maxLine = lines;
+            }
+        });
+        // 每个名称都按最大行数显示
+        dataInfo.forEach(function (data) {
+            var name = data.name + (data.unit ? ('(' + data.unit+ ')') : '');
+            // 对名称进行分行
+            if (strlen(data.name) > 10) {
+                var totalLen = strlen(name);
+                var lineCount = Math.ceil(totalLen / 10);      // 计算一共有几行
+                var lineCharCount = Math.ceil(totalLen/maxLine);
+                var lines=[], len=0, lastIndex=0;
+                for (var i=0; i<name.length; i++) {
+                    var currentLen = strlen(name[i]);
+                    if ((len + currentLen) >= lineCharCount) {
+                        lines.push(name.substring(lastIndex, i+1));
+                        len = 0;
+                        lastIndex = i+1;
+                    } else {
+                        len += currentLen;
+                    }
+                }
+                if (lastIndex < name.length -1) {
+                    lines.push(name.substring(lastIndex));
+                }
+                tableHeader.push({
+                    name: lines.join('<br>')
+                });
+            } else {
+                tableHeader.push({
+                    name: data.name + (data.unit ? ('<br>(' + data.unit+ ')') : '')
+                });
+            }
             dataList.push(data.datas);
         });
+        siteHistoryTableScrollHeight = 106 + 24 * maxLine;
         var tableColumnHeader = [];     // 表的固定列，为二元数组
         for (var i=0; i<timeKeys.length; i++) {
             tableColumnHeader.push([{name: timeKeys[i]}]);
@@ -920,7 +978,7 @@ app.directive('siteHistoryRepeatFinish',function(){
             if(scope.$last == true){
                 setTimeout(function () {
                     $.fn.dataTable.ext.errMode = 'none'; //不显示任何错误信息
-                    var height = screen.height - 154;
+                    var height = screen.height - siteHistoryTableScrollHeight;
                     // 如果宽度小于屏幕宽度，则不设置fixedColumns
                     var $table = $('#siteHistoryTable');
                     var config = {

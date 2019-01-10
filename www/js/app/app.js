@@ -16,6 +16,14 @@ app.run(function ($animate) {
 //     });
 // }]);
 
+app.filter(
+    'to_trusted', ['$sce', function ($sce) {
+        return function (text) {
+            return $sce.trustAsHtml(text);
+        }
+    }]
+);
+
 app.controller('MainCtrl', function ($scope, $rootScope, userService) {
 
 });
