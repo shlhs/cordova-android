@@ -601,7 +601,7 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
 });
 
 // 历史报表
-var siteHistoryTableScrollHeight = 154;
+var siteHistoryTableScrollHeight = 174;
 app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
 
     var stationSn = $scope.sn;  //GetQueryString("sn");
@@ -963,7 +963,7 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
             }
             dataList.push(data.datas);
         });
-        siteHistoryTableScrollHeight = 106 + 24 * maxLine;
+        siteHistoryTableScrollHeight = 126 + 24 * maxLine;
         var tableColumnHeader = [];     // 表的固定列，为二元数组
         for (var i=0; i<timeKeys.length; i++) {
             tableColumnHeader.push([{name: timeKeys[i]}]);
