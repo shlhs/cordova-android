@@ -477,6 +477,8 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
     $scope.reportDataInfo = [];
     $scope.reportSetting = {};
     $scope.isLoading = false;
+    var reportPicker = null;
+
     refreshDateShowName();
 
     $scope.getDataList = function () {
@@ -533,9 +535,7 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
                 $scope.reportGroups = data;
                 if (data.length) {
                     var report = data[0];
-                    $scope.currentReport = report;
                     $scope.reportSetting = JSON.parse(report.extend_js);
-                    getDataInfoOfReport(report);
 
                     // 初始化报告选择器
                     var pickerData = [];
@@ -545,19 +545,19 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
                             text: item.name
                         })
                     });
-                    var taskTypePicker = new mui.PopPicker();
-                    taskTypePicker.setData(pickerData);
-                    var taskTypeButton = document.getElementById('reportPicker');
-                    taskTypeButton.addEventListener('click', function(event) {
-                        taskTypePicker.show(function(items) {
+                    reportPicker = new mui.PopPicker();
+                    reportPicker.setData(pickerData);
+                    var reportPickerBtn = document.getElementById('reportPicker');
+                    reportPickerBtn.addEventListener('click', function(event) {
+                        reportPicker.show(function(items) {
                             if (items[0].value !== $scope.currentReport.id) {
-                                $scope.currentReport.name = items[0].text;
-                                $scope.currentReport.id = items[0].value;
-                                getDataInfoOfReport();
+                                onSelectReport({id: items[0].value, name: items[0].text});
                                 $scope.$apply();
                             }
                         });
                     }, false);
+                    // 默认选择第一个报告
+                    onSelectReport(report);
                 }
                 $scope.$apply();
             },
@@ -568,15 +568,46 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
         });
     }
 
-    $scope.onChangeReport = function (reportId) {
-        $scope.reportGroups.forEach(function (report) {
-            if (report.id === reportId) {
-                $scope.currentReport = report;
-                $scope.reportSetting = JSON.parse(report.extend_js);
-                return false;
+    function onSelectReport(report) {
+        var reportName = report.name;
+        if (reportName.indexOf('月') >= 0) {
+            // 名字中含有"月"，默认显示月报表
+            $scope.timeType = {
+                id: 'MONTH',
+                name: '月报'
+            };
+            $scope.calcMethodList = [{
+                id: 'MAX',
+                name: '最大值'
+            }, {
+                id: 'AVG',
+                name: '平均值'
+            }];
+            $scope.calcMethod = $scope.calcMethodList[0];
+        } else if (reportName.indexOf('日') >= 0){
+            // 默认显示日报表
+            $scope.timeType = {
+                id: 'DAY',
+                name: '日报'
+            };
+            $scope.calcMethodList = [{
+                id: 'MAX',
+                name: '瞬时值'
+            }];
+            $scope.calcMethod = $scope.calcMethodList[0];
+        }
+        if (reportName.indexOf('度') >=0 || reportName.indexOf('用量') >=0 || reportName.indexOf('流量') >= 0) {
+            if ($scope.timeType.id !== 'DAY') {     // 只有月报、年报才有最大值
+                $scope.calcMethod = {
+                    id: 'MAX',
+                    name: '最大值'
+                };
             }
-        })
-    };
+        }
+        $scope.currentReport = report;
+        getDataInfoOfReport();
+        $scope.$apply();
+    }
 
     $scope.onSelect = function (key, value, name) {
         if (key === 'timeType') {
@@ -585,16 +616,20 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
                     id: 'MAX',
                     name: '瞬时值'
                 }];
+                $scope.calcMethod = $scope.calcMethodList[0];
             } else {
                 $scope.calcMethodList = [{
-                    id: 'AVG',
-                    name: '平均值'
-                }, {
                     id: 'MAX',
                     name: '最大值'
+                }, {
+                    id: 'AVG',
+                    name: '平均值'
                 }];
+                // 如果上一次也是选最大或平均值，则保持不变
+                if ($scope.calcMethod.name !== '最大值' && $scope.calcMethod.name !== '平均值') {
+                    $scope.calcMethod = $scope.calcMethodList[0];
+                }
             }
-            $scope.calcMethod = $scope.calcMethodList[0];
         }
         $scope[key] = {
             id: value,
@@ -602,12 +637,6 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
         };
         getDataInfoOfReport();
         refreshDateShowName();
-    };
-
-    $scope.onSelectReport = function (key, value, name) {
-        $scope.currentReport.id = value;
-        $scope.currentReport.name = name;
-        getDataInfoOfReport($scope.currentReport);
     };
 
     function getDataInfoOfReport() {
@@ -859,6 +888,13 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
         }
         return newLine;
     }
+
+    $scope.$on('$destroy', function (event) {
+       if (reportPicker) {
+           reportPicker.dispose();
+           reportPicker = null;
+       }
+    });
 
     $scope.getDataList();
 });
