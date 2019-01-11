@@ -10,8 +10,8 @@
     <link rel="stylesheet" href="../../components/mui/css/mui.min.css">
     <link rel="stylesheet" href="../../components/mui/css/mui.picker.min.css">
     <link rel="stylesheet" href="../../css/iconfont/iconfont.css">
-    <link rel="stylesheet" href="../../css/my.css">
     <link rel="stylesheet" type="text/css" href="../../js/lib/datatables/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="../../css/my.css">
     <script type="text/javascript" src="../../components/libs/jquery-2.1.4.js"></script>
     <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
     <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
@@ -24,7 +24,7 @@
         th:first-child {
             white-space: nowrap;
         }
-        td { white-space: nowrap; }
+        /*td { white-space: nowrap; }*/
         div.dataTables_wrapper {
             width: 100%;
             margin: 0 auto;
@@ -106,7 +106,7 @@
                 </tr>
                 </tbody>
             </table>
-            <div class="page-alert-wrapper" ng-if="!tableBodyData.length">
+            <div class="page-alert-wrapper" ng-if="!selectedItems.length">
                 <div class="page-alert">
                     <i class="alert-icon no-task"></i>
                     <div class="alert-text info">未选择任何{{currentLabel.name}}</div>

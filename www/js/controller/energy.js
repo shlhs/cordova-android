@@ -111,20 +111,9 @@ app.directive('energyConfigTree',[function(){
                 item.$$isExpend = !item.$$isExpend;
             };
 
-            function checkChildrenOfGroup(item) {
-                if (item.isLeaf) {
-                    return;
-                }
-                item.children.forEach(function (child) {
-                    child.checked = item.checked;
-                    checkChildrenOfGroup(child);
-                });
-            }
-
             $scope.onCheckItem = function ($event, item) {
                 $event.stopPropagation();
                 item.checked = !item.checked;
-                checkChildrenOfGroup(item);
                 if (tmpChecked[item.path] !== undefined) {
                     // 如果上一次记录过，则本次删除
                     delete tmpChecked[item.path];
@@ -215,7 +204,7 @@ app.controller('EnergyMeterReadingCtrl', function ($scope, ajax, $compile, platf
     $scope.isLoading = false;
     var variableUnits = {};     // 变量sn与单位的对应关系
     var allEnergyItems = [];
-    var selectedItems = [];
+    $scope.selectedItems = [];
 
 
     function getConfig(stationSn) {
@@ -340,7 +329,7 @@ app.controller('EnergyMeterReadingCtrl', function ($scope, ajax, $compile, platf
         $scope[key] = {id: id, name: name};
         $scope.energyItems = formatEnergyTree($scope.currentCategory.name, $scope.currentLabel.name, allEnergyItems);
         // 切换时默认会选中所有
-        selectedItems = [];
+        $scope.selectedItems = [];
         checkAll($scope.energyItems);
         refreshData();
     };
@@ -348,7 +337,7 @@ app.controller('EnergyMeterReadingCtrl', function ($scope, ajax, $compile, platf
     function checkAll(datas) {
         datas.forEach(function (item) {
             item.checked = true;
-            selectedItems.push(item);
+            $scope.selectedItems.push(item);
             if (item.children) {
                 checkAll(item.children);
             }
@@ -356,15 +345,15 @@ app.controller('EnergyMeterReadingCtrl', function ($scope, ajax, $compile, platf
     }
 
     $scope.onSelectItems = function (items) {
-        if (JSON.stringify(selectedItems) !== JSON.stringify(items)) {
-            selectedItems = items;
+        if (JSON.stringify($scope.selectedItems) !== JSON.stringify(items)) {
+            $scope.selectedItems = items;
             refreshData();
         }
     };
 
     function refreshData() {
         var sns = [];
-        selectedItems.forEach(function (item) {
+        $scope.selectedItems.forEach(function (item) {
             item.deviceVarSns.forEach(function (sn) {
                 if (sns.indexOf(sn) < 0) {
                     sns.push(sn);
@@ -390,7 +379,7 @@ app.controller('EnergyMeterReadingCtrl', function ($scope, ajax, $compile, platf
                 response.forEach(function (item) {
                     item.values = JSON.parse(item.values);
                 });
-                selectedItems.forEach(function (item) {
+                $scope.selectedItems.forEach(function (item) {
                     var rowData = [item.aliasName, '-', '-', '-', '-'];
                     response.forEach(function (n) {
                         var value = null;
@@ -512,7 +501,7 @@ app.controller('EnergyReportCtrl', function ($scope, ajax, $compile, platformSer
     $scope.tableBodyData = [];
     $scope.isLoading = false;
     var allEnergyItems = [];
-    var selectedItems = [];
+    $scope.selectedItems = [];
 
 
     function init() {
@@ -613,15 +602,15 @@ app.controller('EnergyReportCtrl', function ($scope, ajax, $compile, platformSer
             refreshDateShowName();
         } else {
             $scope.energyItems = formatEnergyTree($scope.currentCategory.name, $scope.currentLabel.name, allEnergyItems);
-            selectedItems = [];
+            $scope.selectedItems = [];
             checkAll($scope.energyItems);
         }
         refreshData();
     };
 
     $scope.onSelectItems = function (items) {
-        if (JSON.stringify(selectedItems) !== JSON.stringify(items)) {
-            selectedItems = items;
+        if (JSON.stringify($scope.selectedItems) !== JSON.stringify(items)) {
+            $scope.selectedItems = items;
             refreshData();
         }
     };
@@ -629,7 +618,7 @@ app.controller('EnergyReportCtrl', function ($scope, ajax, $compile, platformSer
     function checkAll(datas) {
         datas.forEach(function (item) {
             item.checked = true;
-            selectedItems.push(item);
+            $scope.selectedItems.push(item);
             if (item.children) {
                 checkAll(item.children);
             }
@@ -638,7 +627,7 @@ app.controller('EnergyReportCtrl', function ($scope, ajax, $compile, platformSer
 
     function refreshData() {
         var sns = [];
-        selectedItems.forEach(function (item) {
+        $scope.selectedItems.forEach(function (item) {
             item.deviceVarSns.forEach(function (sn) {
                 if (sns.indexOf(sn) < 0) {
                     sns.push(sn);
@@ -704,7 +693,7 @@ app.controller('EnergyReportCtrl', function ($scope, ajax, $compile, platformSer
                     item.time_keys = result.time_keys;
                     item.datas = result.datas;
                 });
-                selectedItems.forEach(function (item) {
+                $scope.selectedItems.forEach(function (item) {
                     var rowData = [item.aliasName];
                     // 加入默认数据
                     for (var i=1; i<$scope.tableHeader.length-1; i++) {
