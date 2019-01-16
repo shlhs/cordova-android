@@ -201,7 +201,7 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
             hidePrev: false
         })
     };
-
+``
     $scope.chooseImage = function (files) {     // 选择图片
         $scope.canDelete = true;
         for (var i = 0; i < files.length; i++) {
@@ -223,6 +223,10 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
             };
         }
     } ;
+
+    $scope.openMobileGallery = function () {
+        window.android.openGallery(9, 'onAndroid_dtsImageImport', 'onAndroid_dtsImageDelete');
+    };
 
     $scope.submitAndBack = function() {   //上传描述和图片
         if (!$scope.description && !$scope.files.length){

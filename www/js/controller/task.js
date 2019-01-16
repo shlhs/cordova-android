@@ -138,6 +138,10 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, ajax, $state
     $scope.title = '';
     $scope.navMenus = [];
 
+    function homeInitialize() {
+        window.android && window.android.homeInitialize();      // 进入主界面后进行初始化
+    }
+
     $scope.chooseNav = function (tabName, title) {
         $scope.tabName = tabName;
         $scope.title = title;
@@ -152,8 +156,8 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, ajax, $state
 
     function initMenu() {
         $timeout(function () {
+            homeInitialize();
             $scope.chooseNav('sites', '站点监控');
-
         }, 500);
     }
 
@@ -1257,6 +1261,10 @@ app.controller('TaskHandlerUpload', function ($scope, $timeout) {
        }
    } ;
 
+    $scope.openMobileGallery = function () {
+        window.android.openGallery(9, 'onAndroid_taskImageImport', 'onAndroid_taskImageDelete');
+    };
+
     $scope.submitAndBack = function() {   //上传描述和图片
         if (!$scope.description && !$scope.files.length){
             mui.alert('评论与图片不能同时为空', '无法提交', function() {
@@ -1282,7 +1290,12 @@ app.controller('TaskHandlerUpload', function ($scope, $timeout) {
    };
 
    $scope.openGallery = function (data) {
-       $scope.openPage($scope, 'templates/base-gallery.html', data);
+
+       $scope.openPage($scope, 'templates/base-gallery.html', $.extend({}, data, {
+           onDelete: function (index) {
+               $scope.files.splice(index, 1);
+           }
+       }));
    }
 
 });
