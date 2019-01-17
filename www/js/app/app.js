@@ -600,7 +600,7 @@ app.controller('BaseGalleryCtrl', function ($scope, $stateParams, $timeout) {
 });
 
 
-app.controller('mapCtrl', function ($scope, cordovaService) {
+app.controller('mapCtrl', function ($scope, $timeout, cordovaService) {
     var sn = $scope.stationSn;
 
     $scope.siteData = {};
@@ -682,7 +682,21 @@ app.controller('mapCtrl', function ($scope, cordovaService) {
             }, function (error) {
                 console.log(error);
             });
-
+        } else {
+            apiLocation.start(function (longtitude, latitude) {
+                //如果获取不到用户的定位，则直接显示站点的位置
+                if (longtitude && latitude){
+                    // 添加标注
+                    var start = new BMap.Point(longtitude, latitude);
+                    // 坐标转换
+                    var convertor = new BMap.Convertor();
+                    var pointArr = [start];
+                    convertor.translate(pointArr, 3, 5, function (data) {   //3: gcj02坐标，5：百度坐标
+                        driving.search(data.points[0], end);
+                        map.centerAndZoom(end, 15);                 // 初始化地图，设置中心点坐标和地图级别
+                    });
+                }
+            });
         }
 
     }
@@ -700,5 +714,5 @@ app.controller('mapCtrl', function ($scope, cordovaService) {
         }
     };
 
-    getSite();
+    $timeout(getSite, 500);
 });

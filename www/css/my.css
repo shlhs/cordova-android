@@ -477,7 +477,7 @@ header.mui-bar{
     background-color: #d9d9d9;
     display: inline-block;
 }
-.image-uploader input[type='file']{
+.image-uploader input{
     width: 100%;
     height: 100%;
     opacity: 0;
@@ -1212,12 +1212,15 @@ a:hover.slidesjs-stop {
     display: -webkit-box;
     -wekkit-box-align:center;
 }
-.slides .img-container>div{
+.slides .img-container>div:first-child{
     width: 100%;
     height: 100%;
     display: -webkit-box;
     -webkit-box-pack: center;
     -webkit-box-align: center;
+}
+.slides .img-container>.weui-gallery__opr{
+    bottom: -40px;
 }
 .slides .img-container>img{
     height: auto;
