@@ -201,7 +201,7 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
             hidePrev: false
         })
     };
-``
+
     $scope.chooseImage = function (files) {     // 选择图片
         $scope.canDelete = true;
         for (var i = 0; i < files.length; i++) {
