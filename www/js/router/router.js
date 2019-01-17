@@ -74,19 +74,19 @@ app.config(['myStateProvider', function(myStateProvider){
     // 设置相关
     myStateProvider
         .state('index.account', {
-            url: 'account/',
+            url: '/account',
             templateUrl: 'templates/setting/account.html'
         })
         .state('index.company', {
-            url: 'company',
+            url: '/company',
             templateUrl: 'templates/setting/company.html'
         })
         .state('index.share', {
-            url: 'share',
+            url: '/share',
             templateUrl: 'templates/setting/share.html'
         })
         .state('index.account.password', {
-            url: 'password',
+            url: '/password',
             templateUrl: 'templates/setting/password_setter.html',
             controller: 'PasswordCtrl'
         })
