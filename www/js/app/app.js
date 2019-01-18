@@ -97,6 +97,18 @@ app.service('userService', function ($rootScope) {
         return username;
     };
 
+    this.hasPermission = function (permName) {
+        var perms = this.user.permissions;
+        if (perms && perms.length) {
+            for (var i=0; i<perms.length; i++) {
+                if (perms[i].authrity_name === permName) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    };
+
     this.getPassword = function () {
         var password = getStorageItem('password');
         if (!password){

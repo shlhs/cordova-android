@@ -674,7 +674,8 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile, router
     }
 
     $scope.gotoDevice = function (deviceData) {
-        routerService.openPage($scope, 'templates/site/device-monitor.html', {sn: deviceData.stationSn, deviceSn: deviceData.sn, deviceName: deviceData.name})
+        routerService.openPage($scope, 'templates/site/device-monitor.html',
+            {sn: deviceData.station_sn, deviceSn: deviceData.sn, deviceName: deviceData.name})
     };
 
     $scope.getDataList();
@@ -685,7 +686,8 @@ app.controller('DeviceMonitorCtrl', function ($scope, ajax, routerService, userS
     $scope.stationSn = $scope.sn;
     $scope.deviceSn = $scope.deviceSn;
     $scope.deviceName = $scope.deviceName;
-    $scope.canControl = userService.getUserRole() === UserRole.OpsAdmin || userService.getUserRole() === UserRole.OpsOperator;
+    $scope.canControl = userService.getUserRole() === UserRole.OpsAdmin ||
+        (userService.getUserRole() === UserRole.OpsOperator && userService.hasPermission("STATION_W_" + $scope.stationSn));
     $scope.secondOptions = {
         '实时数据': [],
         '历史数据': []
