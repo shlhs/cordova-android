@@ -163,6 +163,10 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
     function refreshData() {
         $scope.trendGroups.forEach(function (group) {
             group.isLoading = true;
+            var echartDiv = getChartDiv(group.id);
+            if (echartDiv) {
+                echarts.init(echartDiv).setOption({});
+            }
             getDataInfoOfGroup(group.id);
         });
     }
