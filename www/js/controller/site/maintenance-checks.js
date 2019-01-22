@@ -66,7 +66,10 @@ app.controller("MaintenanceCheckRecordItemCtrl", function ($scope, ajax, routerS
     $scope.image_before_check = [];
     $scope.image_in_check = [];
     $scope.image_after_check = [];
+    // 先清除上一次选择的图片
+    window.android && window.android.clearSelectedPhotos();
     $scope.useMobileGallery = window.android && window.android.openGallery;
+
     $scope.canEdit = false;
     var apiHost = GetQueryString("apiHost") || '';      // 适配网页
     var models =['image_before_check', 'image_in_check', 'image_after_check'];
@@ -188,9 +191,12 @@ app.controller("MaintenanceCheckRecordItemCtrl", function ($scope, ajax, routerS
                     $.notify.progressStop();
                     $.notify.info('保存成功');
                     $scope.recordData.id = data.id;
-                    $scope.image_before_check = [];
-                    $scope.image_in_check = [];
-                    $scope.image_after_check = [];
+                    // 将所有图片设置为不可删除
+                    models.forEach(function (model) {
+                        $scope[model].forEach(function (file) {
+                            file.canDelete = false;
+                        })
+                    });
                     if ($scope.$parent.addReport) {
                         $scope.$parent.addReport($scope.recordData);
                     }
@@ -217,9 +223,13 @@ app.controller("MaintenanceCheckRecordItemCtrl", function ($scope, ajax, routerS
                 success: function (data) {
                     $.notify.progressStop();
                     $.notify.info('保存成功');
-                    $scope.image_before_check = [];
-                    $scope.image_in_check = [];
-                    $scope.image_after_check = [];
+                    // 将所有图片设置为不可删除
+                    models.forEach(function (model) {
+                        $scope[model].forEach(function (file) {
+                            file.canDelete = false;
+                        })
+                    });
+                    $scope.$apply();
                 },
                 error: function (xhr, status, error) {
                     $.notify.progressStop();
@@ -267,6 +277,7 @@ app.controller("MaintenanceCheckRecordItemCtrl", function ($scope, ajax, routerS
         }
         $scope[currentImageModel].push({filename: filename, data: data, canDelete: true});
         $scope.$apply();
+        window.android && window.android.clearSelectedPhotos();
     };
 
 

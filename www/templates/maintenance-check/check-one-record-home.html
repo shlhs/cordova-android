@@ -69,7 +69,7 @@
                     <div class="image-uploader">
                         <input unselectable type="file" accept="image/*" name="upload" multiple=""
                                onchange="angular.element(this).scope().chooseImage('image_in_check', this)" ng-if="!useMobileGallery">
-                        <input unselectable ng-click="openMobileGallery('image_before_check')" ng-if="useMobileGallery">
+                        <input unselectable ng-click="openMobileGallery('image_in_check')" ng-if="useMobileGallery">
                     </div>
                 </div>
             </div>
@@ -89,7 +89,7 @@
                     <div class="image-uploader">
                         <input unselectable type="file" accept="image/*" name="upload" multiple=""
                                onchange="angular.element(this).scope().chooseImage('image_after_check', this)" ng-if="!useMobileGallery">
-                        <input unselectable ng-click="openMobileGallery('image_before_check')" ng-if="useMobileGallery">
+                        <input unselectable ng-click="openMobileGallery('image_after_check')" ng-if="useMobileGallery">
                     </div>
                 </div>
             </div>

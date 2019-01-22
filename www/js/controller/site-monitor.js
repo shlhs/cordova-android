@@ -241,8 +241,8 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
                 _self.picker.show(function (rs) {
                     currentDay = rs.text + 'T00:00:00.000Z';
                     refreshDateShowName();
-                    $scope.$apply();
                     refreshData();
+                    $scope.$apply();
                 });
             } else {
                 var options = {type: 'date'};
@@ -250,10 +250,8 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
                 _self.picker.show(function(rs) {
                     currentDay = rs.text + 'T00:00:00.000Z';
                     refreshDateShowName();
-                    // _self.picker.dispose();
-                    // _self.picker = null;
-                    $scope.$apply();
                     refreshData();
+                    $scope.$apply();
                 });
             }
         }, false);
@@ -297,15 +295,35 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
 
     function refreshData() {
         $scope.trendGroups.forEach(function (group) {
+            group.isLoading = true;
+            var echartDiv = getChartDiv(group.id);
+            if (echartDiv) {
+                echarts.init(echartDiv).setOption({});
+            }
             getDataInfoOfGroup(group.id);
         });
     }
 
     function getDataInfoOfGroup(groupId) {
+        function _setLoadFinish(groupId) {
+            for (var i=0; i<$scope.trendGroups.length; i++) {
+                if ($scope.trendGroups[i].id === groupId) {
+                    $scope.trendGroups[i].isLoading = false;
+                    break;
+                }
+            }
+        }
+
         ajax.get({
             url: '/trendgroups/' + groupId + '/datainfo?type=' + $scope.timeType.id + '&calcmethod=' + $scope.calcMethod.id + '&starttime=' + currentDay,
             success: function (data) {
+                _setLoadFinish(groupId);
+                $scope.$apply();
                 showChart(groupId, data, $scope.timeType.id, currentDay, $scope.calcMethod.id);
+            },
+            error: function () {
+                _setLoadFinish(groupId);
+                $scope.$apply();
             }
         });
     }
