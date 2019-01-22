@@ -265,6 +265,22 @@ app.controller('AppStoreCtrl', function ($scope, appStoreProvider) {
     $scope.selectedApps = appStoreProvider.getSelectedApps();
     $scope.isEditing = false;
 
+    function setSelectedState() {
+        var selectedAppUrls = [];
+        $scope.selectedApps.forEach(function (t) {
+            selectedAppUrls.push(t.url);
+        });
+        $scope.allApps.forEach(function (group) {
+            group.children.forEach(function (app) {
+                if (selectedAppUrls.indexOf(app.url) >= 0) {
+                    app.selected = true;
+                } else {
+                    app.selected = false;
+                }
+            });
+        });
+    }
+
     $scope.onAddOrDelete = function (app) {
         if (app.selected) {
             app.selected = false;
@@ -289,5 +305,7 @@ app.controller('AppStoreCtrl', function ($scope, appStoreProvider) {
         $scope.toggleEdit();
 
         $scope.$emit('onNotifyAppUpdate');
-    }
+    };
+
+    setSelectedState();
 });
