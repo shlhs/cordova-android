@@ -15,8 +15,8 @@
                 </div>
                 <div class="mui-media-body mui-ellipsis" ng-if="v.type==='Digital'">
                     {{v.name}}
-                    <div class="mui-switch" style="transition-duration: 0.2s;" data-beforeContent="{{v.value===1 ? v.zero_meaning : v.one_meaning}}"
-                         ng-click="onToggleSwitcher(v)" ng-class="{'mui-active': v.value===1}">
+                    <div class="mui-switch no-color" style="transition-duration: 0.2s;" data-beforeContent="{{v.value==='1' ? v.zero_meaning : v.one_meaning}}"
+                         ng-click="onToggleSwitcher(v)" ng-class="{'status-on': v.value==='1', 'status-off': v.value==='0', 'mui-active': v.value==='1'}">
                         <div class="mui-switch-handle" style="transition-duration: 0.2s;"></div>
                     </div>
                 </div>
@@ -31,7 +31,7 @@
     </div>
     <div class="page-alert-wrapper" ng-if="isLoading">
         <div class="page-alert">
-            <img src="../../../img/page-loading.gif" class="loading-img">
+            <i class="alert-icon loading-spinner"></i>
             <div class="alert-text info">正在加载...</div>
         </div>
     </div>

@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="css/setting.css">
     <link rel="stylesheet" href="css/my.css">
     <link rel="stylesheet" href="css/task.css">
+    <link rel="stylesheet" href="components/libs/font-awesome-4.7.0/css/font-awesome.min.css">
     <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="cordova_plugins.js"></script>
     <script type="text/javascript" src="components/libs/jquery-2.1.4.js"></script>
@@ -28,8 +29,8 @@
     <script type="text/javascript" src="js/app/utils.js"></script>
     <script type="text/javascript" src="js/app/app.js"></script>
     <script type="text/javascript" src="js/controller/appstore.js"></script>
-    <script type="text/javascript" src="js/router/router.js"></script>
     <script type="text/javascript" src="js/service/router-service.js"></script>
+    <script type="text/javascript" src="js/router/router.js"></script>
     <script type="text/javascript" src="js/service/file.service.js"></script>
     <script type="text/javascript" src="js/service/common-service.js"></script>
 
@@ -77,12 +78,6 @@
 <script type="text/javascript" src="components/easy-player/easy-player-element.min.js"></script>
 
 <script>
-//     mui.init({
-//         keyEventBind: {
-//             backbutton: true,  //Boolean(默认true)关闭back按键监听
-//             menubutton: true   //Boolean(默认true)关闭menu按键监听
-//         }
-//     });
     window.addEventListener('message', function(e) {
         var frames = window.frames;
         for(var i=0; i<frames.length; i++) {
@@ -90,17 +85,40 @@
         }
     }, false);
 
-//    // 解决输入框单击无法focus的问题
-//    window.addEventListener('load', function() {
-//        var textInput = document.querySelector('input');
+</script>
+<script>
+//    var str= navigator.userAgent.toLowerCase();
+//    var ver=str.match(/cpu iphone os (.*?) like mac os/);
+//    if(!ver){//非IOS系统
+//        // 引入fastclick文件
+//        console.log('非ios系统');
+//        includeFastclickJsFile();
+//    }else{
+//        console.log("你当前的Ios系统版本为："+ver[1].replace(/_/g,"."));
+//        if(parseInt(ver[1])>=11){
+//            //不必引入fastclick文件
+//        }else{
+//            // 引入fastclick文件
+//            includeFastclickJsFile();
+//        }
+//    }
 //
-//        FastClick.attach(document.body);
-//        Array.prototype.forEach.call(document.getElementsByName('input'), function(testEl) {
-//            testEl.addEventListener('click', function() {
-//                textInput.focus();
-//            }, false)
-//        });
-//    }, false);
+//    function includeFastclickJsFile(){
+//
+//        var oHead = document.getElementsByTagName('HEAD').item(0);
+//        var fastclick= document.createElement("script");
+//        var fastclickAttach = document.createElement("script");
+//        fastclick.type = "text/javascript";
+//        fastclick.src="components/fastclick-master/lib/fastclick.js";
+////        fastclickAttach.type = "text/javascript";
+////        fastclickAttach.src="../static/lib/fastClick/fastclick_attach.js";
+//        oHead.appendChild(fastclick);
+////        oHead.appendChild(fastclickAttach);
+//    }
+    FastClick.prototype.focus = function (targetElement) {
+        'use strict';
+        targetElement.focus();
+    }
 </script>
 </body>
 </html>

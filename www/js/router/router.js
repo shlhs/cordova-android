@@ -4,9 +4,55 @@
  * Created by liucaiyun on 2017/7/22.
  */
 
-app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider){
+app.provider('myRouter', function () {
+    this.$get = function () {
+        return {};
+    }
+});
 
-    $stateProvider
+app.provider('myState', function (myRouterProvider) {
+
+    var allStates = {};
+
+    this.state = function (index, config) {
+        /**
+         * index: 该页面的标示
+         * url: 该页面显示在地址栏上的链接
+         * config: {
+                        url: '',
+                        templateUrl: '',
+                        config: {}
+                    }
+         */
+        allStates[index] = config;
+        return this;
+    };
+
+    function go(index, params, config) {
+        var stateConfig = allStates[index];
+    }
+
+    this.when = function (url, defaultUrl) {
+        if (window.location.pathname === url) {
+            for (var index in allStates) {
+                if (allStates[index].url === defaultUrl) {
+                    go(index);
+                    break;
+                }
+            }
+        }
+    };
+
+    this.$get = function () {
+        return {
+            go: go
+        };
+    }
+});
+
+app.config(['myStateProvider', function(myStateProvider){
+
+    myStateProvider
         .state('base', {
             url: '/'
         })
@@ -26,6 +72,51 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
     ;
 
     // 设置相关
+    myStateProvider
+        .state('index.account', {
+            url: '/account',
+            templateUrl: 'templates/setting/account.html'
+        })
+        .state('index.company', {
+            url: '/company',
+            templateUrl: 'templates/setting/company.html'
+        })
+        .state('index.share', {
+            url: '/share',
+            templateUrl: 'templates/setting/share.html'
+        })
+        .state('index.account.password', {
+            url: '/password',
+            templateUrl: 'templates/setting/password_setter.html',
+            controller: 'PasswordCtrl'
+        })
+    ;
+
+    myStateProvider.when('/', '/welcome');
+    myStateProvider.when('', '/welcome');
+}]);
+
+app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider){
+
+    $stateProvider
+        .state('base', {
+            url: '/'
+        })
+        .state('welcome', {
+            url:'/welcome',
+            templateUrl: 'templates/welcome.html'
+        })
+        .state('login', {
+            url: '/login',
+            templateUrl: 'templates/login.html'
+        })
+        .state('index', {
+            url: '/index',
+            templateUrl: 'templates/home.html'
+        })
+    ;
+
+    // 设置相关
     $stateProvider
         .state('index.account', {
             url: 'account/',
@@ -41,8 +132,7 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
         })
         .state('index.account.password', {
             url: 'password',
-            templateUrl: 'templates/setting/password_setter.html',
-            controller: 'PasswordCtrl'
+            templateUrl: 'templates/setting/password_setter.html'
         })
     ;
 

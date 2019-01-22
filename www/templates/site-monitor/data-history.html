@@ -1,7 +1,6 @@
 <div ng-controller="SiteHistoryReportCtrl" class="page page-left box-vertical-center">
     <style type="text/css" class="init">
-                /* Ensure that the demo table scrolls */
-            th, td { white-space: nowrap; }
+            th,td { white-space: nowrap; }
             div.dataTables_wrapper {
                 width: 100%;
                 margin: 0 auto;
@@ -72,9 +71,7 @@
         <div style="position: absolute; top: 38px;bottom: 0;width: 100%;overflow: auto;border-top: #e8e8e8 1px solid;padding-bottom: 10px;" id="tableParent" site-history-repeat-finish>
             <table id="siteHistoryTable" class="stripe row-border order-column dataTable no-footer">
                 <thead>
-                    <th ng-repeat="item in tableHeader" site-history-repeat-finish>
-                        {{item.name}}<br ng-if="item.unit"/><span ng-if="item.unit">({{item.unit}})</span>
-                    </th>
+                    <th ng-repeat="item in tableHeader" site-history-repeat-finish ng-bind-html="item.name|to_trusted"></th>
                 </thead>
                 <tbody>
                     <tr ng-repeat="item in tableBodyData">
@@ -99,7 +96,7 @@
         </div>
         <!--<div class="page-alert-wrapper" ng-if="isLoading">-->
             <!--<div class="page-alert">-->
-                <!--<img src="../../img/page-loading.gif" class="loading-img">-->
+                <!--<i class="alert-icon loading-spinner"></i>-->
                 <!--<div class="alert-text info">正在加载...</div>-->
             <!--</div>-->
         <!--</div>-->

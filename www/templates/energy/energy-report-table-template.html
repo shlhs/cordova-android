@@ -1,4 +1,4 @@
-<table class="stripe row-border order-column dataTable no-footer" style="border-bottom: none;" id="energyReportTable">
+<table class="stripe row-border order-column dataTable no-footer" style="border-bottom: none;" id="energyReportTable" ng-show="tableBodyData.length">
     <thead>
     <tr>
         <th ng-repeat="item in tableHeader track by $index" energy-report-table-repeat-finish>

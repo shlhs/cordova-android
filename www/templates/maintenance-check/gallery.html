@@ -1,8 +1,13 @@
-<div ng-controller="PowerOffGalleryCtrl" class="page page-fade">
+<div class="page page-fade" ng-controller="MaintenanceGalleryCtrl">
     <div id="slides" class="slides">
-        <div class="img-container" ng-repeat="image in images">
+        <div class="img-container" ng-repeat="file in files" ng-click="hide()">
             <div>
-                <img ng-src="{{image}}" ng-click="hide()">
+                <img ng-src="{{file.data}}">
+            </div>
+            <div class="weui-gallery__opr" ng-if="file.canDelete" style="z-index: 1000;">
+                <a href="javascript:" class="weui-gallery__del" ng-click="deleteImage($index)">
+                    <i class="weui-icon-delete weui-icon_gallery-delete fa fa-trash-o"></i>
+                </a>
             </div>
         </div>
     </div>

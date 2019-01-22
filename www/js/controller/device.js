@@ -674,17 +674,20 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile, router
     }
 
     $scope.gotoDevice = function (deviceData) {
-        routerService.openPage($scope, 'templates/site/device-monitor.html', {sn: deviceData.stationSn, deviceSn: deviceData.sn, deviceName: deviceData.name})
+        routerService.openPage($scope, 'templates/site/device-monitor.html',
+            {sn: deviceData.station_sn, deviceSn: deviceData.sn, deviceName: deviceData.name})
     };
 
     $scope.getDataList();
 });
 
-app.controller('DeviceMonitorCtrl', function ($scope, ajax, routerService) {
+app.controller('DeviceMonitorCtrl', function ($scope, ajax, routerService, userService) {
     $scope.isLoading = true;
     $scope.stationSn = $scope.sn;
     $scope.deviceSn = $scope.deviceSn;
     $scope.deviceName = $scope.deviceName;
+    $scope.canControl = userService.getUserRole() === UserRole.OpsAdmin ||
+        (userService.getUserRole() === UserRole.OpsOperator && userService.hasPermission("STATION_W_" + $scope.stationSn));
     $scope.secondOptions = {
         '实时数据': [],
         '历史数据': []
@@ -886,7 +889,7 @@ app.controller('DeviceRemoteControlCtrl', function ($scope, $interval, routerSer
                     var exist = false;
                     for (var i=0; i<data.length; i++) {
                         if (data[i].var.sn === v.sn) {
-                            v.value = (data[i].data === null ? '' : data[i].data) + (data[i].unit || '');
+                            v.value = (data[i].data === null ? 1 : data[i].data) + (data[i].unit || '');
                             exist = true;
                             break;
                         }
@@ -901,10 +904,10 @@ app.controller('DeviceRemoteControlCtrl', function ($scope, $interval, routerSer
     }
 
     $scope.onToggleSwitcher = function (v) {     // 变量开关
-        if (v.value === 1) {
-            v.value = 0;
+        if (v.value === '1') {
+            v.value = '0';
         } else {
-            v.value = 1;
+            v.value = '1';
         }
         var controlObj = {
             sn: v.sn,
@@ -912,7 +915,7 @@ app.controller('DeviceRemoteControlCtrl', function ($scope, $interval, routerSer
             name: v.name,
             action: 'yaokong-act',
             type: 'Digital',
-            actionName: v.value ? v.zero_meaning : v.one_meaning
+            actionName: v.value === '1' ? v.one_meaning : v.zero_meaning
         };
         showConfirmModal(controlObj);
     };
@@ -929,47 +932,10 @@ app.controller('DeviceRemoteControlCtrl', function ($scope, $interval, routerSer
 
     function showConfirmModal(controlObj) {
         routerService.openPage($scope, '/templates/site/device-monitor/remote-control-confirm-modal.html', {
-            controlObj: controlObj,
-            onCancel: function () {
-                // 取消下发，将值恢复
-                if (controlObj.type === 'Digital') {
-                    for (var i=0; i<$scope.varList.length; i++) {
-                        if ($scope.varList[i].sn === controlObj.sn) {
-                            $scope.varList[i].value = !$scope.varList[i].value;
-                            break;
-                        }
-                    }
-                }
-                history.back();
-            },
-            onConfirm: function (newValue) {
-                confirmControl(controlObj, newValue);
-            }
+            controlObj: controlObj
         }, {
             hidePrev: false
         });
-    }
-
-    function confirmControl(controlObj, newValue) {
-        ajax.post({
-            url: platformService.getDeviceMgmtHost() + '/notification/value_changed',
-            data: {
-                type: controlObj.action,
-                variable_sn: controlObj.sn,
-                variable_value: controlObj.type === 'Digital' ? controlObj.value : newValue
-            },
-            success: function (response) {
-                if (response && response.code === 200) {
-                    $.notify.info('成功下发');
-                    history.back();
-                } else {
-                    $.notify.error('下发失败');
-                }
-            },
-            error: function () {
-                $.notify.error('下发失败');
-            }
-        })
     }
 
     $scope.$on('$destroy',function(){
@@ -981,15 +947,26 @@ app.controller('DeviceRemoteControlCtrl', function ($scope, $interval, routerSer
     getWriteVarList();
 });
 
-app.controller('DeviceRemoteControlConfirmCtrl', function ($scope) {
+app.controller('DeviceRemoteControlConfirmCtrl', function ($scope, ajax, platformService) {
     $scope.okEnable = $scope.controlObj.type === 'Digital' ? true : false;
     $scope.error = '';
+    $scope.isSubmitting = false;
     $scope.inputValid = true;
     var newValue = '';
+    var pwd = '';
 
     $scope.onInputValidate = function (value) {
         newValue = value;
         $scope.error = '';
+    };
+
+    $scope.onPwdChange = function (value) {
+        pwd = value;
+        $scope.error = '';
+    };
+
+    $scope.onCancel = function () {
+        history.back();
     };
 
     function isNumber(val) {
@@ -1003,6 +980,10 @@ app.controller('DeviceRemoteControlConfirmCtrl', function ($scope) {
     }
 
     $scope.confirm = function () {
+        if (!pwd) {
+            $scope.error = '请输入密码';
+            return;
+        }
         if ($scope.controlObj.type === 'Analog') {
             if (!newValue) {
                 $scope.error = '请输入需要设置的值';
@@ -1012,7 +993,42 @@ app.controller('DeviceRemoteControlConfirmCtrl', function ($scope) {
                 return;
             }
         }
-        $scope.onConfirm(newValue);
+        postControl();
+    };
+
+    function postControl() {
+        var controlObj = $scope.controlObj;
+        $scope.isSubmitting = true;
+        ajax.post({
+            url: platformService.getDeviceMgmtHost() + '/notification/value_changed',
+            data: {
+                type: controlObj.action,
+                variable_sn: controlObj.sn,
+                variable_value: controlObj.type === 'Digital' ? controlObj.value : newValue,
+                pwd: pwd
+            },
+            success: function (response) {
+                if (response) {
+                    if (response.code === 200) {
+                        $.notify.info('成功下发');
+                        $scope.onCancel();
+                    } else {
+                        $scope.isSubmitting = false;
+                        $scope.error = '密码错误';
+                        $scope.$apply();
+                    }
+                } else {
+                    $scope.isSubmitting = false;
+                    $scope.error = '下发失败';
+                    $scope.$apply();
+                }
+            },
+            error: function () {
+                $scope.isSubmitting = false;
+                $scope.error = '下发失败';
+                $scope.$apply();
+            }
+        })
     }
 });
 
@@ -1026,7 +1042,7 @@ app.controller('VarRealtimeCtrl', function ($scope, ajax) {
     $scope.isLoading = false;
     var interval = null;
 
-    $scope.$on('$onRealtimeTypeChanged', function (event, realtimeItem) {
+    var typeChangeListener = $scope.$on('$onRealtimeTypeChanged', function (event, realtimeItem) {
 
         $scope.realtime = realtimeItem;
         $scope.realtimeType = realtimeItem.name;
@@ -1036,7 +1052,7 @@ app.controller('VarRealtimeCtrl', function ($scope, ajax) {
         }
     });
 
-    $scope.$on('$onHistoryVarChanged', function (event) {
+    var varChangeListener = $scope.$on('$onHistoryVarChanged', function (event) {
         if (interval) {
             clearInterval(interval);
             interval = null;
@@ -1083,6 +1099,14 @@ app.controller('VarRealtimeCtrl', function ($scope, ajax) {
         if (null != interval) {
             clearInterval(interval);
         }
+        if (typeChangeListener) {
+            typeChangeListener();
+            typeChangeListener = null;
+        }
+        if (varChangeListener) {
+            varChangeListener();
+            varChangeListener = null;
+        }
     })
 });
 
@@ -1093,7 +1117,7 @@ app.controller('HistoryVarCtrl', function ($scope, ajax, $timeout) {
     $scope.timeRange = 'DAY';
     $scope.isLoading = false;
 
-    $scope.$on('$onHistoryVarChanged', function (event, dataItem) {
+    var varChangeListener = $scope.$on('$onHistoryVarChanged', function (event, dataItem) {
         if (dataItem)
         {
             $scope.currentGroup = dataItem;
@@ -1241,6 +1265,13 @@ app.controller('HistoryVarCtrl', function ($scope, ajax, $timeout) {
     //     }
     //
     // })
+
+    $scope.$on('$destroy', function (event) {
+        if (varChangeListener) {
+            varChangeListener();
+            varChangeListener = null;
+        }
+    });
 });
 
 app.directive('treeView',[function(){

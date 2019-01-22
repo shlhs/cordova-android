@@ -148,9 +148,6 @@ app.service('SecurityReportService', function (userService, ajax) {
                 success: function (data) {
                     $.notify.progressStop();
                     $.notify.info("保存成功");
-
-                    // 调用Android接口
-                    window.android && window.android.onJsCallbackForPrevPage('setTaskReportId', data.id);
                     successCallback && successCallback(data);
                 },
                 error: function (xhr, status, error) {

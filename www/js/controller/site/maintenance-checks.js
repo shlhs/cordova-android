@@ -53,8 +53,12 @@ app.controller('MaintenanceCheckHistoryCtrl', function ($scope, ajax, routerServ
 });
 
 
-function importImage(imageData) {    // 从Android读取的图片
-    angular.element("#powerOffHandler").scope().addImagesWithBase64(imageData);
+function onAndroid_maintenanceImageImport(imageData, filename) {    // 从Android读取的图片
+    angular.element("#powerOffHandler").scope().addImagesWithBase64(imageData, filename);
+}
+
+function onAndroid_maintenanceImageDelete(filename) {    // 从Android读取的图片
+    angular.element("#powerOffHandler").scope().deleteImageFromMobile(filename);
 }
 
 app.controller("MaintenanceCheckRecordItemCtrl", function ($scope, ajax, routerService, userService, $rootScope) {
@@ -62,9 +66,14 @@ app.controller("MaintenanceCheckRecordItemCtrl", function ($scope, ajax, routerS
     $scope.image_before_check = [];
     $scope.image_in_check = [];
     $scope.image_after_check = [];
-    $scope.isPC = IsPC();
+    // 先清除上一次选择的图片
+    window.android && window.android.clearSelectedPhotos();
+    $scope.useMobileGallery = window.android && window.android.openGallery;
+
     $scope.canEdit = false;
     var apiHost = GetQueryString("apiHost") || '';      // 适配网页
+    var models =['image_before_check', 'image_in_check', 'image_after_check'];
+    var currentImageModel = '';     // 当前照片类型：维护前、维护过程、维护后
 
     if ($scope.isCreate) {
         $scope.recordData = {station_sn: $scope.stationSn, station_name: $scope.stationName,
@@ -75,14 +84,6 @@ app.controller("MaintenanceCheckRecordItemCtrl", function ($scope, ajax, routerS
 
     $scope.gotoCheckListPage = function(){
         routerService.openPage($scope, '/templates/maintenance-check/check-one-record-items.html', {recordData: $scope.recordData});
-    };
-
-    $scope.openGallery = function(startIndex, images) {
-
-        routerService.openPage($scope, '/templates/maintenance-check/gallery.html', {
-            index: startIndex,
-            images: images
-        });
     };
 
     $scope.gotoPrevPage = function () {
@@ -128,6 +129,16 @@ app.controller("MaintenanceCheckRecordItemCtrl", function ($scope, ajax, routerS
                     $scope.recordData.image_before_check = splitImagePath(data.image_before_check);
                     $scope.recordData.image_in_check = splitImagePath(data.image_in_check);
                     $scope.recordData.image_after_check = splitImagePath(data.image_after_check);
+                    models.forEach(function (model) {
+                        $scope[model] = [];
+                        splitImagePath(data[model]).forEach(function (image) {
+                            $scope[model].push({
+                                filename: image,
+                                data: image,
+                                canDelete: false
+                            })
+                        });
+                    });
                     // 判断当前用户是否有操作权限
                     checkEditable();
                     $scope.$apply();
@@ -148,17 +159,24 @@ app.controller("MaintenanceCheckRecordItemCtrl", function ($scope, ajax, routerS
 
     $scope.save = function () {
         $.notify.progressStart();
+        var postImages = {};
+        models.forEach(function (model) {
+            var images = [];
+            $scope[model].forEach(function (f) {
+                if (f.canDelete) {
+                    images.push(f.data);
+                }
+            });
+            postImages[model] = JSON.stringify(images);
+        });
 
         if (!$scope.recordData.id) {
             var postData = $.extend({}, $scope.recordData,
                 {
                     template:JSON.stringify($scope.recordData.template),
-                    image_before_check: JSON.stringify($scope.image_before_check),
-                    image_in_check: JSON.stringify($scope.image_in_check),
-                    image_after_check: JSON.stringify($scope.image_after_check),
                     stationSn: $scope.stationSn,
                     stationName: $scope.stationName
-                });
+                }, postImages);
             if ($scope.taskId) {
                 postData.ops_task_id = $scope.taskId;
             }
@@ -173,15 +191,16 @@ app.controller("MaintenanceCheckRecordItemCtrl", function ($scope, ajax, routerS
                     $.notify.progressStop();
                     $.notify.info('保存成功');
                     $scope.recordData.id = data.id;
-                    $scope.image_before_check = [];
-                    $scope.image_in_check = [];
-                    $scope.image_after_check = [];
+                    // 将所有图片设置为不可删除
+                    models.forEach(function (model) {
+                        $scope[model].forEach(function (file) {
+                            file.canDelete = false;
+                        })
+                    });
                     if ($scope.$parent.addReport) {
                         $scope.$parent.addReport($scope.recordData);
                     }
                     $scope.$apply();
-                    // 调用Android接口
-                    window.android && window.android.onJsCallbackForPrevPage('setTaskReportId', data.id);
                 },
                 error: function (xhr, status, error) {
                     $.notify.progressStop();
@@ -189,14 +208,11 @@ app.controller("MaintenanceCheckRecordItemCtrl", function ($scope, ajax, routerS
                 }
             })
         } else {
-            var postData = {
+            var postData = $.extend({}, {
                 power_capacity: $scope.recordData.power_capacity,
                 power_circuit: $scope.recordData.power_circuit,
-                template: JSON.stringify($scope.recordData.template),
-                image_before_check: JSON.stringify($scope.image_before_check),
-                image_in_check: JSON.stringify($scope.image_in_check),
-                image_after_check: JSON.stringify($scope.image_after_check)
-            };
+                template: JSON.stringify($scope.recordData.template)
+            }, postImages);
             ajax.patch({
                 url: '/poweroff_reports/' + $scope.recordData.id,
                 data: JSON.stringify(postData),
@@ -207,9 +223,13 @@ app.controller("MaintenanceCheckRecordItemCtrl", function ($scope, ajax, routerS
                 success: function (data) {
                     $.notify.progressStop();
                     $.notify.info('保存成功');
-                    $scope.image_before_check = [];
-                    $scope.image_in_check = [];
-                    $scope.image_after_check = [];
+                    // 将所有图片设置为不可删除
+                    models.forEach(function (model) {
+                        $scope[model].forEach(function (file) {
+                            file.canDelete = false;
+                        })
+                    });
+                    $scope.$apply();
                 },
                 error: function (xhr, status, error) {
                     $.notify.progressStop();
@@ -235,28 +255,54 @@ app.controller("MaintenanceCheckRecordItemCtrl", function ($scope, ajax, routerS
                 img.onload = function(){
                     var quality =  75;
                     var dataUrl = imageHandler.compress(this, 75, file.orientation).src;
-                    $scope.addImagesWithBase64(dataUrl);
+                    $scope.addImagesWithBase64(dataUrl, file.name);
                 };
             };
         }
         obj.files = null;
     };
 
-    var currentImageModel = '';
+    $scope.openMobileGallery = function (model) {        // 打开手机上相册
+        currentImageModel = model;
+        window.android.openGallery(9, 'onAndroid_maintenanceImageImport', 'onAndroid_maintenanceImageDelete');
+    };
+
     $scope.setCurrentImageModel = function (model) {
         currentImageModel = model;
     };
 
-    $scope.addImagesWithBase64 = function (data) {
-        if ($scope.recordData[currentImageModel] === undefined) {
-            $scope.recordData[currentImageModel] = [];
-        }
+    $scope.addImagesWithBase64 = function (data, filename) {
         if ($scope[currentImageModel] === undefined){   // 用于保存新上传的图片，保存时只保存新上传的图片
             $scope[currentImageModel] = [];
         }
-        $scope[currentImageModel].push(data);
-        $scope.recordData[currentImageModel].push(data);
+        $scope[currentImageModel].push({filename: filename, data: data, canDelete: true});
         $scope.$apply();
+        window.android && window.android.clearSelectedPhotos();
+    };
+
+
+    $scope.deleteImageFromMobile = function (filename) {
+        var editingImageFiles = $scope[currentImageModel];
+        for (var i=0; i<editingImageFiles; i++) {
+            if (editingImageFiles[i].canDelete && editingImageFiles[i].filename === filename) {
+                editingImageFiles.splice(i, 1);
+                break;
+            }
+        }
+        $scope.$apply();
+    };
+
+    $scope.openGallery = function(startIndex, imageModel) {
+        currentImageModel = imageModel;
+        routerService.openPage($scope, '/templates/maintenance-check/gallery.html', {
+            index: startIndex+1,
+            files: $scope[imageModel],
+            onDelete: function (index) {
+                if ($scope[currentImageModel].length > index) {
+                    $scope[currentImageModel].splice(index, 1);
+                }
+            }
+        });
     };
 
     init();
@@ -315,18 +361,22 @@ app.controller('MaintenanceChecklistCtrl', function ($scope, ajax) {
     init();
 });
 
+app.controller('MaintenanceGalleryCtrl', function ($scope, $timeout) {
 
-
-app.controller('PowerOffGalleryCtrl', function ($scope, $stateParams, $timeout) {
     $scope.show = false;
 
+    $scope.deleteImage = function(index) {       // 删除图片
+        if ($scope.onDelete) {
+            $scope.onDelete(index);
+        }
+        history.back();
+    };
 
     function initSlider() {
-        if ($scope.images.length>1){
-
+        if ($scope.files.length>1){
             var slide = $("#slides");
             slide.slidesjs({
-                start: $scope.index+1,
+                start: $scope.index,
                 width: window.screen.width,
                 play: {
                     active: true,
@@ -334,12 +384,13 @@ app.controller('PowerOffGalleryCtrl', function ($scope, $stateParams, $timeout) 
                 }
             });
         }
-
         $scope.$apply();
     }
+
+    $timeout(initSlider, 100);
+
+
     $scope.hide = function () {
         history.back();
     };
-
-    $timeout(initSlider, 100);
 });

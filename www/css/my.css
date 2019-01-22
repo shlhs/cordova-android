@@ -468,11 +468,14 @@ header.mui-bar{
     background-color: #d9d9d9;
     display: inline-block;
 }
-.image-uploader input[type='file']{
+.image-uploader input{
     width: 100%;
     height: 100%;
     opacity: 0;
     display: inline-block;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 .image-item .img-file{
     float: left;
@@ -1200,12 +1203,15 @@ a:hover.slidesjs-stop {
     display: -webkit-box;
     -wekkit-box-align:center;
 }
-.slides .img-container>div{
+.slides .img-container>div:first-child{
     width: 100%;
     height: 100%;
     display: -webkit-box;
     -webkit-box-pack: center;
     -webkit-box-align: center;
+}
+.slides .img-container>.weui-gallery__opr{
+    bottom: -40px;
 }
 .slides .img-container>img{
     height: auto;
@@ -1494,6 +1500,11 @@ a:hover.slidesjs-stop {
     width: calc(100% - 110px);
     padding: 0px;
     height: 21px;
+}
+.image-uploader>input {
+    width: 100%;
+    height: 100%;
+    padding: 0 4px;
 }
 .media-lg{
     width: 60px;
@@ -2674,7 +2685,7 @@ table.monitor-table {
 }
 .monitor-table th,td{
     text-align: left;
-    height: 40px;
+    height: 32px;
     border-bottom: #eee 1px solid;
     font-size: 14px;
 }
@@ -3058,20 +3069,20 @@ div.pinch-zoom, div.pinch-zoom-container{
 .dropdown .day-list>li.active {
     color: #586BF3;
 }
-.mui-dtpicker-title, .mui-dtpicker-body {
-    display: -webkit-box;
-}
-.mui-dtpicker-title h5 {
-    -webkit-box-flex: 1;
-    float: none;
-    display: block;
-}
-.mui-dtpicker-body>.mui-picker {
-    -webkit-box-flex: 1;
-    float: none;
-}
+/*.mui-dtpicker-title, .mui-dtpicker-body {*/
+    /*display: -webkit-box;*/
+/*}*/
+/*.mui-dtpicker-title h5 {*/
+    /*-webkit-box-flex: 1;*/
+    /*float: none;*/
+    /*display: block;*/
+/*}*/
+/*.mui-dtpicker-body>.mui-picker {*/
+    /*-webkit-box-flex: 1;*/
+    /*float: none;*/
+/*}*/
 .timeType-MONTH .mui-picker, .timeType-MONTH .mui-dtpicker-title h5 {
-    width: 50%;
+    width: calc(50% - 1px);
 }
 .timeType-MONTH [data-id=title-d] {
     display: none;
@@ -3080,7 +3091,7 @@ div.pinch-zoom, div.pinch-zoom-container{
     width: 1px !important;
 }
 .timeType-YEAR .mui-picker, .timeType-YEAR .mui-dtpicker-title h5 {
-    width: 100%;
+    width: calc(100% - 2px);
 }
 .timeType-YEAR [data-id=title-m],.timeType-YEAR [data-id=title-d] {
     display: none;
@@ -3098,7 +3109,7 @@ header .mui-title .dropdown-arrow:after {
     color: #fff;
     position: absolute;
     right: -22px;
-    top: -10px;
+    top: -12px;
 }
 
 .add-item-btn {
@@ -3518,4 +3529,31 @@ header .mui-title .dropdown-arrow:after {
     display: block;
     content: '';
     clear: both;
+}
+.mui-switch.status-on .mui-switch-handle {
+    background-color: #e00202 !important;
+    box-shadow: 0 2px 5px rgba(245, 30, 30, 0.4) !important;
+}
+.mui-switch.status-off .mui-switch-handle {
+    /*border-color: #4cd964 !important;;*/
+    background-color: #4cd964 !important;
+    box-shadow: 0 2px 5px rgba(100, 255, 126, 0.46);
+}
+.mui-switch.no-color {
+    border-color: #ddd !important;
+    background-color: #fff !important;
+}
+.mui-switch.no-color:before {
+    color: #999;
+    right: 10px;
+}
+.mui-switch.mui-active.no-color:before {
+    color: #999;
+    left: 10px;
+}
+table.dataTable thead th, table.dataTable thead td {
+    padding: 4px 4px;
+}
+table.dataTable tbody th, table.dataTable tbody td {
+    padding: 4px 4px;
 }

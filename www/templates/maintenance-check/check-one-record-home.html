@@ -47,17 +47,18 @@
             <div class="info-group"><span class="title dark" style="float: none;">维护前照片：</span>
                 <div class="icon icon-20 icon-camera" style="position: absolute;" ng-if="canEdit">
                     <div class="image-uploader">
-                        <input type="file" accept="image/*" name="upload" multiple="" onchange="angular.element(this).scope().chooseImage('image_before_check', this)">
-                        <!--<input type="file" accept="image/*" name="upload" multiple="" ng-if="!isPC" ng-click="setCurrentImageModel('image_before_check')">-->
+                        <input unselectable type="file" accept="image/*" name="upload" multiple=""
+                               onchange="angular.element(this).scope().chooseImage('image_before_check', this)" ng-if="!useMobileGallery">
+                        <input unselectable ng-click="openMobileGallery('image_before_check')" ng-if="useMobileGallery">
                     </div>
                 </div>
             </div>
 
             <ul class="image-list">
-                <li class="image-item" ng-repeat="file in recordData.image_before_check"
-                    ng-click="openGallery($index, recordData.image_before_check)">
+                <li class="image-item" ng-repeat="file in image_before_check"
+                    ng-click="openGallery($index, 'image_before_check')">
                     <div class="content">
-                        <a class="img-file" style="background-image: url({{file}})"></a>
+                        <a class="img-file" style="background-image: url({{file.data}})"></a>
                     </div>
                 </li>
             </ul>
@@ -66,17 +67,18 @@
             <div class="info-group"><span class="title dark" style="float: none;">维护过程照片：</span>
                 <div class="icon icon-20 icon-camera" style="position: absolute;" ng-if="canEdit">
                     <div class="image-uploader">
-                        <input type="file" accept="image/*" name="upload" multiple="" onchange="angular.element(this).scope().chooseImage('image_in_check', this)">
-                        <!--<input type="file" accept="image/*" name="upload" multiple="" ng-if="!isPC" ng-click="setCurrentImageModel('image_in_check')">-->
+                        <input unselectable type="file" accept="image/*" name="upload" multiple=""
+                               onchange="angular.element(this).scope().chooseImage('image_in_check', this)" ng-if="!useMobileGallery">
+                        <input unselectable ng-click="openMobileGallery('image_in_check')" ng-if="useMobileGallery">
                     </div>
                 </div>
             </div>
 
             <ul class="image-list">
-                <li class="image-item" ng-repeat="file in recordData.image_in_check"
-                    ng-click="openGallery($index, recordData.image_in_check)">
+                <li class="image-item" ng-repeat="file in image_in_check"
+                    ng-click="openGallery($index, 'image_in_check')">
                     <div class="content">
-                        <a class="img-file" style="background-image: url({{file}})"></a>
+                        <a class="img-file" style="background-image: url({{file.data}})"></a>
                     </div>
                 </li>
             </ul>
@@ -85,17 +87,18 @@
             <div class="info-group"><span class="title dark" style="float: none;">维护后照片：</span>
                 <div class="icon icon-20 icon-camera" style="position: absolute;" ng-if="canEdit">
                     <div class="image-uploader">
-                        <input type="file" accept="image/*" name="upload" multiple="" onchange="angular.element(this).scope().chooseImage('image_after_check', this)"">
-                        <!--<input type="file" accept="image/*" name="upload" multiple="" ng-if="!isPC" ng-click="setCurrentImageModel('image_after_check')">-->
+                        <input unselectable type="file" accept="image/*" name="upload" multiple=""
+                               onchange="angular.element(this).scope().chooseImage('image_after_check', this)" ng-if="!useMobileGallery">
+                        <input unselectable ng-click="openMobileGallery('image_after_check')" ng-if="useMobileGallery">
                     </div>
                 </div>
             </div>
 
             <ul class="image-list">
-                <li class="image-item" ng-repeat="file in recordData.image_after_check"
-                    ng-click="openGallery($index, recordData.image_after_check)">
+                <li class="image-item" ng-repeat="file in image_after_check"
+                    ng-click="openGallery($index, 'image_after_check')">
                     <div class="content">
-                        <a class="img-file" style="background-image: url({{file}})"></a>
+                        <a class="img-file" style="background-image: url({{file.data}})"></a>
                     </div>
                 </li>
             </ul>

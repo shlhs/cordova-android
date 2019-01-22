@@ -16,6 +16,14 @@ app.run(function ($animate) {
 //     });
 // }]);
 
+app.filter(
+    'to_trusted', ['$sce', function ($sce) {
+        return function (text) {
+            return $sce.trustAsHtml(text);
+        }
+    }]
+);      // html显示字符串
+
 
 app.controller('MainCtrl', function ($scope, $rootScope, userService, routerService, cordovaService) {
 
@@ -23,6 +31,14 @@ app.controller('MainCtrl', function ($scope, $rootScope, userService, routerServ
         routerService.openPage(scope, template, params, config);
     };
 
+    var taskUpdateListener = $scope.$on('onBaseTaskUpdate', function (event, taskData) {
+        $scope.$broadcast('onTaskUpdate', taskData);
+    });
+
+    $scope.$on('$destroy', function (event) {
+        taskUpdateListener();
+        taskUpdateListener = null;
+    });
 });
 
 var UserRole = {SuperUser: 'SUPERUSER', OpsAdmin: 'OPS_ADMIN', OpsOperator: 'OPS_OPERATOR', Normal: 'USER'};
@@ -79,6 +95,18 @@ app.service('userService', function ($rootScope) {
             this.username = username;
         }
         return username;
+    };
+
+    this.hasPermission = function (permName) {
+        var perms = this.user.permissions;
+        if (perms && perms.length) {
+            for (var i=0; i<perms.length; i++) {
+                if (perms[i].authrity_name === permName) {
+                    return true;
+                }
+            }
+        }
+        return false;
     };
 
     this.getPassword = function () {
@@ -584,7 +612,7 @@ app.controller('BaseGalleryCtrl', function ($scope, $stateParams, $timeout) {
 });
 
 
-app.controller('mapCtrl', function ($scope, cordovaService) {
+app.controller('mapCtrl', function ($scope, $timeout, cordovaService) {
     var sn = $scope.stationSn;
 
     $scope.siteData = {};
@@ -666,7 +694,21 @@ app.controller('mapCtrl', function ($scope, cordovaService) {
             }, function (error) {
                 console.log(error);
             });
-
+        } else {
+            apiLocation.start(function (longtitude, latitude) {
+                //如果获取不到用户的定位，则直接显示站点的位置
+                if (longtitude && latitude){
+                    // 添加标注
+                    var start = new BMap.Point(longtitude, latitude);
+                    // 坐标转换
+                    var convertor = new BMap.Convertor();
+                    var pointArr = [start];
+                    convertor.translate(pointArr, 3, 5, function (data) {   //3: gcj02坐标，5：百度坐标
+                        driving.search(data.points[0], end);
+                        map.centerAndZoom(end, 15);                 // 初始化地图，设置中心点坐标和地图级别
+                    });
+                }
+            });
         }
 
     }
@@ -684,5 +726,5 @@ app.controller('mapCtrl', function ($scope, cordovaService) {
         }
     };
 
-    getSite();
+    $timeout(getSite, 500);
 });

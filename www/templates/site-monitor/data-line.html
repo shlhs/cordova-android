@@ -28,7 +28,7 @@
                 <div class="card-content" style="padding-top: 6px;">
                     <div class="mui-content-padded no-margin">
                         <div style="margin: 0 10px;padding-bottom: 6px;border-bottom: #f1f1f1 1px solid;text-align: center;color: #007aff;">{{group.name}}</div>
-                        <div class="chart" id="chart{{group.id}}">
+                        <div class="chart" id="chart{{group.id}}" ng-class="{'spin-loading': group.isLoading}">
                         </div>
                     </div>
                 </div>
@@ -41,7 +41,7 @@
             </div>
             <div class="page-alert-wrapper" ng-if="isLoading">
                 <div class="page-alert">
-                    <img src="../../img/page-loading.gif" class="loading-img">
+                    <i class="alert-icon loading-spinner"></i>
                     <div class="alert-text info">正在加载...</div>
                 </div>
             </div>
