@@ -290,6 +290,14 @@ app.controller('AppStoreCtrl', function ($scope, appStoreProvider) {
                     return false;
                 }
             });
+            $scope.allApps.forEach(function (group) {
+                group.children.forEach(function (item) {
+                    if (item.url === app.url) {
+                        item.selected = false;
+                        return false;
+                    }
+                })
+            });
         } else {
             app.selected = true;
             $scope.selectedApps.push(app);
