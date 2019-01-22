@@ -2798,16 +2798,8 @@ color: #a7a7a7;
 .dropdown .day-list>li.active {
     color: #586BF3;
 }
-.mui-dtpicker-title, .mui-dtpicker-body {
-    display: -webkit-box;
-}
-.mui-dtpicker-title h5 {
-    -webkit-box-flex: 1;
-    float: none;
-    display: block;
-}
 .timeType-MONTH .mui-picker, .timeType-MONTH .mui-dtpicker-title h5 {
-    width: 50%;
+    width: calc(50% - 1px);
 }
 .timeType-MONTH [data-id=title-d] {
     display: none;
@@ -2816,7 +2808,7 @@ color: #a7a7a7;
     width: 1px !important;
 }
 .timeType-YEAR .mui-picker, .timeType-YEAR .mui-dtpicker-title h5 {
-    width: 100%;
+    width: calc(100% - 2px);
 }
 .timeType-YEAR [data-id=title-m],.timeType-YEAR [data-id=title-d] {
     display: none;
