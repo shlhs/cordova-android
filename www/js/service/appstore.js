@@ -282,6 +282,7 @@ app.controller('AppStoreCtrl', function ($scope, appStoreProvider) {
             });
         });
     }
+
     $scope.onAddOrDelete = function (app) {
         if (app.selected) {
             app.selected = false;
@@ -290,6 +291,14 @@ app.controller('AppStoreCtrl', function ($scope, appStoreProvider) {
                     $scope.selectedApps.splice(i ,1);
                     return false;
                 }
+            });
+            $scope.allApps.forEach(function (group) {
+                group.children.forEach(function (item) {
+                    if (item.url === app.url) {
+                        item.selected = false;
+                        return false;
+                    }
+                })
             });
         } else {
             app.selected = true;
