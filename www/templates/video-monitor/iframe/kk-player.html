@@ -11,12 +11,12 @@
 <!--autoplay="true" id="player" muted="true" id="player"></easy-player>-->
 <easy-player live="true" show-custom-button="true"
              autoplay="true" id="player" muted="true" id="player"></easy-player>
-<script type="text/javascript" src="/js/app/utils.js"></script>
+<script type="text/javascript" src="../../../js/app/utils.js"></script>
 <script>
     var url = GetQueryString("url"), ipcId=GetQueryString("ipcId");
     document.getElementById("player").setAttribute('video-url', url);
 </script>
-<script type="text/javascript" src="/components/easy-player/easy-player-element.min.js"></script>
+<script type="text/javascript" src="../../../components/easy-player/easy-player-element.min.js"></script>
 <script>
     var player = document.getElementById('player');
     var isPlaying = false;

@@ -713,7 +713,6 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
                 $scope.reportGroups = data;
                 if (data.length) {
                     var report = data[0];
-                    $scope.reportSetting = JSON.parse(report.extend_js);
 
                     // 初始化报告选择器
                     var pickerData = [];
@@ -729,7 +728,12 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
                     reportPickerBtn.addEventListener('click', function(event) {
                         reportPicker.show(function(items) {
                             if (items[0].value !== $scope.currentReport.id) {
-                                onSelectReport({id: items[0].value, name: items[0].text});
+                                for (var i=0; i<data.length; i++) {
+                                    if (data[i].id === items[0].value) {
+                                        onSelectReport(data[i]);
+                                        break;
+                                    }
+                                }
                                 $scope.$apply();
                             }
                         });
@@ -785,6 +789,7 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
             }
         }
         $scope.currentReport = report;
+        $scope.reportSetting = JSON.parse(report.extend_js);
         getDataInfoOfReport();
         $scope.$apply();
     }
@@ -822,6 +827,10 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
 
     function getDataInfoOfReport() {
         if (!$scope.currentReport) {
+            return;
+        }
+        if ($scope.timeType.id === 'DAY') {
+            getDataInfoOfDayReport();
             return;
         }
         $scope.isLoading = true;
@@ -877,6 +886,81 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
         })
     }
 
+    function getDataInfoOfDayReport() {
+        if (!$scope.currentReport) {
+            return;
+        }
+        // 适配报表起始时间不为00:00的问题
+        var nextDay = null;
+        if ($scope.reportSetting.startTime !== '00:00') {       // 跨天
+            var startMoment = moment(currentDay);
+            startMoment.add(1, 'd');
+            nextDay = moment(startMoment).format('YYYY-MM-DD') + 'T00:00:00.000Z';
+        }
+        var currentDayData = null, nextDayData = null;
+        ajax.get({
+            url: '/reportgroups/' + $scope.currentReport.id + '/datainfo',
+            data: {
+                type: $scope.timeType.id,
+                calcmethod: $scope.calcMethod.id,
+                querytime: currentDay
+            },
+            success: function (response) {
+                currentDayData = response;
+                if (!nextDay || nextDayData) {
+                    formatDayData();
+                }
+            }
+        });
+        if (nextDay) {
+            ajax.get({
+                url: '/reportgroups/' + $scope.currentReport.id + '/datainfo',
+                data: {
+                    type: $scope.timeType.id,
+                    calcmethod: $scope.calcMethod.id,
+                    querytime: nextDay
+                },
+                success: function (response) {
+                    nextDayData = response;
+                    if (currentDayData) {
+                        formatDayData();
+                    }
+                }
+            });
+        }
+
+        function formatDayData() {
+            var configStartTime = $scope.reportSetting.startTime;
+            var startTime = currentDay.substring(0, 10) + " " + configStartTime + '00.000';
+            var endTime = moment(startTime).add(23, 'h').format('YYYY-MM-DD HH:mm:ss') + '.000Z';
+            var times = createTimeList(startTime, endTime, 'HOUR', 'YYYY-MM-DD HH:mm:ss.000');
+            // 从startTime开始去数据
+            var offset = parseInt(configStartTime.substring(0, 2)) - 1;     // 起始时间的位移
+            currentDayData.data.forEach(function (varData) {
+                var datas = [];
+                for (var i=offset; i<24; i++) {
+                    datas.push(varData.datas[i]);       // 从当日取一部分，再从次日取一部分
+                }
+                if (nextDayData) {
+                    for (var j=0; j<nextDayData.data.length; j++) {
+                        var nextDayVarData = nextDayData.data[j];
+                        if (nextDayVarData.var.id === varData.var.id) {
+                            for (var i=0; i<offset; i++) {
+                                datas.push(nextDayVarData.datas[i]);
+                            }
+                            break;
+                        }
+                    }
+                }
+                varData.datas = datas;
+                varData.time_keys = times;
+            });
+            calcDataBySetting($scope.reportSetting, currentDayData.data);
+            refreshTable();
+            $scope.$apply();
+        }
+    }
+
     function refreshTable() {
         if ($scope.table) {
             $scope.table.destroy(true);
@@ -916,8 +1000,11 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
 
         dataInfo[0].time_keys.forEach(function (t) {
             if (timeType === 'DAY') {
-                if (t.slice(11, 13) === '00') {
+                var hour = t.slice(11, 13);
+                if (hour === '00') {
                     timeKeys.push('24时');
+                } else if (t.substring(8, 10) > currentDay.substring(8, 10)) {
+                    timeKeys.push('次日' + t.slice(11, 13) + '时');
                 } else {
                     timeKeys.push(t.slice(11, 13) + '时');
                 }
