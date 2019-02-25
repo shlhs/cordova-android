@@ -125,6 +125,8 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
                     sites.push(s);
                 });
                 $scope.sites = sites;
+                // 更新站点状态
+                $scope.sitesTree = formatToTreeData(sites)[0].children;
                 $scope.searchSiteResult = sites;
                 getCurrentSite();
                 getSiteDetail();        // 获取站点详情
@@ -178,7 +180,7 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
             },
             error: function (a,b,c) {
                 $scope.isLoading = false;
-                $.notify.error('获取站点列表失败');
+                // $.notify.error('获取站点列表失败');
                 console.log('get fail');
                 $scope.$apply();
             }
@@ -189,30 +191,22 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
         ajax.get({
             url: '/station/' + $scope.currentSite.sn + '/menudata',
             success: function (response) {
-                if (response && response.extend_js) {
-                    var menuData = JSON.parse(response.extend_js);
-                    var menuSns = [];
-                    menuData.data.forEach(function (menuGroup) {
-                       if (menuGroup.enabled) {
-                           if (menuGroup.sn) {
-                               menuSns.push(menuGroup.sn);
-                           }
-                           if (menuGroup.children) {
-                               menuGroup.children.forEach(function (menu) {
-                                   if (menu.enabled && menu.sn) {
-                                       menuSns.push(menu.sn);
-                                   }
-                               });
-                           }
-                       }
-                    });
-                    appStoreProvider.setMenuSns(menuSns);
+                if (response) {
+                    var menuData = response.extend_js ? JSON.parse(response.extend_js) : {};
+                    var menuSns = {};
+                    if (menuData.data) {
+                        menuData.data.forEach(function (menuGroup) {
+                            var enabled = menuGroup.enabled;
+                            if (menuGroup.children) {
+                                menuGroup.children.forEach(function (menu) {
+                                    menuSns[menu.sn] = enabled && menu.enabled;
+                                });
+                            }
+                        });
+                    }
+                    var platFuncs = response.plat_function_switch ? JSON.parse(response.plat_function_switch) : null;
+                    appStoreProvider.setMenuSns(menuSns, platFuncs);
                     $scope.$emit('$onMenuUpdate', menuSns);
-                    $scope.selectedApps = appStoreProvider.getSelectedApps();
-                    $scope.$apply();
-                } else {
-                    appStoreProvider.setMenuSns(null);
-                    $scope.$emit('$onMenuUpdate', null);
                     $scope.selectedApps = appStoreProvider.getSelectedApps();
                     $scope.$apply();
                 }
