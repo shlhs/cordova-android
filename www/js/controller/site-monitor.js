@@ -931,7 +931,7 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
 
         function formatDayData() {
             var configStartTime = $scope.reportSetting.startTime;
-            var startTime = currentDay.substring(0, 10) + " " + configStartTime + '00.000';
+            var startTime = currentDay.substring(0, 10) + " " + configStartTime + ':00.000';
             var endTime = moment(startTime).add(23, 'h').format('YYYY-MM-DD HH:mm:ss') + '.000Z';
             var times = createTimeList(startTime, endTime, 'HOUR', 'YYYY-MM-DD HH:mm:ss.000');
             // 从startTime开始去数据
