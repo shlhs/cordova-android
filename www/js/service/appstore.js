@@ -32,16 +32,26 @@ app.provider('appStoreProvider', function () {
     }
 
     function setMenuSns(snsObj, platFuncs) {
-        if (!platFuncs) {
-            // 如果没有平台功能接口，则根据菜单列表中是否包含运维菜单来判断是否有运维权限
-            if (!Object.keys(snsObj).indexOf('ops-management') >= 0) {
-                setStorageItem("ops-management", 1);
-            } else {
-                setStorageItem('ops-management', 0);
+        var platFormHasOpsAuth = platFuncs.opsManagement;
+
+        // 再判断菜单是否配置了运维权限
+        var menuHasOpsAuth = false, opsExist = false;
+        for (var sn in snsObj) {
+            if (sn.indexOf('ops-management') >= 0) {
+                opsExist = true;
+                if (snsObj[sn]) {
+                    // 只要配置了一个，就认为是有运维权限的
+                    menuHasOpsAuth = true;
+                    break;
+                }
             }
-        } else {
-            setStorageItem('ops-management', platFuncs.opsManagement ? 1 : 0);
         }
+        if (!opsExist) {        // 如果未保存过运维菜单，则默认具有运维权限
+            menuHasOpsAuth = true;
+        }
+        var hasOpsAuth = platFormHasOpsAuth && menuHasOpsAuth;
+        setStorageItem("ops-management", hasOpsAuth ? 1 : 0);
+
         var allApps = [];
         // 将站点菜单与平台菜单比较，计算有权限的所有菜单
         defaultApps.forEach(function (group) {
@@ -56,7 +66,7 @@ app.provider('appStoreProvider', function () {
                if (enabled === undefined || enabled) {
                    // 如果没有保存过该菜单的配置，则根据平台功能权限显示菜单
                    if (sn.indexOf('ops-management') >= 0) {
-                       if (!platFuncs || platFuncs.opsManagement) {
+                       if (hasOpsAuth) {
                            children.push(child);
                        }
                        return;
