@@ -1318,9 +1318,9 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
                 break;
             case '月':
                 startTime = moment().format('YYYY-MM-01 00:00:00.000');
-                endTime = moment().add(1, 'month').set('day', 1).subtract(1, 'day').format("YYYY-MM-DD 23:59:59.000");
+                endTime = moment().add(1, 'month').set('date', 1).subtract(1, 'day').format("YYYY-MM-DD 23:59:59.000");
                 startTime1 = moment().subtract(1, 'month').format('YYYY-MM-01 00:00:00.000');
-                endTime1 = moment().set('day', 1).subtract(1, 'day').format("YYYY-MM-DD 23:59:59.000");
+                endTime1 = moment().set('date', 1).subtract(1, 'day').format("YYYY-MM-DD 23:59:59.000");
                 queryPeriod = 'DAY';
                 labels = ['本月', '上月'];
                 break;
@@ -1488,7 +1488,7 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
             end = currentDate + ' 23:59:59.000';
         } else if (timeType === 'MONTH') {
             start = currentDate + '-01 00:00:00.000';
-            end = moment(currentDate, 'YYYY-MM').add(1, 'month').set('day', 1).subtract(1, 'day').format('YYYY-MM-DD 23:59:59.000');
+            end = moment(currentDate, 'YYYY-MM').add(1, 'month').set('date', 1).subtract(1, 'day').format('YYYY-MM-DD 23:59:59.000');
         } else if (timeType === 'YEAR') {
             start = currentDate + '-01-01 00:00:00.000';
             end = currentDate + '-12-31 23:59:59.000';
@@ -1971,7 +1971,7 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
                 break;
             case 'MONTH':
                 startTime = currentDate + '-01 00:00:00.000';
-                endTime = moment(currentDate, 'YYYY-MM').add(1, 'month').set('day', 1).subtract(1, 'day').format('YYYY-MM-DD 23:59:59.000');
+                endTime = moment(currentDate, 'YYYY-MM').add(1, 'month').set('date', 1).subtract(1, 'day').format('YYYY-MM-DD 23:59:59.000');
                 queryPeriod = 'DAY';
                 break;
             case 'YEAR':
