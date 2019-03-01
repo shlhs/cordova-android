@@ -1025,6 +1025,7 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
     $scope.categoryName = null;
     $scope.labelName = null;
     $scope.hasConfig = false;
+    $scope.width = screen.width + 'px';     // 直接用屏幕宽度定义chart宽度，比较概率性出现图表只有100px宽度的问题
 
     var zhiluRefreshListener = $scope.$on('$zhiluRefresh', function (event) {
         currentItem = $scope.$parent.currentItem;
@@ -1425,11 +1426,10 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
                 },
                 ],
             };
+
             echarts.init(document.getElementById('zhilu_trend2')).setOption(config);
         }
     }
-    
-    
 });
 
 app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformService) {
@@ -1447,6 +1447,7 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
         4: false,
         5: false
     };
+    $scope.width = screen.width + 'px';     // 直接用屏幕宽度定义chart宽度，比较概率性出现图表只有100px宽度的问题
 
     var otherRefreshListener = $scope.$on('$otherRefresh', function (event) {
         timeType = $scope.$parent.timeType.id;
