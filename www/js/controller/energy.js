@@ -1308,9 +1308,9 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
             var times = [];
             var currentMoment = moment().format('YYYY-MM-DD HH:mm:ss.000');
             data.now.time_keys.forEach(function (t) {
-                if (t > currentMoment) {
-                    return false;
-                }
+                // if (t > currentMoment) {
+                //     return false;
+                // }
                switch ($scope.timeType) {
                    case '日':
                        times.push(parseInt(t.substring(11, 13)) + '时');
@@ -1319,7 +1319,7 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
                        times.push(parseInt(t.substring(8, 10)) + '日');
                        break;
                    case '年':
-                       times.push(parseInt(t.substring(5, 7) + '月'));
+                       times.push(parseInt(t.substring(5, 7)) + '月');
                        break;
                }
             });
@@ -1355,17 +1355,17 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
                 xAxis: {
                     type: 'category',
                     boundaryGap: [0, 0.01],
-                    name: 'kWh',
                     nameLocation: 'start',
                     nameGap: '5',
                     data: times,
                 },
                 yAxis: {
+                    name: 'kWh',
                     type: 'value',
-                    nameGap: '5',
+                    nameGap: 25,
                     nameLocation: 'start',
                     nameTextStyle: {
-                        verticalAlign: 'top'
+                        // verticalAlign: 'top'
                     }
                 },
                 color: ENERGY_LINE_COLORS,
