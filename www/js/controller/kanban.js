@@ -92,7 +92,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                                 // 将processed_value分解除值和单位
                                 if (processedValue.processed_value ) {
                                     var value = parseFloat(processedValue.processed_value);
-                                    tempVarData.value = value;
+                                    tempVarData.value = value.toFixed(1);
                                     if (processedValue.processed_value.length > String(value).length) {
                                         tempVarData.unit = processedValue.processed_value.substring(String(value).length);
                                     }
