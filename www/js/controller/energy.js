@@ -1025,6 +1025,7 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
     $scope.categoryName = null;
     $scope.labelName = null;
     $scope.hasConfig = false;
+    $scope.width = screen.width + 'px';     // 直接用屏幕宽度定义chart宽度，比较概率性出现图表只有100px宽度的问题
 
     var zhiluRefreshListener = $scope.$on('$zhiluRefresh', function (event) {
         currentItem = $scope.$parent.currentItem;
@@ -1317,9 +1318,9 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
                 break;
             case '月':
                 startTime = moment().format('YYYY-MM-01 00:00:00.000');
-                endTime = moment().add(1, 'month').set('day', 1).subtract(1, 'day').format("YYYY-MM-DD 23:59:59.000");
+                endTime = moment().add(1, 'month').set('date', 1).subtract(1, 'day').format("YYYY-MM-DD 23:59:59.000");
                 startTime1 = moment().subtract(1, 'month').format('YYYY-MM-01 00:00:00.000');
-                endTime1 = moment().set('day', 1).subtract(1, 'day').format("YYYY-MM-DD 23:59:59.000");
+                endTime1 = moment().set('date', 1).subtract(1, 'day').format("YYYY-MM-DD 23:59:59.000");
                 queryPeriod = 'DAY';
                 labels = ['本月', '上月'];
                 break;
@@ -1349,9 +1350,9 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
             var times = [];
             var currentMoment = moment().format('YYYY-MM-DD HH:mm:ss.000');
             data.now.time_keys.forEach(function (t) {
-                if (t > currentMoment) {
-                    return false;
-                }
+                // if (t > currentMoment) {
+                //     return false;
+                // }
                switch ($scope.timeType) {
                    case '日':
                        times.push(parseInt(t.substring(11, 13)) + '时');
@@ -1360,7 +1361,7 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
                        times.push(parseInt(t.substring(8, 10)) + '日');
                        break;
                    case '年':
-                       times.push(parseInt(t.substring(5, 7) + '月'));
+                       times.push(parseInt(t.substring(5, 7)) + '月');
                        break;
                }
             });
@@ -1396,14 +1397,14 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
                 xAxis: {
                     type: 'category',
                     boundaryGap: [0, 0.01],
-                    name: 'kWh',
                     nameLocation: 'start',
                     nameGap: '5',
                     data: times,
                 },
                 yAxis: {
+                    name: 'kWh',
                     type: 'value',
-                    nameGap: '5',
+                    nameGap: 20,
                     nameLocation: 'start',
                     nameTextStyle: {
                         verticalAlign: 'top'
@@ -1425,11 +1426,10 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
                 },
                 ],
             };
+
             echarts.init(document.getElementById('zhilu_trend2')).setOption(config);
         }
     }
-    
-    
 });
 
 app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformService) {
@@ -1447,6 +1447,7 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
         4: false,
         5: false
     };
+    $scope.width = screen.width + 'px';     // 直接用屏幕宽度定义chart宽度，比较概率性出现图表只有100px宽度的问题
 
     var otherRefreshListener = $scope.$on('$otherRefresh', function (event) {
         timeType = $scope.$parent.timeType.id;
@@ -1487,7 +1488,7 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
             end = currentDate + ' 23:59:59.000';
         } else if (timeType === 'MONTH') {
             start = currentDate + '-01 00:00:00.000';
-            end = moment(currentDate, 'YYYY-MM').add(1, 'month').set('day', 1).subtract(1, 'day').format('YYYY-MM-DD 23:59:59.000');
+            end = moment(currentDate, 'YYYY-MM').add(1, 'month').set('date', 1).subtract(1, 'day').format('YYYY-MM-DD 23:59:59.000');
         } else if (timeType === 'YEAR') {
             start = currentDate + '-01-01 00:00:00.000';
             end = currentDate + '-12-31 23:59:59.000';
@@ -1970,7 +1971,7 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
                 break;
             case 'MONTH':
                 startTime = currentDate + '-01 00:00:00.000';
-                endTime = moment(currentDate, 'YYYY-MM').add(1, 'month').set('day', 1).subtract(1, 'day').format('YYYY-MM-DD 23:59:59.000');
+                endTime = moment(currentDate, 'YYYY-MM').add(1, 'month').set('date', 1).subtract(1, 'day').format('YYYY-MM-DD 23:59:59.000');
                 queryPeriod = 'DAY';
                 break;
             case 'YEAR':
