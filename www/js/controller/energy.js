@@ -986,6 +986,7 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
     $scope.categoryName = null;
     $scope.labelName = null;
     $scope.hasConfig = false;
+    $scope.width = screen.width + 'px';     // 直接用屏幕宽度定义chart宽度
 
     $scope.$on('$zhiluRefresh', function (event) {
         currentItem = $scope.$parent.currentItem;
@@ -1405,6 +1406,7 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
         4: false,
         5: false
     };
+    $scope.width = screen.width + 'px';     // 直接用屏幕宽度定义chart宽度
 
     $scope.$on('$otherRefresh', function (event) {
         timeType = $scope.$parent.timeType.id;
