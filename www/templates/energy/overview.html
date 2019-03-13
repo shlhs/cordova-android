@@ -114,7 +114,7 @@
                     <div class="card-header" style="padding-left: 12px;padding-bottom: 0;">
                         <i class="iconfont anticon-zhihuiyongdian" style="color: #507CFD;margin-right: 4px;"></i>支路今日用能曲线
                     </div>
-                    <div id="zhilu_trend1" style="width: 100%;height: 200px;"></div>
+                    <div id="zhilu_trend1" style="width: {{width}};height: 200px;"></div>
                 </div>
                 <div class="card" style="padding: 0;">
                     <div class="card-header" style="padding-left: 12px;padding-bottom: 0;">
@@ -125,7 +125,7 @@
                         </ul>
                     </div>
                     <div class="card-content no-padding">
-                        <div id="zhilu_trend2" style="width: 100%;height: 200px;"></div>
+                        <div id="zhilu_trend2" style="width: {{width}};height: 200px;"></div>
                     </div>
                 </div>
             </div>
@@ -144,31 +144,31 @@
                     <div class="card-header" style="padding-left: 12px;padding-bottom: 0;">
                         <i class="iconfont anticon-energy-fenxiang" style="color: #507CFD;margin-right: 4px;"></i>{{labelName}}用能占比
                     </div>
-                    <div id="chart_pie1" style="width: 100%;height: 150px;" class="chart" ng-class="{'spin-loading': loadingStatus[1]}"></div>
+                    <div id="chart_pie1" style="width: {{width}};height: 150px;" class="chart" ng-class="{'spin-loading': loadingStatus[1]}"></div>
                 </div>
                 <div class="card" style="padding: 0;">
                     <div class="card-header" style="padding-left: 12px;padding-bottom: 0;">
                         <i class="iconfont anticon-shuju11" style="color: #507CFD;margin-right: 4px;"></i>{{labelName}}用能增幅前五名
                     </div>
-                    <div id="chart_bar1" style="width: 100%;height: 150px;" class="chart" ng-class="{'spin-loading': loadingStatus[2]}"></div>
+                    <div id="chart_bar1" style="width:  {{width}};height: 150px;" class="chart" ng-class="{'spin-loading': loadingStatus[2]}"></div>
                 </div>
                 <div class="card" style="padding: 0;">
                     <div class="card-header" style="padding-left: 12px;padding-bottom: 0;">
                         <i class="iconfont anticon-shuju11" style="color: #507CFD;margin-right: 4px;"></i>{{labelName}}用能前五名
                     </div>
-                    <div id="chart_bar2" style="width: 100%;height: 150px;" class="chart" ng-class="{'spin-loading': loadingStatus[3]}"></div>
+                    <div id="chart_bar2" style="width:  {{width}};height: 150px;" class="chart" ng-class="{'spin-loading': loadingStatus[3]}"></div>
                 </div>
                 <div class="card" style="padding: 0;">
                     <div class="card-header" style="padding-left: 12px;padding-bottom: 0;position: absolute;">
                         <i class="iconfont anticon-shuju11" style="color: #507CFD;margin-right: 4px;"></i>{{labelName}}用能环比
                     </div>
-                    <div id="chart_bar3" style="width: 100%;height: 180px;" class="chart" ng-class="{'spin-loading': loadingStatus[4]}"></div>
+                    <div id="chart_bar3" style="width:  {{width}};height: 180px;" class="chart" ng-class="{'spin-loading': loadingStatus[4]}"></div>
                 </div>
                 <div class="card" style="padding: 0;">
                     <div class="card-header" style="padding-left: 12px;padding-bottom: 0;">
                         <i class="iconfont anticon-shuju2" style="color: #507CFD;margin-right: 4px;"></i>{{labelName}}用能趋势
                     </div>
-                    <div id="chart_bar4" style="width: 100%;height: 200px;" class="chart" ng-class="{'spin-loading': loadingStatus[5]}"></div>
+                    <div id="chart_bar4" style="width:  {{width}};height: 200px;" class="chart" ng-class="{'spin-loading': loadingStatus[5]}"></div>
                 </div>
             </div>
             <div ng-if="!hasConfig">
