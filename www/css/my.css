@@ -582,6 +582,20 @@ background-image: url("../img/light/64X64/profile.png");
 .sites{
     background-image: url("../img/dark/64X64/sites.png");
 }
+.no-station .alert-icon {
+    display: block;
+    width: 100%;
+    height: 120px;
+    background: url(../img/no-station.png) 50% no-repeat;
+    background-size: contain;
+    margin-top: 80px;
+}
+.no-station .alert-info {
+    color: #888686;
+    margin-top: 10px;
+    font-size: 14px;
+    display: block;
+}
 .building {
     background-image: url(../img/building.png);
 }
