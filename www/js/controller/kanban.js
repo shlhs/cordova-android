@@ -80,6 +80,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                     if(contentsResult[i].type === 'singlestate' || contentsResult[i].type === 'multistate'){
                         for(var j in contentsResult[i].content) {
                             var processedValue = getProcessedValue($scope.sn, contentsResult[i].content[j], $scope.queryTime);
+                            //只显示智能设备的数据；不显示 站点管理信息 和 自定义文本信息, 避免与站点概览页重复
                             if(contentsResult[i].content[j].type === 'device-data') {
                                 var tempVarData = {};
                                 // 如果name中含有单位，将单位去除
@@ -89,15 +90,15 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                                     tempVarData.name = processedValue.name;
                                 }
                                 // 将processed_value分解除值和单位
-                                if (processedValue.processed_value) {
+                                if (processedValue.processed_value ) {
                                     var value = parseFloat(processedValue.processed_value);
-                                    tempVarData.value = value;
+                                    tempVarData.value = value.toFixed(1);
                                     if (processedValue.processed_value.length > String(value).length) {
                                         tempVarData.unit = processedValue.processed_value.substring(String(value).length);
                                     }
                                 }
                                 else {
-                                    tempVarData.value = processedValue.processed_value;
+                                    tempVarData.value = '--';
                                 }
                                 keyVarDatas.push(tempVarData);
                             } else {
@@ -122,9 +123,10 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                         }
                         haveChart = true;
                         needChartCount += 1;
-                        getTrendAnalysis(contentsResult[i].title, deviceVarSns, contentsResult[i].period, $scope.queryTime, contentsResult[i].pfvSettings);
+                        getTrendAnalysis(contentsResult[i].title, deviceVarSns, contentsResult[i].period, $scope.queryTime, contentsResult[i].pfvSettings, contentsResult[i].showType);
                     }else if(contentsResult[i].type === 'ratio-pie'){
                         var ratioPieData = [];
+                        var unit = '';
                         for(var j in contentsResult[i].content) {
                             var tempVarSn = contentsResult[i].content[j].varInfo.deviceVarSn;
                             if(!tempVarSn || tempVarSn == '') {
@@ -137,21 +139,24 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                                 tempName = tempName.substring(0, pos) + "\n" + tempName.substring(pos)
                             }
                             tempData.name = tempName;
-                            tempData.value = getDeviceVarData(tempVarSn, $scope.queryTime, contentsResult[i].period, contentsResult[i].calcMethod);
+                            var tempValue = getDeviceVarData(tempVarSn, $scope.queryTime, contentsResult[i].period, contentsResult[i].calcMethod);
+                            tempData.value = parseFloat(tempValue);
+                            if(unit == '' && tempValue.length > String(tempData.value).length) {
+                                unit = tempValue.substring(String(tempData.value).length);
+                            }
                             ratioPieData.push(tempData);
                         }
+                        haveChart = true;
                         needChartCount += 1;
-                        getRatioPie(contentsResult[i].title, ratioPieData);
+                        getRatioPie(contentsResult[i].title, ratioPieData, unit);
                     }else if(contentsResult[i].type === 'device-statics'){
                         continue;
                     }else if(contentsResult[i].type === 'alarm-list'){
                         $scope.havaEventList = true;
                     }
                 }
-
                 $scope.keyVarDatas = keyVarDatas;
                 $scope.keyStaticDatas = keyStaticDatas;
-
                 if (!haveChart){  //  隐藏图表
                     $("#chartCard").hide();
                 }
@@ -249,9 +254,9 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
         processedValue.type = tempType;
 
         var tempValue = '请进行配置';
-        if(tempType == 'normal-text') {
+        if(tempType === 'normal-text') {
             tempValue = tempContent.value;
-        } else if(tempType == 'station-manage-info') {
+        } else if(tempType === 'station-manage-info') {
             ajax.get({
                 url: '/stations/' + stationSn,
                 async: false,
@@ -270,7 +275,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                     console.log('获取站点信息失败 '+stationSn+err);
                 }
             });
-        } else if(tempType == 'device-data') {
+        } else if(tempType === 'device-data') {
             tempValue = getDeviceVarData(tempContent.varInfo.deviceVarSn, queryTime, tempContent.period, tempContent.calcMethod);
         }
         processedValue.processed_value = tempValue;
@@ -305,7 +310,11 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                     if(!data || data.length == 0) {
                         return;
                     }
-                    resultValue = data[0].data+data[0].unit;
+                    if (data[0].data === null) {
+                        resultValue = '';
+                    } else {
+                        resultValue = data[0].data+data[0].unit;
+                    }
                     g_devicevar_unit_map[deviceSn] = data[0].unit;
                 },
                 error: function () {
@@ -334,10 +343,64 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                             return;
                         }
                         var varData = data[0];
-                        var index = parseInt(tempQueryTime.substr(5,2)) - 1;
-                        if(varData.datas != null && varData.datas.length > index) {
+                        var queryMonth = parseInt(tempQueryTime.substr(5,2));
+                        var index = null;
+                        if(varData.time_keys != null) {
+                            for(var i=0; i<varData.time_keys.length; i++) {
+                                var temp = parseInt(varData.time_keys[i].substr(5,2));
+                                if(temp == queryMonth) {
+                                    index=i;
+                                    break;
+                                }
+                            }
+                        }
+                        if(index != null && varData.datas != null && varData.datas.length > index) {
                             if(varData.datas[index] != null) {
-                                resultValue = varData.datas[index]+varData.unit;
+                                var tempValue = varData.datas[index];
+                                resultValue = tempValue+varData.unit;
+                                g_devicevar_unit_map[deviceSn] = data[0].unit;
+                            }
+                        }
+                    },
+                    error: function(){
+                        console.log('获取设备变量值失败 '+deviceSn);
+                    }
+                });
+                return resultValue;
+            }
+        }
+
+        if(calcMethod == 'max') {
+            if(queryPeriod == 'current_month') {
+                var resultValue = '';
+                ajax.get({
+                    url: '/devicevars/getstatisticalvalues?type=YEAR&calcmethod=MAX&sns=' + deviceSn + '&querytime=' + tempQueryTime,
+                    async: false,
+                    dataType: 'json',
+                    xhrFields: {
+                        withCredentials: true
+                    },
+                    crossDomain: true,
+                    success: function(data) {
+                        if(data.length == 0) {
+                            return;
+                        }
+                        var varData = data[0];
+                        var queryMonth = parseInt(tempQueryTime.substr(5,2));
+                        var index = null;
+                        if(varData.time_keys != null) {
+                            for(var i=0; i<varData.time_keys.length; i++) {
+                                var temp = parseInt(varData.time_keys[i].substr(5,2));
+                                if(temp == queryMonth) {
+                                    index=i;
+                                    break;
+                                }
+                            }
+                        }
+                        if(index != null && varData.datas != null && varData.datas.length > index) {
+                            if(varData.datas[index] != null) {
+                                var tempValue = varData.datas[index];
+                                resultValue = tempValue+varData.unit;
                                 g_devicevar_unit_map[deviceSn] = data[0].unit;
                             }
                         }
@@ -359,7 +422,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
 
                 var queryData = "&sns=" + [deviceSn].join(",");
                 queryData += '&querytimes=' + startQueryTime + ',' + endQueryTime;
-            
+
                 ajax.get({
                     url: '/devicevars/getOneTimeDatas',
                     async: false,
@@ -370,46 +433,46 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                     },
                     crossDomain: true,
                     success: function(values) {
-                    var startValues, endValues = null;
-                    for(var i=0; i<values.length; i++) {
-                        if(values[i].time == startQueryTime) {
-                        startValues = values[i].values;
-                        continue;
-                        }
-                        if(values[i].time == endQueryTime) {
-                        endValues = values[i].values;
-                        continue;
-                        }
-                    }
-                    if(startValues == null || endValues == null){
-                        if(startValues == null) {
-                        console.warn('获取时间点的值失败: '+startQueryTime+deviceSn);
-                        }
-                        if(endValues == null) {
-                        console.warn('获取时间点的值失败: '+endQueryTime+deviceSn);
-                        }
-                    } else {
-                        //resultValue = endValues[deviceSn] - startValues[deviceSn];
-                        if(!g_devicevar_unit_map[deviceSn]) {
-                        //待后台
-                        ajax.get({
-                            url: '/devicevars/getbysn/' + deviceSn,
-                            async: false,
-                            success: function (data) {
-                            if(!data) {
-                                return;
+                        var startValues, endValues = null;
+                        for(var i=0; i<values.length; i++) {
+                            if(values[i].time == startQueryTime) {
+                                startValues = values[i].values;
+                                continue;
                             }
-                            g_devicevar_unit_map[deviceSn] = data.unit;
-                            },
-                            error: function () {
-                            console.warn('获取设备变量信息 '+deviceSn);
+                            if(values[i].time == endQueryTime) {
+                                endValues = values[i].values;
+                                continue;
                             }
-                        });
                         }
-                        var tempValue = endValues[deviceSn] - startValues[deviceSn];
-                        //tempValue = tempValue == 0 ? tempValue:tempValue.toFixed(valueFixNum);
-                        diffValue = tempValue + g_devicevar_unit_map[deviceSn];
-                    }
+                        if(startValues == null || endValues == null){
+                            if(startValues == null) {
+                                console.warn('获取时间点的值失败: '+startQueryTime+deviceSn);
+                            }
+                            if(endValues == null) {
+                                console.warn('获取时间点的值失败: '+endQueryTime+deviceSn);
+                            }
+                        } else {
+                            //resultValue = endValues[deviceSn] - startValues[deviceSn];
+                            if(!g_devicevar_unit_map[deviceSn]) {
+                                //待后台
+                                ajax.get({
+                                    url: '/devicevars/getbysn/' + deviceSn,
+                                    async: false,
+                                    success: function (data) {
+                                        if(!data) {
+                                            return;
+                                        }
+                                        g_devicevar_unit_map[deviceSn] = data.unit;
+                                    },
+                                    error: function () {
+                                        console.warn('获取设备变量信息 '+deviceSn);
+                                    }
+                                });
+                            }
+                            var tempValue = endValues[deviceSn] - startValues[deviceSn];
+                            //tempValue = tempValue == 0 ? tempValue:tempValue.toFixed(valueFixNum);
+                            diffValue = tempValue + g_devicevar_unit_map[deviceSn];
+                        }
                     },
                     error: function(){
                         console.log('获取设备变量值失败 '+deviceSn);
@@ -518,7 +581,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
         });
     }
 
-    function getTrendAnalysis(name, deviceVarSns, period, queryTime, pfvSettings) {
+    function getTrendAnalysis(name, deviceVarSns, period, queryTime, pfvSettings, inputShowType) {
         var queryType = 'MONTH';
         if(period == 'current_day') {
             queryType = 'DAY';
@@ -526,6 +589,15 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
             queryType = 'YEAR';
         } else if(period == 'normal') {
             queryType = 'NORMAL';
+        }
+
+        var showType = 'line';
+        var boundaryGap = true;
+        if(inputShowType != null && inputShowType != '') {
+            showType = inputShowType;
+        }
+        if(showType == 'line') {
+            boundaryGap = false;
         }
 
         ajax.get({
@@ -557,11 +629,11 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
 
                 var chartDatas = [];
                 for(var j in data) {
-                    chartDatas.push({name: data[j].name+' '+data[j].unit, type:'line', data: data[j].datas, yAxisIndex: 0});
+                    chartDatas.push({name: data[j].name+' '+data[j].unit, type:showType, data: data[j].datas, yAxisIndex: 0});
                 }
 
                 var showPfvSetting = (period == 'current_day' || period == 'normal')&& (pfvSettings == 'pfv-settings-f' || pfvSettings == 'pfv-settings-r')
-                drawEchart(name, getTrendAnalysisEchartOption(showPfvSetting, pfvSettings, times, chartDatas));
+                drawEchart(name, getTrendAnalysisEchartOption(showPfvSetting, pfvSettings, times, chartDatas, boundaryGap));
             },
             error: function () {
                 paintFailed();
@@ -570,7 +642,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
         });
     }
 
-    function getTrendAnalysisEchartOption(showPfvSetting, pfvSettings, times, data) {
+    function getTrendAnalysisEchartOption(showPfvSetting, pfvSettings, times, data, boundaryGap) {
         var yAxis =[
             {
                 type: 'value'
@@ -708,13 +780,20 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
             },
             legend: {
                 data: legendData,
-                bottom: -5
+                bottom: -5,
+                textStyle: {
+                    fontSize: 10,
+                    lineHeight: 14
+                },
+                pageIconSize: 10,
+                itemWidth: 15,
+                itemHeight: 10
             },
             grid: {
-                top: 22,
+                top: 15,
                 left: 4,
                 right: 2,
-                bottom: 20,
+                bottom: 25,
                 containLabel: true
             },
             toolbox: {
@@ -724,7 +803,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
             },
             xAxis: {
                 type: 'category',
-                boundaryGap: false,
+                boundaryGap: boundaryGap,
                 data: times
             },
             yAxis: yAxis,
@@ -751,63 +830,25 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
         })
     }
 
-    function getRatioPie(title, data) {
-        console.log(data);
+    function getRatioPie(title, data, unit) {
         var echartOptions = {
-            title: [{
-                text: ''
-            }],
-            chart: {
-                top: 15
-            },
+            title: [],
             color: ['#F04863', '#F9CC13', '#369FFF', '#12C1C1', '#8442E0', '#2FC15B'],
             series: [{
-                name: '1',
-                type: 'pie',
-                label: {
-                    normal: {
-                        "position": "inner",
-                        formatter: function(param) {
-                            return (param.percent) + "%";
-                        },
-                        "textStyle": {
-                            "fontSize": 12,
-                            "color": "#ffffff"
-                        }
-                    }
-                },
-                "radius": "80%",
-                data: data
-            }, {
                 name: '2',
                 type: 'pie',
-                hoverAnimation: false,
-                "label": {
-                    "normal": {
-                        "position": "inner",
-                        formatter: function(param) {
-                            return param.name
-                        },
-                        "textStyle": {
-                            "fontSize": 12,
-                            "color" : "#666666"
-                        }
-                    }
-                },
-                "radius": ["90%", "110%"],
-                "itemStyle": {
-                    "normal": {
-                        "color": "rgba(0,0,0,0)"
+                radius: ['25%', '60%'],
+                label: {
+                    normal: {
+                        formatter: '{b}:\n{c}' + unit + '\n{d}%',
                     },
-                    "emphasis": {
-                        "color": "rgba(0,0,0,0)"
-                    }
                 },
-                data: data
-            }]
+                data: data,
+            },
+            ],
         };
 
-        drawEchart(title, echartOptions);
+        setTimeout(function(){drawEchart(title, echartOptions);}, 1000);
     }
 
     function drawEchart(name, config) {

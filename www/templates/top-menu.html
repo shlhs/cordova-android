@@ -3,7 +3,7 @@
     <div class="mui-scroll-wrapper" data-scroll="1" style="position: static;">
         <div class="mui-scroll" style="transform: translate3d(0px, 0px, 0px) translateZ(0px);position: static;">
             <ul class="mui-table-view">
-                <li class="mui-table-view-cell" ng-if="permission.canEditTask">
+                <li class="mui-table-view-cell">
                     <a href="/templates/task/add-task.html" style="margin-bottom:-6px;"><i class="icon icon-ms icon-add" style="float: left;width:18px;height:18px;margin-right:6px;"></i>派单</a>
                 </li>
                 <li class="mui-table-view-cell">
@@ -29,11 +29,10 @@
 
     }
     function startCaptureQR() {
-    window.android && window.android.openQRCapturePage();
+        window.android && window.android.openQRCapturePage();
     }
 
     function openDeviceFromQR(data) {   //根据扫码结果打开设备详情
-        console.log(data);
         var stationSn = data.sn.substring(0, data.sn.indexOf("_"));
         window.location.href = '/templates/site/device-monitor.html?stationSn=' + stationSn + '&deviceSn=' + data.sn;
     }

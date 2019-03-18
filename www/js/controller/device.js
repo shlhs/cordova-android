@@ -19,7 +19,7 @@ app.controller('DeviceListCtrl', function ($scope, ajax, scrollerService) {
             cache: false,
             success: function(result) {
                 // 设置默认状态胃正常
-                for (var i in result){
+                for (var i=0; i<result.length; i++){
                     result[i].status = 'normal';
                     result[i].status_name = '正常';
                 }
@@ -375,8 +375,8 @@ app.controller('DeviceTaskHistoryCtrl', function ($scope, ajax, scrollerService)
         $scope.showType = type;
     };
 
-    $scope.openTask = function (taskId) {
-        location.href = '/templates/task/task-detail.html?id=' + taskId;
+    $scope.openTask = function (task) {
+        location.href = '/templates/task/task-detail.html?id=' + task.id + '&taskType=' + task.task_type_id;
     };
 
     $scope.getDataList();
@@ -432,8 +432,8 @@ app.controller('DeviceTreeCommonCtrl', function ($scope, ajax) {
                 return;
             }
             if (item.indexs) {
-                const newChildren = [];
-                const childrenMap = {};
+                var newChildren = [];
+                var childrenMap = {};
                 item.children.forEach(function (n, i) {
                     childrenMap[n.id] = n;
                 });
@@ -584,19 +584,21 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile) {     
 
 
     function _formatDeviceStatus(device) {
-        if (device.communi_status > 0){
-            device.status = 'offline';
-            device.status_name = '离线';
-            $scope.faultDeviceList.push(device);
-
-        }else{
-            if (device.running_status > 0){
-                device.status = 'danger';
-                device.status_name = '故障';
+        if (!device.is_group) {
+            if (device.communi_status > 0){
+                device.status = 'offline';
+                device.status_name = '离线';
                 $scope.faultDeviceList.push(device);
+
             }else{
-                device.status = 'normal';
-                device.status_name = '正常';
+                if (device.running_status > 0){
+                    device.status = 'danger';
+                    device.status_name = '故障';
+                    $scope.faultDeviceList.push(device);
+                }else{
+                    device.status = 'normal';
+                    device.status_name = '正常';
+                }
             }
         }
     }
@@ -610,7 +612,10 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile) {     
                 $scope.isLoading = false;
                 // 默认状态为"未知"
                 data.forEach(function (d) {
-                    d.status = 'offline';
+                    if (!d.is_group)
+                    {
+                        d.status = 'offline';
+                    }
                 });
                 $scope.deviceDatas = data;
                 $scope.$apply();
@@ -645,16 +650,15 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile) {     
             success: function (data) {
                 var deviceData = null, device=null;
                 // 将实时数据写入设备列表中
-                var j = 0;
-                for (var i in data){
+                for (var i=0; i<data.length; i++){
                     deviceData = data[i];
-                    for (; j < deviceList.length; j++){
+                    for (var j=0; j < deviceList.length; j++){
                         if (deviceList[j].id === deviceData.device.id){
                             break;
                         }
                     }
                     if (j >= deviceList.length){
-                        break;
+                        continue;
                     }
                     device = deviceList[j];
                     device.communi_status = deviceData.communi_status;
@@ -671,17 +675,18 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile) {     
 
     $scope.gotoDevice = function (deviceData) {
         location.href = '/templates/site/device-monitor.html?stationSn=' + stationSn + '&deviceSn=' + deviceData.sn + '&deviceName=' + deviceData.name;
-
     };
 
     $scope.getDataList();
 });
 
-app.controller('DeviceMonitorCtrl', function ($scope, ajax) {
+app.controller('DeviceMonitorCtrl', function ($scope, ajax, appStoreProvider, userService) {
     $scope.isLoading = true;
     $scope.stationSn = GetQueryString('stationSn');
     $scope.deviceSn=GetQueryString('deviceSn');
     $scope.deviceName = GetQueryString('deviceName');
+    // $scope.hasOpsAuthMenu = appStoreProvider.hasOpsAuth();
+    $scope.canControl = userService.getUserRole() === UserRole.OpsAdmin || userService.getUserRole() === UserRole.OpsOperator;
     $scope.secondOptions = {
         '实时数据': [],
         '历史数据': []
@@ -819,6 +824,210 @@ app.controller('DeviceMonitorCtrl', function ($scope, ajax) {
 
 });
 
+app.controller('DeviceRemoteControlCtrl', function ($scope, $interval, routerService, platformService, ajax) {
+    $scope.device_sn = GetQueryString('device_sn');
+    $scope.varList = [];
+    $scope.confirmVisible = false;
+    $scope.controlObj = null;
+    $scope.isLoading = true;
+    var refreshInterval = null;
+
+    function getWriteVarList() {
+        $scope.isLoading = true;
+        ajax.get({
+            url: platformService.getDeviceMgmtHost() + '/management/devices/' + $scope.device_sn + '/variables',
+            data: {
+                rw: 3
+            },
+            success: function (response) {
+                $scope.isLoading = false;
+                // 状态量在前，模拟量在后
+                $scope.varList = response.data.sort(function (v1, v2) {
+                    if (v1.type === v2.type) {
+                        return 0;
+                    }
+                    if (v1.type === 'Analog' && v2.type === 'Digital') {
+                        return 1;
+                    }
+                    return -1;
+                });
+                // 修改状态量的0/1描述
+                $scope.varList.forEach(function (v) {
+                   if (v.type === 'Digital') {
+                       v.one_meaning = v.one_meaning || 'ON';
+                       v.zero_meaning = v.zero_meaning || 'OFF';
+                   }
+
+                });
+                getRealTimeData();
+                if (refreshInterval === null) {
+                    refreshInterval = $interval(getRealTimeData, 4000);
+                }
+                $scope.$apply();
+            },
+            error: function () {
+                $scope.isLoading = false;
+                $.notify.error('获取可控变量失败');
+            }
+        });
+    }
+
+    function getRealTimeData() {        // 获取变量的实时值
+        var sns = [];
+        $scope.varList.forEach(function (n) {
+            sns.push(n.sn);
+        });
+        var url = "/devicevars/getrealtimevalues";
+        ajax.get({
+            url: url,
+            data: {sns: sns.join(",")},
+            success: function(data) {
+                $scope.varList.forEach(function (v) {
+                   var exist = false;
+                   for (var i=0; i<data.length; i++) {
+                       if (data[i].var.sn === v.sn) {
+                           v.value = (data[i].data === null ? 1 : data[i].data) + (data[i].unit || '');
+                           exist = true;
+                           break;
+                       }
+                   }
+                   if (!exist) {
+                       v.value = null;
+                   }
+                });
+                $scope.$apply();
+            }
+        });
+    }
+
+    $scope.onToggleSwitcher = function (v) {     // 变量开关
+        if (v.value === '1') {
+            v.value = '0';
+        } else {
+            v.value = '1';
+        }
+        var controlObj = {
+            sn: v.sn,
+            value: v.value,
+            name: v.name,
+            action: 'yaokong-act',
+            type: 'Digital',
+            actionName: v.value === '1' ? v.one_meaning : v.zero_meaning
+        };
+        showConfirmModal(controlObj);
+    };
+
+    $scope.onEditAnalog = function (v) {        // 遥设
+        var controlObj = {
+            sn: v.sn,
+            name: v.name,
+            action: 'yaoshe-act',
+            type: 'Analog'
+        };
+        showConfirmModal(controlObj);
+    };
+
+    function showConfirmModal(controlObj) {
+        routerService.openPage($scope, '/templates/site/device-monitor/remote-control-confirm-modal.html', {
+            controlObj: controlObj
+        }, {
+            hidePrev: false
+        });
+    }
+
+    $scope.$on('$destroy',function(){
+        if (refreshInterval !== null) {
+            $interval.cancel(refreshInterval);
+        }
+    });
+
+    getWriteVarList();
+});
+
+app.controller('DeviceRemoteControlConfirmCtrl', function ($scope, ajax, platformService) {
+    $scope.okEnable = $scope.controlObj.type === 'Digital' ? true : false;
+    $scope.error = '';
+    $scope.isSubmitting = false;
+    $scope.inputValid = true;
+    var newValue = '';
+    var pwd = '';
+
+    $scope.onInputValidate = function (value) {
+        newValue = value;
+        $scope.error = '';
+    };
+
+    $scope.onPwdChange = function (value) {
+        pwd = value;
+        $scope.error = '';
+    };
+
+    $scope.onCancel = function () {
+        history.back();
+    };
+
+    function isNumber(val) {
+        var regPos = /^\d+(\.\d+)?$/; //非负浮点数
+        var regNeg = /^(-(([0-9]+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*)))$/; //负浮点数
+        if(regPos.test(val) || regNeg.test(val)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    $scope.confirm = function () {
+        if (!pwd) {
+            $scope.error = '请输入密码';
+            return;
+        }
+        if ($scope.controlObj.type === 'Analog') {
+            if (!newValue) {
+                $scope.error = '请输入需要设置的值';
+                return;
+            } else if (!isNumber(newValue)) {
+                $scope.error = '请输入数字';
+                return;
+            }
+        }
+        postControl();
+    };
+
+    function postControl() {
+        var controlObj = $scope.controlObj;
+        $scope.isSubmitting = true;
+        ajax.post({
+            url: platformService.getDeviceMgmtHost() + '/notification/value_changed',
+            data: {
+                type: controlObj.action,
+                variable_sn: controlObj.sn,
+                variable_value: controlObj.type === 'Digital' ? controlObj.value : newValue,
+                pwd: pwd
+            },
+            success: function (response) {
+                if (response) {
+                    if (response.code === 200) {
+                        $.notify.info('成功下发');
+                        $scope.onCancel();
+                    } else {
+                        $scope.isSubmitting = false;
+                        $scope.error = '密码错误';
+                        $scope.$apply();
+                    }
+                } else {
+                    $scope.isSubmitting = false;
+                    $scope.error = '下发失败';
+                    $scope.$apply();
+                }
+            },
+            error: function () {
+                $scope.isSubmitting = false;
+                $scope.error = '下发失败';
+                $scope.$apply();
+            }
+        })
+    }
+});
 
 app.controller('VarRealtimeCtrl', function ($scope, ajax) {
 
@@ -862,10 +1071,10 @@ app.controller('VarRealtimeCtrl', function ($scope, ajax) {
                 if (type === '状态量') {   // 状态量
                     data.forEach(function (n) {
                         if (n.data > 0) {
-                            n.value = n.var.one_meaning ? n.var.one_meaning : 'OFF';
+                            n.value = n.var.one_meaning ? n.var.one_meaning : 'ON';
                             n.status = 'danger';
                         } else {
-                            n.value = n.var.zero_meaning ? n.var.zero_meaning : 'ON';
+                            n.value = n.var.zero_meaning ? n.var.zero_meaning : 'OFF';
                             n.status = 'normal';
                         }
                     });
@@ -1081,4 +1290,3 @@ app.directive('treeView',[function(){
         }]
     };
 }]);
-

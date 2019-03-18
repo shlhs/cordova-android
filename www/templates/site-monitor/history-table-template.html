@@ -1,0 +1,12 @@
+<table id="siteHistoryTable" class="stripe row-border order-column dataTable no-footer">
+    <thead>
+    <th ng-repeat="item in tableHeader" ng-bind-html="item.name|to_trusted"></th>
+    </thead>
+    <tbody>
+    <tr ng-repeat="item in tableBodyData">
+        <td ng-repeat="col in item" rowspan="{{col.rowSpan || 1}}" colspan="{{col.colSpan || 1}}" ng-style="{backgroundColor: col.backgroundColor}">
+            {{col.value}}
+        </td>
+    </tr>
+    </tbody>
+</table>

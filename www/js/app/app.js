@@ -2,8 +2,6 @@
 /**
  * Created by liucaiyun on 2017/5/4.
  */
-
-
 var app = angular.module('myApp', ['ngAnimate', 'ui.router', 'ui.router.state.events']);
 
 app.run(function ($animate) {
@@ -18,13 +16,19 @@ app.run(function ($animate) {
 //     });
 // }]);
 
+app.filter(
+    'to_trusted', ['$sce', function ($sce) {
+        return function (text) {
+            return $sce.trustAsHtml(text);
+        }
+    }]
+);
 
 app.controller('MainCtrl', function ($scope, $rootScope, userService) {
 
 });
 
 var UserRole = {SuperUser: 'SUPERUSER', OpsAdmin: 'OPS_ADMIN', OpsOperator: 'OPS_OPERATOR', Normal: 'USER'};
-
 
 app.service('userService', function ($rootScope) {
 
@@ -105,8 +109,25 @@ app.service('userService', function ($rootScope) {
 
     this.getCompany = function () {
         return getStorageItem('company') ? JSON.parse(getStorageItem('company')) : null;
-
     };
+
+    this.getTaskCompanyId = function () {
+        // 获取任务时需要用到的用户id
+        var perms = JSON.parse(getStorageItem("user")).permissions;
+        for (var i=0; i<perms.length; i++) {
+            var auth = perms[i].authrity_name;
+            //运维公司
+            if (auth.indexOf("COMPANY_OPS_COMPANY_VIEWCOMPANY") === 0) {
+                return auth.substring("COMPANY_OPS_COMPANY_VIEWCOMPANY".length);
+            }
+            //用户公司
+            if (auth.indexOf("USER_COMPANY_USERUSER_COMPANY") === 0) {
+                return 'user' + auth.substring("USER_COMPANY_USERUSER_COMPANY".length);
+            }
+        }
+        return null;
+    };
+
     this.user = this.getUser();
     this.username = this.getUsername();
     this.password = this.getPassword();
@@ -140,6 +161,7 @@ app.service('platformService', function () {
     this.setLatestPlatform = function (platform) {
         setStorageItem('latestPlatform', JSON.stringify(platform));
         this.host = platform.url;
+        this.ipAddress = this.host.substring(0, this.host.indexOf(':', 5));
         this.thumbHost = this.getImageThumbHost();
     };
 
@@ -158,20 +180,48 @@ app.service('platformService', function () {
         return platform ? platform.url : null;
     };
 
+    this.getAuthHost = function () {
+        return this.ipAddress + ":8096/v1"
+    };
+
     this.getImageThumbHost = function () {      // 获取图片压缩服务的地址
         // 格式为： http://ip:8888/unsafe
-        if (this.host)
+        if (this.ipAddress)
         {
-            return this.host.substring(0, this.host.indexOf(':', 5)) + ":8888/unsafe"
+            return this.ipAddress + ":8888/unsafe"
         }
         return null;
+    };
+
+    this.getGraphHost = function () {
+        return this.ipAddress + ':8920/v1';
+    };
+
+    this.getGraphScreenUrl = function (graphSn) {
+        // 新的监控画面服务
+        return this.ipAddress + ':8921/monitor.html?sn=' + graphSn;
+    };
+
+    this.getDeviceMgmtHost = function () {
+        return this.ipAddress + ':8097';
+    };
+
+    this.getOldMonitorScreenUrl = function (screenSn) {
+        // 老的监控画面服务
+        return this.ipAddress + ':8098/monitor_screen?sn=' + screenSn;
     };
 
     this.getImageUrl = function (width, height, imageUrl) {
         return this.thumbHost + '/' + width + 'x' + height + '/' + imageUrl;
     };
 
+    this.getIpcServiceHost = function () {
+        return this.ipAddress + ':8095/v1';
+    };
+
     this.host = this.getHost();
+    // this.host = 'http://127.0.0.1:8099/v1';
+    this.ipAddress = this.host ? this.host.substring(0, this.host.indexOf(':', 5)) : '';
     this.thumbHost = this.getImageThumbHost();
 });
 
@@ -183,7 +233,6 @@ app.service('ajax', function ($rootScope, platformService, userService, $http) {
     $rootScope.user = null;
 
     $rootScope.getCompany = function(callback) {
-        console.log(platformService.host + '/user/' + username + '/opscompany');
         $.ajax({
             url: platformService.host + '/user/' + username + '/opscompany',
             xhrFields: {
@@ -207,23 +256,38 @@ app.service('ajax', function ($rootScope, platformService, userService, $http) {
         });
     };
 
+    this.getCompanyMembers = function (callback) {
+        var companyId = userService.getTaskCompanyId();
+        var url = '/opscompanies/' + companyId + '/members';
+        if (companyId.indexOf('user') === 0) {
+            url = '/usercompanies/'+ companyId.substring(4) + '/members';
+        }
+        this.get({
+            url: url,
+            success: function (result) {
+                if (callback) {
+                    callback(result);
+                }
+            }
+        })
+    };
+
     function request(option) {
         if (option.url.indexOf("http://") !== 0){
             option.url = platformService.host + option.url;
+            // option.url = 'http://127.0.0.1:8099/v1' + option.url;
         }
         var headers = $.extend({
             Authorization: userService.getAccountToken(),
             credentials: 'include',
             mode: 'cors'
         }, option.headers);
+        option = $.extend({}, {timeout: 30000}, option);
         $.extend(option, {
-            timeout: 5000,
             xhrFields: {withCredentials: true},
             crossDomain: true,
             headers: headers
         });
-
-
 		var newOption = $.extend({}, option
         );
         var r = $.ajax(newOption);
@@ -246,7 +310,6 @@ app.service('ajax', function ($rootScope, platformService, userService, $http) {
        return request(option);
    }
 });
-
 
 Date.prototype.format = function(fmt) {
     var o = {
@@ -474,4 +537,109 @@ app.controller('ImageZoomCtrl', function ($scope, $timeout) {
         $scope.headerVisible = !$scope.headerVisible;
     };
 
+});
+
+app.controller('BaseGalleryCtrl', function ($scope, $stateParams, $timeout) {
+    // $scope.canDelete = false;
+    // $scope.index = $stateParams.index;
+    // $scope.images = $stateParams.images;
+    $scope.show = false;
+
+    $scope.deleteImage = function() {       // 删除图片
+        var index = $("#slides .slidesjs-pagination a.active").parent().index();
+        if (index < 0) {
+            index = 0;
+        }
+        if ($scope.onDelete) {
+            $scope.onDelete(index);
+        }
+        history.back();
+    };
+
+
+    function initSlider() {
+        if ($scope.images.length>1){
+
+            var slide = $("#slides");
+            slide.slidesjs({
+                start: $scope.index,
+                width: window.screen.width,
+                play: {
+                    active: true,
+                    swap: true
+                }
+            });
+        }
+        $scope.$apply();
+    }
+
+    $timeout(initSlider, 100);
+
+
+    $scope.hide = function () {
+        history.back();
+    };
+});
+
+app.directive('dropDownMenu', function () {
+    return {
+        restrict: 'E',
+        templateUrl: '/templates/site-monitor/dropdown-menu.html',
+        scope: {
+            options: '=',
+            onSelect: '=',
+            modelName: '=',
+            defaultValue: '=',
+            selected: '=',
+            disabled: '='
+        },
+        replace: true,
+        controller:['$scope', '$attrs', function($scope, $attrs){
+            $scope.active = false;
+            $scope.selected = $scope.selected || {};
+
+            $scope.toggle = function () {
+                if ($scope.disabled) {
+                    return;
+                }
+                $scope.active = !$scope.active;
+                if ($scope.active) {
+                    var mark = $('<div style="position: fixed;background-color: transparent;width: 100%;height: 100%;top:60px;z-index: 1;left: 0;" ng-click="toggle()"></div>')
+                        .appendTo($scope.domEle);
+                } else {
+                    $scope.domEle.find('div:last').remove();
+                }
+            };
+
+            $scope.onClick = function ($event, id) {
+                if ($event) {
+                    $event.preventDefault();
+                    $event.stopPropagation();
+                }
+                for (var i=0; i<$scope.options.length; i++) {
+                    if ($scope.options[i].id === id) {
+                        $scope.selected = $scope.options[i];
+                        $scope.toggle();
+                        $scope.onSelect($scope.modelName, $scope.selected.id, $scope.selected.name);
+                        return false;
+                    }
+                }
+            };
+
+            if ($scope.defaultValue !== undefined) {
+                for (var i=0; i<$scope.options.length; i++) {
+                    if ($scope.options[i].id === $scope.defaultValue) {
+                        $scope.selected = $scope.options[i];
+                        break;
+                    }
+                }
+            } else if ($scope.options.length) {
+                $scope.selected = $scope.options[0];
+            }
+        }],
+        link: function (scope, element, attrs) {
+            console.log(element);
+            scope.domEle = element;
+        }
+    }
 });
