@@ -16,13 +16,19 @@ app.run(function ($animate) {
 //     });
 // }]);
 
+app.filter(
+    'to_trusted', ['$sce', function ($sce) {
+        return function (text) {
+            return $sce.trustAsHtml(text);
+        }
+    }]
+);
 
 app.controller('MainCtrl', function ($scope, $rootScope, userService) {
 
 });
 
 var UserRole = {SuperUser: 'SUPERUSER', OpsAdmin: 'OPS_ADMIN', OpsOperator: 'OPS_OPERATOR', Normal: 'USER'};
-
 
 app.service('userService', function ($rootScope) {
 
@@ -196,6 +202,10 @@ app.service('platformService', function () {
         return this.ipAddress + ':8921/monitor.html?sn=' + graphSn;
     };
 
+    this.getDeviceMgmtHost = function () {
+        return this.ipAddress + ':8097';
+    };
+
     this.getOldMonitorScreenUrl = function (screenSn) {
         // 老的监控画面服务
         return this.ipAddress + ':8098/monitor_screen?sn=' + screenSn;
@@ -203,6 +213,10 @@ app.service('platformService', function () {
 
     this.getImageUrl = function (width, height, imageUrl) {
         return this.thumbHost + '/' + width + 'x' + height + '/' + imageUrl;
+    };
+
+    this.getIpcServiceHost = function () {
+        return this.ipAddress + ':8095/v1';
     };
 
     this.host = this.getHost();
@@ -296,7 +310,6 @@ app.service('ajax', function ($rootScope, platformService, userService, $http) {
        return request(option);
    }
 });
-
 
 Date.prototype.format = function(fmt) {
     var o = {
@@ -566,4 +579,67 @@ app.controller('BaseGalleryCtrl', function ($scope, $stateParams, $timeout) {
     $scope.hide = function () {
         history.back();
     };
+});
+
+app.directive('dropDownMenu', function () {
+    return {
+        restrict: 'E',
+        templateUrl: '/templates/site-monitor/dropdown-menu.html',
+        scope: {
+            options: '=',
+            onSelect: '=',
+            modelName: '=',
+            defaultValue: '=',
+            selected: '=',
+            disabled: '='
+        },
+        replace: true,
+        controller:['$scope', '$attrs', function($scope, $attrs){
+            $scope.active = false;
+            $scope.selected = $scope.selected || {};
+
+            $scope.toggle = function () {
+                if ($scope.disabled) {
+                    return;
+                }
+                $scope.active = !$scope.active;
+                if ($scope.active) {
+                    var mark = $('<div style="position: fixed;background-color: transparent;width: 100%;height: 100%;top:60px;z-index: 1;left: 0;" ng-click="toggle()"></div>')
+                        .appendTo($scope.domEle);
+                } else {
+                    $scope.domEle.find('div:last').remove();
+                }
+            };
+
+            $scope.onClick = function ($event, id) {
+                if ($event) {
+                    $event.preventDefault();
+                    $event.stopPropagation();
+                }
+                for (var i=0; i<$scope.options.length; i++) {
+                    if ($scope.options[i].id === id) {
+                        $scope.selected = $scope.options[i];
+                        $scope.toggle();
+                        $scope.onSelect($scope.modelName, $scope.selected.id, $scope.selected.name);
+                        return false;
+                    }
+                }
+            };
+
+            if ($scope.defaultValue !== undefined) {
+                for (var i=0; i<$scope.options.length; i++) {
+                    if ($scope.options[i].id === $scope.defaultValue) {
+                        $scope.selected = $scope.options[i];
+                        break;
+                    }
+                }
+            } else if ($scope.options.length) {
+                $scope.selected = $scope.options[0];
+            }
+        }],
+        link: function (scope, element, attrs) {
+            console.log(element);
+            scope.domEle = element;
+        }
+    }
 });

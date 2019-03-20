@@ -9,7 +9,6 @@ function eventHandled() {
     scope.getDataList();
 }
 
-
 app.directive('siteTreeView',[function(){
     return {
         restrict: 'E',
@@ -87,7 +86,15 @@ app.directive('siteTreeView',[function(){
     };
 }]);
 
-app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, routerService, platformService, userService) {
+function onAndroidCb_updateAppList() {
+    // 更新首页的app列表
+    var scope = angular.element('#siteHome').scope();
+    if (scope) {
+        scope.updateAppList();
+    }
+}
+
+app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, routerService, platformService, userService, appStoreProvider) {
     $scope.sitesTree = [];
     $scope.sites = [];
     $scope.currentSite = {};
@@ -95,9 +102,11 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
     $scope.popup_visible = false;
     $scope.searchSiteResult = [];
     $scope.role = userService.getUserRole();
+    $scope.selectedApps = [];
 
     $scope.getDataList = function () {
         scrollerService.initScroll('#sites', $scope.getDataList);
+        $scope.isLoading = true;
         ajax.get({
             url: "/stations",
             success: function(result) {
@@ -117,10 +126,13 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
                     sites.push(s);
                 });
                 $scope.sites = sites;
-                $scope.searchSiteResult = sites;
-                getCurrentSite();
-                getSiteDetail();        // 获取站点详情
-                $scope.isLoading = false;
+                if (sites.length) {
+                    // 更新站点状态
+                    $scope.sitesTree = formatToTreeData(sites)[0].children;
+                    $scope.searchSiteResult = sites;
+                    getCurrentSite();
+                    getSiteDetail();        // 获取站点详情
+                }
                 $scope.$apply();
             },
             error: function (a,b,c) {
@@ -170,13 +182,44 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
             },
             error: function (a,b,c) {
                 $scope.isLoading = false;
-                $.notify.error('获取站点列表失败');
+                // $.notify.error('获取站点列表失败');
                 console.log('get fail');
                 $scope.$apply();
             }
         });
-
     }
+
+    function getMenuDataOfStation() {
+        ajax.get({
+            url: '/station/' + $scope.currentSite.sn + '/menudata',
+            success: function (response) {
+                if (response) {
+                    var menuData = response.extend_js ? JSON.parse(response.extend_js) : {};
+                    var menuSns = {};
+                    if (menuData.data) {
+                        menuData.data.forEach(function (menuGroup) {
+                            var enabled = menuGroup.enabled;
+                            if (menuGroup.children) {
+                                menuGroup.children.forEach(function (menu) {
+                                    menuSns[menu.sn] = enabled && menu.enabled;
+                                });
+                            }
+                        });
+                    }
+                    var platFuncs = response.plat_function_switch ? JSON.parse(response.plat_function_switch) : null;
+                    appStoreProvider.setMenuSns(menuSns, platFuncs);
+                    $scope.$emit('$onMenuUpdate', menuSns);
+                    $scope.selectedApps = appStoreProvider.getSelectedApps();
+                    $scope.$apply();
+                }
+            }
+        });
+    }
+
+    $scope.updateAppList = function() {
+        $scope.selectedApps = appStoreProvider.getSelectedApps();
+        $scope.$apply();
+    };
 
     $scope.searchInputChange = function (input) {
         var value = input.value.toLowerCase().trim();
@@ -216,6 +259,7 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
         $scope.searchSiteResult = $scope.sites;
         localStorage.setItem("currentSite", JSON.stringify(site));
         $scope.closePopover();
+        getMenuDataOfStation();
     };
 
     function getCurrentSite() {
@@ -227,6 +271,7 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
             for (var i=0; i<sites.length; i++) {
                 if (sites[i].sn === site.sn) {
                     $scope.currentSite = sites[i];
+                    getMenuDataOfStation();
                     return;
                 }
             }
@@ -235,6 +280,7 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
             if (!sites[i].is_group) {
                 $scope.currentSite = sites[i];
                 localStorage.setItem("currentSite", JSON.stringify($scope.currentSite));
+                getMenuDataOfStation();
                 break;
             }
         }
@@ -430,11 +476,14 @@ app.controller('SiteBaseInfoCtrl', function ($scope, $timeout, $stateParams, aja
 });
 
 
-app.controller('EventListCtrl', function ($scope, $stateParams, scrollerService, userService, ajax) {
+app.controller('EventListCtrl', function ($scope, $stateParams, scrollerService, userService, ajax, appStoreProvider) {
     $scope.sn = GetQueryString('sn');
     var checked = GetQueryString('status') === '0' ? 0 : 1;
     $scope.isDevice = false;   // 是设备还是站点
     $scope.canCreateTask = userService.getUserRole() === UserRole.Normal ? false : true;
+
+    $scope.hasOpsAuth = appStoreProvider.hasOpsAuth();
+
     var deviceSn = GetQueryString("deviceSn");
     if (deviceSn){
         $scope.isDevice = true;
@@ -520,27 +569,13 @@ app.controller('EventListCtrl', function ($scope, $stateParams, scrollerService,
             },
             success: function (data) {
                 $.notify.progressStop();
-                $.notify.info("事件已确认");
-                // 将已确认的事件移至后面
-                var oldIndex = 0;
+                $.notify.info("事件已确认", 800);
+                // 将已确认的事件从列表中删除
                 for (var i=0; i<$scope.events.length; i++) {
                     if ($scope.events[i].id === data.id) {
                         $scope.events.splice(i, 1);
-                        oldIndex = i > 0 ? i-1 :0;
                         break;
                     }
-                }
-                var inserted = false;
-                for (var i=oldIndex; i<$scope.events.length; i++) {
-                    if ($scope.events[i].status_name === 'CLEARED') {
-                        // 插到前面
-                        $scope.events.splice(i, 0, data);
-                        inserted = true;
-                        break;
-                    }
-                }
-                if (!inserted) {
-                    $scope.events.push(data);
                 }
                 // 确认事件后，需要在首页更新事件信息
                 window.android && window.android.onJsCallbackForPrevPage('eventHandled', '');

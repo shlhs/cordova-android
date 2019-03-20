@@ -1,0 +1,16 @@
+<a href="javascript:;" class="mui-navigate-right" ng-click="warpCallback(item, $event);"
+   ng-class="{'is_leaf': item.isLeaf}">
+    <label class="mui-checkbox mui-left checkbox-square" ng-click="onCheckItem($event, item)">
+        <span class="checkbox" ng-class="{'checked': item.checked}"></span>
+    </label>
+    <i class="node-group" ng-if="!item.isLeaf"></i>
+    {{item.name}}
+</a>
+<ul class="tree-group" ng-if="!item.isLeaf && item.children.length && !item.unvisible">
+    <li class="tree-cell" ng-repeat="item in item.children"
+        ng-class="{'active': item.$$isExpend, 'collapse': !isLeaf(item), 'is-leaf': isLeaf(item)}"
+        ng-include="'/templates/energy/tree-item.html'"
+        ng-if="!item.unvisible"
+    >
+    </li>
+</ul>

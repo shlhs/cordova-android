@@ -33,6 +33,12 @@
     <div class="mui-content" ng-cloak style="padding-left: 8px;background-color: #fff;">
         <div ng-if="!isLoading && !loadingFailed">
             <device-tree-view device-list="deviceDatas" click-callback="gotoDevice"></device-tree-view>
+            <div class="page-alert-wrapper" ng-if="deviceDatas.length <= 1">
+                <div class="page-alert">
+                    <i class="alert-icon nodata"></i>
+                    <div class="alert-text info">设备档案为空</div>
+                </div>
+            </div>
         </div>
         <div class="page-alert-wrapper" ng-if="isLoading">
             <div class="page-alert">

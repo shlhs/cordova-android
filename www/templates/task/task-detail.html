@@ -32,6 +32,7 @@
     <script type="text/javascript" src="../../js/service/router-service.js"></script>
     <script type="text/javascript" src="../../js/controller/task.js"></script>
     <script type="text/javascript" src="../../js/controller/static-devices.js"></script>
+    <script type="text/javascript" src="../../js/service/appstore.js"></script>
     <style>
         html,
         body {
@@ -96,7 +97,7 @@
     </style>
 </head>
 
-<body class="mui-android mui-android-5 mui-android-5-1 mui-android-5-1-1 mui-segmented-control-vertical" ng-app="myApp" ng-controller="TaskBaseCtrl">
+<body class="mui-android mui-android-5 mui-android-5-1 mui-android-5-1-1 mui-segmented-control-vertical" ng-app="myApp" ng-controller="TaskBaseCtrl" ng-cloak>
 <div ng-controller="TaskDetailCtrl" ng-cloak id="taskDetail">
 <header class="mui-bar bg-header" ng-style="{height: taskData.stage_id != TaskStatus.ToAssign ? '120px' : '60px'}">
     <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
@@ -158,7 +159,7 @@
                             <a class="link" href="javascript:;" ng-click="openMap()" ng-if="taskData.station_sn">{{taskData.station_name}}</a>
                         </li>
                         <li ng-if="taskData.events.length">
-                            <i class="icon icon-xs icon-event-red"></i><span style="color: rgb(250, 129, 12)">事件信息:{{taskData.events[0].name}}</span>
+                            <i class="icon icon-xs icon-event-red"></i><span style="color: rgb(250, 129, 12)">事件信息:</span>{{taskData.events[0].info}}
                         </li>
                         <li ng-repeat="record in taskData.device_record" ng-if="taskData.task_type_id !== 11">
                             <i class="icon icon-xs icon-device-grey mui-pull-left"></i>

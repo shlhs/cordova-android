@@ -1,8 +1,6 @@
 <table id="siteHistoryTable" class="stripe row-border order-column dataTable no-footer">
     <thead>
-    <th ng-repeat="item in tableHeader">
-        {{item.name}}<br ng-if="item.unit"/><span ng-if="item.unit">({{item.unit}})</span>
-    </th>
+    <th ng-repeat="item in tableHeader" ng-bind-html="item.name|to_trusted"></th>
     </thead>
     <tbody>
     <tr ng-repeat="item in tableBodyData">
