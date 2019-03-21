@@ -302,37 +302,39 @@ app.controller('TaskBaseCtrl', function ($scope, ajax, userService, appStoreProv
         //     cb && cb(taskId, TaskAction.Arrive);
         //     return;
         // }
-        /*
-        $.notify.progressStart();
-        apiLocation.start(function (longtitude, latitude) {     // 获取用户的当前位置
-            // 判断位置是否一致
-            if (typeof (longtitude) !== 'undefined'){
-                var start = new BMap.Point(longtitude, latitude);
-                // 坐标转换
-                var convertor = new BMap.Convertor();
-                var pointArr = [start];
-                convertor.translate(pointArr, 3, 5, function (data) {
-                    // 计算用户与站点的直线距离
-                    if (!map){
-                        map = new BMap.Map("map");          // 创建地图实例
-                    }
-                    var sitePoint = new BMap.Point(siteLongitude, siteLatitude);
-                    var distance = map.getDistance(data.points[0], sitePoint);
-                    if (distance > 300){    // 距离大于300米，无法确认到达
-                        $.notify.progressStop();
-                        $.notify.error('检测到您未到达现场');
-                    }else{
-                        // 需要先检查是否真的已到现场
-                        cb && cb(taskId, TaskAction.Arrive);
-                        return;
-                    }
-                });
-            }else{
-                $.notify.progressStop();
-                $.notify.error('无法获取当前位置');
-            }
-        });
-        */
+        // $.notify.progressStart();
+        // apiLocation.start(function (longtitude, latitude, errorInfo) {     // 获取用户的当前位置
+        //     // 判断位置是否一致
+        //     if (longtitude && latitude){
+        //         var start = new BMap.Point(longtitude, latitude);
+        //         // 坐标转换
+        //         var convertor = new BMap.Convertor();
+        //         var pointArr = [start];
+        //         convertor.translate(pointArr, 3, 5, function (data) {
+        //             // 计算用户与站点的直线距离
+        //             if (!map){
+        //                 map = new BMap.Map("map");          // 创建地图实例
+        //             }
+        //             var sitePoint = new BMap.Point(siteLongitude, siteLatitude);
+        //             var distance = map.getDistance(data.points[0], sitePoint);
+        //             if (distance > 1000){    // 因泰来：距离大于1000米，无法确认到达
+        //                 $.notify.progressStop();
+        //                 $.notify.error('检测到您未到达现场');
+        //             }else{
+        //                 // 需要先检查是否真的已到现场
+        //                 cb && cb(taskId, TaskAction.Arrive);
+        //                 return;
+        //             }
+        //         });
+        //     } else{
+        //         $.notify.progressStop();
+        //         if (errorInfo) {
+        //             $.notify.error(errorInfo);
+        //         } else {
+        //             $.notify.error('无法获取当前位置');
+        //         }
+        //     }
+        // });
     };
 
     $scope.openDtsCreatePage = function () {

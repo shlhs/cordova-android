@@ -204,7 +204,7 @@ app.controller('EnergyMeterReadingCtrl', function ($scope, ajax, $compile, platf
     $scope.isLoading = false;
     var variableUnits = {};     // 变量sn与单位的对应关系
     var allEnergyItems = [];
-    var selectedItems = [];
+    $scope.selectedItems = [];
 
 
     function getConfig(stationSn) {
@@ -329,7 +329,7 @@ app.controller('EnergyMeterReadingCtrl', function ($scope, ajax, $compile, platf
         $scope[key] = {id: id, name: name};
         $scope.energyItems = formatEnergyTree($scope.currentCategory.name, $scope.currentLabel.name, allEnergyItems);
         // 切换时默认会选中所有
-        selectedItems = [];
+        $scope.selectedItems = [];
         checkAll($scope.energyItems);
         refreshData();
     };
@@ -337,7 +337,7 @@ app.controller('EnergyMeterReadingCtrl', function ($scope, ajax, $compile, platf
     function checkAll(datas) {
         datas.forEach(function (item) {
             item.checked = true;
-            selectedItems.push(item);
+            $scope.selectedItems.push(item);
             if (item.children) {
                 checkAll(item.children);
             }
@@ -345,15 +345,15 @@ app.controller('EnergyMeterReadingCtrl', function ($scope, ajax, $compile, platf
     }
 
     $scope.onSelectItems = function (items) {
-        if (JSON.stringify(selectedItems) !== JSON.stringify(items)) {
-            selectedItems = items;
+        if (JSON.stringify($scope.selectedItems) !== JSON.stringify(items)) {
+            $scope.selectedItems = items;
             refreshData();
         }
     };
 
     function refreshData() {
         var sns = [];
-        selectedItems.forEach(function (item) {
+        $scope.selectedItems.forEach(function (item) {
             item.deviceVarSns.forEach(function (sn) {
                 if (sns.indexOf(sn) < 0) {
                     sns.push(sn);
@@ -366,6 +366,7 @@ app.controller('EnergyMeterReadingCtrl', function ($scope, ajax, $compile, platf
         $scope.tableHeader = [$scope.currentLabel.name+'名称', $scope.startDate.substring(0, 16), $scope.endDate.substring(0, 16), '差值', '单位'];
         $scope.tableBodyData = [];
         if (!sns.length) {
+            refreshTable();
             return;
         }
         ajax.get({
@@ -378,7 +379,7 @@ app.controller('EnergyMeterReadingCtrl', function ($scope, ajax, $compile, platf
                 response.forEach(function (item) {
                     item.values = JSON.parse(item.values);
                 });
-                selectedItems.forEach(function (item) {
+                $scope.selectedItems.forEach(function (item) {
                     var rowData = [item.aliasName, '-', '-', '-', '-'];
                     response.forEach(function (n) {
                         var value = null;
@@ -408,6 +409,7 @@ app.controller('EnergyMeterReadingCtrl', function ($scope, ajax, $compile, platf
                     $scope.tableBodyData.push(rowData);
                 });
                 $scope.$apply();
+                refreshTable();
             },
             error: function () {
                 $.notify.error('获取数据失败');
@@ -415,8 +417,64 @@ app.controller('EnergyMeterReadingCtrl', function ($scope, ajax, $compile, platf
         });
     }
 
+    function refreshTable() {
+        var table = $("#meterReadingTable").DataTable();
+        if (table) {
+            table.destroy(true);
+            table = null;
+            var html = "<energy-meter-reading-table table-header='tableHeader' table-body-data='tableBodyData'></energy-meter-reading-table>";
+            var compileFn = $compile(html);
+            var $dom = compileFn($scope);
+            // 添加到文档中
+            $dom.appendTo($('#tableParent'));
+        }
+    }
+
     // initDatePicker();
     getConfig(stationSn);
+});
+
+app.directive('energyMeterReadingTable', [function(){
+    return {
+        restrict: 'E',
+        templateUrl: '/templates/energy/energy-meter-reading-table-template.html',
+        replace: true,
+        scope: {
+            tableHeader: '=',
+            tableBodyData: '='
+        },
+        controller: ['$scope', '$attrs', function($scope, $attrs){
+            console.log('finish');
+        }]
+    };
+}]);
+
+
+app.directive('energyMeterReadingTableRepeatFinish',function(){
+    return {
+        link: function(scope,element,attr){
+            if(scope.$last == true){
+                setTimeout(function () {
+                    $.fn.dataTable.ext.errMode = 'none'; //不显示任何错误信息
+                    var height = screen.height - 210;
+                    var table = $('#meterReadingTable').DataTable( {
+                        searching: false,
+                        ordering: false,
+                        scrollY:        height + 'px',
+                        scrollX:        true,
+                        scrollCollapse: true,
+                        paging:         false,
+                        info: false,
+                        fixedRows: false,
+                        fixedColumns: {
+                            leftColumns: 1
+                        }
+                    } );
+                    // scope.$parent.table = table;
+                }, 100);
+            }
+        }
+    }
 });
 
 app.controller('EnergyReportCtrl', function ($scope, ajax, $compile, platformService) {
@@ -443,7 +501,7 @@ app.controller('EnergyReportCtrl', function ($scope, ajax, $compile, platformSer
     $scope.tableBodyData = [];
     $scope.isLoading = false;
     var allEnergyItems = [];
-    var selectedItems = [];
+    $scope.selectedItems = [];
 
 
     function init() {
@@ -544,15 +602,15 @@ app.controller('EnergyReportCtrl', function ($scope, ajax, $compile, platformSer
             refreshDateShowName();
         } else {
             $scope.energyItems = formatEnergyTree($scope.currentCategory.name, $scope.currentLabel.name, allEnergyItems);
-            selectedItems = [];
+            $scope.selectedItems = [];
             checkAll($scope.energyItems);
         }
         refreshData();
     };
 
     $scope.onSelectItems = function (items) {
-        if (JSON.stringify(selectedItems) !== JSON.stringify(items)) {
-            selectedItems = items;
+        if (JSON.stringify($scope.selectedItems) !== JSON.stringify(items)) {
+            $scope.selectedItems = items;
             refreshData();
         }
     };
@@ -560,7 +618,7 @@ app.controller('EnergyReportCtrl', function ($scope, ajax, $compile, platformSer
     function checkAll(datas) {
         datas.forEach(function (item) {
             item.checked = true;
-            selectedItems.push(item);
+            $scope.selectedItems.push(item);
             if (item.children) {
                 checkAll(item.children);
             }
@@ -569,7 +627,7 @@ app.controller('EnergyReportCtrl', function ($scope, ajax, $compile, platformSer
 
     function refreshData() {
         var sns = [];
-        selectedItems.forEach(function (item) {
+        $scope.selectedItems.forEach(function (item) {
             item.deviceVarSns.forEach(function (sn) {
                 if (sns.indexOf(sn) < 0) {
                     sns.push(sn);
@@ -635,7 +693,7 @@ app.controller('EnergyReportCtrl', function ($scope, ajax, $compile, platformSer
                     item.time_keys = result.time_keys;
                     item.datas = result.datas;
                 });
-                selectedItems.forEach(function (item) {
+                $scope.selectedItems.forEach(function (item) {
                     var rowData = [item.aliasName];
                     // 加入默认数据
                     for (var i=1; i<$scope.tableHeader.length-1; i++) {
@@ -928,6 +986,7 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
     $scope.categoryName = null;
     $scope.labelName = null;
     $scope.hasConfig = false;
+    $scope.width = screen.width + 'px';     // 直接用屏幕宽度定义chart宽度
 
     $scope.$on('$zhiluRefresh', function (event) {
         currentItem = $scope.$parent.currentItem;
@@ -1217,9 +1276,9 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
                 break;
             case '月':
                 startTime = moment().format('YYYY-MM-01 00:00:00.000');
-                endTime = moment().add(1, 'month').set('day', 1).subtract(1, 'day').format("YYYY-MM-DD 23:59:59.000");
+                endTime = moment().add(1, 'month').set('date', 1).subtract(1, 'day').format("YYYY-MM-DD 23:59:59.000");
                 startTime1 = moment().subtract(1, 'month').format('YYYY-MM-01 00:00:00.000');
-                endTime1 = moment().set('day', 1).subtract(1, 'day').format("YYYY-MM-DD 23:59:59.000");
+                endTime1 = moment().set('date', 1).subtract(1, 'day').format("YYYY-MM-DD 23:59:59.000");
                 queryPeriod = 'DAY';
                 labels = ['本月', '上月'];
                 break;
@@ -1249,9 +1308,9 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
             var times = [];
             var currentMoment = moment().format('YYYY-MM-DD HH:mm:ss.000');
             data.now.time_keys.forEach(function (t) {
-                if (t > currentMoment) {
-                    return false;
-                }
+                // if (t > currentMoment) {
+                //     return false;
+                // }
                switch ($scope.timeType) {
                    case '日':
                        times.push(parseInt(t.substring(11, 13)) + '时');
@@ -1260,7 +1319,7 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
                        times.push(parseInt(t.substring(8, 10)) + '日');
                        break;
                    case '年':
-                       times.push(parseInt(t.substring(5, 7) + '月'));
+                       times.push(parseInt(t.substring(5, 7)) + '月');
                        break;
                }
             });
@@ -1296,17 +1355,17 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
                 xAxis: {
                     type: 'category',
                     boundaryGap: [0, 0.01],
-                    name: 'kWh',
                     nameLocation: 'start',
                     nameGap: '5',
                     data: times,
                 },
                 yAxis: {
+                    name: 'kWh',
                     type: 'value',
-                    nameGap: '5',
+                    nameGap: 25,
                     nameLocation: 'start',
                     nameTextStyle: {
-                        verticalAlign: 'top'
+                        // verticalAlign: 'top'
                     }
                 },
                 color: ENERGY_LINE_COLORS,
@@ -1347,6 +1406,7 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
         4: false,
         5: false
     };
+    $scope.width = screen.width + 'px';     // 直接用屏幕宽度定义chart宽度
 
     $scope.$on('$otherRefresh', function (event) {
         timeType = $scope.$parent.timeType.id;
@@ -1375,7 +1435,7 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
             end = currentDate + ' 23:59:59.000';
         } else if (timeType === 'MONTH') {
             start = currentDate + '-01 00:00:00.000';
-            end = moment(currentDate, 'YYYY-MM').add(1, 'month').set('day', 1).subtract(1, 'day').format('YYYY-MM-DD 23:59:59.000');
+            end = moment(currentDate, 'YYYY-MM').add(1, 'month').set('date', 1).subtract(1, 'day').format('YYYY-MM-DD 23:59:59.000');
         } else if (timeType === 'YEAR') {
             start = currentDate + '-01-01 00:00:00.000';
             end = currentDate + '-12-31 23:59:59.000';
@@ -1470,7 +1530,7 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
             var total = 0;
             var varValue = {};
             data.forEach(function (item) {
-                varValue[item.device_var_sn] = item.all_degree;
+                varValue[item.sn] = item.all_degree;
                 total += item.all_degree;
             });
             // 按项统计
@@ -1482,7 +1542,7 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
                         total += varValue[sn];
                     }
                 });
-                seriesList.push({name: item.aliasName, value: total.toFixed(2)});
+                seriesList.push({name: item.aliasName, value: parseFloat(total.toFixed(2))});
             });
             _paint(total.toFixed(2), seriesList);
         });
@@ -1872,7 +1932,7 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
                 break;
             case 'MONTH':
                 startTime = currentDate + '-01 00:00:00.000';
-                endTime = moment(currentDate, 'YYYY-MM').add(1, 'month').set('day', 1).subtract(1, 'day').format('YYYY-MM-DD 23:59:59.000');
+                endTime = moment(currentDate, 'YYYY-MM').add(1, 'month').set('date', 1).subtract(1, 'day').format('YYYY-MM-DD 23:59:59.000');
                 queryPeriod = 'DAY';
                 break;
             case 'YEAR':

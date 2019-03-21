@@ -8,6 +8,7 @@ app.provider('appStoreProvider', function () {
 
     this.$get = function () {
         return {
+            setPlatFunction: setPlatFunction,
             getAllApps: getAllApps,
             getSelectedApps: getSelectedApps,
             saveSelectedApps: saveSelectedApps,
@@ -17,66 +18,77 @@ app.provider('appStoreProvider', function () {
         }
     };
 
-    function getAllApps() {
-        // 如果没有运维权限，则将运维菜单从defaultApps去除
-        var userHasOpsAuth = hasOpsAuth();
-        var originApps = [];
-        defaultApps.forEach(function (group) {
-            var children = [];
-            group.children.forEach(function (app) {
-                if (!userHasOpsAuth && app.sn && app.sn.indexOf('ops-management') >= 0) {
-                    return;
-                }
-                children.push(app);
-            });
-            if (children.length) {
-                originApps.push($.extend({}, group, {children: children}));
-            }
-        });
-        var enabledMenuSns = getMenuSns();
-        if (!enabledMenuSns) {
-            return originApps;
-        } else {
-            var appGroups = [];
-            originApps.forEach(function (group) {
-                var children = [];
-                group.children.forEach(function (child) {
-                    if (!child.sn) {    // sn为空，则说明所有人都有权限
-                        children.push(child);
-                    } else if (enabledMenuSns.indexOf(child.sn) >= 0) {
-                        children.push(child);
-                    }
-                });
-                if (children.length) {
-                    appGroups.push({
-                        name: group.name,
-                        children: children
-                    });
-                }
-            });
-            return appGroups;
-        }
-    }
-
-    function getMenuSns() {
-        var menuStr = getStorageItem("menuSns");
-        if (!menuStr) {
-            return null;
-        }
-        return JSON.parse(menuStr);
-    }
-
-    function setMenuSns(sns) {
-        if (sns && sns.length) {
-            setStorageItem("menuSns", JSON.stringify(sns));
-        } else {
-            setStorageItem("menuSns", '');
-        }
-        if (!sns || sns.indexOf('ops-management') >= 0) {
+    function setPlatFunction(data) {        // 设置平台的功能列表
+        if (data.opsManagement) {
             setStorageItem("ops-management", 1);
         } else {
-            setStorageItem('ops-management', 0);
+            setStorageItem("ops-management", 0);
         }
+        setStorageItem("platFunctions", JSON.stringify(data));
+    }
+
+    function getAllApps() {
+        return JSON.parse(getStorageItem("allApps"));
+    }
+
+    function setMenuSns(snsObj, platFuncs) {
+        var platFormHasOpsAuth = platFuncs ? platFuncs.opsManagement : false;
+
+        // 再判断菜单是否配置了运维权限
+        var menuHasOpsAuth = false, opsExist = false;
+        for (var sn in snsObj) {
+            if (sn.indexOf('ops-management') >= 0) {
+                opsExist = true;
+                if (snsObj[sn]) {
+                    // 只要配置了一个，就认为是有运维权限的
+                    menuHasOpsAuth = true;
+                    break;
+                }
+            }
+        }
+        if (!opsExist) {        // 如果未保存过运维菜单，则默认具有运维权限
+            menuHasOpsAuth = true;
+        }
+        var hasOpsAuth = platFormHasOpsAuth && menuHasOpsAuth;
+        setStorageItem("ops-management", hasOpsAuth ? 1 : 0);
+
+        var allApps = [];
+        // 将站点菜单与平台菜单比较，计算有权限的所有菜单
+        defaultApps.forEach(function (group) {
+            var children = [];
+            group.children.forEach(function (child) {
+                var sn = child.sn;
+                if (!sn) {
+                    children.push(child);
+                    return;
+                }
+                var enabled = snsObj[sn];
+               if (enabled === undefined || enabled) {
+                   // 如果没有保存过该菜单的配置，则根据平台功能权限显示菜单
+                   if (sn.indexOf('ops-management') >= 0) {
+                       if (hasOpsAuth) {
+                           children.push(child);
+                       }
+                       return;
+                   }
+                   if (sn === 'station-monitor/video-monitor') {
+                       if (!platFuncs || platFuncs.videoMonitor) {
+                           children.push(child);
+                       }
+                       return;
+                   }
+                   // 其他菜单根据默认显示
+                   children.push(child);
+               }
+            });
+            if (children.length) {
+                allApps.push({
+                    name: group.name,
+                    children: children
+                });
+            }
+        });
+        setStorageItem("allApps", JSON.stringify(allApps));
     }
 
     function hasOpsAuth() {
@@ -88,42 +100,21 @@ app.provider('appStoreProvider', function () {
     }
 
     function getSelectedApps() {
-        var enabledMenuSns = getMenuSns();
         var allApps = getAllApps();
         var appsStr = getStorageItem('apps');
         var apps = appsStr ? JSON.parse(appsStr) : null;
-        var userHasOpsAuth = hasOpsAuth();
         var selectedApps = [];
         allApps.forEach(function (group) {
             group.children.forEach(function (app) {
-                // // 如果没有运维菜单权限，不管配置里是否有，都不添加
-                // if (!userHasOpsAuth && app.sn && app.sn.indexOf('ops-management') >= 0) {
-                //     return;
-                // }
                 if (!apps) {
                     if (app.defaultChecked) {
-                        if (app.sn && enabledMenuSns) {
-                            if (enabledMenuSns.indexOf(app.sn) >= 0) {
-                                app.selected = true;
-                                selectedApps.push(app);
-                            }
-                        } else {
-                            // 如果第一次登录，那么使用默认配置
-                            app.selected = true;
-                            selectedApps.push(app);
-                        }
+                        app.selected = true;
+                        selectedApps.push(app);
                     }
                 } else {
                     if (apps.indexOf(app.url) >= 0) {
-                        if (app.sn && enabledMenuSns) {
-                            if (enabledMenuSns.indexOf(app.sn) >= 0) {
-                                app.selected = true;
-                                selectedApps.push(app);
-                            }
-                        } else {
-                            app.selected = true;
-                            selectedApps.push(app);
-                        }
+                        app.selected = true;
+                        selectedApps.push(app);
                         return false;
                     }
                 }
@@ -140,7 +131,7 @@ app.provider('appStoreProvider', function () {
         return selectedApps;
     }
 
-    function  saveSelectedApps(apps) {
+    function saveSelectedApps(apps) {
         var urls = [];
         apps.forEach(function (app) {
             urls.push(app.url);
@@ -179,7 +170,16 @@ app.config(['appStoreProviderProvider', function (appStoreServiceProvider) {
                     url: 'device-monitor',
                     sn: 'station-monitor/device-monitor',
                     defaultChecked: true
-                }, {
+                },
+                {
+                    name: '视频监控',
+                    icon: 'icon-video-monitor',
+                    templateUrl: '/templates/video-monitor/video-monitor.html',
+                    url: 'video-monitor',
+                    sn: 'station-monitor/video-monitor',
+                    defaultChecked: true
+                },
+                {
                     name: '设备档案',
                     icon: 'icon-archives',
                     templateUrl: '/templates/site/static-devices/device-home.html',
@@ -277,6 +277,22 @@ app.controller('AppStoreCtrl', function ($scope, appStoreProvider) {
     $scope.selectedApps = appStoreProvider.getSelectedApps();
     $scope.isEditing = false;
 
+    function setSelectedState() {
+        var selectedAppUrls = [];
+        $scope.selectedApps.forEach(function (t) {
+            selectedAppUrls.push(t.url);
+        });
+        $scope.allApps.forEach(function (group) {
+            group.children.forEach(function (app) {
+                if (selectedAppUrls.indexOf(app.url) >= 0) {
+                    app.selected = true;
+                } else {
+                    app.selected = false;
+                }
+            });
+        });
+    }
+
     $scope.onAddOrDelete = function (app) {
         if (app.selected) {
             app.selected = false;
@@ -285,6 +301,14 @@ app.controller('AppStoreCtrl', function ($scope, appStoreProvider) {
                     $scope.selectedApps.splice(i ,1);
                     return false;
                 }
+            });
+            $scope.allApps.forEach(function (group) {
+                group.children.forEach(function (item) {
+                    if (item.url === app.url) {
+                        item.selected = false;
+                        return false;
+                    }
+                })
             });
         } else {
             app.selected = true;
@@ -305,5 +329,6 @@ app.controller('AppStoreCtrl', function ($scope, appStoreProvider) {
             window.android.onJsCallbackForPrevPage('onAndroidCb_updateAppList', '');
         }
         $scope.$emit('onNotifyAppUpdate');
-    }
+    };
+    setSelectedState();
 });

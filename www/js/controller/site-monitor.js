@@ -106,8 +106,8 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
                 _self.picker.show(function (rs) {
                     currentDay = rs.text + 'T00:00:00.000Z';
                     refreshDateShowName();
-                    $scope.$apply();
                     refreshData();
+                    $scope.$apply();
                 });
             } else {
                 var options = {type: 'date'};
@@ -117,8 +117,8 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
                     refreshDateShowName();
                     // _self.picker.dispose();
                     // _self.picker = null;
-                    $scope.$apply();
                     refreshData();
+                    $scope.$apply();
                 });
             }
         }, false);
@@ -157,23 +157,44 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
             error: function () {
                 $scope.isLoading = false;
             }
-        })
+        });
     }
 
     function refreshData() {
         $scope.trendGroups.forEach(function (group) {
+            group.isLoading = true;
+            var echartDiv = getChartDiv(group.id);
+            if (echartDiv) {
+                echarts.init(echartDiv).setOption({});
+            }
             getDataInfoOfGroup(group.id);
         });
     }
 
     function getDataInfoOfGroup(groupId) {
+        function _setLoadFinish(groupId) {
+            for (var i=0; i<$scope.trendGroups.length; i++) {
+                if ($scope.trendGroups[i].id === groupId) {
+                    $scope.trendGroups[i].isLoading = false;
+                    break;
+                }
+            }
+        }
         ajax.get({
             url: '/trendgroups/' + groupId + '/datainfo?type=' + $scope.timeType.id + '&calcmethod=' + $scope.calcMethod.id + '&starttime=' + currentDay,
             success: function (data) {
+                _setLoadFinish(groupId);
+                $scope.$apply();
                 showChart(groupId, data, $scope.timeType.id, currentDay, $scope.calcMethod.id);
+            },
+            error: function () {
+                _setLoadFinish(groupId);
+                $scope.$apply();
             }
         });
     }
+
+
     function createChartSeriesForGroup(data, chartOption) {
         // 从datainfo返回的数据创建曲线的series
         var arr = [];
@@ -450,8 +471,8 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
     $scope.getDataList();
 });
 
-
 // 历史报表
+var siteHistoryTableScrollHeight = 154;
 app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
 
     var stationSn = GetQueryString("sn");
@@ -477,6 +498,8 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
     $scope.reportDataInfo = [];
     $scope.reportSetting = {};
     $scope.isLoading = false;
+    var reportPicker = null;
+
     refreshDateShowName();
 
     $scope.getDataList = function () {
@@ -509,6 +532,7 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
             }
         }, false);
     }
+
     function refreshDateShowName() {
         // 根据按日、按月、按年，显示当前时间的格式
         switch ($scope.timeType.id) {
@@ -533,9 +557,6 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
                 $scope.reportGroups = data;
                 if (data.length) {
                     var report = data[0];
-                    $scope.currentReport = report;
-                    $scope.reportSetting = JSON.parse(report.extend_js);
-                    getDataInfoOfReport(report);
 
                     // 初始化报告选择器
                     var pickerData = [];
@@ -545,19 +566,24 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
                             text: item.name
                         })
                     });
-                    var taskTypePicker = new mui.PopPicker();
-                    taskTypePicker.setData(pickerData);
-                    var taskTypeButton = document.getElementById('reportPicker');
-                    taskTypeButton.addEventListener('click', function(event) {
-                        taskTypePicker.show(function(items) {
+                    reportPicker = new mui.PopPicker();
+                    reportPicker.setData(pickerData);
+                    var reportPickerBtn = document.getElementById('reportPicker');
+                    reportPickerBtn.addEventListener('click', function(event) {
+                        reportPicker.show(function(items) {
                             if (items[0].value !== $scope.currentReport.id) {
-                                $scope.currentReport.name = items[0].text;
-                                $scope.currentReport.id = items[0].value;
-                                getDataInfoOfReport();
+                                for (var i=0; i<data.length; i++) {
+                                    if (data[i].id === items[0].value) {
+                                        onSelectReport(data[i]);
+                                        break;
+                                    }
+                                }
                                 $scope.$apply();
                             }
                         });
                     }, false);
+                    // 默认选择第一个报告
+                    onSelectReport(report);
                 }
                 $scope.$apply();
             },
@@ -568,15 +594,49 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
         });
     }
 
-    $scope.onChangeReport = function (reportId) {
-        $scope.reportGroups.forEach(function (report) {
-            if (report.id === reportId) {
-                $scope.currentReport = report;
-                $scope.reportSetting = JSON.parse(report.extend_js);
-                return false;
+    function onSelectReport(report) {
+        var reportName = report.name;
+        if (reportName.indexOf('月') >= 0) {
+            // 名字中含有"月"，默认显示月报表
+            $scope.timeType = {
+                id: 'MONTH',
+                name: '月报'
+            };
+            $scope.calcMethodList = [{
+                id: 'MAX',
+                name: '最大值'
+            }, {
+                id: 'AVG',
+                name: '平均值'
+            }];
+            $scope.calcMethod = $scope.calcMethodList[0];
+            refreshDateShowName();
+        } else if (reportName.indexOf('日') >= 0){
+            // 默认显示日报表
+            $scope.timeType = {
+                id: 'DAY',
+                name: '日报'
+            };
+            $scope.calcMethodList = [{
+                id: 'MAX',
+                name: '瞬时值'
+            }];
+            $scope.calcMethod = $scope.calcMethodList[0];
+            refreshDateShowName();
+        }
+        if (reportName.indexOf('度') >=0 || reportName.indexOf('用量') >=0 || reportName.indexOf('流量') >= 0) {
+            if ($scope.timeType.id !== 'DAY') {     // 只有月报、年报才有最大值
+                $scope.calcMethod = {
+                    id: 'MAX',
+                    name: '最大值'
+                };
             }
-        })
-    };
+        }
+        $scope.currentReport = report;
+        $scope.reportSetting = JSON.parse(report.extend_js);
+        getDataInfoOfReport();
+        $scope.$apply();
+    }
 
     $scope.onSelect = function (key, value, name) {
         if (key === 'timeType') {
@@ -585,16 +645,20 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
                     id: 'MAX',
                     name: '瞬时值'
                 }];
+                $scope.calcMethod = $scope.calcMethodList[0];
             } else {
                 $scope.calcMethodList = [{
-                    id: 'AVG',
-                    name: '平均值'
-                }, {
                     id: 'MAX',
                     name: '最大值'
+                }, {
+                    id: 'AVG',
+                    name: '平均值'
                 }];
+                // 如果上一次也是选最大或平均值，则保持不变
+                if ($scope.calcMethod.name !== '最大值' && $scope.calcMethod.name !== '平均值') {
+                    $scope.calcMethod = $scope.calcMethodList[0];
+                }
             }
-            $scope.calcMethod = $scope.calcMethodList[0];
         }
         $scope[key] = {
             id: value,
@@ -604,14 +668,12 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
         refreshDateShowName();
     };
 
-    $scope.onSelectReport = function (key, value, name) {
-        $scope.currentReport.id = value;
-        $scope.currentReport.name = name;
-        getDataInfoOfReport($scope.currentReport);
-    };
-
     function getDataInfoOfReport() {
         if (!$scope.currentReport) {
+            return;
+        }
+        if ($scope.timeType.id === 'DAY') {
+            getDataInfoOfDayReport();
             return;
         }
         ajax.get({
@@ -640,10 +702,10 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
                             queryPeriod = 'DAY';
                             break;
                         case 'DAY':
-                            startTime = currentDay.substring(0, 10) + ' 01:00:00.000';     // 从1点开始，到第二天0点结束
+                            startTime = currentDay.substring(0, 10) + ' 00:00:00.000';     // 从1点开始，到第二天0点结束
                             var startMoment = moment(startTime);
                             startMoment.add(1, 'd');
-                            endTime = startMoment.format().substring(0, 10) + ' 00:00:00.000';
+                            endTime = currentDay.substring(0, 10) + ' 23:59:59.000';
                             queryPeriod = 'HOUR';
                             break;
                     }
@@ -655,7 +717,82 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
                 refreshTable();
                 $scope.$apply();
             }
-        })
+        });
+    }
+
+    function getDataInfoOfDayReport() {
+        if (!$scope.currentReport) {
+            return;
+        }
+        // 适配报表起始时间不为00:00的问题
+        var nextDay = null;
+        if ($scope.reportSetting.startTime !== '00:00') {       // 跨天
+            var startMoment = moment(currentDay);
+            startMoment.add(1, 'd');
+            nextDay = moment(startMoment).format('YYYY-MM-DD') + 'T00:00:00.000Z';
+        }
+        var currentDayData = null, nextDayData = null;
+        ajax.get({
+            url: '/reportgroups/' + $scope.currentReport.id + '/datainfo',
+            data: {
+                type: $scope.timeType.id,
+                calcmethod: $scope.calcMethod.id,
+                querytime: currentDay
+            },
+            success: function (response) {
+                currentDayData = response;
+                if (!nextDay || nextDayData) {
+                    formatDayData();
+                }
+            }
+        });
+        if (nextDay) {
+            ajax.get({
+                url: '/reportgroups/' + $scope.currentReport.id + '/datainfo',
+                data: {
+                    type: $scope.timeType.id,
+                    calcmethod: $scope.calcMethod.id,
+                    querytime: nextDay
+                },
+                success: function (response) {
+                    nextDayData = response;
+                    if (currentDayData) {
+                        formatDayData();
+                    }
+                }
+            });
+        }
+
+        function formatDayData() {
+            var configStartTime = $scope.reportSetting.startTime;
+            var startTime = currentDay.substring(0, 10) + " " + configStartTime + ':00.000';
+            var endTime = moment(startTime).add(23, 'h').format('YYYY-MM-DD HH:mm:ss') + '.000Z';
+            var times = createTimeList(startTime, endTime, 'HOUR', 'YYYY-MM-DD HH:mm:ss.000');
+            // 从startTime开始去数据
+            var offset = parseInt(configStartTime.substring(0, 2)) - 1;     // 起始时间的位移
+            currentDayData.data.forEach(function (varData) {
+                var datas = [];
+                for (var i=offset; i<24; i++) {
+                    datas.push(varData.datas[i]);       // 从当日取一部分，再从次日取一部分
+                }
+                if (nextDayData) {
+                    for (var j=0; j<nextDayData.data.length; j++) {
+                        var nextDayVarData = nextDayData.data[j];
+                        if (nextDayVarData.var.id === varData.var.id) {
+                            for (var i=0; i<offset; i++) {
+                                datas.push(nextDayVarData.datas[i]);
+                            }
+                            break;
+                        }
+                    }
+                }
+                varData.datas = datas;
+                varData.time_keys = times;
+            });
+            calcDataBySetting($scope.reportSetting, currentDayData.data);
+            refreshTable();
+            $scope.$apply();
+        }
     }
 
     function refreshTable() {
@@ -670,6 +807,21 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
         }
     }
 
+    function strlen(str){       // 获取字符串占位符，中文两位，英文一位
+        var len = 0;
+        for (var i=0; i<str.length; i++) {
+            var c = str.charCodeAt(i);
+            //单字节加1
+            if ((c >= 0x0001 && c <= 0x007e) || (0xff60<=c && c<=0xff9f)) {
+                len++;
+            }
+            else {
+                len+=2;
+            }
+        }
+        return len;
+    }
+
     function calcDataBySetting(setting, dataInfo) {
         if (!dataInfo || !dataInfo.length) {
             $scope.tableHeader = [];
@@ -679,11 +831,13 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
         // 先按timeType简化显示时间
         var timeKeys = [];
         var timeType = $scope.timeType.id;
-
         dataInfo[0].time_keys.forEach(function (t) {
             if (timeType === 'DAY') {
-                if (t.slice(11, 13) === '00') {
+                var hour = t.slice(11, 13);
+                if (hour === '00') {
                     timeKeys.push('24时');
+                } else if (t.substring(8, 10) > currentDay.substring(8, 10)) {
+                    timeKeys.push('次日' + t.slice(11, 13) + '时');
                 } else {
                     timeKeys.push(t.slice(11, 13) + '时');
                 }
@@ -701,13 +855,53 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
             name: '时间'
         }];       // 表头
         var dataList = [];      // 取出所有数据
+        var maxLine = 1;
+        // 取所有名称的最大行数
         dataInfo.forEach(function (data) {
-            tableHeader.push({
-                name : data.name,
-                unit: data.unit
-            });
+            var lines = 0;
+            if (strlen(data.name) < 10) {
+                lines = data.unit ? 2 : 1;
+            } else {
+                var name = data.name + (data.unit ? ('(' + data.unit+ ')') : '');
+                lines = Math.ceil(strlen(name) / 10);      // 计算一共有几行
+            }
+            if (lines > maxLine) {
+                maxLine = lines;
+            }
+        });
+        // 每个名称都按最大行数显示
+        dataInfo.forEach(function (data) {
+            var name = data.name + (data.unit ? ('(' + data.unit+ ')') : '');
+            // 对名称进行分行
+            if (strlen(data.name) > 10) {
+                var totalLen = strlen(name);
+                var lineCount = Math.ceil(totalLen / 10);      // 计算一共有几行
+                var lineCharCount = Math.ceil(totalLen/maxLine);
+                var lines=[], len=0, lastIndex=0;
+                for (var i=0; i<name.length; i++) {
+                    var currentLen = strlen(name[i]);
+                    if ((len + currentLen) >= lineCharCount) {
+                        lines.push(name.substring(lastIndex, i+1));
+                        len = 0;
+                        lastIndex = i+1;
+                    } else {
+                        len += currentLen;
+                    }
+                }
+                if (lastIndex < name.length -1) {
+                    lines.push(name.substring(lastIndex));
+                }
+                tableHeader.push({
+                    name: lines.join('<br>')
+                });
+            } else {
+                tableHeader.push({
+                    name: data.name + (data.unit ? ('<br>(' + data.unit+ ')') : '')
+                });
+            }
             dataList.push(data.datas);
         });
+        siteHistoryTableScrollHeight = 106 + 24 * maxLine;
         var tableColumnHeader = [];     // 表的固定列，为二元数组
         for (var i=0; i<timeKeys.length; i++) {
             tableColumnHeader.push([{name: timeKeys[i]}]);
@@ -860,6 +1054,13 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
         return newLine;
     }
 
+    $scope.$on('$destroy', function (event) {
+       if (reportPicker) {
+           reportPicker.dispose();
+           reportPicker = null;
+       }
+    });
+
     $scope.getDataList();
 });
 
@@ -884,7 +1085,7 @@ app.directive('siteHistoryRepeatFinish',function(){
             if(scope.$last == true){
                 setTimeout(function () {
                     $.fn.dataTable.ext.errMode = 'none'; //不显示任何错误信息
-                    var height = screen.height - 154;
+                    var height = screen.height - siteHistoryTableScrollHeight;
                     // 如果宽度小于屏幕宽度，则不设置fixedColumns
                     var $table = $('#siteHistoryTable');
                     var config = {

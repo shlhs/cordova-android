@@ -1,11 +1,11 @@
 
-<div style="height: 100%;">
+<div style="height: 100%;" ng-style="{'background-color': (isLoading || !sites.length) ? '#fff' : ''}">
     <div class="site-header">
         <header class="mui-bar bg-header bg-transparent" style="box-shadow: none;position: static;">
             <a class=" mui-pull-left site-popover" ng-click="openSiteSelectPage()" ng-show="sites.length > 1" ng-if="!isSiteDetail">站点选择</a>
             <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()" ng-if="isSiteDetail"></a>
             <h1 class="mui-title" style="font-size: 18px;left: 70px;right: 70px;">{{currentSite.name}}</h1>
-            <a class="mui-pull-right" href="/templates/site/event-list.html?sn={{currentSite.sn}}" style="position: relative;margin-right: 8px;">
+            <a class="mui-pull-right" href="/templates/site/event-list.html?sn={{currentSite.sn}}" style="position: relative;margin-right: 8px;" ng-if="currentSite.sn">
                 <i class="icon white icon-events" style="width: 18px;height: 18px;">
                 </i>
                 <span class="mui-badge mui-badge-danger" ng-if="currentSite.unclosed_envet_amount"
@@ -16,14 +16,15 @@
         </header>
         <div class="site-img-wrapper">
             <div class="img-border">
-                <img ng-src="{{currentSite.site_image}}" style="width: 100%;height: 100%;border-radius: 8px;">
+                <img ng-src="{{currentSite.site_image}}" style="width: 100%;height: 100%;border-radius: 8px;" ng-if="currentSite.sn">
+                <img src="/img/site-default.png" style="width: 100%;height: 100%;border-radius: 8px;" ng-if="!currentSite.sn">
             </div>
-            <div class="status-line">
+            <div class="status-line" ng-if="currentSite.sn">
                 <div class="status {{currentSite.status}}"><i class="site-status {{currentSite.status}}"></i> {{currentSite.status_name}}</div>
             </div>
         </div>
     </div>
-    <div class="card round-card apps" style="padding: 4px 0 8px 0;">
+    <div class="card round-card apps" style="padding: 4px 0 8px 0;" ng-if="currentSite.sn">
         <ul class="mui-table-view mui-grid-view mui-grid-9 no-border entrance-list" style="background-color: transparent;border-radius: 0;">
             <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border" ng-repeat="app in selectedApps">
                 <a href="{{app.templateUrl}}?sn={{currentSite.sn}}&name={{currentSite.name}}" style="padding: 6px 0 0 0;">
@@ -39,7 +40,7 @@
             </li>
         </ul>
     </div>
-    <div class="card round-card">
+    <div class="card round-card" ng-if="currentSite.sn">
         <div class="card-header" style="margin: 0 -4px; border-bottom: rgb(239,238,238) 1px solid;">
             站点信息
         </div>
@@ -75,8 +76,11 @@
             </ul>
         </div>
     </div>
+    <div class="no-station" ng-if="!isLoading && !currentSite.sn" style="text-align: center;">
+        <i class="alert-icon"></i>
+        <label class="alert-info">未配置站点，<a ng-click="getDataList()">重新加载</a></label>
+    </div>
 </div>
-
 <div class="page-alert-wrapper" ng-if="isLoading">
     <div class="page-alert">
         <img src="../../img/page-loading.gif" class="loading-img">

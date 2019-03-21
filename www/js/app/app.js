@@ -16,6 +16,14 @@ app.run(function ($animate) {
 //     });
 // }]);
 
+app.filter(
+    'to_trusted', ['$sce', function ($sce) {
+        return function (text) {
+            return $sce.trustAsHtml(text);
+        }
+    }]
+);
+
 app.controller('MainCtrl', function ($scope, $rootScope, userService) {
 
 });
@@ -205,6 +213,10 @@ app.service('platformService', function () {
 
     this.getImageUrl = function (width, height, imageUrl) {
         return this.thumbHost + '/' + width + 'x' + height + '/' + imageUrl;
+    };
+
+    this.getIpcServiceHost = function () {
+        return this.ipAddress + ':8095/v1';
     };
 
     this.host = this.getHost();

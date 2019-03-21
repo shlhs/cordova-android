@@ -44,9 +44,13 @@ function IsPC()
 }
 
 
-function GetQueryString(name)
+function GetQueryString(name, url)
 {
-    var search = window.location.search.substring(1), params = search.split('&');
+    var search = window.location.search;
+    if (url) {
+        search = url.substring(url.indexOf('?'));
+    }
+    var search = search.substring(1), params = search.split('&');
     var index, param;
     for (var i=0; i<params.length; i++){
         param = params[i];
@@ -80,9 +84,9 @@ var apiLocation = {
         this.callback = cb;
         window.android && window.android.startLocation();
     },
-    setLocation: function (longtitude, latitude) {
+    setLocation: function (longtitude, latitude, error) {
         if (this.callback){
-            this.callback(longtitude, latitude);
+            this.callback(longtitude, latitude, error);
             this.callback = null;
         }
     }
@@ -259,7 +263,7 @@ function createTimeList(startTime, endTime, queryPeriod, timeFormat) {
         }
     } else if (queryPeriod === 'MONTH') {
         var monthsDiff = endMoment.diff(startMoment, 'months');
-        startMoment.day(1).hour(0).minute(0).second(0).millisecond(0);
+        startMoment.date(1).hour(0).minute(0).second(0).millisecond(0);
         for (var i=0; i<=monthsDiff; i++) {
             timeList.push(startMoment.format(resultFormat));
             startMoment.add(1, 'M');
@@ -304,7 +308,7 @@ function fillTrendDataVacancy(startTime, endTime, queryPeriod, dataTimes, datas,
 
 function fillVacancyAndSumTrendData(startTime, endTime, queryPeriod, multiDatas, timeFormat) {
     var fullTimeKeys = createTimeList(startTime, endTime, queryPeriod, timeFormat);
-// 对子设备进行求和，作为全厂区的数据
+    // 对子设备进行求和，作为全厂区的数据
     var multiFullDatas = [];
     multiDatas.forEach(function (data) {
         var fullDatas = [];

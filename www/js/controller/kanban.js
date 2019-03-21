@@ -80,6 +80,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                     if(contentsResult[i].type === 'singlestate' || contentsResult[i].type === 'multistate'){
                         for(var j in contentsResult[i].content) {
                             var processedValue = getProcessedValue($scope.sn, contentsResult[i].content[j], $scope.queryTime);
+                            //只显示智能设备的数据；不显示 站点管理信息 和 自定义文本信息, 避免与站点概览页重复
                             if(contentsResult[i].content[j].type === 'device-data') {
                                 var tempVarData = {};
                                 // 如果name中含有单位，将单位去除
@@ -89,9 +90,9 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                                     tempVarData.name = processedValue.name;
                                 }
                                 // 将processed_value分解除值和单位
-                                if (processedValue.processed_value) {
+                                if (processedValue.processed_value ) {
                                     var value = parseFloat(processedValue.processed_value);
-                                    tempVarData.value = value;
+                                    tempVarData.value = value.toFixed(1);
                                     if (processedValue.processed_value.length > String(value).length) {
                                         tempVarData.unit = processedValue.processed_value.substring(String(value).length);
                                     }
@@ -154,10 +155,8 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                         $scope.havaEventList = true;
                     }
                 }
-
                 $scope.keyVarDatas = keyVarDatas;
                 $scope.keyStaticDatas = keyStaticDatas;
-
                 if (!haveChart){  //  隐藏图表
                     $("#chartCard").hide();
                 }
@@ -255,9 +254,9 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
         processedValue.type = tempType;
 
         var tempValue = '请进行配置';
-        if(tempType == 'normal-text') {
+        if(tempType === 'normal-text') {
             tempValue = tempContent.value;
-        } else if(tempType == 'station-manage-info') {
+        } else if(tempType === 'station-manage-info') {
             ajax.get({
                 url: '/stations/' + stationSn,
                 async: false,
@@ -276,7 +275,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                     console.log('获取站点信息失败 '+stationSn+err);
                 }
             });
-        } else if(tempType == 'device-data') {
+        } else if(tempType === 'device-data') {
             tempValue = getDeviceVarData(tempContent.varInfo.deviceVarSn, queryTime, tempContent.period, tempContent.calcMethod);
         }
         processedValue.processed_value = tempValue;
@@ -423,7 +422,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
 
                 var queryData = "&sns=" + [deviceSn].join(",");
                 queryData += '&querytimes=' + startQueryTime + ',' + endQueryTime;
-            
+
                 ajax.get({
                     url: '/devicevars/getOneTimeDatas',
                     async: false,
@@ -434,46 +433,46 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                     },
                     crossDomain: true,
                     success: function(values) {
-                    var startValues, endValues = null;
-                    for(var i=0; i<values.length; i++) {
-                        if(values[i].time == startQueryTime) {
-                        startValues = values[i].values;
-                        continue;
-                        }
-                        if(values[i].time == endQueryTime) {
-                        endValues = values[i].values;
-                        continue;
-                        }
-                    }
-                    if(startValues == null || endValues == null){
-                        if(startValues == null) {
-                        console.warn('获取时间点的值失败: '+startQueryTime+deviceSn);
-                        }
-                        if(endValues == null) {
-                        console.warn('获取时间点的值失败: '+endQueryTime+deviceSn);
-                        }
-                    } else {
-                        //resultValue = endValues[deviceSn] - startValues[deviceSn];
-                        if(!g_devicevar_unit_map[deviceSn]) {
-                        //待后台
-                        ajax.get({
-                            url: '/devicevars/getbysn/' + deviceSn,
-                            async: false,
-                            success: function (data) {
-                            if(!data) {
-                                return;
+                        var startValues, endValues = null;
+                        for(var i=0; i<values.length; i++) {
+                            if(values[i].time == startQueryTime) {
+                                startValues = values[i].values;
+                                continue;
                             }
-                            g_devicevar_unit_map[deviceSn] = data.unit;
-                            },
-                            error: function () {
-                            console.warn('获取设备变量信息 '+deviceSn);
+                            if(values[i].time == endQueryTime) {
+                                endValues = values[i].values;
+                                continue;
                             }
-                        });
                         }
-                        var tempValue = endValues[deviceSn] - startValues[deviceSn];
-                        //tempValue = tempValue == 0 ? tempValue:tempValue.toFixed(valueFixNum);
-                        diffValue = tempValue + g_devicevar_unit_map[deviceSn];
-                    }
+                        if(startValues == null || endValues == null){
+                            if(startValues == null) {
+                                console.warn('获取时间点的值失败: '+startQueryTime+deviceSn);
+                            }
+                            if(endValues == null) {
+                                console.warn('获取时间点的值失败: '+endQueryTime+deviceSn);
+                            }
+                        } else {
+                            //resultValue = endValues[deviceSn] - startValues[deviceSn];
+                            if(!g_devicevar_unit_map[deviceSn]) {
+                                //待后台
+                                ajax.get({
+                                    url: '/devicevars/getbysn/' + deviceSn,
+                                    async: false,
+                                    success: function (data) {
+                                        if(!data) {
+                                            return;
+                                        }
+                                        g_devicevar_unit_map[deviceSn] = data.unit;
+                                    },
+                                    error: function () {
+                                        console.warn('获取设备变量信息 '+deviceSn);
+                                    }
+                                });
+                            }
+                            var tempValue = endValues[deviceSn] - startValues[deviceSn];
+                            //tempValue = tempValue == 0 ? tempValue:tempValue.toFixed(valueFixNum);
+                            diffValue = tempValue + g_devicevar_unit_map[deviceSn];
+                        }
                     },
                     error: function(){
                         console.log('获取设备变量值失败 '+deviceSn);
@@ -818,10 +817,10 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
             url: '/stations/' + $scope.sn,
             async: false,
             success: function (data) {
-                if(data.pfv_settings_f && data.pfv_settings_f != '' && data.pfv_settings_f != '[]') {
+                if(data.pfv_settings_f && data.pfv_settings_f != '') {
                     pfvSettingsF = JSON.parse(data.pfv_settings_f);
                 }
-                if(data.pfv_settings_r && data.pfv_settings_r != '' && data.pfv_settings_r != '[]') {
+                if(data.pfv_settings_r && data.pfv_settings_r != '') {
                     pfvSettingsR = JSON.parse(data.pfv_settings_r);
                 }
             },
@@ -832,7 +831,6 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
     }
 
     function getRatioPie(title, data, unit) {
-
         var echartOptions = {
             title: [],
             color: ['#F04863', '#F9CC13', '#369FFF', '#12C1C1', '#8442E0', '#2FC15B'],
@@ -842,16 +840,15 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                 radius: ['25%', '60%'],
                 label: {
                     normal: {
-                    formatter: '{b}:\n{c}' + unit + '\n{d}%',
+                        formatter: '{b}:\n{c}' + unit + '\n{d}%',
                     },
                 },
                 data: data,
-                },
+            },
             ],
         };
 
         setTimeout(function(){drawEchart(title, echartOptions);}, 1000);
-
     }
 
     function drawEchart(name, config) {
