@@ -106,6 +106,7 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
 
     $scope.getDataList = function () {
         scrollerService.initScroll('#sites', $scope.getDataList);
+        $scope.isLoading = true;
         ajax.get({
             url: "/stations",
             success: function(result) {
@@ -125,12 +126,13 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
                     sites.push(s);
                 });
                 $scope.sites = sites;
-                // 更新站点状态
-                $scope.sitesTree = formatToTreeData(sites)[0].children;
-                $scope.searchSiteResult = sites;
-                getCurrentSite();
-                getSiteDetail();        // 获取站点详情
-                $scope.isLoading = false;
+                if (sites.length) {
+                    // 更新站点状态
+                    $scope.sitesTree = formatToTreeData(sites)[0].children;
+                    $scope.searchSiteResult = sites;
+                    getCurrentSite();
+                    getSiteDetail();        // 获取站点详情
+                }
                 $scope.$apply();
             },
             error: function (a,b,c) {

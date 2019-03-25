@@ -726,7 +726,8 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
         }
         // 适配报表起始时间不为00:00的问题
         var nextDay = null;
-        if ($scope.reportSetting.startTime !== '00:00') {       // 跨天
+        var configStartTime = $scope.reportSetting.startTime.substring(0, 2);
+        if (configStartTime !== '00' && configStartTime !== '01') {       // 跨天
             var startMoment = moment(currentDay);
             startMoment.add(1, 'd');
             nextDay = moment(startMoment).format('YYYY-MM-DD') + 'T00:00:00.000Z';
@@ -764,8 +765,7 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
         }
 
         function formatDayData() {
-            var configStartTime = $scope.reportSetting.startTime;
-            var startTime = currentDay.substring(0, 10) + " " + configStartTime + ':00.000';
+            var startTime = currentDay.substring(0, 10) + " " + configStartTime + ':00:00.000';
             var endTime = moment(startTime).add(23, 'h').format('YYYY-MM-DD HH:mm:ss') + '.000Z';
             var times = createTimeList(startTime, endTime, 'HOUR', 'YYYY-MM-DD HH:mm:ss.000');
             // 从startTime开始去数据
