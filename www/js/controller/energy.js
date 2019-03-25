@@ -107,12 +107,42 @@ app.directive('energyConfigTree',[function(){
             $scope.isLeaf = function(item){
                 return item.isLeaf;
             };
-            $scope.warpCallback = function(item, $event){
+            $scope.onToggleExpand = function($event, item){
                 item.$$isExpend = !item.$$isExpend;
+            };
+            $scope.onCheckAllChildren = function ($event, item) {
+                function _checkChildren(children, checked) {
+                    if (children) {
+                        children.forEach(function (child) {
+                            if (!child.isVirtual) {
+                                child.checked = checked;
+                            }
+                            _checkChildren(child.children, checked);
+                        });
+                    }
+                }
+                // 选择自身及所有子节点
+                if (item.checkAll) {
+                    if (!item.isVirtual) {
+                        item.checked = false;
+                    }
+                    item.checkAll = false;
+                    _checkChildren(item.children, false);
+                } else {
+                    if (!item.isVirtual) {
+                        item.checked = true;
+                    }
+                    item.checkAll = true;
+                    _checkChildren(item.children, true);
+                }
             };
 
             $scope.onCheckItem = function ($event, item) {
                 $event.stopPropagation();
+                if (item.isVirtual) {
+                    $.notify.toast('未配置变量，无法选择');
+                    return false;
+                }
                 item.checked = !item.checked;
                 if (tmpChecked[item.path] !== undefined) {
                     // 如果上一次记录过，则本次删除
@@ -336,8 +366,10 @@ app.controller('EnergyMeterReadingCtrl', function ($scope, ajax, $compile, platf
 
     function checkAll(datas) {
         datas.forEach(function (item) {
-            item.checked = true;
-            $scope.selectedItems.push(item);
+            if (!item.isVirtual) {
+                item.checked = true;
+                $scope.selectedItems.push(item);
+            }
             if (item.children) {
                 checkAll(item.children);
             }
@@ -616,13 +648,26 @@ app.controller('EnergyReportCtrl', function ($scope, ajax, $compile, platformSer
     };
 
     function checkAll(datas) {
-        datas.forEach(function (item) {
-            item.checked = true;
-            $scope.selectedItems.push(item);
-            if (item.children) {
-                checkAll(item.children);
+        if (!datas || !datas.length) {
+            return false;
+        }
+        // 默认选中第一个非virtual的项
+        var count = 0;
+        for (var i=0; i<datas.length; i++) {
+            var item = datas[i];
+            if (!item.isVirtual && count === 0) {
+                item.checked = true;
+                $scope.selectedItems.push(item);
+                return true;
             }
-        });
+        }
+        // 如果没有非virtual的节点，则寻找下一级
+        for(var i=0; i<datas.length; i++) {
+            if (checkAll(datas[i].children)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     function refreshData() {
