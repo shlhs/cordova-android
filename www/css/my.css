@@ -751,6 +751,20 @@ background-image: url("../img/light/64X64/profile.png");
 .sites{
     background-image: url("../img/dark/64X64/sites.png");
 }
+.no-station .alert-icon {
+    display: block;
+    width: 100%;
+    height: 120px;
+    background: url(../img/no-station.png) 50% no-repeat;
+    background-size: contain;
+    margin-top: 80px;
+}
+.no-station .alert-info {
+    color: #888686;
+    margin-top: 10px;
+    font-size: 14px;
+    display: block;
+}
 .building {
     background-image: url(../img/building.png);
 }
@@ -2766,6 +2780,9 @@ div.pinch-zoom, div.pinch-zoom-container{
     background-size: contain;
     margin-right: 8px;
 }
+.site-tree .node-group.virtual {
+    background-image: url("../img/station/tree-node-group-virtual.png");
+}
 .tree-cell .tree-group {
     padding-left: 24px;
 }
@@ -2796,11 +2813,26 @@ div.pinch-zoom, div.pinch-zoom-container{
 .tree-cell.active>.tree-group {
     display: block;
 }
-.tree-cell .mui-navigate-right:after {
-    content: '\e581';
+.tree-cell .navigate {
+    width: 24px;
+    height: 24px;
+    float: right;
+    text-align: center;
+    font-style: normal;
 }
-.tree-cell.active>.mui-navigate-right:after {
-    content: '\e580';
+.tree-cell>a>.navigate:after {
+    content: '\a603';
+    font-family: iconfont !important;
+    color: #8B8B8B;
+    font-size: 10px;
+    text-align: center;
+    line-height: 24px;
+    display: inline-block;
+}
+.tree-cell.active>a>.navigate:after {
+    content: '\a602';
+    font-family: iconfont !important;
+    display: inline-block;
 }
 .tree-cell .mui-badge {
     float: right;

@@ -30,7 +30,7 @@ app.provider('appStoreProvider', function () {
     }
 
     function setMenuSns(snsObj, platFuncs) {
-        var platFormHasOpsAuth = platFuncs.opsManagement;
+        var platFormHasOpsAuth = !platFuncs || platFuncs.opsManagement;
 
         // 再判断菜单是否配置了运维权限
         var menuHasOpsAuth = false, opsExist = false;
