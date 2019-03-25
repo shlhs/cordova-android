@@ -46,7 +46,7 @@ function formatEnergyTree(category, labelName, allEnergyItems) {
         });
     }
 
-    return treeObj;
+    return JSON.parse(JSON.stringify(treeObj));
 }
 
 app.directive('energyConfigTree',[function(){
@@ -368,6 +368,7 @@ app.controller('EnergyMeterReadingCtrl', function ($scope, ajax, $compile, platf
         datas.forEach(function (item) {
             if (!item.isVirtual) {
                 item.checked = true;
+                item.checkAll = true;
                 $scope.selectedItems.push(item);
             }
             if (item.children) {
@@ -652,10 +653,9 @@ app.controller('EnergyReportCtrl', function ($scope, ajax, $compile, platformSer
             return false;
         }
         // 默认选中第一个非virtual的项
-        var count = 0;
         for (var i=0; i<datas.length; i++) {
             var item = datas[i];
-            if (!item.isVirtual && count === 0) {
+            if (!item.isVirtual) {
                 item.checked = true;
                 $scope.selectedItems.push(item);
                 return true;
