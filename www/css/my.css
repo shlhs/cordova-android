@@ -3228,3 +3228,20 @@ table.dataTable thead th, table.dataTable thead td {
 table.dataTable tbody th, table.dataTable tbody td {
     padding: 4px 4px;
 }
+.data-loading {
+    color: #999;
+    top: 50%;
+    margin-top: -20px;
+    margin-left: calc(50% - 14px);
+    position: fixed;
+    z-index: 1;
+}
+.data-loading:before {
+    content: '\a618';
+    font-family: iconfont;
+    -webkit-animation: spin 1.2s infinite linear;
+    -o-animation: spin 1.2s infinite linear;
+    animation: spin 1.2s infinite linear;
+    font-size: 28px;
+    display: inline-block;
+}
