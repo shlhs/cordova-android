@@ -49,6 +49,18 @@ function formatEnergyTree(category, labelName, allEnergyItems) {
     return JSON.parse(JSON.stringify(treeObj));
 }
 
+function expandAll(datas) {
+    if (!datas) {
+        return;
+    }
+    datas.forEach(function (item) {
+        if (!item.isLeaf) {
+            item.$$isExpend = true;
+            expandAll(item.children);
+        }
+    })
+}
+
 app.directive('energyConfigTree',[function(){
     return {
         restrict: 'E',
@@ -65,29 +77,25 @@ app.directive('energyConfigTree',[function(){
             var tmpChecked = {};        // 本次操作中被选中或被取消的选项
             $scope.toggle = function () {
                 $scope.active = !$scope.active;
-                if ($scope.active) {
-                    // 每次显示时默认展开所有
-                    expandAll($scope.datas);
-                }
-                else {
+                if (!$scope.active) {
                     // 当收起时，将当前已选通过回调回传
                     $scope.onOk();
                 }
                 tmpChecked = {};
             };
 
-            function expandAll(datas) {
-                // if (!datas) {
-                //     return;
-                // }
-                // datas.forEach(function (item) {
-                //     if (!item.isLeaf) {
-                //         item.$$isExpend = true;
-                //         expandAll(item.children);
-                //     }
-                // })
-            }
-            expandAll($scope.datas);
+            // function expandAll(datas) {
+            //     if (!datas) {
+            //         return;
+            //     }
+            //     datas.forEach(function (item) {
+            //         if (!item.isLeaf) {
+            //             item.$$isExpend = true;
+            //             expandAll(item.children);
+            //         }
+            //     })
+            // }
+            // expandAll($scope.datas);
 
             $scope.itemExpended = function(item, $event){
                 item.$$isExpend = ! item.$$isExpend;
@@ -375,7 +383,6 @@ app.controller('EnergyMeterReadingCtrl', function ($scope, ajax, $compile, platf
             if (!item.isVirtual) {
                 count += 1;
                 item.checked = true;
-                item.$$isExpend = true;
                 $scope.selectedItems.push(item);
             }
         });
@@ -386,13 +393,15 @@ app.controller('EnergyMeterReadingCtrl', function ($scope, ajax, $compile, platf
                    item.children.forEach(function (child) {
                        if (!child.isVirtual) {
                            child.checked = true;
-                           item.$$isExpend = true;
                            $scope.selectedItems.push(child);
                        }
                    })
                }
             });
         }
+
+        // 展开所有节点
+        expandAll(datas);
     }
 
     $scope.onSelectItems = function (items) {
@@ -672,26 +681,35 @@ app.controller('EnergyReportCtrl', function ($scope, ajax, $compile, platformSer
     };
 
     function checkAll(datas) {
+        // 选第一个层的非虚拟节点
         if (!datas || !datas.length) {
-            return false;
+            return 0;
         }
-        // 默认选中第一个非virtual的项
-        for (var i=0; i<datas.length; i++) {
-            var item = datas[i];
+        var count = 0;
+        // 先查找第一级
+        datas.forEach(function (item) {
             if (!item.isVirtual) {
+                count += 1;
                 item.checked = true;
-                item.$$isExpend = true;
                 $scope.selectedItems.push(item);
-                return true;
             }
+        });
+        // 再查找第二级
+        if (count === 0) {
+            datas.forEach(function (item) {
+                if (item.children) {
+                    item.children.forEach(function (child) {
+                        if (!child.isVirtual) {
+                            child.checked = true;
+                            $scope.selectedItems.push(child);
+                        }
+                    })
+                }
+            });
         }
-        // 如果没有非virtual的节点，则寻找下一级
-        for(var i=0; i<datas.length; i++) {
-            if (checkAll(datas[i].children)) {
-                return true;
-            }
-        }
-        return false;
+
+        // 展开所有节点
+        expandAll(datas);
     }
 
     function refreshData() {
