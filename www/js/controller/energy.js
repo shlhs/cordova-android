@@ -362,19 +362,36 @@ app.controller('EnergyMeterReadingCtrl', function ($scope, ajax, $compile, platf
         $scope.selectedItems = [];
         checkAll($scope.energyItems);
         refreshData();
+        $scope.$apply();
     };
 
     function checkAll(datas) {
+        // 选第一个层的非虚拟节点
+        if (!datas || !datas.length) {
+            return 0;
+        }
+        var count = 0;
+        // 先查找第一级
         datas.forEach(function (item) {
             if (!item.isVirtual) {
+                count += 1;
                 item.checked = true;
-                item.checkAll = true;
                 $scope.selectedItems.push(item);
             }
-            if (item.children) {
-                checkAll(item.children);
-            }
         });
+        // 再查找第二级
+        if (count === 0) {
+            datas.forEach(function (item) {
+               if (item.children) {
+                   item.children.forEach(function (child) {
+                       if (!child.isVirtual) {
+                           child.checked = true;
+                           $scope.selectedItems.push(child);
+                       }
+                   })
+               }
+            });
+        }
     }
 
     $scope.onSelectItems = function (items) {
