@@ -94,6 +94,31 @@ function onAndroidCb_updateAppList() {
     }
 }
 
+function formatSiteTree(sites) {
+
+    function _deleteEmptyFolderOfTree(parent) {
+        if (parent.children) {
+            var newChildren = [];
+            parent.children.forEach(function (child) {
+                if (child.is_group && child.children.length) {
+                    _deleteEmptyFolderOfTree(child);
+                    if (child.children.length) {
+                        newChildren.push(child);
+                    }
+                } else if (!child.is_group) {
+                    newChildren.push(child);
+                }
+            });
+            parent.children = newChildren;
+        }
+    }
+
+    var sitesTree = formatToTreeData(sites);
+    // 去除没有站点的文件夹
+    _deleteEmptyFolderOfTree(sitesTree[0]);
+    return sitesTree;
+}
+
 app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, routerService, platformService, userService, appStoreProvider) {
     $scope.sitesTree = [];
     $scope.sites = [];
@@ -128,7 +153,7 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
                 $scope.sites = sites;
                 if (sites.length) {
                     // 更新站点状态
-                    $scope.sitesTree = formatToTreeData(sites)[0].children;
+                    $scope.sitesTree = formatSiteTree(sites)[0].children;
                     $scope.searchSiteResult = sites;
                     getCurrentSite();
                     getSiteDetail();        // 获取站点详情
@@ -176,7 +201,7 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
                     }
                 });
                 // 更新站点状态
-                $scope.sitesTree = formatToTreeData(sites)[0].children;
+                $scope.sitesTree = formatSiteTree(sites)[0].children;
                 $scope.isLoading = false;
                 $scope.$apply();
             },
