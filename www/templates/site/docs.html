@@ -1,5 +1,5 @@
 
-<div ng-controller="SiteDocsCtrl">
+<div class="page page-left" ng-controller="SiteDocsCtrl">
 <header class="mui-bar bg-header">
     <a class="mui-icon mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
     <h1 class="mui-title">电子档案</h1>
@@ -47,13 +47,6 @@
             <i class="alert-icon warning"></i>
             <div class="alert-text info">加载失败，请检查网络</div>
             <div class="alert-reload" ng-click="getDataList()">重新加载</div>
-        </div>
-    </div>
-</div>
-<div id="slides" style="display: none;">
-    <div class="img-container">
-        <div>
-            <img src="{{currentImage}}">
         </div>
     </div>
 </div>

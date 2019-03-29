@@ -1,4 +1,4 @@
-<div ng-controller="KanbanCtrl">
+<div class="page page-left" ng-controller="KanbanCtrl">
 
     <style>
         .summary-list{
@@ -81,6 +81,12 @@
         .mui-table-view:after{
             display: none;
         }
+        .kanban-slider ul.slidesjs-pagination {
+            height: 14px;
+        }
+        .kanban-slider .chart {
+            height: 210px;
+        }
     </style>
     <header class="mui-bar bg-header mui-segmented-control-vertical">
         <a class="mui-icon mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
@@ -104,7 +110,7 @@
                     <div class="card-header border">
                         <i class="icon icon-ms icon-card-event"></i>
                         事件与告警
-                        <a class="mui-pull-right" ui-sref=".eventList({sn: sn})" style="font-size: 14px;" ng-if="events.length">更多</a>
+                        <a class="mui-pull-right" ng-click="gotoEventListPage()" style="font-size: 14px;" ng-if="events.length">更多</a>
                     </div>
                     <div class="card-content">
                         <div ng-if="events.length === 0" style="height: 30px;text-align: center;color: #717171;">站点无事件</div>
@@ -134,5 +140,4 @@
             </div>
         </div>
     </div>
-    <div class="page page-left" ui-view=""></div>
 </div>

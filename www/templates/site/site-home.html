@@ -1,82 +1,45 @@
 <div ng-controller="SiteListCtrl" style="height: 100%;">
-    <div style="height: 100%;">
+    <div style="height: 100%;" ng-style="{'background-color': (isLoading || !sites.length) ? '#fff' : ''}">
         <div class="site-header">
             <header class="mui-bar bg-header bg-transparent" style="box-shadow: none;position: static;">
-                <a class=" mui-pull-left" ng-click="showPopover()" ng-show="sites.length > 1">站点切换</a>
-                <h1 class="mui-title" style="font-size: 18px;left: 70px;right: 70px;">{{currentSite.station.name}}</h1>
-                <!--<a class="mui-pull-right" href="/templates/site/event-list.html?sn={{currentSite.station.sn}}">-->
-                <a class="mui-pull-right" ui-sref=".eventList({sn: currentSite.station.sn})" style="position: relative;margin-right: 8px;">
+                <a class=" mui-pull-left" ng-click="openSiteSelectPage()" ng-show="sites.length > 1">站点切换</a>
+                <h1 class="mui-title" style="font-size: 18px;left: 70px;right: 70px;">{{currentSite.name}}</h1>
+                <a class="mui-pull-right" ng-click="openEventListPage()" style="position: relative;margin-right: 8px;" ng-if="currentSite.sn">
                     <i class="icon white icon-events" style="width: 18px;height: 18px;">
                     </i>
-                    <span class="mui-badge mui-badge-danger ng-binding ng-scope" ng-if="currentSite.unclosed_envet_amount" style="position: absolute; font-size: 9px; top: -8px; left: 10px; font-weight: 300;">
-                    {{currentSite.unclosed_envet_amount}}
+                    <span class="mui-badge mui-badge-danger ng-binding ng-scope" ng-if="currentSite.unclosed_envet_amount"
+                          style="position: absolute; font-size: 9px; top: -8px; left: 10px; font-weight: 300;padding: 2px 6px;">
+                    {{currentSite.events_amount}}
                     </span>
                 </a>
             </header>
             <div class="site-img-wrapper">
                 <div class="img-border">
-                    <img ng-src="{{currentSite.site_image}}" style="width: 100%;height: 100%;border-radius: 8px;">
+                    <img ng-src="{{currentSite.site_image}}" style="width: 100%;height: 100%;border-radius: 8px;" ng-if="currentSite.sn">
+                    <img src="img/site-default.png" style="width: 100%;height: 100%;border-radius: 8px;" ng-if="!currentSite.sn">
                 </div>
-                <div class="status-line">
+                <div class="status-line" ng-if="currentSite.sn">
                     <div class="status {{currentSite.status}}"><i class="site-status {{currentSite.status}}"></i> {{currentSite.status_name}}</div>
                 </div>
             </div>
         </div>
-        <div class="card round-card" style="padding: 4px 0 8px 0;">
+        <div class="card round-card" style="padding: 4px 0 8px 0;" ng-if="currentSite.sn">
             <ul class="mui-table-view mui-grid-view mui-grid-9 no-border entrance-list">
-                <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
-                    <!--<a href="javascript:void(0)" ng-click="openPage(scope, '/templates/site/kanban.html', {sn: currentSite.station.sn})" style="padding: 6px 0 0 0;">-->
-                    <a ui-sref=".kanban({sn: currentSite.station.sn})" style="padding: 6px 0 0 0;">
-                        <span class="mui-icon icon icon-36 icon-kanban"></span>
-                        <div class="mui-media-body">看板</div>
+                <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border" ng-repeat="app in selectedApps">
+                    <a href="javascript:;" ng-click="openAppPage(app)" style="padding: 6px 0 0 0;">
+                        <span class="mui-icon icon icon-32 {{app.icon}}"></span>
+                        <div class="mui-media-body">{{app.name}}</div>
                     </a>
                 </li>
                 <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
-                    <!--<a href="/templates/site/monitor-list.html?sn={{currentSite.station.sn}}" style="padding: 6px 0 0 0;">-->
-                    <a ui-sref=".monitorList({sn: currentSite.station.sn})" style="padding: 6px 0 0 0;">
-                        <span class="mui-icon icon icon-36 icon-monitor"></span>
-                        <div class="mui-media-body">画面</div>
-                    </a>
-                </li>
-                <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
-                    <a ui-sref=".monitorDevices({sn: currentSite.station.sn})" style="padding: 6px 0 0 0;">
-                        <span class="mui-icon icon icon-36 icon-device-monitor"></span>
-                        <div class="mui-media-body">设备监测</div>
-                    </a>
-                </li>
-                <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
-                    <a ui-sref=".devicedocs({sn: currentSite.station.sn})" style="padding: 6px 0 0 0;">
-                        <span class="mui-icon icon icon-36 icon-archives"></span>
-                        <div class="mui-media-body">设备档案</div>
-                    </a>
-                </li>
-                <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
-                    <a ui-sref=".docs({sn: currentSite.station.sn})" style="padding: 6px 0 0 0;">
-                        <span class="mui-icon icon icon-36 icon-docs"></span>
-                        <div class="mui-media-body">电子档案</div>
-                    </a>
-                </li>
-                <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
-                    <a ui-sref=".reports({sn: currentSite.station.sn, name: currentSite.station.name})" style="padding: 6px 0 0 0;">
-                        <span class="mui-icon icon icon-36 icon-reports"></span>
-                        <div class="mui-media-body">月度报告</div>
-                    </a>
-                </li>
-                <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
-                    <a ui-sref=".securityReports({sn: currentSite.station.sn, name: currentSite.station.name})" style="padding: 6px 0 0 0;">
-                        <span class="mui-icon icon icon-36 icon-security"></span>
-                        <div class="mui-media-body">安全评测</div>
-                    </a>
-                </li>
-                <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
-                    <a ui-sref=".poweroffReports({sn: currentSite.station.sn, name: currentSite.station.name})" style="padding: 6px 0 0 0;">
-                        <span class="mui-icon icon icon-36 icon-poweroff"></span>
-                        <div class="mui-media-body">停电维护</div>
+                    <a href="javascript:;" ng-click="gotoAppStore()" style="padding: 6px 0 0 0;">
+                        <span class="mui-icon icon icon-32 icon-app-store"></span>
+                        <div class="mui-media-body">更多</div>
                     </a>
                 </li>
             </ul>
         </div>
-        <div class="card round-card">
+        <div class="card round-card" ng-if="currentSite.sn">
             <div class="card-header" style="margin: 0 -4px; border-bottom: rgb(239,238,238) 1px solid;">
                 站点信息
             </div>
@@ -85,35 +48,38 @@
                 <ul class="mui-table-view no-border info-group" style="font-size: 14px;margin-top:0px;">
                     <li class="mui-table-view-cell">
                         <label class="title">站点地址</label>
-                        <span class="value">{{currentSite.station.address}}</span>
+                        <span class="value" ng-click="openMap()" ng-if="currentSite.longitude">
+                        {{currentSite.address}}
+                        <i class="icon icon-location" style="width: 18px; height: 18px; float: right"></i>
+                    </span>
+                        <span class="value" ng-if="!currentSite.longitude">
+                        {{currentSite.address}}
+                    </span>
                     </li>
                     <li class="mui-table-view-cell">
                         <label class="title">联系电话</label>
-                        <span class="value">{{currentSite.station.fix_line_telephone}}</span>
+                        <span class="value">{{currentSite.fix_line_telephone}}</span>
                     </li>
                     <li class="mui-table-view-cell">
                         <label class="title">额定容量</label>
-                        <span class="value">{{currentSite.station.capacity}}KVA</span>
+                        <span class="value">{{currentSite.capacity}}KVA</span>
                     </li>
                     <li class="mui-table-view-cell">
                         <label class="title">供电类型</label>
-                        <span class="value">{{currentSite.station.power_supply_type}}</span>
+                        <span class="value">{{currentSite.power_supply_type}}</span>
                     </li>
                     <li class="mui-table-view-cell">
                         <label class="title">电压等级</label>
-                        <span class="value">{{currentSite.station.voltage_class}}</span>
+                        <span class="value">{{currentSite.voltage_class}}</span>
                     </li>
                 </ul>
             </div>
         </div>
-        <!--<div class="page-alert-wrapper" ng-if="sites.length==0 && !isLoading">-->
-            <!--<div class="page-alert">-->
-                <!--<i class="alert-icon nodata"></i>-->
-                <!--<div class="alert-text info">没有站点信息</div>-->
-            <!--</div>-->
-        <!--</div>-->
+        <div class="no-station" ng-if="!isLoading && !currentSite.sn" style="text-align: center;">
+            <i class="alert-icon"></i>
+            <label class="alert-info">未配置站点，<a ng-click="getDataList()">重新加载</a></label>
+        </div>
     </div>
-
     <div class="page-alert-wrapper" ng-if="isLoading">
         <div class="page-alert">
             <i class="alert-icon loading-spinner"></i>
@@ -124,7 +90,7 @@
     <div class="popover-mask" ng-if="popup_visible" ng-click="closePopover()"></div>
     <div class="mui-popover dark-popover mui-active" ng-if="popup_visible"
          style="display: block; top: 57px; left: 16px;width: calc(100% - 32px);background-color: #323234;">
-        <div class="mui-popover-arrow" style="left:10px"></div>
+        <div class="mui-popover-arrow" style="left: 10px"></div>
         <div class="site-search-comp">
             <div class="search-wrapper">
                 <i class="icon icon-search"></i>

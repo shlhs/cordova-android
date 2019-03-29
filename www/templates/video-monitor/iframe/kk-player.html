@@ -1,0 +1,57 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>kk-player</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport">
+</head>
+<body>
+<!--<easy-player video-url="http://114.215.90.83:10812/nvc/2/flv/hls/stream_1.flv" live="true" show-custom-button="true"-->
+<!--autoplay="true" id="player" muted="true" id="player"></easy-player>-->
+<easy-player live="true" show-custom-button="true"
+             autoplay="true" id="player" muted="true" id="player"></easy-player>
+<script type="text/javascript" src="../../../js/app/utils.js"></script>
+<script>
+    var url = GetQueryString("url"), ipcId=GetQueryString("ipcId");
+    document.getElementById("player").setAttribute('video-url', url);
+</script>
+<script type="text/javascript" src="../../../components/easy-player/easy-player-element.min.js"></script>
+<script>
+    var player = document.getElementById('player');
+    var isPlaying = false;
+    player.addEventListener('pause', function () {
+        console.log('pause');
+        window.parent && window.parent.onVideoPause && window.parent.onVideoPause(ipcId);
+    });
+    player.addEventListener('play', function () {
+        console.log('play');
+        isPlaying = true;
+    });
+    player.addEventListener('snapOutside', function () {
+        console.log('snapOutside')
+    });
+    player.addEventListener('snapInside', function () {
+        console.log('snapInside');
+    });
+    player.addEventListener('message', function () {
+        console.log('message');
+    });
+    // 设置超时时间，如果30s后还没开始播放，则暂停播放
+//    setTimeout(function () {
+//        if (!isPlaying) {
+//            if( document.createEvent )
+//            {
+//                var evObj = document.createEvent('HTMLEvents');
+//                evObj.initEvent( 'pause', true, false );
+//                player.dispatchEvent(evObj);
+//            }
+//            else if( document.createEventObject )
+//            {
+//                player.fireEvent('pause');
+//            }
+//        }
+//    }, 20000);
+</script>
+</body>
+</html>

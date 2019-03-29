@@ -22,7 +22,7 @@
   "_resolved": "https://registry.npmjs.org/cordova-plugin-code-push/-/cordova-plugin-code-push-1.11.11.tgz",
   "_shasum": "89b3fff879512efe9b42afdaef955ceff2c873a1",
   "_spec": "cordova-plugin-code-push@latest",
-  "_where": "/Users/luohusi/workspace/lhs/cordova-android",
+  "_where": "/Users/luohusi/workspace/lhs/iOS/ios-master",
   "author": {
     "name": "Microsoft Corporation"
   },

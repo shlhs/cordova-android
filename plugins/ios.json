@@ -31,28 +31,28 @@
     "cordova-plugin-network-information": {
       "PACKAGE_NAME": "com.dianguanjia.mingyang"
     },
+    "cordova-plugin-settings-hook": {
+      "PACKAGE_NAME": "com.dianguanjia.mingyang"
+    },
     "cordova-plugin-splashscreen": {
       "PACKAGE_NAME": "com.dianguanjia.mingyang"
     },
     "cordova-plugin-whitelist": {
       "PACKAGE_NAME": "com.dianguanjia.mingyang"
     },
-    "cordova-plugin-settings-hook": {
+    "cordova-plugin-zip": {
       "PACKAGE_NAME": "com.dianguanjia.mingyang"
     },
     "cordova-plugin-code-push": {
-      "PACKAGE_NAME": "$(PRODUCT_BUNDLE_IDENTIFIER)"
-    },
-    "cordova-plugin-zip": {
-      "PACKAGE_NAME": "$(PRODUCT_BUNDLE_IDENTIFIER)"
+      "PACKAGE_NAME": "com.dianguanjia.mingyang"
     }
   },
   "dependent_plugins": {
     "code-push": {
-      "PACKAGE_NAME": "$(PRODUCT_BUNDLE_IDENTIFIER)"
+      "PACKAGE_NAME": "com.dianguanjia.mingyang"
     },
     "cordova-plugin-dialogs": {
-      "PACKAGE_NAME": "$(PRODUCT_BUNDLE_IDENTIFIER)"
+      "PACKAGE_NAME": "com.dianguanjia.mingyang"
     }
   }
 }

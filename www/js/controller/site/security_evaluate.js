@@ -148,9 +148,6 @@ app.service('SecurityReportService', function (userService, ajax) {
                 success: function (data) {
                     $.notify.progressStop();
                     $.notify.info("保存成功");
-
-                    // 调用Android接口
-                    window.android && window.android.onJsCallbackForPrevPage('setTaskReportId', data.id);
                     successCallback && successCallback(data);
                 },
                 error: function (xhr, status, error) {
@@ -162,9 +159,9 @@ app.service('SecurityReportService', function (userService, ajax) {
     };
 });
 
-app.controller('SecurityHistoryCtrl', function ($scope, $stateParams, routerService, ajax, userService) {
-    var sn = $stateParams.sn;
-    $scope.stationName = $stateParams.name;
+app.controller('SecurityHistoryCtrl', function ($scope, routerService, ajax, userService) {
+    var sn = $scope.sn;
+    $scope.stationName = $scope.name;
     $scope.history = [];
     $scope.isLoading = false;
     $scope.loadingFailed = false;

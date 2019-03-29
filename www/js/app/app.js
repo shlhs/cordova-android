@@ -2,8 +2,6 @@
 /**
  * Created by liucaiyun on 2017/5/4.
  */
-
-
 var app = angular.module('myApp', ['ngAnimate', 'ui.router', 'ui.router.state.events']);
 
 app.run(function ($animate) {
@@ -18,6 +16,14 @@ app.run(function ($animate) {
 //     });
 // }]);
 
+app.filter(
+    'to_trusted', ['$sce', function ($sce) {
+        return function (text) {
+            return $sce.trustAsHtml(text);
+        }
+    }]
+);      // html显示字符串
+
 
 app.controller('MainCtrl', function ($scope, $rootScope, userService, routerService, cordovaService) {
 
@@ -25,9 +31,14 @@ app.controller('MainCtrl', function ($scope, $rootScope, userService, routerServ
         routerService.openPage(scope, template, params, config);
     };
 
-    $scope.openTaskCreatePage = function () {
-        routerService.openPage($scope, '/templates/task/add-task.html');
-    };
+    var taskUpdateListener = $scope.$on('onBaseTaskUpdate', function (event, taskData) {
+        $scope.$broadcast('onTaskUpdate', taskData);
+    });
+
+    $scope.$on('$destroy', function (event) {
+        taskUpdateListener();
+        taskUpdateListener = null;
+    });
 });
 
 var UserRole = {SuperUser: 'SUPERUSER', OpsAdmin: 'OPS_ADMIN', OpsOperator: 'OPS_OPERATOR', Normal: 'USER'};
@@ -86,6 +97,18 @@ app.service('userService', function ($rootScope) {
         return username;
     };
 
+    this.hasPermission = function (permName) {
+        var perms = this.user.permissions;
+        if (perms && perms.length) {
+            for (var i=0; i<perms.length; i++) {
+                if (perms[i].authrity_name === permName) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    };
+
     this.getPassword = function () {
         var password = getStorageItem('password');
         if (!password){
@@ -114,6 +137,24 @@ app.service('userService', function ($rootScope) {
         return getStorageItem('company') ? JSON.parse(getStorageItem('company')) : null;
 
     };
+
+    this.getTaskCompanyId = function () {
+        // 获取任务时需要用到的用户id
+        var perms = JSON.parse(getStorageItem("user")).permissions;
+        for (var i=0; i<perms.length; i++) {
+            var auth = perms[i].authrity_name;
+            //运维公司
+            if (auth.indexOf("COMPANY_OPS_COMPANY_VIEWCOMPANY") === 0) {
+                return auth.substring("COMPANY_OPS_COMPANY_VIEWCOMPANY".length);
+            }
+            //用户公司
+            if (auth.indexOf("USER_COMPANY_USERUSER_COMPANY") === 0) {
+                return 'user' + auth.substring("USER_COMPANY_USERUSER_COMPANY".length);
+            }
+        }
+        return null;
+    };
+
     this.user = this.getUser();
     this.username = this.getUsername();
     this.password = this.getPassword();
@@ -147,6 +188,7 @@ app.service('platformService', function () {
     this.setLatestPlatform = function (platform) {
         setStorageItem('latestPlatform', JSON.stringify(platform));
         this.host = platform.url;
+        this.ipAddress = this.host.substring(0, this.host.indexOf(':', 5));
         this.thumbHost = this.getImageThumbHost();
     };
 
@@ -165,20 +207,47 @@ app.service('platformService', function () {
         return platform ? platform.url : null;
     };
 
+    this.getAuthHost = function () {
+        return this.ipAddress + ":8096/v1"
+    };
+
+    this.getDeviceMgmtHost = function () {
+        return this.ipAddress + ':8097';
+    };
+
     this.getImageThumbHost = function () {      // 获取图片压缩服务的地址
         // 格式为： http://ip:8888/unsafe
-        if (this.host)
+        if (this.ipAddress)
         {
-            return this.host.substring(0, this.host.indexOf(':', 5)) + ":8888/unsafe"
+            return this.ipAddress + ":8888/unsafe"
         }
         return null;
+    };
+
+    this.getGraphHost = function () {
+        return this.ipAddress + ':8920/v1';
+    };
+
+    this.getGraphScreenUrl = function (graphSn) {
+        // 新的监控画面服务
+        return this.ipAddress + ':8921/monitor.html?sn=' + graphSn;
+    };
+
+    this.getOldMonitorScreenUrl = function (screenSn) {
+        // 老的监控画面服务
+        return this.ipAddress + ':8098/monitor_screen?sn=' + screenSn;
     };
 
     this.getImageUrl = function (width, height, imageUrl) {
         return this.thumbHost + '/' + width + 'x' + height + '/' + imageUrl;
     };
 
+    this.getIpcServiceHost = function () {
+        return this.ipAddress + ':8095/v1';
+    };
+
     this.host = this.getHost();
+    this.ipAddress = this.host ? this.host.substring(0, this.host.indexOf(':', 5)) : '';
     this.thumbHost = this.getImageThumbHost();
 });
 
@@ -214,9 +283,26 @@ app.service('ajax', function ($rootScope, platformService, userService, $http, c
         });
     };
 
+    this.getCompanyMembers = function (callback) {
+        var companyId = userService.getTaskCompanyId();
+        var url = '/opscompanies/' + companyId + '/members';
+        if (companyId.indexOf('user') === 0) {
+            url = '/usercompanies/'+ companyId.substring(4) + '/members';
+        }
+        this.get({
+            url: url,
+            success: function (result) {
+                if (callback) {
+                    callback(result);
+                }
+            }
+        })
+    };
+
     function request(option) {
         if (option.url.indexOf("http://") !== 0){
             option.url = platformService.host + option.url;
+            // option.url = 'http://127.0.0.1:8099/v1' + option.url;
         }
         var headers = $.extend({
             Authorization: userService.getAccountToken(),
@@ -251,7 +337,6 @@ app.service('ajax', function ($rootScope, platformService, userService, $http, c
        return request(option);
    }
 });
-
 
 Date.prototype.format = function(fmt) {
     var o = {
@@ -440,12 +525,12 @@ var imageHandler = {
 /**
  * 图片缩放控制器
  */
-app.controller('ImageZoomCtrl', function ($scope, $timeout, $stateParams) {
+app.controller('ImageZoomCtrl', function ($scope, $timeout) {
     $scope.menuVisible = false;
     $scope.header = null;
     $scope.headerVisible = false;
-    $scope.link = $stateParams.link;
-    $scope.name = $stateParams.name;
+    // $scope.link = $stateParams.link;
+    // $scope.name = $stateParams.name;
     imagesLoaded('#zoomTarget', function (e) {
 
         new RTP.PinchZoom($("#zoomTarget"), {});
@@ -481,4 +566,164 @@ app.controller('ImageZoomCtrl', function ($scope, $timeout, $stateParams) {
         $scope.headerVisible = !$scope.headerVisible;
     };
 
+});
+
+app.controller('BaseGalleryCtrl', function ($scope, $stateParams, $timeout) {
+    // $scope.canDelete = false;
+    // $scope.index = $stateParams.index;
+    // $scope.images = $stateParams.images;
+    $scope.show = false;
+
+    $scope.deleteImage = function() {       // 删除图片
+        var index = $("#slides .slidesjs-pagination a.active").parent().index();
+        if (index < 0) {
+            index = 0;
+        }
+        if ($scope.onDelete) {
+            $scope.onDelete(index);
+        }
+        history.back();
+    };
+
+
+    function initSlider() {
+        if ($scope.images.length>1){
+
+            var slide = $("#slides");
+            slide.slidesjs({
+                start: $scope.index,
+                width: window.screen.width,
+                play: {
+                    active: true,
+                    swap: true
+                }
+            });
+        }
+        $scope.$apply();
+    }
+
+    $timeout(initSlider, 100);
+
+
+    $scope.hide = function () {
+        history.back();
+    };
+});
+
+
+app.controller('mapCtrl', function ($scope, $timeout, cordovaService) {
+    var sn = $scope.stationSn;
+
+    $scope.siteData = {};
+    $scope.distance = '';
+    $scope.enableNavigate = false;
+    function getSite() {
+        var host = JSON.parse(getStorageItem('latestPlatform')).url;
+        $.ajax({
+            url: host + '/stations/' + sn,
+            xhrFields: {
+                withCredentials: true
+            },
+            crossDomain: true,
+            headers: {
+                Authorization: 'Bearer' + (getStorageItem('accountToken') || ''),
+                credentials: 'include',
+                mode: 'cors'
+            },
+            success: function (data) {
+                data.address = (data.address_province?data.address_province:'') + (data.address_city?data.address_city:'')
+                    + (data.address_district?data.address_district:'') + (data.address || '');
+                $scope.siteData = data;
+                $scope.$apply();
+                drawMap(data);
+            },
+            error: function (a, b, c) {
+                $.notify.error('获取站点信息失败');
+                console.log('login fail');
+            }
+        });
+    }
+
+    function drawMap(siteData) {
+        var map = new BMap.Map("map");          // 创建地图实例
+        if (!map){ return; }
+        // 导航
+        var driving = new BMap.DrivingRoute(map, {
+            renderOptions: {
+                map   : map,
+                panel : "results",
+                autoViewport: true
+            },
+            onSearchComplete: function (result) {
+                if (result){
+                    $scope.distance = result.getPlan(0).getDistance();
+                    $scope.$apply();
+                }
+            }
+        });
+        var end = new BMap.Point(siteData.longitude, siteData.latitude);
+        // 添加标注
+        map.centerAndZoom(end, 15);
+        map.enableScrollWheelZoom();
+        var marker = new BMap.Marker(end);
+        var mgr = new BMapLib.MarkerManager(map,{
+            maxZoom: 15,
+            trackMarkers: true
+        });
+        mgr.addMarker(marker,1, 15);
+        mgr.showMarkers();
+        if (window.android && window.android.gotoThirdMap) {
+            $scope.enableNavigate = true;
+        }
+
+        $scope.$apply();
+        if (cordovaService.deviceReady) {
+            navigator.geolocation.getCurrentPosition(function (position) {
+                var longtitude = position.coords.longtitude;
+                var latitude = position.coords.latitude;
+                // 添加标注
+                var start = new BMap.Point(longtitude, latitude);
+                // 坐标转换
+                var convertor = new BMap.Convertor();
+                var pointArr = [start];
+                convertor.translate(pointArr, 3, 5, function (data) {   //3: gcj02坐标，5：百度坐标
+                    driving.search(data.points[0], end);
+                    map.centerAndZoom(end, 15);                 // 初始化地图，设置中心点坐标和地图级别
+                });
+            }, function (error) {
+                console.log(error);
+            });
+        } else {
+            apiLocation.start(function (longtitude, latitude) {
+                //如果获取不到用户的定位，则直接显示站点的位置
+                if (longtitude && latitude){
+                    // 添加标注
+                    var start = new BMap.Point(longtitude, latitude);
+                    // 坐标转换
+                    var convertor = new BMap.Convertor();
+                    var pointArr = [start];
+                    convertor.translate(pointArr, 3, 5, function (data) {   //3: gcj02坐标，5：百度坐标
+                        driving.search(data.points[0], end);
+                        map.centerAndZoom(end, 15);                 // 初始化地图，设置中心点坐标和地图级别
+                    });
+                }
+            });
+        }
+
+    }
+
+    // 打开第三方地图
+    $scope.openThirdMap = function () {
+        if (window.android && window.android.gotoThirdMap){
+            var sitePoint = new BMap.Point($scope.siteData.longitude, $scope.siteData.latitude);
+
+            var convertor = new BMap.Convertor();
+            var pointArr = [sitePoint];
+            convertor.translate(pointArr, 5, 3, function (data) {   //3: gcj02坐标，5：百度坐标
+                window.android.gotoThirdMap($scope.siteData.latitude, $scope.siteData.longitude, data.points[0].lat, data.points[0].lng);
+            });
+        }
+    };
+
+    $timeout(getSite, 500);
 });

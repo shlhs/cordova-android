@@ -1,10 +1,16 @@
 "use strict";
 
-
+/**
+ * @param scope  调用该接口的scope
+ * @param templateUrl  页面链接
+ * @param dataParam    页面使用的数据参数，在打开的页面中使用$scope调用
+ * @param config       调用时可配置的参数
+ *              1）finish: 打开新页面时是否删除上一页，default: false
+ *              2）hidePrev：打开新页面时是否隐藏上一页，default: true
+ *              3）addHistory: 新页面是否可使用返回键关闭，default：true
+ */
 app.service('routerService', function ($timeout, $compile) {
-    var pages = [],         // 当前的所有页面
-        pageLength=0,       // 当前页面的个数
-        currentIndex=0;     // 当前页面索引值
+    var pages = [], pageLength=0, currentIndex=0, scopeList=[];
     var nextPage = {};      // 保存下一个页面的数据
     window.addEventListener('popstate', function () {
         if (!pageLength){
@@ -20,21 +26,14 @@ app.service('routerService', function ($timeout, $compile) {
         element.addClass('ng-leave');
         item.scope.$broadcast('$destroy');
         pages.splice(pageLength-1, 1);
+        scopeList.splice(scopeList.length-1, 1);
         pageLength -= 1;
         currentIndex = pageLength - 1;
         element[0].addEventListener('webkitAnimationEnd', _animateEnd);
         function _animateEnd() {
-            element.nextAll('.mui-poppicker,.mui-dtpicker').remove();  // 创建任务页面会在所有元素后面默认生成几个mui-poppicker元素，需要一起删除
             element.remove();
         }
     });
-
-    this.finishPage = function () {
-        pages[currentIndex].ele.remove();
-        pages.splice(currentIndex, 1);
-        pageLength -= 1;
-        currentIndex = pageLength - 1;
-    };
 
     this.addHistory = function (scope, element) {
         var pageData = this.getNextPage();
@@ -44,19 +43,18 @@ app.service('routerService', function ($timeout, $compile) {
             scope: scope,
             config: config
         };
-        var toFinishPage = null, addNewHistory=config.addNewHistory;
+        var toFinishPage = null, addNewHistory=true;
         element.addClass('ng-enter');
 
         function _animationEnd(event) {
-
-            if (config && config.finishPage){   // 打开这个页面时，需要关闭前一个页面
-                if (pageLength > 0) {
-                    toFinishPage = pages[currentIndex].ele;
-                }
+            if (config && config.finish){   // 打开这个页面时，需要关闭前一个页面
+                toFinishPage = pages[currentIndex].ele;
                 pages[currentIndex] = data;
+                scopeList[currentIndex] = data.scope;
                 addNewHistory = false;
-            } else{
+            }else{
                 pages.push(data);
+                scopeList.push(data.scope);
                 pageLength += 1;
                 currentIndex = pageLength - 1;
             }
@@ -70,7 +68,7 @@ app.service('routerService', function ($timeout, $compile) {
                 toFinishPage.remove();
             }
             if (addNewHistory){
-                history.pushState('routerpage', null, null);
+                history.pushState(null, null, null);
             }
             element[0].removeEventListener('webkitAnimationEnd', _animationEnd);
         }
@@ -78,26 +76,33 @@ app.service('routerService', function ($timeout, $compile) {
     };
 
     this.openPage = function (scope, templateUrl, params, config) {
-        if (templateUrl.indexOf('/') ==0 ) {
+        if (templateUrl.startsWith('/')) {
             templateUrl = templateUrl.substring(1);
         }
         var html = "<route-page template=" + templateUrl;
-        this._setNextPage(params, config);
+        this._setNextPage(templateUrl, params, config);
         html += '></route-page>';
         var compileFn = $compile(html);
         var $dom = compileFn(scope);
-        // 添加到文档中
+        // 首次打开时将页面加到body中，其他时候打开时将页面加到上一级的文档中。 如果设置了config.finish=true，那么将页面加到上上级文档中
+        // if (scopeList.length && (!config || !config.finish)) {
+        //     $dom.appendTo(scopeList[scopeList.length-1].domEle);
+        // } else if (scopeList.length > 1 && config.finish) {
+        //     $dom.appendTo(scopeList[scopeList.length-2].domEle);
+        // } else {
+        //     $dom.appendTo($('body'));
+        // }
         $dom.appendTo($('body'));
     };
 
-    this._setNextPage = function (params, config) {
+    this._setNextPage = function (templateUrl, params, config) {
         config = $.extend({}, {
             hidePrev: true,      // 默认打开新页面时会隐藏前一页
             addHistory: true,    // 是否加到history中
-            finishPage: false,    // 是否结束前一个页面
-            addNewHistory: true
+            finish: false
         }, config);
         nextPage = {
+            templateUrl: templateUrl,
             params: params,
             config: config
         };
@@ -137,7 +142,10 @@ app.directive('routePage', ['$log', 'routerService', function($log, routerServic
         templateUrl: function (ele, attr) {
             return attr.template;
         },
-        scope: true     // scope隔离
+        scope: true,     // scope隔离,
+        link: function (scope, element, attrs) {
+            scope.domEle = element;
+        }
 
         // compile: function(element, attributes) {
         //     return {
@@ -149,28 +157,5 @@ app.directive('routePage', ['$log', 'routerService', function($log, routerServic
         //         }
         //     };
         // }
-    };
-}]);
-
-app.directive('rootPage', ['$log', 'routerService', function($log, routerService){
-    return {
-        restrict: 'E', // E = Element, A = Attribute, C = Class, M = Comment
-        replace: true,
-        templateUrl: function (ele, attr) {
-            return attr.template;
-        },
-        scope: true,     // scope隔离
-        controller: function ($scope, $element) {
-            var search = window.location.search.substring(1), params = search.split('&');
-            var index, param;
-            for (var i=0; i<params.length; i++){
-                param = params[i];
-                index = param.indexOf('=');
-                var key = param.substring(0, index), value = param.substring(index+1);
-                if (key !== 'template') {
-                    $scope[key] = decodeURIComponent(value);
-                }
-            }
-        }
     };
 }]);
