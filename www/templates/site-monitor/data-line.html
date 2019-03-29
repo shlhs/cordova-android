@@ -44,12 +44,12 @@
         </li>
         <drop-down-menu options="calcMethodList" on-select="onSelect" model-name="'calcMethod'" default-value="'MAX'" selected="calcMethod"></drop-down-menu>
     </ul>
-    <div style="position: absolute; top: 40px; width: 100%; bottom: 0;overflow-x: hidden;overflow-y: auto;">
+    <div style="position: absolute; top: 40px; width: 100%; bottom: 0;overflow-x: hidden;overflow-y: auto;" id="group_charts">
         <div class="card" ng-repeat="group in trendGroups" style="padding: 0;">
-            <div class="card-content" style="padding-top: 6px;">
+            <div class="card-content" style="padding-top: 6px;height: 238px;">
                 <div class="mui-content-padded no-margin">
                     <div style="margin: 0 10px;padding-bottom: 6px;border-bottom: #f1f1f1 1px solid;text-align: center;color: #007aff;">{{group.name}}</div>
-                    <div class="chart" id="chart{{group.id}}" ng-class="{'spin-loading': group.isLoading}">
+                    <div class="chart" id="chart{{group.id}}" ng-class="{'spin-loading': group.isLoading}" ng-style="{width: screenWidth + 'px'}">
                     </div>
                 </div>
             </div>
