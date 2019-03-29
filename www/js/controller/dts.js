@@ -356,12 +356,15 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
     $scope.$on('$destroy', function (event) {
         if (taskTypePicker) {
             taskTypePicker.dispose();
+            taskTypePicker = null;
         }
         if (datePicker) {
             datePicker.dispose();
+            datePicker = null;
         }
         if (userPicker) {
             userPicker.dispose();
+            userPicker = null;
         }
     });
 
