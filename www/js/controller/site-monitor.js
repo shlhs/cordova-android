@@ -166,6 +166,7 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
     $scope.timeType = {id: 'DAY', name: '按日'};
     $scope.trendGroups = [];
     $scope.picker = null;
+    $scope.screenWidth = window.screen.width;
     var currentDay = moment().format('YYYY-MM-DDT00:00:00.000') + 'Z';
     refreshDateShowName();
 
@@ -241,8 +242,10 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
                 _self.picker.show(function (rs) {
                     currentDay = rs.text + 'T00:00:00.000Z';
                     refreshDateShowName();
-                    refreshData();
-                    $scope.$apply();
+                    setTimeout(function () {
+                        refreshData();
+                        $scope.$apply();
+                    }, 50);
                 });
             } else {
                 var options = {type: 'date'};
@@ -250,8 +253,10 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
                 _self.picker.show(function(rs) {
                     currentDay = rs.text + 'T00:00:00.000Z';
                     refreshDateShowName();
-                    refreshData();
-                    $scope.$apply();
+                    setTimeout(function () {
+                        refreshData();
+                        $scope.$apply();
+                    }, 50);
                 });
             }
         }, false);
@@ -616,6 +621,54 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
     });
 
     setTimeout($scope.getDataList, 500);
+
+    var groupWrapper = $("#group_charts");
+    var lastScrollTop = -20;
+    function startScrollListen() {
+        groupWrapper.get(0).addEventListener('scroll', function () {
+            refreshChartsVisibleStatus();
+        });
+    }
+
+    function refreshChartsVisibleStatus() {
+        var scrollTop = groupWrapper.scrollTop();
+        if (Math.abs(scrollTop - lastScrollTop) < 20) {
+            return;
+        }
+        var charts = groupWrapper.find('.chart');
+        // 6个及以下图表不需要进行显示状态切换，默认一直显示
+        if (charts.length <= 6) {
+            return;
+        }
+        lastScrollTop = scrollTop;
+        var screenHeight = window.screen.height;
+        // 计算应该显示的图表的第一个和最后一个的索引
+        var startIndex = Math.floor(scrollTop/245);
+        var endIndex = Math.ceil((scrollTop+screenHeight)/245);
+        $.each(charts, function (i) {
+
+            if (i < startIndex) {
+                $(this).hide();
+            } else if (i > endIndex) {
+                $(this).hide();
+            } else {
+                $(this).show();
+            }
+        })
+        // // 每一个图表所占高度为245
+        // console.log(scrollTop);
+    }
+
+    function stopScrollListen() {
+        groupWrapper.off('touchstart');
+        groupWrapper.off('touchmove');
+        groupWrapper.off('touchend');
+    }
+    startScrollListen();
+
+    $scope.$on('$destroy', function (event) {
+        stopScrollListen();
+    })
 });
 
 // 历史报表
