@@ -1,5 +1,5 @@
 
-<div style="height: 100%;" ng-style="{'background-color': (isLoading || !sites.length) ? '#fff' : ''}">
+<div style="height: 100%;background-color: #fff;">
     <div class="site-header">
         <header class="mui-bar bg-header bg-transparent" style="box-shadow: none;position: static;">
             <a class=" mui-pull-left site-popover" ng-click="openSiteSelectPage()" ng-show="sites.length > 1" ng-if="!isSiteDetail">站点选择</a>
@@ -80,11 +80,11 @@
         <i class="alert-icon"></i>
         <label class="alert-info">未配置站点，<a ng-click="getDataList()">重新加载</a></label>
     </div>
-</div>
-<div class="page-alert-wrapper" ng-if="isLoading">
-    <div class="page-alert">
-        <img src="../../img/page-loading.gif" class="loading-img">
-        <div class="alert-text info">正在加载...</div>
+    <div class="page-alert-wrapper" ng-if="isLoading" style="background-color: #fff;">
+        <div class="page-alert">
+            <img src="../../img/page-loading.gif" class="loading-img">
+            <div class="alert-text info">正在加载...</div>
+        </div>
     </div>
 </div>
 <!-- 站点选择对话框 -->
