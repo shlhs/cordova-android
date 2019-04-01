@@ -3605,3 +3605,18 @@ table.dataTable tbody th, table.dataTable tbody td {
     font-size: 28px;
     display: inline-block;
 }
+.data-loading-spin:before {
+    content: '\a618';
+    font-family: iconfont;
+    -webkit-animation: spin 1.2s infinite linear;
+    -o-animation: spin 1.2s infinite linear;
+    animation: spin 1.2s infinite linear;
+    font-size: 28px;
+    color: #999;
+    top: 50%;
+    margin-top: -20px;
+    display: inline-block;
+    margin-left: calc(50% - 14px);
+    position: absolute;
+    z-index: 1;
+}
