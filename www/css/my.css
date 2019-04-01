@@ -1734,6 +1734,7 @@ color: #a7a7a7;
     height: 100%;
     padding: 1px;
     box-sizing: border-box;
+    text-align: center;
 }
 .site-img-wrapper .status-line {
     position: absolute;
