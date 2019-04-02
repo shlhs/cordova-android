@@ -36,6 +36,7 @@ app.directive('dropDownMenu', [function () {
         controller:['$scope', '$attrs', function($scope, $attrs){
             $scope.active = false;
             $scope.selected = $scope.selected || {};
+            $scope.dropDownMaxHeight = window.screen.height - 97;
 
             $scope.toggle = function () {
                 if ($scope.disabled) {
