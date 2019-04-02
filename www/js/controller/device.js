@@ -1000,9 +1000,12 @@ app.controller('DeviceRemoteControlConfirmCtrl', function ($scope, ajax, platfor
         var controlObj = $scope.controlObj;
         $scope.isSubmitting = true;
         ajax.post({
-            url: '/varcontrol/action',
+            // url: '/varcontrol/action',
+            // data: {
+            //     type: controlObj.action === 'yaokong-act' ? 1 : 2,
+            url: platformService.getDeviceMgmtHost() + '/notification/value_changed',
             data: {
-                type: controlObj.action === 'yaokong-act' ? 1 : 2,
+                type: controlObj.action,
                 variable_sn: controlObj.sn,
                 variable_value: controlObj.type === 'Digital' ? controlObj.value : newValue,
                 pwd: pwd
