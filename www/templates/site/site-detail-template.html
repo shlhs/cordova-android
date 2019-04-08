@@ -1,5 +1,5 @@
 
-<div style="height: 100%;background-color: #fff;">
+<div style="height: 100%;" ng-style="{'background-color': currentSite.sn ? '' : '#fff'}">
     <div class="site-header">
         <header class="mui-bar bg-header bg-transparent" style="box-shadow: none;position: static;">
             <a class=" mui-pull-left site-popover" ng-click="openSiteSelectPage()" ng-show="sites.length > 1" ng-if="!isSiteDetail">站点选择</a>
@@ -16,7 +16,7 @@
         </header>
         <div class="site-img-wrapper">
             <div class="img-border">
-                <img ng-src="{{currentSite.site_image}}" style="width: 100%;height: 100%;border-radius: 8px;" ng-if="currentSite.sn">
+                <img ng-src="{{currentSite.site_image}}" style="width: 100%;height: 100%;border-radius: 8px;" ng-if="currentSite.sn" ng-click="refreshStationStatus(currentSite.sn)">
                 <img src="/img/site-default.png" style="width: 100%;height: 100%;border-radius: 8px;" ng-if="!isLoading && !currentSite.sn">
                 <img src="/img/no-station-img.png" style="height:64px;border-radius: 8px;margin-top: 20px;" ng-if="isLoading">
             </div>
