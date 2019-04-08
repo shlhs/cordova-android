@@ -149,6 +149,8 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, ajax, $state
         if (scope.getDataList && !element.data('inited')){
             scope.getDataList();
             element.data('inited', true);
+        } else {
+            $scope.$broadcast('onChooseNav', tabName);
         }
         angular.element('#' + tabName).addClass('mui-active').siblings().removeClass('mui-active');
     };

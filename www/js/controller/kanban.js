@@ -783,8 +783,8 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                 data: legendData,
                 bottom: -5,
                 textStyle: {
-                    fontSize: 10,
-                    lineHeight: 14
+                    fontSize: 9,
+                    lineHeight: 10
                 },
                 pageIconSize: 10,
                 itemWidth: 15,
@@ -794,7 +794,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                 top: 10,
                 left: 4,
                 right: 2,
-                bottom: 25,
+                bottom: 28,
                 containLabel: true
             },
             toolbox: {
