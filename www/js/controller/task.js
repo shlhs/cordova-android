@@ -149,6 +149,8 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, ajax, $state
         if (scope.getDataList && !element.data('inited')){
             scope.getDataList();
             element.data('inited', true);
+        } else {
+            $scope.$broadcast('onChooseNav', tabName);
         }
         angular.element('#' + tabName).addClass('mui-active').siblings().removeClass('mui-active');
     };
@@ -1203,6 +1205,7 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
     $scope.$on('$destroy', function (event) {
        if (userPicker) {
            userPicker.dispose();
+           userPicker = null;
        }
     });
 });
@@ -1660,18 +1663,23 @@ app.controller('TaskCreateCtrl', function ($scope, $stateParams, $timeout, route
     $scope.$on('$destroy', function (event) {
         if (taskTypePicker) {
             taskTypePicker.dispose();
+            taskTypePicker = null;
         }
         if (stationPicker) {
             stationPicker.dispose();
+            stationPicker = null;
         }
         if (devicePicker) {
             devicePicker.dispose();
+            devicePicker = null;
         }
         if (userPicker) {
             userPicker.dispose();
+            userPicker = null;
         }
         if (datePicker) {
             datePicker.dispose();
+            datePicker = null;
         }
     });
 

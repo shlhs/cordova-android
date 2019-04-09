@@ -2,7 +2,7 @@
 
 
 app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
-    // $scope.sn = GetQueryString('sn');
+    $scope.sn = GetQueryString('sn');
     // $scope.sn = $stateParams.sn;
     $scope.hasData = true;
     $scope.isLoading = true;
@@ -60,7 +60,6 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
             });
         }
     }
-
     function getKanbanData() {
         needChartCount = 0;
         paintedChartCount = 0;
@@ -93,7 +92,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                                 // 将processed_value分解除值和单位
                                 if (processedValue.processed_value ) {
                                     var value = parseFloat(processedValue.processed_value);
-                                    tempVarData.value = value.toFixed(1);
+                                    tempVarData.value = value;
                                     if (processedValue.processed_value.length > String(value).length) {
                                         tempVarData.unit = processedValue.processed_value.substring(String(value).length);
                                     }
@@ -164,7 +163,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
 
                 $scope.isLoading = false;
                 $scope.$apply();
-               
+
             },
             error: function (a,b,c) {
                 $scope.isLoading = false;
@@ -253,11 +252,11 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
         processedValue.name = tempContent.name;
         var tempType = tempContent.type;
         processedValue.type = tempType;
-  
+
         var tempValue = '请进行配置';
-        if(tempType == 'normal-text') {
+        if(tempType === 'normal-text') {
             tempValue = tempContent.value;
-        } else if(tempType == 'station-manage-info') {
+        } else if(tempType === 'station-manage-info') {
             ajax.get({
                 url: '/stations/' + stationSn,
                 async: false,
@@ -276,11 +275,11 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                     console.log('获取站点信息失败 '+stationSn+err);
                 }
             });
-        } else if(tempType == 'device-data') {
+        } else if(tempType === 'device-data') {
             tempValue = getDeviceVarData(tempContent.varInfo.deviceVarSn, queryTime, tempContent.period, tempContent.calcMethod);
         }
         processedValue.processed_value = tempValue;
-    
+
         return processedValue;
     }
 
@@ -434,46 +433,46 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                     },
                     crossDomain: true,
                     success: function(values) {
-                        var startValues, endValues = null;
-                        for(var i=0; i<values.length; i++) {
-                            if(values[i].time == startQueryTime) {
-                                startValues = values[i].values;
-                                continue;
-                            }
-                            if(values[i].time == endQueryTime) {
-                                endValues = values[i].values;
-                                continue;
-                            }
+                    var startValues, endValues = null;
+                    for(var i=0; i<values.length; i++) {
+                        if(values[i].time == startQueryTime) {
+                        startValues = values[i].values;
+                        continue;
                         }
-                        if(startValues == null || endValues == null){
-                            if(startValues == null) {
-                                console.warn('获取时间点的值失败: '+startQueryTime+deviceSn);
-                            }
-                            if(endValues == null) {
-                                console.warn('获取时间点的值失败: '+endQueryTime+deviceSn);
-                            }
-                        } else {
-                            //resultValue = endValues[deviceSn] - startValues[deviceSn];
-                            if(!g_devicevar_unit_map[deviceSn]) {
-                                //待后台
-                                ajax.get({
-                                    url: '/devicevars/getbysn/' + deviceSn,
-                                    async: false,
-                                    success: function (data) {
-                                        if(!data) {
-                                            return;
-                                        }
-                                        g_devicevar_unit_map[deviceSn] = data.unit;
-                                    },
-                                    error: function () {
-                                        console.warn('获取设备变量信息 '+deviceSn);
-                                    }
-                                });
-                            }
-                            var tempValue = endValues[deviceSn] - startValues[deviceSn];
-                            //tempValue = tempValue == 0 ? tempValue:tempValue.toFixed(valueFixNum);
-                            diffValue = tempValue + g_devicevar_unit_map[deviceSn];
+                        if(values[i].time == endQueryTime) {
+                        endValues = values[i].values;
+                        continue;
                         }
+                    }
+                    if(startValues == null || endValues == null){
+                        if(startValues == null) {
+                        console.warn('获取时间点的值失败: '+startQueryTime+deviceSn);
+                        }
+                        if(endValues == null) {
+                        console.warn('获取时间点的值失败: '+endQueryTime+deviceSn);
+                        }
+                    } else {
+                        //resultValue = endValues[deviceSn] - startValues[deviceSn];
+                        if(!g_devicevar_unit_map[deviceSn]) {
+                        //待后台
+                        ajax.get({
+                            url: '/devicevars/getbysn/' + deviceSn,
+                            async: false,
+                            success: function (data) {
+                            if(!data) {
+                                return;
+                            }
+                            g_devicevar_unit_map[deviceSn] = data.unit;
+                            },
+                            error: function () {
+                            console.warn('获取设备变量信息 '+deviceSn);
+                            }
+                        });
+                        }
+                        var tempValue = endValues[deviceSn] - startValues[deviceSn];
+                        //tempValue = tempValue == 0 ? tempValue:tempValue.toFixed(valueFixNum);
+                        diffValue = tempValue + g_devicevar_unit_map[deviceSn];
+                    }
                     },
                     error: function(){
                         console.log('获取设备变量值失败 '+deviceSn);
@@ -510,7 +509,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                 var v = 0;
                 var sum = 0;
                 var unit = degreeOrCharge == 'charge' ? '元' : 'kWh';
-        
+
                 if(degreeOrCharge == 'charge') {
                     for(var i=0; i < data.length; i++) {
                         p += data[i].pCharge;
@@ -526,51 +525,51 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                         sum += data[j].allDegree;
                     }
                 }
-        
+
                 var newData = [{
-                                    value: p,
-                                    name: '峰'
-                                }, {
-                                    value: f,
-                                    name: '平'
-                                }, {
-                                    value: v,
-                                    name: '谷'
-                                }];
+                    value: p,
+                    name: '峰'
+                }, {
+                    value: f,
+                    name: '平'
+                }, {
+                    value: v,
+                    name: '谷'
+                }];
 
                 var echartOptions = {
                     title: [{
-                      text: ''+sum+'\n'+unit,
-                      textStyle: {
-                        fontFamily: 'Microsoft YaHei',
-                        fontSize: 12
-                      },
-                      x: 'center',
-                      y: 'center'
+                        text: ''+sum+'\n'+unit,
+                        textStyle: {
+                            fontFamily: 'Microsoft YaHei',
+                            fontSize: 12
+                        },
+                        x: 'center',
+                        y: 'center'
                     }],
                     tooltip: {
-                      trigger: 'item',
-                      formatter: '{a} <br/>{b}: {c} ({d}%)'
+                        trigger: 'item',
+                        formatter: '{a} <br/>{b}: {c} ({d}%)'
                     },
                     legend: {
-                      orient: 'vertical',
-                      show: false,
-                      x: 'left',
-                      data: ['峰', '平', '谷']
+                        orient: 'vertical',
+                        show: false,
+                        x: 'left',
+                        data: ['峰', '平', '谷']
                     },
                     color: ['#F04863', '#F9CC13', '#369FFF', '#12C1C1', '#8442E0', '#2FC15B'],
                     series: [{
-                      name: '用电量',
-                      type: 'pie',
-                      radius: ['30%', '65%'],
-                      label: {
-                        normal: {
-                            formatter: '{b}: {c}'+unit+'\n{d}%'
-                        }
-                      },
-                      data: newData
+                        name: '用电量',
+                        type: 'pie',
+                        radius: ['30%', '65%'],
+                        label: {
+                            normal: {
+                                formatter: '{b}: {c}'+unit+'\n{d}%'
+                            }
+                        },
+                        data: newData
                     }]
-                  };
+                };
 
                 drawEchart(name, echartOptions);
 
@@ -579,7 +578,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                 paintFailed();
                 console.warn('获取数据失败');
             }
-          });
+        });
     }
 
     function getTrendAnalysis(name, deviceVarSns, period, queryTime, pfvSettings, inputShowType) {
@@ -600,7 +599,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
         if(showType == 'line') {
             boundaryGap = false;
         }
-        
+
         ajax.get({
             url: '/devicevars/getstatisticalvalues',
             data: {
@@ -646,24 +645,24 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
     function getTrendAnalysisEchartOption(showPfvSetting, pfvSettings, times, data, boundaryGap) {
         var yAxis =[
             {
-              type: 'value'
+                type: 'value'
             },{
-      
+
             }];
-      
+
         if(showPfvSetting) {
             var tempPfvSettings = pfvSettings == 'pfv-settings-f' ? pfvSettingsF : pfvSettingsR;
             if(tempPfvSettings != null) {
                 yAxis[1]={
                     type: 'value'
                 };
-        
+
                 //只支持 'DAY' 'NORMAL'
                 var timesInt = [];
                 for(var k in times) {
                     timesInt.push(60*parseInt(times[k].substr(0,2)) + parseInt(times[k].substr(3,5)));
                 }
-                
+
                 /*
                 [
                 {
@@ -677,7 +676,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                 for(var i=0; i<tempPfvSettings.length; i++){
                     var markAreaData = [];
                     var chargeData = [];
-            
+
                     var tempStartTimeInt = 60*parseInt(tempPfvSettings[i].starttime.substr(0,2)) + parseInt(tempPfvSettings[i].starttime.substr(3,5));
                     var tempEndTimeInt = 60*parseInt(tempPfvSettings[i].endtime.substr(0,2)) + parseInt(tempPfvSettings[i].endtime.substr(3,5));
                     if(tempStartTimeInt >= tempEndTimeInt) {
@@ -699,13 +698,13 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                             tempEndIndex = j;
                         }
                     }
-            
+
                     if(tempStartIndex == null || tempEndIndex == null || tempStartIndex >= tempEndIndex) {
                         continue;
                     }
-            
+
                     var tempPfv = tempPfvSettings[i].pfv;
-                    var tempCharge = tempPfvSettings[i].charge;          
+                    var tempCharge = tempPfvSettings[i].charge;
                     var tempName = '';
                     var tempColor = 'gray';
                     var tempLabelColor = 'gray';
@@ -720,9 +719,9 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                     } else if(tempPfv == 'v') {
                         tempName = '谷';
                         tempColor = 'rgba(46,165,1,0.2)';
-                        tempLabelColor = 'rgba(46,165,1)';  
-                    } 
-            
+                        tempLabelColor = 'rgba(46,165,1)';
+                    }
+
                     var tempAreaData = [{
                         name: tempName+'\n'+tempPfvSettings[i].charge+'元',
                         xAxis: tempStartIndex,
@@ -731,40 +730,40 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                         xAxis: tempEndIndex,
                         yAxis: tempPfvSettings[i].charge,
                     }];
-            
+
                     chargeData.push(tempPfvSettings[i].charge*1.2);
                     markAreaData.push(tempAreaData);
-            
+
                     var newDate = {
                         name: i,
-                        yAxisIndex: 1, 
-                        type:'line', 
+                        yAxisIndex: 1,
+                        type:'line',
                         symbolSize: 0,
                         itemStyle: {
-                        normal: {
-                            lineStyle: {
-                            width: 0
+                            normal: {
+                                lineStyle: {
+                                    width: 0
+                                }
                             }
-                        }
                         },
                         data: chargeData,
                         markArea: {
-                        data: markAreaData,
-                        itemStyle: {
-                            normal: {
-                            color: tempColor
+                            data: markAreaData,
+                            itemStyle: {
+                                normal: {
+                                    color: tempColor
+                                }
+                            },
+                            label: {
+                                normal: {
+                                    color: tempLabelColor
+                                }
                             }
-                        },
-                        label: {
-                            normal: {
-                                color: tempLabelColor
-                            }
-                        }
                         }
                     };
-            
+
                     data.push(newDate);
-        
+
                 }
             }
         }
@@ -773,7 +772,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
         for(var i in data) {
             legendData.push(data[i].name);
         }
-    
+
         return {
             tooltip: {
                 trigger: 'axis',
@@ -783,23 +782,23 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                 data: legendData,
                 bottom: -5,
                 textStyle: {
-                    fontSize: 9,
-                    lineHeight: 10
+                    fontSize: 10,
+                    lineHeight: 14
                 },
                 pageIconSize: 10,
                 itemWidth: 15,
                 itemHeight: 10
             },
             grid: {
-                top: 10,
+                top: 15,
                 left: 4,
                 right: 2,
-                bottom: 28,
+                bottom: 25,
                 containLabel: true
             },
             toolbox: {
                 feature: {
-                saveAsImage: false
+                    saveAsImage: false
                 }
             },
             xAxis: {
@@ -828,7 +827,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
             error: function(err) {
               console.log('获取站点信息失败 '+$scope.sn+err);
             }
-          })
+        })
     }
 
     function getRatioPie(title, data, unit) {
@@ -841,11 +840,11 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                 radius: ['25%', '60%'],
                 label: {
                     normal: {
-                        formatter: '{b}:\n{c}' + unit + '\n{d}%',
+                    formatter: '{b}:\n{c}' + unit + '\n{d}%',
                     },
                 },
                 data: data,
-            },
+                },
             ],
         };
 

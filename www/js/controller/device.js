@@ -1000,9 +1000,9 @@ app.controller('DeviceRemoteControlConfirmCtrl', function ($scope, ajax, platfor
         var controlObj = $scope.controlObj;
         $scope.isSubmitting = true;
         ajax.post({
-            url: platformService.getDeviceMgmtHost() + '/notification/value_changed',
+            url: '/varcontrol/action',
             data: {
-                type: controlObj.action,
+                type: controlObj.action === 'yaokong-act' ? 1 : 2,
                 variable_sn: controlObj.sn,
                 variable_value: controlObj.type === 'Digital' ? controlObj.value : newValue,
                 pwd: pwd
@@ -1012,9 +1012,13 @@ app.controller('DeviceRemoteControlConfirmCtrl', function ($scope, ajax, platfor
                     if (response.code === 200) {
                         $.notify.info('成功下发');
                         $scope.onCancel();
-                    } else {
+                    } else if (response.code === 403) {
                         $scope.isSubmitting = false;
                         $scope.error = '密码错误';
+                        $scope.$apply();
+                    } else {
+                        $scope.isSubmitting = false;
+                        $scope.error = '下发失败';
                         $scope.$apply();
                     }
                 } else {

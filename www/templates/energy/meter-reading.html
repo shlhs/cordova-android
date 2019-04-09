@@ -1,9 +1,9 @@
 <div  ng-controller="EnergyMeterReadingCtrl" class="page page-left box-vertical-center">
     <style>
-        th:first-child {
-            white-space: nowrap;
-        }
-        td { white-space: nowrap; }
+        /*th:first-child {*/
+            /*white-space: nowrap;*/
+        /*}*/
+        /*td { white-space: nowrap; }*/
         div.dataTables_wrapper {
             width: 100%;
             margin: 0 auto;
@@ -90,6 +90,7 @@
                 </div>
             </div>
         </div>
+        <div class="data-loading" ng-if="isDataLoading"></div>
     </div>
     <div class="page-alert-wrapper" ng-if="!isLoading && !categories.length">
         <div class="page-alert">

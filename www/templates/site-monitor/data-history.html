@@ -24,9 +24,9 @@
                 border-right: #ccc 1px solid;
                 text-align: center;
             }
-            table tr td:first-child, tr th:first-child {
-                width: 70px;
-            }
+            /*table tr td:first-child, tr th:first-child {*/
+                /*width: 70px;*/
+            /*}*/
             table td, table th {
                 border-right: #e8e8e8 1px solid;
                 border-bottom: #e8e8e8 1px solid;
@@ -42,6 +42,9 @@
             }
             table tbody tr:nth-child(odd) td {
                 background-color: #fff;
+            }
+            table thead th.no-borderb {
+                border-bottom: none;
             }
         </style>
     </head>
@@ -68,17 +71,29 @@
             </li>
             <drop-down-menu options="calcMethodList" on-select="onSelect" model-name="'calcMethod'" default-value="'MAX'" selected="calcMethod"></drop-down-menu>
         </ul>
-        <div style="position: absolute; top: 38px;bottom: 0;width: 100%;overflow: auto;border-top: #e8e8e8 1px solid;padding-bottom: 10px;" id="tableParent" site-history-repeat-finish>
+        <div style="position: absolute; top: 38px;bottom: 0;width: 100%;overflow: auto;border-top: #e8e8e8 1px solid;padding-bottom: 10px;"
+             id="tableParent" site-history-repeat-finish ng-class="{'data-loading-spin': dataRefreshing}">
             <table id="siteHistoryTable" class="stripe row-border order-column dataTable no-footer">
-                <thead>
-                    <th ng-repeat="item in tableHeader" site-history-repeat-finish ng-bind-html="item.name|to_trusted"></th>
+                <thead ng-if="hasGroup">
+                <tr>
+                    <th ng-repeat="item in tableHeader[0]" ng-bind-html="item.name|to_trusted" ng-if="hasGroup"
+                        rowspan="{{item.rowSpan || 1}}" colspan="{{item.colSpan || 1}}" ng-class="{'no-borderb': !(item.rowSpan>1)}"></th>
+                </tr>
+                <tr>
+                    <th ng-repeat="item in tableHeader[1]" site-history-repeat-finish ng-bind-html="item.name|to_trusted" ng-if="hasGroup"></th>
+                </tr>
+                </thead>
+                <thead ng-if="!hasGroup">
+                <tr>
+                    <th ng-repeat="item in tableHeader[0]" site-history-repeat-finish ng-bind-html="item.name|to_trusted" ng-if="!hasGroup"></th>
+                </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="item in tableBodyData">
-                        <td ng-repeat="col in item" rowspan="{{col.rowSpan || 1}}" colspan="{{col.colSpan || 1}}" ng-style="{backgroundColor: col.backgroundColor}">
-                            {{col.value}}
-                        </td>
-                    </tr>
+                <tr ng-repeat="item in tableBodyData">
+                    <td ng-repeat="col in item" rowspan="{{col.rowSpan || 1}}" colspan="{{col.colSpan || 1}}" ng-style="{backgroundColor: col.backgroundColor}">
+                        {{col.value}}
+                    </td>
+                </tr>
                 </tbody>
             </table>
         </div>

@@ -4,8 +4,11 @@
         <h1 class="mui-title">所有设备</h1>
     </header>
     <div class="mui-content" ng-cloak style="padding-left: 8px;background-color: #fff;">
-        <div>
+        <div ng-if="deviceDatas.length > 1">
             <device-tree-view device-list="deviceDatas" click-callback="onSelect"></device-tree-view>
+        </div>
+        <div ng-if="deviceDatas.length <= 1" style="padding: 10px; color: #656464;">
+            设备档案为空，无法选择
         </div>
     </div>
 </div>
