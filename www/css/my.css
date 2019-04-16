@@ -3261,3 +3261,29 @@ table.dataTable tbody th, table.dataTable tbody td {
     position: absolute;
     z-index: 1;
 }
+.login-expire-modal {
+}
+.login-expire-modal>.mui-popup {
+    display: block;
+    opacity: 1;
+    width: 65%;
+}
+.login-expire-modal .img {
+    width: 100%;
+    height: 80px;
+    background: url(../img/login/login-expire.png) 50% no-repeat;
+    background-size: contain;
+    margin-bottom: 10px;
+}
+.login-expire-modal .info {
+    color: #333;
+    font-size: 16px;
+}
+.login-expire-modal .btn-cancel {
+    color: #474747;
+    background-color: #fff;
+}
+.login-expire-modal .btn-login {
+    color: #fff;
+    background-color: #5690FF;
+}

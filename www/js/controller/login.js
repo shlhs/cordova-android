@@ -99,6 +99,7 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
     function getUserInfo() {
         ajax.get({
             url: '/user/' + $scope.username,
+            ignoreAuthExpire: true,
             success: function (data) {
                 userService.saveLoginUser(data, $scope.password);
                 // getCompany();
@@ -120,6 +121,7 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
     function getCompany() {
         ajax.get({
             url: platform.url + '/user/' + $scope.username + '/opscompany',
+            ignoreAuthExpire: true,
             xhrFields: {
                 withCredentials: true
             },
@@ -185,9 +187,8 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
                 $scope.$apply();
             }
         });
-    };
+    }
     // 平台查询end
-
 });
 
 app.controller('AutoLoginCtrl', function ($scope, $timeout, userService, platformService) {
