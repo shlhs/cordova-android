@@ -3,6 +3,7 @@
  * Created by liucaiyun on 2017/5/4.
  */
 var app = angular.module('myApp', ['ngAnimate', 'ui.router', 'ui.router.state.events']);
+const loginExpireCheckEnable = false;       // 是否检查鉴权过期
 
 app.run(function ($animate) {
     $animate.enabled(true);
@@ -453,7 +454,7 @@ app.service('ajax', function ($rootScope, platformService, userService, routerSe
             headers: headers,
             error: function (xhr, statusText, error) {
                 // 如果请求本身设置了ignoreAuthExpire，则不提示认证过期
-                if (new Date().getTime() - startTime < timeout && !option.ignoreAuthExpire) {
+                if (loginExpireCheckEnable && new Date().getTime() - startTime < timeout && !option.ignoreAuthExpire) {
                     var statusCode = xhr.status;
                     if (statusCode === 400 || statusCode === 500 || statusCode === 404) {
                         if (errorFunc) {
@@ -480,9 +481,11 @@ app.service('ajax', function ($rootScope, platformService, userService, routerSe
         }
     }
 
-    window.addEventListener('popstate', function () {
-        expireNotified = false;
-    });
+    if (loginExpireCheckEnable) {
+        window.addEventListener('popstate', function () {
+            expireNotified = false;
+        });
+    }
 
    this.get = function (option) {
         option.type = 'get';
