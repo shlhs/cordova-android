@@ -1,4 +1,4 @@
-<div class="page page-fade login-expire-modal" id="loginExpireModal">
+<div class="page page-fade login-expire-modal" id="loginExpireModal" ng-controller="LoginExpireCtrl">
     <div class="mui-popup property-editor-popup">
         <div class="mui-popup-inner" style="background-color: #fff;">
             <div class="form-group" style="padding: 40px 0;text-align: center;">
@@ -8,7 +8,7 @@
         </div>
         <div class="mui-popup-buttons">
             <span class="mui-popup-button btn-cancel" onclick="history.back()">取消</span>
-            <a class="mui-popup-button btn-login" href="/templates/login.html">重新登录</a>
+            <a class="mui-popup-button btn-login" ng-click="gotoLogin()">重新登录</a>
         </div>
     </div>
     <div class="mui-popup-backdrop mui-active" style="display: block;"></div>

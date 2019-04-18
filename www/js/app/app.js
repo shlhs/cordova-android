@@ -29,6 +29,14 @@ app.controller('MainCtrl', function ($scope, $rootScope, userService) {
 
 });
 
+app.controller('LoginExpireCtrl', function ($scope, userService) {
+    $scope.gotoLogin = function () {
+        // 先清空密码
+        userService.setPassword('');
+        window.location.href = '/templates/login.html';
+    };
+});
+
 var UserRole = {SuperUser: 'SUPERUSER', OpsAdmin: 'OPS_ADMIN', OpsOperator: 'OPS_OPERATOR', Normal: 'USER'};
 
 app.service('userService', function ($rootScope) {
@@ -502,6 +510,7 @@ app.service('ajax', function ($rootScope, platformService, userService, routerSe
        return request(option);
    }
 });
+
 
 Date.prototype.format = function(fmt) {
     var o = {
