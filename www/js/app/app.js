@@ -456,13 +456,11 @@ app.service('ajax', function ($rootScope, platformService, userService, routerSe
                 // 如果请求本身设置了ignoreAuthExpire，则不提示认证过期
                 if (loginExpireCheckEnable && new Date().getTime() - startTime < timeout && !option.ignoreAuthExpire) {
                     var statusCode = xhr.status;
-                    if (statusCode === 400 || statusCode === 500 || statusCode === 404) {
-                        if (errorFunc) {
-                            errorFunc(xhr, statusText, error);
-                        } else {
-                            // 鉴权过期
-                            notifyLoginExpire();
-                        }
+                    if (errorFunc) {
+                        errorFunc(xhr, statusText, error);
+                    }
+                    if (statusCode !== 400 || statusCode !== 500 || statusCode !== 404) {
+                        notifyLoginExpire();
                     }
                 } else if (errorFunc) {
                     errorFunc(xhr, statusText, error);
