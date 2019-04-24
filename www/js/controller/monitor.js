@@ -45,7 +45,6 @@ app.controller('MonitorListCtrl', function ($scope, $stateParams, platformServic
 
     $scope.openMonitorDetail = function (url) {
         if (window.android && window.android.setScreenOrient) {
-        // if (true) {
             routerService.openPage($scope, "/templates/site/monitor-detail-template.html", {
                 url: url
             });
