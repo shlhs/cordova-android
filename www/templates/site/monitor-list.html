@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="../../css/setting.css">
     <!--<script type="text/javascript" src="../../cordova.js"></script>-->
     <!--<script type="text/javascript" src="../../cordova_plugins.js"></script>-->
-    <script type="text/javascript" src="../../components/libs/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="../../components/libs/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
     <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
     <script type="text/javascript" src="../../components/angular-animate/angular-animate.js"></script>
@@ -37,7 +37,7 @@
             <div class="mui-scroll">
                 <ul class="mui-table-view no-margin" style="background-color: #fff;" ng-if="monitorScreens.length">
                     <li class="mui-table-view-cell mui-media" ng-repeat="screen in monitorScreens" >
-                        <a class="mui-navigate-right" href="/templates/site/monitor-detail.html?url={{screen.mobile_screen_link}}&screen=h">
+                        <a class="mui-navigate-right" ng-click="openMonitorDetail(screen.mobile_screen_link)">
                             <i class="mui-media-object mui-pull-left icon icon-md icon-monitor-list" style="width: 50px;height: 50px;max-width: 50px;"></i>
                             <div class="mui-media-body" style="line-height: 50px;font-size: 18px;">
                                 {{screen.name}}
@@ -77,5 +77,13 @@
 <script type="text/javascript" src="../../js/controller/device.js"></script>
 <script src="../../js/controller/monitor.js"></script>
 <script src="../../js/controller/kanban.js"></script>
+<script>
+    window.addEventListener('message', function(e) {
+        var frames = window.frames;
+        for(var i=0; i<frames.length; i++) {
+            frames[i].postMessage('Bearer' + (getStorageItem('accountToken') || ''), '*');
+        }
+    }, false);
+</script>
 </body>
 </html>

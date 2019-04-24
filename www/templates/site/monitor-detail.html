@@ -76,23 +76,26 @@
         }, false);
         var url = location.search.substring(location.search.lastIndexOf('http://'));
         url += "&mobile=1";
-        var iframe = document.getElementById('iframe');
-        iframe.src = url;
-//        $.notify.progressStart();
-        if (!/*@cc_on!@*/0) { //if not IE
-            iframe.onload = function(){
-                iframe.onload = null;
-//                $.notify.progressStop();
-                enableZoom();
-            };
-        } else {
-            iframe.onreadystatechange = function(){
-                if (iframe.readyState === "complete"){
+        window.onload = function () {
+            var iframe = document.getElementById('iframe');
+            iframe.src = url;
+//            $.notify.progressStart();
+            if (!/*@cc_on!@*/0) { //if not IE
+                iframe.onload = function(){
+                    iframe.onload = null;
 //                    $.notify.progressStop();
                     enableZoom();
-                }
-            };
-        }
+                };
+            } else {
+                iframe.onreadystatechange = function(){
+                    if (iframe.readyState === "complete"){
+//                        $.notify.progressStop();
+                        enableZoom();
+                    }
+                };
+            }
+        };
+
 
         function enableZoom() {
             //new RTP.PinchZoom($("#targetObj"), {});
