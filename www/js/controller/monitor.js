@@ -39,10 +39,6 @@ app.controller('MonitorListCtrl', function ($scope, $stateParams, platformServic
         });
     };
 
-    $scope.openMonitorDetail = function () {
-        routerService.openPage($scope, '/templates/site/monitor-detail.html?url={{screen.mobile_screen_link}}&screen=h');
-    };
-
     $scope.openMonitorDetail = function (url) {
         if (window.android && window.android.setScreenOrient) {
             routerService.openPage($scope, "/templates/site/monitor-detail-template.html", {
