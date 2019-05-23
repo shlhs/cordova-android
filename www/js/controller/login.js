@@ -6,12 +6,14 @@
 
 // var gPublicApiHost = 'http://47.104.75.86:8090';        // 公有云接口
 var gPublicApiHost = 'http://47.97.167.195:8090';        // 因泰来接口
+var defaultPlatCode = "int";    // 如果有默认的平台编码，则不需要用户输入
 
 app.controller('LoginCtrl', function ($scope, $timeout, platformService, userService, $state, $http, ajax) {
     $scope.error = '';
     var platform = null;
     $scope.enable = false;
-    $scope.platformCode = platformService.getLatestPlatform() ? platformService.getLatestPlatform().code : null;
+    $scope.platformCodeVisible = !defaultPlatCode;
+    $scope.platformCode = defaultPlatCode ? defaultPlatCode : (platformService.getLatestPlatform() ? platformService.getLatestPlatform().code : null);
     $scope.username = userService.getUsername();
     $scope.password = userService.getPassword();
     $scope.isLogin = false;
