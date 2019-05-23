@@ -21,11 +21,11 @@ var jic = {
     _rotateImg: function (img, direction, canvas) {
         //alert(img);
         //最小与最大旋转方向，图片旋转4次后回到原方向
-        const min_step = 0, max_step = 3;
+        var min_step = 0, max_step = 3;
         //var img = document.getElementById(pid);
         if (img === null)return;
         //img的高度和宽度不能在img元素隐藏后获取，否则会出错
-        let originHeight = img.height, originWidth = img.width, width=originWidth, height=originHeight;
+        var originHeight = img.height, originWidth = img.width, width=originWidth, height=originHeight;
         if (originWidth > originHeight){
             if (originHeight > 2048){
                 height = 2048;
@@ -39,7 +39,7 @@ var jic = {
             }
         }
         //var step = img.getAttribute('step');
-        let step = 2;
+        var step = 2;
         if (step === null) {
             step = min_step;
         }
@@ -52,7 +52,7 @@ var jic = {
             step < min_step && (step = max_step);
         }
         //旋转角度以弧度值为参数
-        const degree = step * 90 * Math.PI / 180, ctx = canvas.getContext('2d');
+        var degree = step * 90 * Math.PI / 180, ctx = canvas.getContext('2d');
         switch (step) {
             case 0:
                 canvas.width = width;
@@ -80,9 +80,9 @@ var jic = {
         }
     },
     compress: function(source_img_obj, quality, orientation){
-        const that = this, mime_type = "image/jpeg", cvs = document.createElement('canvas');
+        var that = this, mime_type = "image/jpeg", cvs = document.createElement('canvas');
         //naturalWidth真实图片的宽度
-        let originWidth = source_img_obj.naturalWidth, originHeight = source_img_obj.naturalHeight, width=originWidth, height=originHeight;
+        var originWidth = source_img_obj.naturalWidth, originHeight = source_img_obj.naturalHeight, width=originWidth, height=originHeight;
         if (orientation && orientation !== 1){
             switch (orientation){
                 case 6://需要顺时针（向左）90度旋转
@@ -113,7 +113,7 @@ var jic = {
             cvs.height = height;
             cvs.getContext("2d").drawImage(source_img_obj, 0, 0, originWidth, originHeight, 0, 0, width, height);
         }
-        const newImageData = cvs.toDataURL(mime_type, quality/100), result_image_obj = new Image();
+        var newImageData = cvs.toDataURL(mime_type, quality/100), result_image_obj = new Image();
         result_image_obj.src = newImageData;
         return result_image_obj;
     },

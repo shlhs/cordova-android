@@ -28,14 +28,14 @@
         }
 
     </style>
-    <script type="text/javascript" src="../components/libs/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="../components/libs/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="../js/app/utils.js"></script>
     <script type="text/javascript" src="../components/angular/angular.min.js"></script>
 </head>
 
 <body class="mui-android mui-android-5 mui-android-5-1 mui-android-5-1-1 mui-segmented-control-vertical" ng-app="myApp">
 <header class="mui-bar bg-header">
-    <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
+    <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
     <h1 class="mui-title" id="head_title">站点位置</h1>
 </header>
 <div>
@@ -61,7 +61,7 @@
 <script src="../js/my/notify.js"></script>
 <script>
 
-    $("#head_title").html(GetQueryString('stationName'));
+    $("#head_title").html(GetQueryString('name'));
     var app = angular.module('myApp', []);
     app.controller('mapCtrl', function ($scope) {
         var sn = GetQueryString('stationSn');
@@ -84,10 +84,14 @@
                 },
                 success: function (data) {
                     data.address = (data.address_province?data.address_province:'') + (data.address_city?data.address_city:'')
-                        + (data.address_district?data.address_district:'') + data.address;
+                        + (data.address_district?data.address_district:'') + (data.address ? data.address : '');
                     $scope.siteData = data;
                     $scope.$apply();
-                    drawMap(data);
+                    if (data.longitude && data.latitude) {
+                        drawMap(data);
+                    } else {
+                        $.notify.toast('无法获取站点位置');
+                    }
                 },
                 error: function (a, b, c) {
                     $.notify.error('获取站点信息失败');

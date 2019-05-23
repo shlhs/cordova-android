@@ -7,7 +7,7 @@
         }
     </style>
     <header class="mui-bar bg-header" style="z-index:1;box-shadow: 0 0 1px rgba(239, 237, 237, 0.85);">
-        <a class="mui-icon mui-icon-left-nav mui-pull-left text-white" ng-click="gotoPrevPage()"></a>
+        <a class="mui-icon mui-icon-left-nav mui-pull-left text-white btn-back" ng-click="gotoPrevPage()"></a>
         <h1 class="mui-title">电房及设备停电维护作业表</h1>
         <a class="mui-action-menu mui-icon mui-pull-right" style="font-size: 16px;line-height: 28px;color: #fff;" ng-click="save()" ng-if="canEdit">保存</a>
     </header>
@@ -49,7 +49,8 @@
                 <div class="icon icon-20 icon-camera" style="position: absolute;" ng-if="canEdit">
                     <div class="image-uploader">
                         <input type="file" accept="image/*" name="upload" multiple="" onchange="angular.element(this).scope().chooseImage('image_before_check', this)" ng-if="isPC">
-                        <input type="file" accept="image/*" name="upload" multiple="" ng-if="!isPC" ng-click="setCurrentImageModel('image_before_check')">
+                        <input type="file" accept="image/*" name="upload" multiple="" ng-if="!isPC"
+                               ng-click="setCurrentImageModel('image_before_check')" style="width: 25px;overflow: hidden;padding-left: 25px;">
                     </div>
                 </div>
             </div>
@@ -68,7 +69,8 @@
                 <div class="icon icon-20 icon-camera" style="position: absolute;" ng-if="canEdit">
                     <div class="image-uploader">
                         <input type="file" accept="image/*" name="upload" multiple="" onchange="angular.element(this).scope().chooseImage('image_in_check', this)" ng-if="isPC">
-                        <input type="file" accept="image/*" name="upload" multiple="" ng-if="!isPC" ng-click="setCurrentImageModel('image_in_check')">
+                        <input type="file" accept="image/*" name="upload" multiple="" ng-if="!isPC"
+                               ng-click="setCurrentImageModel('image_in_check')" style="width: 25px;overflow: hidden;padding-left: 25px;">
                     </div>
                 </div>
             </div>
@@ -87,7 +89,8 @@
                 <div class="icon icon-20 icon-camera" style="position: absolute;" ng-if="canEdit">
                     <div class="image-uploader">
                         <input type="file" accept="image/*" name="upload" multiple="" onchange="angular.element(this).scope().chooseImage('image_after_check', this)" ng-if="isPC">
-                        <input type="file" accept="image/*" name="upload" multiple="" ng-if="!isPC" ng-click="setCurrentImageModel('image_after_check')">
+                        <input type="file" accept="image/*" name="upload" multiple="" ng-if="!isPC"
+                               ng-click="setCurrentImageModel('image_after_check')" style="width: 25px;overflow: hidden;padding-left: 25px;">
                     </div>
                 </div>
             </div>

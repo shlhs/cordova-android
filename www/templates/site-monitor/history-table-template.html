@@ -1,0 +1,23 @@
+<table id="siteHistoryTable" class="stripe row-border order-column dataTable no-footer">
+    <thead ng-if="hasGroup">
+        <tr>
+            <th ng-repeat="item in tableHeader[0]" ng-bind-html="item.name|to_trusted" ng-if="hasGroup"
+                rowspan="{{item.rowSpan || 1}}" colspan="{{item.colSpan || 1}}" ng-class="{'no-borderb': !(item.rowSpan>1)}"></th>
+        </tr>
+        <tr>
+            <th ng-repeat="item in tableHeader[1]" site-history-repeat-finish ng-bind-html="item.name|to_trusted" ng-if="hasGroup"></th>
+        </tr>
+    </thead>
+    <thead ng-if="!hasGroup">
+        <tr>
+            <th ng-repeat="item in tableHeader[0]" site-history-repeat-finish ng-bind-html="item.name|to_trusted" ng-if="!hasGroup"></th>
+        </tr>
+    </thead>
+    <tbody>
+    <tr ng-repeat="item in tableBodyData">
+        <td ng-repeat="col in item" rowspan="{{col.rowSpan || 1}}" colspan="{{col.colSpan || 1}}" ng-style="{backgroundColor: col.backgroundColor}">
+            {{col.value}}
+        </td>
+    </tr>
+    </tbody>
+</table>

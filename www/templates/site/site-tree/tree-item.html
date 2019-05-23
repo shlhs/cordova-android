@@ -1,0 +1,18 @@
+<a href="javascript:;" class="mui-navigate-right" ng-click="warpCallback(item, $event);"
+   ng-class="{'is_leaf': !item.is_group, 'selected': item.sn === selectedSn}" href="#" >
+    <i class="node-group" ng-if="item.is_group"></i>
+    <i class="site-status {{item.status}}" ng-if="!item.is_group"></i>
+    {{item.name}}
+
+    <span class="mui-badge mui-badge-warning" ng-if="item.unclosed_envet_amount">
+        {{item.unclosed_envet_amount}}
+    </span>
+</a>
+<ul class="tree-group" ng-if="item.is_group && item.children.length && !item.unvisible">
+    <li class="tree-cell" ng-repeat="item in item.children"
+        ng-class="{'active': item.$$isExpend, 'collapse': !isLeaf(item), 'is-leaf': isLeaf(item)}"
+        ng-include="'/templates/site/site-tree/tree-item.html'"
+        ng-if="!item.unvisible"
+    >
+    </li>
+</ul>

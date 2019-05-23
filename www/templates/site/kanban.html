@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="../../css/setting.css">
     <!--<script type="text/javascript" src="../../cordova.js"></script>-->
     <!--<script type="text/javascript" src="../../cordova_plugins.js"></script>-->
-    <script type="text/javascript" src="../../components/libs/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="../../components/libs/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
     <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
     <!--<script type="text/javascript" src="components/ui-router-extras/release/ct-ui-router-extras.js"></script>-->
@@ -25,6 +25,7 @@
     <script type="text/javascript" src="../../js/app/app.js"></script>
     <script type="text/javascript" src="../../js/controller/sites.js"></script>
     <script type="text/javascript" src="../../js/service/common-service.js"></script>
+    <script type="text/javascript" src="../../js/service/appstore.js"></script>
     <script src="../../js/controller/kanban.js"></script>
     <!--<script src="../../components/libs/echarts-all.js"></script>-->
 
@@ -132,11 +133,17 @@
         .mui-table-view:after{
             display: none;
         }
+        ul.slidesjs-pagination {
+            height: 14px;
+        }
+        .chart {
+            height: 216px;
+        }
     </style>
 </head>
 <body class="box-vertical-center" ng-app="myApp">
     <header class="mui-bar bg-header mui-segmented-control-vertical">
-        <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
+        <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
         <h1 class="mui-title">看板</h1>
         <!--<a onclick="showTopMenu()" class="mui-action-menu mui-icon mui-pull-right" ><i class="header-icon white icon-add"></i></a>-->
     </header>

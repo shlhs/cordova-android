@@ -45,5 +45,14 @@ $.notify = {
     progressStop: function(){
         this._notifyObj && this._notifyObj.remove();
         self._notifyObj = null;
+    },
+    toast: function(message, interval) {
+        var div = $('<div class="toast"><div class="msg">' + message + '</div></div>').appendTo($('body'));
+        if (interval === undefined) {
+            interval = 2000;
+        }
+        setTimeout(function () {
+            div.remove();
+        }, interval);
     }
 };

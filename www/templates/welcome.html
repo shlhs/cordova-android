@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="../css/setting.css">
     <!--<script type="text/javascript" src="../cordova.js"></script>-->
     <!--<script type="text/javascript" src="../cordova_plugins.js"></script>-->
-    <script type="text/javascript" src="../components/libs/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="../components/libs/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="../components/angular/angular.min.js"></script>
     <script type="text/javascript" src="../components/angular-ui-router/release/angular-ui-router.min.js"></script>
     <!--<script type="text/javascript" src="../components/ui-router-extras/release/ct-ui-router-extras.js"></script>-->
@@ -29,10 +29,10 @@
             background-color: #fff;
             position: relative;
         }
-       .background{
-           height: 100%;
-           overflow: hidden;
-       }
+        .background{
+            height: 100%;
+            overflow: hidden;
+        }
         .main-icon {
             margin-top: 31%;
             width: 57%;
@@ -47,7 +47,8 @@
         }
         .sub-title {
             width: 72px;
-            height: 19px;
+            /*height: 19px;*/
+            padding-top: 2px;
             line-height: 19px;
             border-radius: 9px;
             border: rgba(77,129,239,0.5) 1px solid;
@@ -77,33 +78,35 @@
             left: 0;
             width: 100%;
         }
-   </style>
+    </style>
 
 <body class="box-vertical-center" ng-app="myApp" ng-controller="LoginCtrl">
-    <!--<div class="background">-->
-        <!--<img src="../img/bj.jpg">-->
-    <!--</div>-->
-    <img class="main-icon" src="../img/login/login-icon.png">
-    <div class="middle">
-        <div class="sub-title">实时监控</div>
-        <!--<div class="title">明阳智能配用电平台</div>-->
-    </div>
-    <div class="bottom">便捷监控 高效运维</div>
-    <img class="bottom-img" src="../img/login/login-bottom-@2x.png">
-    <div ng-controller="AutoLoginCtrl"></div>
+<div class="background" style="overflow: hidden;">
+    <img src="../img/welcome.png" id="welcome_img" style="height: 100%;">
+</div>
+<div ng-controller="AutoLoginCtrl"></div>
 
-    <script src="../components/fastclick-master/lib/fastclick.js"></script>
-    <script src="../js/my/notify.js"></script>
-    <script src="../components/dropload-gh-pages/dist/dropload.min.js"></script>
-    <script src="../components/handlebars-v4.0.10.js"></script>
-    <script type="text/javascript" src="../js/controller/login.js"></script>
-    <script>
-        $(function () {
-            var height = parseInt($('.background').css('height'));
-            var width = height / 800 * 1200;
-            $('img').css('margin-left', 'calc(50% - ' + width/2 + 'px');
-
-        });
-    </script>
+<script src="../components/fastclick-master/lib/fastclick.js"></script>
+<script src="../js/my/notify.js"></script>
+<script src="../components/dropload-gh-pages/dist/dropload.min.js"></script>
+<script src="../components/handlebars-v4.0.10.js"></script>
+<script type="text/javascript" src="../js/controller/login.js"></script>
+<script>
+    $(function () {
+        var screenHeight = window.screen.height;
+        var screenWidth = window.screen.width;
+        var $img = $("#welcome_img");
+        var imageHeight = parseInt($img.css('height'));
+        var imageWidth = parseInt($img.css('width'));
+        if (imageWidth/imageHeight > screenWidth/screenHeight) {
+            // 如果图片比例更宽，那么以高度为准
+            var width = -(imageWidth * (screenHeight / imageHeight) - screenWidth) / 2;
+            $img.css({height: screenHeight+'px', 'margin-left': width + 'px'});
+        } else {
+            var height = -(imageHeight * (screenWidth / imageWidth) - screenHeight ) / 2;
+            $img.css({width: screenWidth+'px', 'margin-top': height + 'px'});
+        }
+    });
+</script>
 </body>
 </html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>设备控制中心</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <link rel="stylesheet" href="../../../components/mui/css/mui.min.css">
+    <link rel="stylesheet" href="../../../css/iconfont/iconfont.css">
+    <link rel="stylesheet" href="../../../css/my.css">
+    <link rel="stylesheet" href="../../../css/icon.css">
+    <link rel="stylesheet" href="../../../css/animate.css">
+    <link rel="stylesheet" href="../../../components/mui/css/icons-extra.css">
+    <link rel="stylesheet" href="../../../css/setting.css">
+    <script type="text/javascript" src="../../../components/libs/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="../../../components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="../../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script type="text/javascript" src="../../../components/angular-animate/angular-animate.js"></script>
+    <script type="text/javascript" src="../../../components/angular-ui-router/release/stateEvents.min.js"></script>
+    <script type="text/javascript" src="../../../js/app/utils.js"></script>
+    <script type="text/javascript" src="../../../js/app/app.js"></script>
+    <script type="text/javascript" src="../../../js/service/appstore.js"></script>
+    <script type="text/javascript" src="../../../js/service/common-service.js"></script>
+</head>
+<body class="box-vertical-center" ng-app="myApp" ng-controller="DeviceRemoteControlCtrl">
+<header class="mui-bar bg-header">
+    <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
+    <h1 class="mui-title">设备控制中心</h1>
+</header>
+<div class="mui-content" ng-cloak>
+    <div class="mui-card-content" ng-if="!isLoading && varList.length">
+        <ul class="mui-table-view write-var-list no-border">
+            <li class="mui-table-view-cell mui-media" ng-repeat="v in varList">
+                <div class="mui-media-body mui-ellipsis" ng-if="v.type==='Analog'">
+                    {{v.name}}
+                    <p class="value">{{v.value}}</p>
+                    <a class="iconfont anticon-edit edit" ng-click="onEditAnalog(v)"></a>
+                </div>
+                <div class="mui-media-body mui-ellipsis" ng-if="v.type==='Digital'">
+                    {{v.name}}
+                    <div class="mui-switch no-color" style="transition-duration: 0.2s;" data-beforeContent="{{v.value==='1' ? v.zero_meaning : v.one_meaning}}"
+                         ng-click="onToggleSwitcher(v)" ng-class="{'status-on': v.value==='1', 'status-off': v.value==='0', 'mui-active': v.value==='1'}">
+                        <div class="mui-switch-handle" style="transition-duration: 0.2s;"></div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="page-alert-wrapper" ng-if="varList.length==0 && !isLoading">
+        <div class="page-alert">
+            <i class="alert-icon nodata"></i>
+            <div class="alert-text info">设备没有可写变量</div>
+        </div>
+    </div>
+    <div class="page-alert-wrapper" ng-if="isLoading">
+        <div class="page-alert">
+            <img src="/img/page-loading.gif" class="loading-img">
+            <div class="alert-text info">正在加载...</div>
+        </div>
+    </div>
+</div>
+
+<div class="page page-left" ui-view></div>
+<script src="../../../components/fastclick-master/lib/fastclick.js"></script>
+<script src="../../../js/my/notify.js"></script>
+<script type="text/javascript" src="../../../js/controller/device.js"></script>
+</body>
+</html>

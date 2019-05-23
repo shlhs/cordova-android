@@ -4,9 +4,8 @@
  * Created by liucaiyun on 2017/7/23.
  */
 
-var gPublicApiHost = 'http://47.104.75.86:8090';
-// var gPublicApiHost = 'http://114.215.90.83:8090';
-
+var gPublicApiHost = 'http://47.104.75.86:8090';        // 公有云接口
+// var gPublicApiHost = 'http://47.105.143.250:8090';        // 因泰来接口
 
 app.controller('LoginCtrl', function ($scope, $timeout, platformService, userService, $state, $http, ajax) {
     $scope.error = '';
@@ -46,7 +45,6 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
         $timeout(function () {
             div.remove();
         }, 2000);
-
     }
 
     function login() {
@@ -56,6 +54,8 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
             username: $scope.username,
             password: $scope.password
         };
+        // loginUrl = 'http://118.190.51.135:8096/v1';
+        loginUrl = platformService.getAuthHost();
         $scope.isLogin = true;
         $.ajax({
             url: loginUrl + '/auth',
@@ -74,7 +74,6 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
             },
             crossDomain: true,
             success: function (data) {
-
                 var result = KJUR.jws.JWS.verify(data.token, 'zjlhstest');
                 if (result) {
                     userService.setAccountToken(data.token);
@@ -100,9 +99,15 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
     function getUserInfo() {
         ajax.get({
             url: '/user/' + $scope.username,
+            ignoreAuthExpire: true,
             success: function (data) {
                 userService.saveLoginUser(data, $scope.password);
-                getCompany();
+                // getCompany();
+                if (window.android){
+                    window.android.loginSuccess();
+                }else{
+                    location.href = '/templates/home.html?finishPage=1';
+                }
             },
             error: function () {
                 $scope.enable = true;
@@ -116,6 +121,7 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
     function getCompany() {
         ajax.get({
             url: platform.url + '/user/' + $scope.username + '/opscompany',
+            ignoreAuthExpire: true,
             xhrFields: {
                 withCredentials: true
             },
@@ -181,9 +187,8 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
                 $scope.$apply();
             }
         });
-    };
+    }
     // 平台查询end
-
 });
 
 app.controller('AutoLoginCtrl', function ($scope, $timeout, userService, platformService) {
@@ -203,6 +208,9 @@ app.controller('AutoLoginCtrl', function ($scope, $timeout, userService, platfor
             }, 1500);
         }
     };
-
+    // if (window.android && window.android.checkWebVersion) {
+    //     // 启动时先检测web版本并升级
+    //     window.android.checkWebVersion();
+    // }
     $scope.autoLogin();
 });

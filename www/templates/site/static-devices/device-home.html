@@ -15,23 +15,29 @@
     <link rel="stylesheet" href="/css/setting.css">
     <!--<script type="text/javascript" src="/cordova.js"></script>-->
     <!--<script type="text/javascript" src="/cordova_plugins.js"></script>-->
-    <script type="text/javascript" src="/components/libs/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="/components/libs/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="/components/angular/angular.min.js"></script>
     <script type="text/javascript" src="/components/angular-ui-router/release/angular-ui-router.min.js"></script>
     <script type="text/javascript" src="/components/angular-animate/angular-animate.js"></script>
     <script type="text/javascript" src="/components/angular-ui-router/release/stateEvents.min.js"></script>
     <script type="text/javascript" src="/js/app/utils.js"></script>
     <script type="text/javascript" src="/js/app/app.js"></script>
-    <script type="text/javascript" src="/js/service/router-service.js"></script>
     <script type="text/javascript" src="/js/service/common-service.js"></script>
 <body class="box-vertical-center" ng-app="myApp" ng-controller="StaticDevicesHomeCtrl">
     <header class="mui-bar bg-header">
-        <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
+        <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
         <h1 class="mui-title">设备档案</h1>
+        <a ng-click="startCaptureQR()" class="mui-action-menu mui-icon mui-pull-right"><i class="header-icon white icon-scan"></i></a>
     </header>
-    <div class="mui-content" ng-cloak>
+    <div class="mui-content" ng-cloak style="padding-left: 8px;background-color: #fff;">
         <div ng-if="!isLoading && !loadingFailed">
-            <device-tree-view device-list="deviceDatas" goto-device="gotoDevice"></device-tree-view>
+            <device-tree-view device-list="deviceDatas" click-callback="gotoDevice"></device-tree-view>
+            <div class="page-alert-wrapper" ng-if="deviceDatas.length <= 1">
+                <div class="page-alert">
+                    <i class="alert-icon nodata"></i>
+                    <div class="alert-text info">设备档案为空</div>
+                </div>
+            </div>
         </div>
         <div class="page-alert-wrapper" ng-if="isLoading">
             <div class="page-alert">
@@ -46,11 +52,10 @@
                 <div class="alert-reload" ng-click="getDataList()">重新加载</div>
             </div>
         </div>
-
     </div>
 <script src="/components/fastclick-master/lib/fastclick.js"></script>
 <script src="/js/my/notify.js"></script>
-<script src="/components/dropload-gh-pages/dist/dropload.min.js"></script>
+<!--<script src="/components/dropload-gh-pages/dist/dropload.min.js"></script>-->
 <script src="/js/controller/static-devices.js"></script>
 </body>
 </html>

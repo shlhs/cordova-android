@@ -13,19 +13,18 @@
     <link rel="stylesheet" href="../../css/animate.css">
     <link rel="stylesheet" href="../../components/mui/css/icons-extra.css">
     <link rel="stylesheet" href="../../css/setting.css">
-    <script type="text/javascript" src="../../components/libs/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="../../components/libs/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
     <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
     <script type="text/javascript" src="../../components/angular-animate/angular-animate.js"></script>
     <script type="text/javascript" src="../../components/angular-ui-router/release/stateEvents.min.js"></script>
     <script type="text/javascript" src="../../js/app/utils.js"></script>
     <script type="text/javascript" src="../../js/app/app.js"></script>
-    <script type="text/javascript" src="../../js/service/router-service.js"></script>
     <script type="text/javascript" src="../../js/controller/site/security_evaluate.js"></script>
 <body class="box-vertical-center" ng-app="myApp" ng-controller="SecurityHistoryCtrl">
 
     <header class="mui-bar bg-header" style="z-index:1;box-shadow: 0 0 1px rgba(239, 237, 237, 0.85);">
-        <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
+        <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
         <h1 class="mui-title">设备安全技术评测记录</h1>
         <a class="mui-action-menu mui-icon mui-pull-right" style="font-size: 16px;line-height: 28px;color: #fff;" ng-click="createOneRecord()">新增</a>
     </header>

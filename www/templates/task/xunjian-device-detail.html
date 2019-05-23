@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>任务详情</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <!--标准mui.css-->
+    <link rel="stylesheet" href="../../components/mui/css/mui.min.css">
+    <link rel="stylesheet" href="../../components/mui/css/mui.picker.min.css">
+    <link rel="stylesheet" href="../../components/libs/font-awesome-4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../../css/my.css" />
+    <link rel="stylesheet" href="../../css/icon.css" />
+    <link rel="stylesheet" href="../../css/task.css" />
+    <link rel="stylesheet" href="../../css/animate.css">
+    <link rel="stylesheet" href="../../css/iconfont/iconfont.css">
+
+    <!--<link rel="stylesheet" href="./components/slides-playing/css/example.css">-->
+    <!--<script type="text/javascript" src="../../cordova.js"></script>-->
+    <!--<script type="text/javascript" src="../../cordova_plugins.js"></script>-->
+    <script type="text/javascript" src="../../components/libs/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="../../components/angular-animate/angular-animate.js"></script>
+    <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script type="text/javascript" src="../../components/angular-ui-router/release/stateEvents.min.js"></script>
+    <script type="text/javascript" src="../../js/app/utils.js"></script>
+    <script type="text/javascript" src="../../js/app/app.js"></script>
+    <script type="text/javascript" src="../../js/controller/task.js"></script>
+    <script type="text/javascript" src="../../js/service/appstore.js"></script>
+    <style>
+        html,
+        body {
+            height: 100%;
+            overflow: hidden;
+        }
+        .mui-bar {
+            -webkit-box-shadow: none;
+            box-shadow: none;
+        }
+        .mui-table-view.mui-grid-view .mui-table-view-cell .mui-media-body{
+            height: 18px;
+        }
+        strong{
+            height: 18px;
+            display: inline-block;
+        }
+        .mui-bar-tab{
+            box-shadow: none;
+            background-color: transparent;
+        }
+        .mui-bar-tab>a{
+            padding: 8px 2px 4px 2px;
+        }
+        .mui-bar-tab>a:first-child {
+            padding-left: 4px;
+        }
+        .mui-bar-tab>a:last-child {
+            padding-right: 4px;
+        }
+        .mui-bar-tab>a>button{
+            margin-bottom: 6px !important;
+        }
+        .device-list{
+            margin-left: 60px;
+        }
+        .device-list .device{
+            display: block;
+        }
+        .info-group>li{
+            line-height: 24px;
+        }
+        .info-group .title {
+            width: auto;
+        }
+        .info-group .value {
+            margin-left: 0;
+        }
+    </style>
+</head>
+
+<body class="mui-android mui-android-5 mui-android-5-1 mui-android-5-1-1 mui-segmented-control-vertical" ng-app="myApp" ng-controller="TaskBaseCtrl" ng-cloak>
+<div ng-controller="DeviceXunjianTaskDetailCtrl" ng-cloak id="taskDetail">
+    <header class="mui-bar bg-header" style="height: 70px;">
+        <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
+        <h1 class="mui-title" id="head_title">巡检结果</h1>
+    </header>
+    <div style="margin-top: 62px;">
+        <!-- 正在处理的任务单 -->
+        <div class="mui-content" style="top: 56px; background-color: transparent;">
+            <div class="xunjian-devices-area vertical">
+                <div style="padding: 20px;">
+                    <i class="icon icon-xunjianstatus-{{checkResult.status_name}}" style="margin-bottom: 4px;"></i>
+                    <div class="status-{{checkResult.status_name}}">设备{{checkResult.status}}</div>
+                </div>
+            </div>
+            <div class="mui-card card" style="box-shadow: none;margin-top: 6px;" ng-if="checkResult.desp || checkResult.images">
+                <div class="mui-card-content">
+                    <div class="mui-card-content-inner" style="padding: 2px 6px;">
+                        <div class="task-desp mui-ellipsis">
+                            <span class="task-type">检查记录</span>
+                        </div>
+                        <div style="padding: 8px;line-height: 22px;background-color: #f4f4f4;margin: 4px -8px;">{{checkResult.desp}}</div>
+                        <ul class="image-list" style="margin: 0 -28px;">
+                            <li class="image-item" ng-repeat="file in checkResult.images" ng-click="openGallery($index)">
+                                <div class="content">
+                                    <a class="img-file" style="background-image: url({{file}})"></a>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="mui-card card" style="box-shadow: none;margin-top: 6px;">
+                <div class="mui-card-content">
+                    <div class="mui-card-content-inner" style="padding: 2px 6px;">
+                        <div class="task-desp mui-ellipsis">
+                            <span class="task-type" ng-class="{'ergent': taskData.task_type_id===3}">{{taskData.task_type_name}}：</span> {{taskData.name}}
+                        </div>
+                        <ul class=" info-group" style="padding-bottom: 8px;">
+                            <li>
+                                <label class="title">{{taskName}}单号：</label><span class="value">{{taskData.id}}</span>
+                            </li>
+                            <li>
+                                <label class="title">创建时间：</label><span class="value">{{taskData.create_time}}</span>
+                            </li>
+                            <li>
+                                <label class="title">截止时间：</label><span class="value">{{taskData.expect_complete_time}}</span>
+                            </li>
+                            <li ng-if="taskData.desp">
+                                <label class="title">{{taskName}}描述：</label><span class="value">{{taskData.desp}}</span>
+                            </li>
+                            <li ng-if="taskData.desp">
+                                <label class="title">巡检人：</label><span class="value">{{taskData.operator_name || taskData.current_handler_name}}</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div ui-view class="page page-left"></div>
+        <div>
+            <div id="updater"></div>
+        </div>
+    </div>
+</div>
+<script src="../../components/fastclick-master/lib/fastclick.js"></script>
+<script src="../../js/my/notify.js"></script>
+<script src="../../components/slides-playing/js/jquery.slides.js"></script>
+</body>
+
+</html>
