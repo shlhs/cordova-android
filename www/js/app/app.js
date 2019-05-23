@@ -3,6 +3,7 @@
  * Created by liucaiyun on 2017/5/4.
  */
 var app = angular.module('myApp', ['ngAnimate', 'ui.router', 'ui.router.state.events']);
+const loginExpireCheckEnable = false;       // 是否检查鉴权过期
 
 app.run(function ($animate) {
     $animate.enabled(true);
@@ -26,6 +27,14 @@ app.filter(
 
 app.controller('MainCtrl', function ($scope, $rootScope, userService) {
 
+});
+
+app.controller('LoginExpireCtrl', function ($scope, userService) {
+    $scope.gotoLogin = function () {
+        // 先清空密码
+        userService.setPassword('');
+        window.location.href = '/templates/login.html';
+    };
 });
 
 var UserRole = {SuperUser: 'SUPERUSER', OpsAdmin: 'OPS_ADMIN', OpsOperator: 'OPS_OPERATOR', Normal: 'USER'};
@@ -225,12 +234,173 @@ app.service('platformService', function () {
     this.thumbHost = this.getImageThumbHost();
 });
 
-app.service('ajax', function ($rootScope, platformService, userService, $http) {
+// routerService
+app.service('routerService', function ($timeout, $compile) {
+    var pages = [], pageLength=0, currentIndex=0;
+    var nextPage = {};      // 保存下一个页面的数据
+    window.addEventListener('popstate', function () {
+        if (!pageLength){
+            return;
+        }
+        // 显示前一个页面
+        if (pageLength>1){
+            pages[pageLength - 2].ele.show();
+        }else{
+            pages[0].ele.prevAll().show();
+        }
+        var item = pages[currentIndex], element=item.ele;
+        element.addClass('ng-leave');
+        item.scope.$broadcast('$destroy');
+        pages.splice(pageLength-1, 1);
+        pageLength -= 1;
+        currentIndex = pageLength - 1;
+        element[0].addEventListener('webkitAnimationEnd', _animateEnd);
+        function _animateEnd() {
+            element.remove();
+        }
+    });
+
+    this.addHistory = function (scope, element) {
+        var pageData = this.getNextPage();
+        var config = pageData.config;
+        var data = {
+            ele: element,
+            scope: scope,
+            config: config
+        };
+        var toFinishPage = null, addNewHistory=true;
+        element.addClass('ng-enter');
+
+        function _animationEnd(event) {
+
+            if (config && config.finish){   // 打开这个页面时，需要关闭前一个页面
+                toFinishPage = pages[currentIndex].ele;
+                pages[currentIndex] = data;
+                addNewHistory = false;
+            }else{
+                pages.push(data);
+                pageLength += 1;
+                currentIndex = pageLength - 1;
+            }
+            element.removeClass('ng-enter');
+            if (config.hidePrev)        // 如果配置
+            {
+                element.prevAll().hide();
+            }
+
+            if (toFinishPage){
+                toFinishPage.remove();
+            }
+            if (addNewHistory){
+                history.pushState(null, null, null);
+            }
+            element[0].removeEventListener('webkitAnimationEnd', _animationEnd);
+        }
+        element[0].addEventListener('webkitAnimationEnd', _animationEnd);
+    };
+
+    this.openPage = function (scope, templateUrl, params, config) {
+        var html = "<route-page template=" + templateUrl;
+        this._setNextPage(params, config);
+        html += '></route-page>';
+        var compileFn = $compile(html);
+        var $dom = compileFn(scope);
+        // 添加到文档中
+        $dom.appendTo($('body'));
+    };
+
+    this._setNextPage = function (params, config) {
+        config = $.extend({}, {
+            hidePrev: true,      // 默认打开新页面时会隐藏前一页
+            addHistory: true    // 是否加到history中
+        }, config);
+        nextPage = {
+            params: params,
+            config: config
+        };
+    };
+
+    this.getNextPage = function () {
+        return nextPage;
+    };
+
+    this.hasNoHistory = function () {       // 当前是否已经是第一集页面
+        if (pageLength === 0) {
+            return true;
+        } else {
+            return false;
+        }
+    };
+});
+
+app.directive('routePage', ['$log', 'routerService', function($log, routerService){
+    return {
+        restrict: 'E', // E = Element, A = Attribute, C = Class, M = Comment
+        // templateUrl: '/templates/site/site-detail.html',
+        replace: true,
+        controller: function($scope, $element){
+            var pageData = routerService.getNextPage();
+            var params = pageData.params, config=pageData.config;
+            if (params){
+                for (var key in params){
+                    $scope[key] = params[key];
+                }
+            }
+            if (config.addHistory)
+            {
+                routerService.addHistory($scope, $element);
+            }
+        },
+        templateUrl: function (ele, attr) {
+            return attr.template;
+        },
+        scope: true     // scope隔离
+
+        // compile: function(element, attributes) {
+        //     return {
+        //         pre: function preLink(scope, element, attributes) {
+        //             scope.sn = attributes.sn;
+        //         },
+        //         post: function postLink(scope, element, attributes) {
+        //             element.prevAll().hide();
+        //         }
+        //     };
+        // }
+    };
+}]);
+
+app.directive('rootPage', ['$log', 'routerService', function($log, routerService){
+    return {
+        restrict: 'E', // E = Element, A = Attribute, C = Class, M = Comment
+        replace: true,
+        templateUrl: function (ele, attr) {
+            return attr.template;
+        },
+        scope: true,     // scope隔离
+        controller: function ($scope, $element) {
+            var search = window.location.search.substring(1), params = search.split('&');
+            var index, param;
+            for (var i=0; i<params.length; i++){
+                param = params[i];
+                index = param.indexOf('=');
+                var key = param.substring(0, index), value = param.substring(index+1);
+                if (key !== 'template') {
+                    $scope[key] = decodeURIComponent(value);
+                }
+            }
+        }
+    };
+}]);
+// routerService end
+
+app.service('ajax', function ($rootScope, platformService, userService, routerService) {
     var host = platformService.host;
     $rootScope.host = host;
     var username = userService.getUsername(), password = userService.getPassword();
 
     $rootScope.user = null;
+
+    var expireNotified = false;     // 是否已通知用户注册过期
 
     $rootScope.getCompany = function(callback) {
         $.ajax({
@@ -283,16 +453,46 @@ app.service('ajax', function ($rootScope, platformService, userService, $http) {
             mode: 'cors'
         }, option.headers);
         option = $.extend({}, {timeout: 30000}, option);
+        const errorFunc = option.error;
+        var startTime = new Date().getTime();
+        const timeout = option.timeout;
         $.extend(option, {
             xhrFields: {withCredentials: true},
             crossDomain: true,
-            headers: headers
+            headers: headers,
+            error: function (xhr, statusText, error) {
+                // 如果请求本身设置了ignoreAuthExpire，则不提示认证过期
+                if (loginExpireCheckEnable && new Date().getTime() - startTime < timeout && !option.ignoreAuthExpire) {
+                    var statusCode = xhr.status;
+                    if (errorFunc) {
+                        errorFunc(xhr, statusText, error);
+                    }
+                    if (statusCode !== 400 || statusCode !== 500 || statusCode !== 404) {
+                        notifyLoginExpire();
+                    }
+                } else if (errorFunc) {
+                    errorFunc(xhr, statusText, error);
+                }
+            }
         });
-		var newOption = $.extend({}, option
-        );
+		var newOption = $.extend({}, option);
         var r = $.ajax(newOption);
         return r;
     }
+
+    function notifyLoginExpire() {
+        if (!expireNotified) {      // 不重复通知
+            expireNotified = true;
+            routerService.openPage($rootScope, '/templates/login-expire-warning.html', {}, {hidePrev: false});
+        }
+    }
+
+    if (loginExpireCheckEnable) {
+        window.addEventListener('popstate', function () {
+            expireNotified = false;
+        });
+    }
+
    this.get = function (option) {
         option.type = 'get';
        return request(option);
@@ -310,6 +510,7 @@ app.service('ajax', function ($rootScope, platformService, userService, $http) {
        return request(option);
    }
 });
+
 
 Date.prototype.format = function(fmt) {
     var o = {
