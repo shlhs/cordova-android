@@ -7,6 +7,8 @@
 var gPublicApiHost = 'http://47.104.75.86:8090';        // 公有云接口
 // var gPublicApiHost = 'http://47.105.143.250:8090';        // 因泰来接口
 var defaultPlatCode = "";    // 如果有默认的平台编码，则不需要用户输入
+var uiMode = "energy";      // 界面模式，energy 或 cloud
+
 
 app.controller('LoginCtrl', function ($scope, $timeout, platformService, userService, $state, $http, ajax) {
     $scope.error = '';
@@ -23,6 +25,8 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
     $scope.togglePasswordVisible = function () {
         $scope.passwordVisible = !$scope.passwordVisible;
     };
+
+    platformService.setUiMode('energy');
 
     $scope.inputChange = function () {
         if ($scope.platformCode && $scope.username && $scope.password) {

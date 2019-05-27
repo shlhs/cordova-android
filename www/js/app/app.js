@@ -183,6 +183,14 @@ app.service('platformService', function () {
         return null;
     };
 
+    this.getUiMode = function () {
+        return getStorageItem('uiMode');
+    };
+
+    this.setUiMode = function (mode) {
+        setStorageItem('uiMode', mode);
+    };
+
     this.getHost = function () {
         // 格式为： http://ip:port/v1
         var platform = this.getLatestPlatform();

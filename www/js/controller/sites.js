@@ -314,6 +314,7 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
         $scope.searchSiteResult = $scope.sites;
         localStorage.setItem("currentSite", JSON.stringify(site));
         $scope.closePopover();
+        $scope.$broadcast('onSiteChange', site.sn, site.name);
         getMenuDataOfStation();
     };
 
@@ -326,6 +327,7 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
             for (var i=0; i<sites.length; i++) {
                 if (sites[i].sn === site.sn) {
                     $scope.currentSite = sites[i];
+                    $scope.$broadcast('onSiteChange', sites[i].sn, sites[i].name);
                     getMenuDataOfStation();
                     return;
                 }
@@ -335,15 +337,12 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
             if (!sites[i].is_group) {
                 $scope.currentSite = sites[i];
                 localStorage.setItem("currentSite", JSON.stringify($scope.currentSite));
+                $scope.$broadcast('onSiteChange', sites[i].sn, sites[i].name);
                 getMenuDataOfStation();
                 break;
             }
         }
     }
-
-    $scope.gotoSite = function (sn, name) {
-        location.href = '/templates/site/site-detail.html?sn=' + sn + '&name=' + name;
-    };
 
     $scope.openSiteSelectPage = function () {
         $scope.refreshAllSiteStatus();

@@ -8,8 +8,10 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta http-equiv="Access-Control-Allow-Origin" content="*">
     <link rel="stylesheet" href="../components/mui/css/icons-extra.css">
+    <link rel="stylesheet" href="../css/iconfont/iconfont.css">
     <link rel="stylesheet" href="../css/setting.css">
     <link rel="stylesheet" href="../css/animate.css">
+    <link rel="stylesheet" href="../css/energy.css">
     <script type="text/javascript" src="../components/libs/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="../components/angular/angular.min.js"></script>
     <script type="text/javascript" src="../components/angular-ui-router/release/angular-ui-router.min.js"></script>
@@ -56,7 +58,7 @@
         <div style="height: 100%;overflow-y: hidden;" ng-controller="TaskBaseCtrl">
 
             <div id='sites' class="no-padding mui-control-content content-wrapper"
-                 ng-class="{'mui-active': tabName === 'sites'}" ng-include="'/templates/site/site-home.html'" style="bottom:54px;">
+                 ng-class="{'mui-active': tabName === 'sites'}" ng-include="homeTemplate" style="bottom:54px;">
             </div>
             <div ng-repeat="menu in navMenus" id={{menu.id}} class="no-padding mui-control-content content-wrapper"
                  ng-class="{'mui-active': tabName === menu.id}" ng-include="menu.templateUrl" style="bottom:54px;">
@@ -92,11 +94,12 @@
     <script type="text/javascript" src="../js/controller/login.js"></script>
     <script type="text/javascript" src="../js/controller/task.js"></script>
     <script type="text/javascript" src="../js/controller/sites.js"></script>
+    <script src="../js/controller/user-energy.js"></script>
     <script type="text/javascript" src="../js/controller/device.js"></script>
     <script src="../js/controller/setting.js"></script>
     <script src="../js/controller/monitor.js"></script>
     <script src="../js/controller/kanban.js"></script>
-    <script src="../../components/moment.min.js"></script>
+    <script src="../components/moment.min.js"></script>
     <script id="grab-task-template" type="text/x-handlebars-template">
         <div class="mui-popup mui-popup-in android-dialog" style="display: block;">
             <div class="mui-popup-inner">
