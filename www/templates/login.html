@@ -131,7 +131,7 @@
     <img class="main-icon" src="../img/login/login-icon.png">
     <div class="login-area" ng-controller="LoginCtrl">
         <div class="login-form">
-            <div class="form-item" ng-if="platformCodeVisible">
+            <div class="form-item" ng-show="platformCodeVisible">
                 <label for="platform">平台</label>
                 <input type="text" id="platform" placeholder="请输入平台编号" ng-model="platformCode" ng-change="inputChange('platformCode')"></div>
             <div class="form-item">
