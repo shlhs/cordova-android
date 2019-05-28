@@ -1,3 +1,11 @@
+.energy-home {
+    background: url(../img/site-title-bg@2x.png) no-repeat top left;
+    background-size: cover;
+    overflow: hidden;
+}
+.energy-header {
+    background: none;
+}
 .site-header .mui-title {
     font-size: 18px;
     left: 70px;
@@ -17,4 +25,52 @@
     top: -10px;
     right: -20px;
     font-size: 10px;
+}
+.value-tab {
+    text-align: center;
+    color: #fff;
+    flex: 1px;
+}
+.value-tab .top {
+    font-size: 12px;
+    margin-bottom: 20px;
+    color: #C8DAFF;
+    display: block;
+}
+.value-tab .value {
+    font-size: 30px;
+    display: block;
+}
+.value-tab .value .unit {
+    font-size: 14px;
+    margin-left: 4px;
+}
+.value-tab .bottom {
+    margin-top: 2px;
+    font-size: 12px;
+    display: block;
+    font-weight: 200;
+}
+.value-mask {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+.h-values {
+    display: flex;
+}
+.h-values .item {
+    flex: 1;
+    text-align: center;
+    color: #fff;
+}
+.h-values .item .name {
+    font-size: 12px;
+    color: #C8DAFF;
+}
+.h-values .item .value {
+    font-size: 14px;
+    margin-left: 8px;
+}
+.h-values .item .unit {
+    font-size: 12px;
+    font-weight: 100;
 }
