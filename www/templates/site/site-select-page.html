@@ -1,5 +1,5 @@
 <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden;background-color: rgb(245,245,245);"
-     ng-controller="SiteTreeCtrl" class="page page-down">
+     ng-controller="SiteTreeCtrl" class="page page-right">
     <header class="mui-bar bg-header mui-segmented-control-vertical bg-transparent" style="padding-left: 14px;padding-left: 14px;box-shadow: none;">
         <a class="mui-icon mui-pull-left text-white" ng-click="cancel()" style="color: rgb(68,68,68);font-size: 16px;top:6px;">取消</a>
         <h1 class="mui-title" style="color: rgb(68,68,68);font-weight: bold;font-size: 18px;left: 60px;right:60px;">站点选择</h1>
@@ -13,7 +13,7 @@
         </div>
         <div class="site-tree" style="position: absolute; top: 50px;bottom:0;width:100%;overflow-y: auto;">
             <ul class="tree-group">
-                <li class="tree-cell" ng-repeat="item in sitesTree"
+                <li class="tree-cell" ng-repeat="item in showedTreeData"
                     ng-class="{'active': item.$$isExpend, 'collapse': !isLeaf(item), 'is-leaf': isLeaf(item)}"
                     ng-include="'/templates/site/site-tree/tree-item.html'"
                     ng-if="!item.unvisible"
