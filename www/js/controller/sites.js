@@ -146,7 +146,7 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
                     }
                     if (!s.is_group)
                     {
-                        s.search_key = s.name+s.sn.toLowerCase();
+                        s.search_key = s.name.toLowerCase() + ' ' + s.sn.toLowerCase();
                     }
                     sites.push(s);
                 });
@@ -364,6 +364,22 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
 });
 
 app.controller('SiteTreeCtrl', function ($scope) {
+    $scope.showedTreeData = JSON.parse(JSON.stringify($scope.treeData));
+
+    function setSearchKey(data) {
+        if (data.is_group) {
+            data.children.forEach(function (child) {
+                setSearchKey(child);
+            });
+        } else {
+            data.search_key = data.sn.toLowerCase() + ' ' + data.name.toLowerCase();
+        }
+    }
+
+    $scope.showedTreeData.forEach(function(item){
+        setSearchKey(item);
+    });
+
     $scope.itemExpended = function(item, $event){
         item.$$isExpend = ! item.$$isExpend;
         ($scope[itemClicked] || angular.noop)({
@@ -393,7 +409,7 @@ app.controller('SiteTreeCtrl', function ($scope) {
 
     $scope.searchInputChange = function (input) {
         var value = input.value.toLowerCase().trim();
-        $scope.treeData.forEach(function (child) {
+        $scope.showedTreeData.forEach(function (child) {
             search(child, value);
         });
         $scope.$apply();

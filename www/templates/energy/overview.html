@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用电概况</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <link rel="stylesheet" href="../../components/mui/css/mui.min.css">
+    <link rel="stylesheet" href="../../components/mui/css/mui.picker.min.css">
+    <link rel="stylesheet" href="../../css/iconfont/iconfont.css">
+    <link rel="stylesheet" href="../../css/my.css">
+    <link rel="stylesheet" href="../../css/energy.css">
+    <link rel="stylesheet" type="text/css" href="../../js/lib/datatables/jquery.dataTables.min.css">
+    <script type="text/javascript" src="../../components/libs/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script type="text/javascript" src="../../components/angular-animate/angular-animate.js"></script>
+    <script type="text/javascript" src="../../components/angular-ui-router/release/stateEvents.min.js"></script>
+    <script type="text/javascript" src="../../js/app/utils.js"></script>
+    <script type="text/javascript" src="../../js/app/app.js"></script>
+    <script type="text/javascript" src="../../js/controller/user-energy.js"></script>
+</head>
+<body ng-app="myApp" ng-cloak ng-controller="EnergyBaseCtrl" class="energy-page timeType-MONTH">
+<header class="mui-bar bg-header mui-segmented-control-vertical">
+    <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
+    <h1 class="mui-title">用电概况</h1>
+</header>
+<div class="mui-content" style="background-color: transparent;">
+    <div class="head-select-tabs">
+        <div class="item" ng-click="openDeviceSelector()">
+            <label class="title">监测点</label>
+            <label class="value">监测点001</label>
+        </div>
+        <div class="item" id="datePicker">
+            <label class="title">用电周期</label>
+            <label class="value">{{showDateName}}</label>
+        </div>
+    </div>
+    <div ng-controller="EnergyOverviewCtrl">
+        <div style="display: flex;width: 100%;padding-top: 12px;" class="sides-values">
+            <div class="value-tab">
+                <label class="top">当月用电量</label>
+                <label class="value">{{statisticsObj.monthDegree}}<span class="unit">kWh</span></label>
+            </div>
+            <div class="value-tab">
+                <label class="top">当月总电费</label>
+                <label class="value">30854.98<span class="unit">元</span></label>
+            </div>
+        </div>
+        <div style="padding-left: 16px; margin-top: 20px;">
+            <label class="energy-value-title">{{isCurrentMonth ? '平均电度电价' : '平均电价'}}</label>
+            <label class="energy-value">{{statisticsObj.avgPrice}}</label>
+            <label class="energy-value-title">元</label>
+            <label class="energy-value-separate"></label>
+            <label class="energy-value-separate"></label>
+            <label class="energy-value-title">电度电费</label>
+            <label class="energy-value">{{statisticsObj.monthCharge}}</label>
+            <label class="energy-value-title">元</label>
+        </div>
+        <div style="margin-top: 16px; background-color: #fff;">
+            <div class="light-value-tabs">
+                <div class="value-tab">
+                    <label class="top">功率因数</label>
+                    <label class="value">{{statisticsObj.cos}}</label>
+                </div>
+                <div class="value-tab">
+                    <label class="top">最大需量</label>
+                    <label class="value">{{statisticsObj.maxDemand}}</label>
+                </div>
+            </div>
+            <div class="light-value-tabs border-top">
+                <div class="value-tab">
+                    <label class="top">平均负荷率</label>
+                    <label class="value">{{statisticsObj.avgLoad}}</label>
+                </div>
+                <div class="value-tab">
+                    <label class="top">最高负荷率</label>
+                    <label class="value">{{statisticsObj.maxLoad}}</label>
+                </div>
+            </div>
+            <div>
+                <div class="chart-title">电度电费</div>
+                <div id="charge_chart" style="height: 150px;"></div>
+            </div>
+            <div>
+                <div class="chart-title">平均电度电价</div>
+                <div id="price_chart" style="height: 130px;"></div>
+            </div>
+            <div>
+                <div class="chart-title">日负荷率最高曲线</div>
+                <div id="load_chart" style="height: 130px;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="../../components/fastclick-master/lib/fastclick.js"></script>
+<script src="../../js/my/notify.js"></script>
+<script src="../../components/moment.min.js"></script>
+<script src="../../components/mui/js/mui.min.js"></script>
+<script src="../../components/mui/js/mui.picker.min.js"></script>
+<script src="../../components/echart/echarts.common.min.js"></script>
+</body>
+</html>

@@ -68,7 +68,7 @@
         }
     </style>
 </head>
-<body ng-app="myApp" ng-cloak ng-controller="EnergyOverviewCtrl" class="box-vertical-center timeType-{{timeType.id}}">
+<body ng-app="myApp" ng-cloak ng-controller="EnergyStatisticsCtrl" class="box-vertical-center timeType-{{timeType.id}}">
 <header class="mui-bar bg-header mui-segmented-control-vertical">
     <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
     <h1 class="mui-title">用能统计</h1>
@@ -86,7 +86,7 @@
         </li>
     </ul>
     <div ng-show="!isLoading && currentLabel">
-        <div ng-show="currentLabel.name === '支路'" ng-controller="EnergyOverviewZhiluCtrl">
+        <div ng-show="currentLabel.name === '支路'" ng-controller="EnergyStatisticsZhiluCtrl">
             <div ng-if="hasConfig">
                 <div class="energy-electric-card">
                     <div class="energy-electric-body">
@@ -161,7 +161,7 @@
                 </div>
             </div>
         </div>
-        <div ng-show="currentLabel.name !== '支路'" ng-controller="EnergyOverviewOtherCtrl">
+        <div ng-show="currentLabel.name !== '支路'" ng-controller="EnergyStatisticsOtherCtrl">
             <div ng-if="hasConfig">
                 <div class="card" style="padding: 0;">
                     <div class="card-header" style="padding-left: 12px;padding-bottom: 0;">
