@@ -4,9 +4,9 @@
  * Created by liucaiyun on 2017/7/23.
  */
 
-var gPublicApiHost = 'http://47.104.75.86:8090';        // 公有云接口
-// var gPublicApiHost = 'http://47.105.143.250:8090';        // 因泰来接口
-var defaultPlatCode = "";    // 如果有默认的平台编码，则不需要用户输入
+// var gPublicApiHost = 'http://47.104.75.86:8090';        // 公有云接口
+var gPublicApiHost = 'http://120.27.62.220:8090';        // 青岛源安
+var defaultPlatCode = "yuanan";    // 如果有默认的平台编码，则不需要用户输入
 
 app.controller('LoginCtrl', function ($scope, $timeout, platformService, userService, $state, $http, ajax) {
     $scope.error = '';
