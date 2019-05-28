@@ -3,7 +3,7 @@ function paintAvgPriceOfMonth(varSn, startDate, endDate, chartId) {       // 平
 }
 
 // 能源管理
-app.controller('EnergyHomeCtrl', function ($scope, ajax, platformService) {
+app.controller('EnergyHomeCtrl', function ($scope, ajax, platformService, routerService) {
 
     $scope.devices = [];
     $scope.stationSn = null;
@@ -12,12 +12,24 @@ app.controller('EnergyHomeCtrl', function ($scope, ajax, platformService) {
     $scope.selectedApps = defaultEnergyMenus;
     $scope.degreeVarSn = null;     // 设备的电度变量sn
     $scope.currentMonthData = {};
+    $scope.isLoading = true;
 
     $scope.$on('onSiteChange', function (event, stationSn, stationName) {
         $scope.stationSn = stationSn;
         $scope.stationName = stationName;
         getMonitorDevices(stationSn);
     });
+
+    $scope.onChangeDevice = function (device) {
+        $scope.currentDevice = device;
+        getVarsOfDevice(device.sn);
+    };
+
+    $scope.openDeviceSelector = function () {
+        // 打开设备选择页面
+        routerService.openPage($scope, '/templates/energy/device-select-page.html',
+            {treeData: $scope.devices ? $scope.devices[0].children : [], onSelect: $scope.onChangeDevice, selectedSn: $scope.currentDevice.sn});
+    };
 
     function findFirstDevice(data) {
         if (!data || !data.length) {
@@ -41,6 +53,7 @@ app.controller('EnergyHomeCtrl', function ($scope, ajax, platformService) {
         if (!stationSn) {
             return;
         }
+        $scope.isLoading = true;
         $scope.currentMonthData = {};
         ajax.get({
             url: '/stations/' + stationSn + '/devicetree',
@@ -50,7 +63,13 @@ app.controller('EnergyHomeCtrl', function ($scope, ajax, platformService) {
                 $scope.currentDevice = findFirstDevice($scope.devices);
                 if ($scope.currentDevice) {
                     getVarsOfDevice($scope.currentDevice.sn);
+                } else {
+                    $scope.isLoading = false;
                 }
+                $scope.$apply();
+            },
+            error: function () {
+                $scope.isLoading = false;
                 $scope.$apply();
             }
         })
@@ -73,6 +92,11 @@ app.controller('EnergyHomeCtrl', function ($scope, ajax, platformService) {
                 } else {
                     $scope.degreeVarSn = null;
                 }
+                $scope.isLoading = false;
+                $scope.$apply();
+            },
+            error: function () {
+                $scope.isLoading = false;
                 $scope.$apply();
             }
         })
