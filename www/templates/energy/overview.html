@@ -44,11 +44,11 @@
         <div style="display: flex;width: 100%;padding-top: 12px;" class="sides-values">
             <div class="value-tab">
                 <label class="top">当月用电量</label>
-                <label class="value">{{statisticsObj.monthDegree}}<span class="unit">kWh</span></label>
+                <label class="value">{{statisticsObj.allDegree}}<span class="unit">kWh</span></label>
             </div>
             <div class="value-tab">
                 <label class="top">当月总电费</label>
-                <label class="value">30854.98<span class="unit">元</span></label>
+                <label class="value">{{statisticsObj.allCharge}}<span class="unit">元</span></label>
             </div>
         </div>
         <div style="padding-left: 16px; margin-top: 20px;">
@@ -58,7 +58,7 @@
             <label class="energy-value-separate"></label>
             <label class="energy-value-separate"></label>
             <label class="energy-value-title">电度电费</label>
-            <label class="energy-value">{{statisticsObj.monthCharge}}</label>
+            <label class="energy-value">{{statisticsObj.degreeCharge}}</label>
             <label class="energy-value-title">元</label>
         </div>
         <div style="margin-top: 16px; background-color: #fff;">

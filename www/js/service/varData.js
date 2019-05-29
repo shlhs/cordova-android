@@ -2,6 +2,9 @@ app.service('varDataService', function (ajax, platformService) {
 
     // 获取变量历史趋势
     this.getHistoryTrend = function (sns, startTime, endTime, queryPeriod, calcMethod, callback) {
+        /**
+         * startTime, endTime: 'YYYY-MM-01 00:00:00.000'格式时间
+         */
         // calcMethod: DIFF, MAX, MIN, AVG
         // period: HOUR, DAY, MONTH, QUARTER, HALF_HOUR,NORMAL
         ajax.get({
@@ -22,6 +25,40 @@ app.service('varDataService', function (ajax, platformService) {
                 callback(data);
             }
         })
+    };
+
+    // 获取变量的统计数据
+    this.getVarSummarizedData = function (sns, startTime, endTime, calcMethod, callback) {
+        /**
+         * startTime/endTime: 'YYYY-MM-DD HH:mm:ss.000'格式时间
+         * calcMethod: 列表，取值范围为：MIN,MAX,AVG
+         * callback:  ([
+         *     {
+         *          sn: '',
+         *          max_value_data: '',
+         *          max_value_time: '',
+         *          min_value_data: '',
+         *          min_value_time: '',
+         *          avg_value_data: '',
+         *          avg_value_time: ''
+         *     }
+         * ])
+         */
+        ajax.get({
+            url: platformService.getDeviceMgmtHost() + '/variables/data/summarized',
+            data: {
+                sns: sns.join(','),
+                startTime: startTime,
+                endTime: endTime,
+                calcmethod: calcMethod.length ? calcMethod.join(',') : 'MIN,MAX,AVG'
+            },
+            success: function (data) {
+                callback(data);
+            },
+            error: function () {
+                callback([]);
+            }
+        });
     };
 
     // 按变量属性查询设备的变量
@@ -106,7 +143,7 @@ app.service('varDataService', function (ajax, platformService) {
             url: '/stations/' + stationSn + '/charge_config',
             data: {
                 chargeType: 'electricity',
-                queryTime: time.format('yyyy-MM-ddTHH:mm:ss.SSS') + 'Z'
+                queryTime: time.format('YYYY-MM-DDTHH:mm:ss.SSS') + 'Z'
             },
             success: function (data) {
                 callback({

@@ -48,7 +48,7 @@
             </div>
             <div class="value-tab">
                 <label class="top">基本电费</label>
-                <label class="value">{{capacityCharge}}<span class="unit">元</span></label>
+                <label class="value">{{charges.capacityCharge === null ? '-' : charges.capacityCharge}}<span class="unit">元</span></label>
             </div>
         </div>
         <div style="margin-top: 16px; background-color: #fff;min-height: {{contentHeight - 148}}px;">
@@ -64,12 +64,12 @@
             </div>
             <div>
                 <div class="chart-title">按时段统计平均负荷率</div>
-                <div style="height: 130px;" id="chart1">
+                <div style="height: 150px;" id="chart1">
                 </div>
             </div>
             <div>
                 <div class="chart-title">日最大负荷率</div>
-                <div style="height: 130px;" id="chart2">
+                <div style="height: 150px;" id="chart2">
                 </div>
             </div>
         </div>
