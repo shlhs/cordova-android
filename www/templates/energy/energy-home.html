@@ -1,6 +1,6 @@
 <!-- 能源管理模式首页 -->
 <div ng-controller="SiteListCtrl" style="height: 100%;" class="energy-home">
-    <div style="height: 100%;" ng-style="{'background-color': stationSn ? '' : '#fff'}" ng-controller="EnergyHomeCtrl">
+    <div style="height: 100%;" ng-style="{'background-color': stationSn ? '' : '#fff'}" ng-controller="EnergyBaseCtrl">
         <div class="site-header energy-header" style="background-size: cover;">
             <header class="mui-bar bg-header bg-transparent" style="box-shadow: none;position: static;">
                 <a class=" mui-pull-left site-popover" ng-click="openSiteSelectPage()" ng-show="sites.length > 1" ng-if="!isSiteDetail">站点切换</a>
@@ -16,82 +16,66 @@
                 </a>
             </header>
         </div>
-        <div style="display: flex;height: 130px;width: 100%;padding-top: 12px;">
-            <div class="value-tab">
-                <label class="top">本月平均电度电价</label>
-                <label class="value">{{currentMonthData.avgPrice}}<span class="unit">元</span></label>
-                <label class="bottom">同比上月
-                    <span ng-if="currentMonthData.priceChangeRatio === undefined">-</span>
-                    <span ng-if="currentMonthData.priceChangeRatio > 0" class="energy-rate up">{{currentMonthData.priceChangeRatio}}%</span>
-                    <span ng-if="currentMonthData.priceChangeRatio <= 0" class="energy-rate down">{{currentMonthData.priceChangeRatio}}%</span>
-                </label>
+        <div ng-controller="EnergyHomeCtrl">
+            <div style="display: flex;height: 130px;width: 100%;padding-top: 12px;">
+                <div class="value-tab">
+                    <label class="top">本月平均电度电价</label>
+                    <label class="value">{{currentMonthData.avgPrice}}<span class="unit">元</span></label>
+                    <label class="bottom">同比上月
+                        <span ng-if="currentMonthData.priceChangeRatio === undefined">-</span>
+                        <span ng-if="currentMonthData.priceChangeRatio > 0" class="energy-rate up">{{currentMonthData.priceChangeRatio}}%</span>
+                        <span ng-if="currentMonthData.priceChangeRatio <= 0" class="energy-rate down">{{currentMonthData.priceChangeRatio}}%</span>
+                    </label>
+                </div>
+                <div class="value-tab">
+                    <label class="top">今日用电量</label>
+                    <label class="value">{{currentMonthData.todayDegree}}<span class="unit">kWh</span></label>
+                    <label class="bottom">今日电费 {{currentMonthData.todayCharge}}元</label>
+                </div>
             </div>
-            <div class="value-tab">
-                <label class="top">今日用电量</label>
-                <label class="value">{{currentMonthData.todayDegree}}<span class="unit">kWh</span></label>
-                <label class="bottom">今日电费 {{currentMonthData.todayCharge}}元</label>
+            <div class="h-values value-mask" style="padding: 10px 0;">
+                <div class="item"><span class="name">当月用电量</span> <span class="value">{{currentMonthData.monthDegree}}</span> <span class="unit">kWh</span></div>
+                <div class="item"> <span class="name">当月电费</span> <span class="value">{{currentMonthData.monthCharge}}</span> <span class="unit">元</span></div>
             </div>
-        </div>
-        <div class="h-values value-mask" style="padding: 10px 0;">
-            <div class="item"><span class="name">当月用电量</span> <span class="value">{{currentMonthData.monthDegree}}</span> <span class="unit">kWh</span></div>
-            <div class="item"> <span class="name">当月电费</span> <span class="value">{{currentMonthData.monthCharge}}</span> <span class="unit">元</span></div>
-        </div>
-        <div style="background-color: #fff;height: calc(100% - 230px)" ng-show="degreeVarSn">
-            <div style="height: calc(100% - 170px);max-height: 230px;">
-                <div style="text-align: center;padding-top: 8px;">平均电度电价/元</div>
-                <div id="main_chart" style="width: 100%;height: calc(100% - 30px)"></div>
+            <div style="background-color: #fff;height:{{contentHeight - 220}}px;" ng-show="degreeVarSn">
+                <div style="height: calc(100% - 170px);max-height: 230px;">
+                    <div style="text-align: center;padding-top: 8px;">平均电度电价/元</div>
+                    <div id="main_chart" style="width: 100%;height: {{contentHeight-420}}px"></div>
+                </div>
+                <!-- app入口 -->
+                <div class="card round-card apps" style="padding: 0;margin-top: 0;" ng-if="stationSn">
+                    <ul class="mui-table-view mui-grid-view mui-grid-9 no-border entrance-list" style="background-color: transparent;border-radius: 0;">
+                        <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border" ng-repeat="app in selectedApps">
+                            <a href="{{app.templateUrl}}?sn={{stationSn}}&name={{stationName}}&device_sn={{currentDevice.sn}}&device_name={{currentDevice.name}}&vc={{currentDevice.vc || ''}}" style="padding: 6px 0 0 0;">
+                                <span class="mui-icon icon icon-40 {{app.icon}}"></span>
+                                <div class="mui-media-body">{{app.name}}</div>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </div>
-            <!-- app入口 -->
-            <div class="card round-card apps" style="padding: 0;margin-top: 0;" ng-if="stationSn">
-                <ul class="mui-table-view mui-grid-view mui-grid-9 no-border entrance-list" style="background-color: transparent;border-radius: 0;">
-                    <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border" ng-repeat="app in selectedApps">
-                        <a href="{{app.templateUrl}}?sn={{stationSn}}&name={{stationName}}&device_sn={{currentDevice.sn}}&device_name={{currentDevice.name}}" style="padding: 6px 0 0 0;">
-                            <span class="mui-icon icon icon-40 {{app.icon}}"></span>
-                            <div class="mui-media-body">{{app.name}}</div>
-                        </a>
-                    </li>
-                </ul>
+            <div style="background-color: #fff;height: calc(100% - 230px)" ng-show="!isLoading && currentDevice && !degreeVarSn">
+                <div class="no-station" style="text-align: center;">
+                    <i class="alert-icon"></i>
+                    <label class="alert-info">监测点未配置电度变量，无法读取数据</label>
+                </div>
             </div>
-        </div>
-        <div style="background-color: #fff;height: calc(100% - 230px)" ng-show="!isLoading && currentDevice && !degreeVarSn">
-            <div class="no-station" style="text-align: center;">
+            <div style="background-color: #fff;height: {{contentHeight - 220}}px;" ng-show="!isLoading && !currentDevice">
+                <div class="no-station" style="text-align: center;">
+                    <i class="alert-icon"></i>
+                    <label class="alert-info">站点未配置监测点</label>
+                </div>
+            </div>
+            <div class="no-station" ng-if="!isLoading && !stationSn" style="text-align: center;height: {{contentHeight - 220}}px;">
                 <i class="alert-icon"></i>
-                <label class="alert-info">监测点未配置电度变量，无法读取数据</label>
+                <label class="alert-info">未配置站点，<a ng-click="getDataList()">重新加载</a></label>
+            </div>
+            <div class="page-alert-wrapper" ng-if="isLoading" style="background-color: #fff;height: {{contentHeight-220}}px;">
+                <div class="page-alert">
+                    <img src="../../img/page-loading.gif" class="loading-img">
+                    <div class="alert-text info">正在加载...</div>
+                </div>
             </div>
         </div>
-        <div style="background-color: #fff;height: calc(100% - 230px)" ng-show="!isLoading && !currentDevice">
-            <div class="no-station" style="text-align: center;">
-                <i class="alert-icon"></i>
-                <label class="alert-info">站点未配置监测点</label>
-            </div>
-        </div>
-        <div class="no-station" ng-if="!isLoading && !currentSite.sn" style="text-align: center;">
-            <i class="alert-icon"></i>
-            <label class="alert-info">未配置站点，<a ng-click="getDataList()">重新加载</a></label>
-        </div>
-        <div class="page-alert-wrapper" ng-if="isLoading" style="background-color: #fff;">
-            <div class="page-alert">
-                <img src="../../img/page-loading.gif" class="loading-img">
-                <div class="alert-text info">正在加载...</div>
-            </div>
-        </div>
-    </div>
-    <!-- 站点选择对话框 -->
-    <div class="popover-mask" ng-if="popup_visible" ng-click="closePopover()"></div>
-    <div class="mui-popover dark-popover mui-active" ng-if="popup_visible"
-         style="display: block; top: 57px; left: 16px;width: calc(100% - 32px);background-color: #323234;padding-bottom: 8px;">
-        <div class="mui-popover-arrow" style="left:10px"></div>
-        <div class="site-search-comp">
-            <div class="search-wrapper">
-                <i class="icon icon-search"></i>
-                <input placeholder="支持名称和站点编号搜索" oninput="angular.element(this).scope().searchInputChange(this)">
-            </div>
-        </div>
-        <ul class="mui-table-view">
-            <li class="mui-table-view-cell" ng-repeat="site in searchSiteResult" ng-click="chooseSite(site)">
-                <i class="site-status {{site.status}}"></i>{{site.name}}
-                <label ng-if="site.unclosed_envet_amount" class="site-event">{{site.unclosed_envet_amount}}</label>
-            </li>
-        </ul>
     </div>
 </div>

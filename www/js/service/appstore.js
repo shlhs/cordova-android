@@ -10,7 +10,7 @@ var defaultEnergyMenus = [
     }, {
         name: '用电负荷',
         icon: 'icon-dashboard-energy-charge',
-        templateUrl: '/templates/energy/charge-chart.html'
+        templateUrl: '/templates/energy/load-analysis.html'
     }, {
         name: '最大需量',
         icon: 'icon-dashboard-energy-max-demand',

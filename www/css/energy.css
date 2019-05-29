@@ -222,3 +222,20 @@
     color: #4cd964;
     font-size: 12px;
 }
+.pfv-texts {
+    padding: 10px;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-box-pack: center;
+}
+.pfv-texts>.item {
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+.pfv-texts>.item:last-child {
+    margin-bottom: 0;
+}
+.pfv-texts>.item>.value {
+    width: 90px;
+    display: inline-block;
+}

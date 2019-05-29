@@ -11,23 +11,14 @@ var g_pvf_colors = {
     's': 'rgba(254,139,106, 1)',
 };
 
-function EnergyFuncApi(scope, ajax, deviceMgmtHost) {
+function EnergyFuncApi(scope, ajax) {
     this.scope = scope;
     this.ajax = ajax;
-    this.deviceMgmtHost = deviceMgmtHost;
 }
 
-EnergyFuncApi.prototype.getTimeList = function (month) {
-    var times = [];
-    var lastDay = month.endOf('month');
-    for (var i=1; i<=lastDay.date(); i++) {
-        times.push(i + '日');
-    }
-    return times;
-};
-
+// 获取变量的月电度趋势数据
 EnergyFuncApi.prototype.getDegreeChargeTrend = function (sn, month, successCallback) {
-    // 获取变量的月电度趋势数据, month：moment对象
+    //  month：moment对象
     // successCallback(dataList, {monthDegree, monthCharge, avgPrice, todayDegree, todayCharge})
     function _thisMonthStatistics(data) {
         var today = moment().date();
@@ -77,38 +68,9 @@ EnergyFuncApi.prototype.getDegreeChargeTrend = function (sn, month, successCallb
     })
 };
 
-EnergyFuncApi.prototype.getVarsOfDevice= function (deviceSn, varCodes, callback) {
-    // 获取设备对应属性的变量
-    // callback({sn1: var1, sn2: var2}) 如果一个code对应了多个变量，那么取返回的第一个变量
-    if (!deviceSn) {
-        return;
-    }
-    this.ajax.get({
-        url: this.deviceMgmtHost + '/management/variables',
-        data: {
-            device_sns: deviceSn,
-            var_codes: varCodes.join(',')
-        },
-        success: function (response) {
-            var data = response.data;
-            var varMap = {};
-            if (data && data.length) {
-                data.forEach(function (item) {
-                   if (!varMap[item.var_code]) {
-                       varMap[item.var_code] = item;
-                   }
-                });
-            }
-            callback(varMap);
-        },
-        error: function () {
-            callback({});
-        }
-    });
-};
-
+// 本月平均电度电价曲线
 EnergyFuncApi.prototype.paintAvgPriceTrend = function (chartId, data) {
-    // 本月平均电度电价曲线
+
     var times = [];
     var yAxis = [];
     var dataIndex = 0;
@@ -180,42 +142,79 @@ EnergyFuncApi.prototype.paintAvgPriceTrend = function (chartId, data) {
     echarts.init(document.getElementById(chartId)).setOption(option);
 };
 
-EnergyFuncApi.prototype.getHistoryTrend = function (sns, startTime, endTime, queryPeriod, calcMethod, callback) {
-    // calcMethod: DIFF, MAX, MIN, AVG
-    // period: HOUR, DAY, MONTH, QUARTER, HALF_HOUR,NORMAL
-    this.ajax.get({
-        url: this.deviceMgmtHost + '/variables/data/historytrend',
-        data: {
-            sns: sns.join(','),
-            calcmethod: calcMethod,
-            startTime: startTime,
-            endTime: endTime,
-            queryPeriod: queryPeriod
-        },
-        success: function (data) {
-            data.forEach(function (item) {
-                var result = fillTrendDataVacancy(startTime, endTime, queryPeriod, item.time_keys, item.datas, 'YYYY-MM-DD HH:mm:ss.000');
-                item.time_keys = result.time_keys;
-                item.datas = result.datas;
-            });
-            callback(data);
-        }
-    })
-};
 
 // 能源管理基础控制，主要用于获取所有监测点，并显示设备显示页面
-app.controller('EnergyBaseCtrl', function ($scope, ajax, platformService, routerService) {
+app.controller('EnergyBaseCtrl', function ($scope, ajax, platformService, routerService, varDataService) {
+    $scope.stationSn = GetQueryString('sn');
+    $scope.stationName = GetQueryString('name');
     $scope.devices = [];
-    $scope.currentDevice = null;
+    $scope.currentDevice = {
+        sn: GetQueryString('device_sn'),
+        name: GetQueryString("device_name"),
+        vc: GetQueryString('vc') || null
+    };
+
+    $scope.contentHeight = window.screen.height - 60;
     $scope.isLoading = true;
     $scope.selectedDate = moment();
     $scope.showDateName = $scope.selectedDate.format('YYYY.MM');
     $scope.isCurrentMonth = true;       // 所选月份是否当前月份
     var datePicker = null;
+    var energyApi = new EnergyFuncApi($scope, ajax, platformService.getDeviceMgmtHost());
+    var siteChangeFunc = function (stationSn, stationName) {};
+    var deviceChangeFunc = function (device) {};    //
+    var dateChangeFunc = function (date) {};
+
+    $scope.$on('onSiteChange', function (event, stationSn, stationName) {
+
+        $scope.stationSn = stationSn;
+        $scope.stationName = stationName;
+        if (stationSn) {
+            if (siteChangeFunc) {
+                siteChangeFunc(stationSn, stationName);
+            }
+            // 获取站点电费配置
+            varDataService.getStationElectricConfig(stationSn, moment(), function (config) {
+                if (config) {
+                    setStorageItem(stationSn + '-electric_config', JSON.stringify(config));
+                }
+            });
+        } else {
+            $scope.isLoading = false;
+        }
+    });
+
+    $scope.getThisMonthElectricConfig = function () {       // 获取当前站点本月的电费配置
+        if ($scope.stationSn) {
+            var configStr = getStorageItem($scope.stationSn + '-electric_config');
+            if (configStr) {
+                return JSON.parse(configStr);
+            }
+        }
+        return null;
+    };
 
     $scope.onChangeDevice = function (device) {
         $scope.currentDevice = device;
-        getVarsOfDevice(device.sn);
+        if (deviceChangeFunc) {
+            deviceChangeFunc(device);
+        }
+    };
+
+    $scope.registerStationChangeListener = function (func) {        // 注册站点切换监听器
+        siteChangeFunc = func;
+    };
+
+    $scope.registerDeviceChangeListener = function (func) {         // 注册设备切换监听器
+        deviceChangeFunc = func;
+    };
+
+    $scope.registerDateChangeListener = function (func) {
+        dateChangeFunc = func;
+    };
+
+    $scope.setIsLoading = function (loading) {
+        $scope.isLoading = loading;
     };
 
     $scope.openDeviceSelector = function () {
@@ -223,15 +222,6 @@ app.controller('EnergyBaseCtrl', function ($scope, ajax, platformService, router
         routerService.openPage($scope, '/templates/energy/device-select-page.html',
             {treeData: $scope.devices ? $scope.devices[0].children : [], onSelect: $scope.onChangeDevice, selectedSn: $scope.currentDevice.sn});
     };
-    
-    function getChargeConfigOfStation() {
-        ajax.get({
-            url: '/stations/' + $scope.stationSn + '/charge_config?chargeType=electricity',
-            success: function (data) {
-                
-            }
-        })
-    }
 
     function findFirstDevice(data) {
         if (!data || !data.length) {
@@ -263,12 +253,11 @@ app.controller('EnergyBaseCtrl', function ($scope, ajax, platformService, router
                 $scope.devices = formatToTreeData(data);
                 // 找到第一个设备
                 $scope.currentDevice = findFirstDevice($scope.devices);
+                $scope.isLoading = false;
                 if ($scope.currentDevice) {
                     if (callback) {
                         callback($scope.currentDevice);
                     }
-                } else {
-                    $scope.isLoading = false;
                 }
                 $scope.$apply();
             },
@@ -303,7 +292,9 @@ app.controller('EnergyBaseCtrl', function ($scope, ajax, platformService, router
         $scope.selectedDate = moment(text);
         $scope.showDateName = $scope.selectedDate.format('YYYY.MM');
         $scope.isCurrentMonth = $scope.showDateName === moment().format('YYYY.MM');
-        $scope.$broadcast('onDateChange', $scope.selectedDate);
+        if (dateChangeFunc) {
+            dateChangeFunc($scope.selectedDate);
+        }
     }
 
     $scope.getMonitorDevices($scope.stationSn);
@@ -319,126 +310,50 @@ app.controller('EnergyBaseCtrl', function ($scope, ajax, platformService, router
 });
 
 // 能源管理
-app.controller('EnergyHomeCtrl', function ($scope, ajax, platformService, routerService) {
+app.controller('EnergyHomeCtrl', function ($scope, ajax, platformService, varDataService) {
 
     $scope.devices = [];
-    $scope.stationSn = null;
     $scope.stationName = null;
     $scope.currentDevice = null;
     $scope.selectedApps = defaultEnergyMenus;
     $scope.degreeVarSn = null;     // 设备的电度变量sn
     $scope.currentMonthData = {};
-    $scope.isLoading = true;
+    var energyApi = new EnergyFuncApi($scope, ajax, platformService.getDeviceMgmtHost());
 
-    $scope.$on('onSiteChange', function (event, stationSn, stationName) {
-        $scope.stationSn = stationSn;
-        $scope.stationName = stationName;
-        getMonitorDevices(stationSn);
+    $scope.registerStationChangeListener(function (stationSn, stationName) {
+        $scope.getMonitorDevices(stationSn, function (device) {
+            if (device) {
+                $scope.setIsLoading(true);
+                refreshForDeviceChange(device);
+            }
+        });
     });
 
-    $scope.onChangeDevice = function (device) {
+    $scope.registerDeviceChangeListener(function (device) {
+        refreshForDeviceChange(device);
+    });
+
+    function refreshForDeviceChange(device) {
+        $scope.currentMonthData = {};
         $scope.currentDevice = device;
-        getVarsOfDevice(device.sn);
-    };
-
-    $scope.openDeviceSelector = function () {
-        // 打开设备选择页面
-        routerService.openPage($scope, '/templates/energy/device-select-page.html',
-            {treeData: $scope.devices ? $scope.devices[0].children : [], onSelect: $scope.onChangeDevice, selectedSn: $scope.currentDevice.sn});
-    };
-
-    function findFirstDevice(data) {
-        if (!data || !data.length) {
-            return null;
-        }
-        for (var i=0; i<data.length; i++) {
-            if (!data[i].is_group) {
-                return data[i];
-            }
-            if (data[i].children) {
-                var foundDevice = findFirstDevice(data[i].children);
-                if (foundDevice) {
-                    return foundDevice;
-                }
-            }
-        }
-        return null;
-    }
-
-    function getMonitorDevices(stationSn) {
-        if (!stationSn) {
+        if (!device) {
             return;
         }
-        $scope.isLoading = true;
-        $scope.currentMonthData = {};
-        ajax.get({
-            url: '/stations/' + stationSn + '/devicetree',
-            success: function (data) {
-                $scope.devices = formatToTreeData(data);
-                // 找到第一个设备
-                $scope.currentDevice = findFirstDevice($scope.devices);
-                if ($scope.currentDevice) {
-                    getVarsOfDevice($scope.currentDevice.sn);
-                } else {
-                    $scope.isLoading = false;
-                }
-                $scope.$apply();
-            },
-            error: function () {
-                $scope.isLoading = false;
-                $scope.$apply();
+        $scope.degreeVarSn = null;
+        varDataService.getVarsOfDevice(device.sn, ['EPf'], function (varMap) {
+            if (varMap.EPf) {
+                $scope.degreeVarSn = varMap.EPf.sn;
+                energyApi.getDegreeChargeTrend($scope.degreeVarSn, moment(), function (degreeList, statistics) {
+                    $scope.currentMonthData = statistics;
+                    energyApi.paintAvgPriceTrend('main_chart', degreeList);
+                    calcAvgPriceChange();
+                });
+                getLastMonthDegree($scope.degreeVarSn);
+            } else {
+                $scope.degreeVarSn = null;
             }
-        })
-    }
-
-    function getVarsOfDevice(deviceSn) {
-        $scope.currentMonthData = {};
-        $scope.lastMonthPrice = null;
-        ajax.get({
-            url: platformService.getDeviceMgmtHost() + '/management/variables',
-            data: {
-                device_sns: deviceSn,
-                var_codes: 'EPf'
-            },
-            success: function (response) {
-                var data = response.data;
-                if (data && data.length) {
-                    $scope.degreeVarSn = data[0].sn;
-                    getDegreeChargeTrend($scope.degreeVarSn);
-                    getLastMonthDegree($scope.degreeVarSn);
-                } else {
-                    $scope.degreeVarSn = null;
-                }
-                $scope.isLoading = false;
-                $scope.$apply();
-            },
-            error: function () {
-                $scope.isLoading = false;
-                $scope.$apply();
-            }
-        })
-    }
-
-    function getDegreeChargeTrend(sn) {
-        ajax.get({
-            url: '/devicevars/getelectricaldegreeandcharge/trend',
-            data: {
-                sns: sn,
-                start_date: moment().format('YYYY-MM-01'),
-                end_date: moment().format('YYYY-MM-DD')
-            },
-            success: function (data) {
-                var degreeList = data[sn];
-                if (degreeList) {
-                    paintPriceTrend(degreeList);
-                    thisMonthStatistics(degreeList);
-                } else {
-                    // 销毁电费趋势图
-                    echarts.dispose(document.getElementById('main_chart'));
-                }
-                $scope.$apply();
-            }
-        })
+            $scope.setIsLoading(false);
+        });
     }
 
     function getLastMonthDegree(sn) {       // 获取上月的电费统计信息
@@ -459,160 +374,34 @@ app.controller('EnergyHomeCtrl', function ($scope, ajax, platformService, router
         })
     }
 
-    function thisMonthStatistics(data) {
-        var today = moment().date();
-        var todayData = data[data.length-1];
-        var pageData = {};
-        if (today === parseInt(todayData.time.substring(8, 10))) {
-            pageData.todayDegree = todayData.allDegree;
-            pageData.todayCharge = todayData.allCharge;
-        }
-        var monthDegree = 0;
-        var monthCharge = 0;
-        data.forEach(function (item) {
-            if (item.allCharge) {
-                monthCharge += item.allCharge;
-            }
-            if (item.allDegree) {
-                monthDegree += item.allDegree;
-            }
-        });
-        pageData.monthDegree = monthDegree.toFixed(1);
-        pageData.monthCharge = monthCharge.toFixed(1);
-        pageData.avgPrice = monthDegree ? parseFloat((monthCharge/monthDegree).toFixed(2)) : null;
-        $scope.currentMonthData = pageData;
-        calcAvgPriceChange();
-    }
-
     function calcAvgPriceChange() {
         if ($scope.lastMonthPrice !== null && $scope.currentMonthData.avgPrice) {
             $scope.currentMonthData.priceChangeRatio = parseFloat((($scope.currentMonthData.avgPrice - $scope.lastMonthPrice)/$scope.lastMonthPrice*100).toFixed(1));
         }
     }
-
-    function paintPriceTrend(data) {
-        // 本月平均电度电价曲线
-        var times = [];
-        var yAxis = [];
-        var dataIndex = 0;
-        var lastDay = moment().endOf('month');
-        for (var i=1; i<=lastDay.date(); i++) {
-            times.push(i + '日');
-            if (dataIndex < data.length) {
-                var dataItem = data[dataIndex];
-                var dataDay = parseInt(dataItem.time.substring(8, 10));
-                if (dataDay === i) {
-                    dataIndex += 1;
-                    var avgPrice = dataItem.allDegree ? parseFloat((dataItem.allCharge/dataItem.allDegree).toFixed(2)) : null;
-                    yAxis.push(avgPrice);
-                    continue;
-                }
-            }
-            yAxis.push(null);
-        }
-        var option = {
-            grid: {
-              top: 15,
-              left: 40,
-              right: 10,
-              bottom: 25
-            },
-            tooltip: {
-                trigger: 'axis',
-                formatter: '{b0}: {c0}元'
-            },
-            xAxis: {
-                type: 'category',
-                data: times,
-                axisLabel: {
-                    fontSize: 11,
-                    color: '#6b6b6b'
-                },
-                axisLine: {
-                    lineStyle: {
-                        color: '#E7EAED'
-                    }
-                }
-            },
-            yAxis: {
-                type: 'value',
-                axisLabel: {
-                    fontSize: 11,
-                    color: '#6b6b6b'
-                },
-                axisLine: {
-                    lineStyle: {
-                        color: '#E7EAED'
-                    }
-                },
-                splitLine: {
-                    lineStyle: {
-                        color: '#E7EAED'
-                    }
-                }
-            },
-            series: [{
-                data: yAxis,
-                type: 'line',
-                symbolSize: 0,
-                itemStyle: {
-                    color: '#8D6ADD'
-                }
-            }]
-        };
-        echarts.init(document.getElementById('main_chart')).setOption(option);
-    }
 });
 
 
 // 用电概况
-app.controller('EnergyOverviewCtrl', function ($scope, ajax, platformService) {
-
-    $scope.stationSn = GetQueryString('sn');
-    $scope.currentDevice = {
-        sn: GetQueryString('device_sn'),
-        name: GetQueryString('device_name'),
-        vc: 6000
-    };
+app.controller('EnergyOverviewCtrl', function ($scope, ajax, platformService, varDataService) {
     $scope.statisticsObj = {};
 
     $scope.degreeVarSn = null;
     var energyApi = new EnergyFuncApi($scope, ajax, platformService.getDeviceMgmtHost());
 
-    $scope.$on('onDateChange', function (event, date) {
-       refreshData($scope.currentDevice);
+    $scope.registerDateChangeListener(function (date) {
+        refreshData($scope.currentDevice);
     });
 
-    function getVarsOfDevice(device) {
-        if (!device) {
-            return;
-        }
-        var deviceSn = device.sn;
-        $scope.currentMonthData = {};
-        ajax.get({
-            url: platformService.getDeviceMgmtHost() + '/management/variables',
-            data: {
-                device_sns: deviceSn,
-                var_codes: ['EPf', 'P', 'PF']
-            },
-            success: function (response) {
-                var data = response.data;
-                if (data && data.length) {
-                    $scope.degreeVarSn = data[0].sn;
-                    getDegreeChargeTrend($scope.degreeVarSn);
-                } else {
-                    $scope.degreeVarSn = null;
-                }
-                $scope.$apply();
-            }
-        })
-    }
+    $scope.registerDeviceChangeListener(function (device) {
+        refreshData(device);
+    });
     
     function refreshData(device) {
         echarts.dispose(document.getElementById('charge_chart'));
         echarts.dispose(document.getElementById('price_chart'));
         echarts.dispose(document.getElementById('load_chart'));
-        energyApi.getVarsOfDevice(device.sn, ['EPf', 'P', 'EQf'], function (varMap) {
+        varDataService.getVarsOfDevice(device.sn, ['EPf', 'P', 'EQf'], function (varMap) {
             var degreeVar = varMap.EPf;
             energyApi.getDegreeChargeTrend(degreeVar.sn, $scope.selectedDate, function (degreeList, statisticsObj) {
                 energyApi.paintAvgPriceTrend('price_chart', degreeList);
@@ -799,7 +588,7 @@ app.controller('EnergyOverviewCtrl', function ($scope, ajax, platformService) {
         var startTime = $scope.selectedDate.format('YYYY-MM-01 00:00:00.000');
         var endTime = $scope.selectedDate.endOf('month').format('YYYY-MM-DD 23:59:59.000');
         var vc = $scope.currentDevice.vc;
-        energyApi.getHistoryTrend([varMap.P.sn], startTime, endTime, 'DAY', 'MAX', function (dataList) {
+        varDataService.getHistoryTrend([varMap.P.sn], startTime, endTime, 'DAY', 'MAX', function (dataList) {
                 if (dataList.length) {
                     var data = dataList[0];
                     var yAxis = [];
@@ -873,4 +662,164 @@ app.controller('EnergyOverviewCtrl', function ($scope, ajax, platformService) {
 
     refreshData($scope.currentDevice);
 
+});
+
+// 电费分析
+app.controller('EnergyCostAnalysisCtrl', function ($scope, ajax, platformService, varDataService) {
+    $scope.degreeTexts = [];
+    $scope.chargeTexts = [];
+    $scope.degreeVarSn = null;
+    var energyApi = new EnergyFuncApi($scope, ajax, platformService.getDeviceMgmtHost());
+
+    $scope.registerDateChangeListener(function (date) {
+        refreshData($scope.currentDevice);
+    });
+
+    $scope.registerDeviceChangeListener(function (device) {
+        refreshData(device);
+    });
+
+    function refreshData(device) {
+        $scope.charge = {
+            degree: '-',    // 电度电费
+            capacity: '-',  // 基本电费
+            cos: '-',       // 力率电费
+            addition: '-',  // 加征电费
+        };
+        echarts.dispose(document.getElementById('chart1'));
+        echarts.dispose(document.getElementById('chart2'));
+        varDataService.getVarsOfDevice(device.sn, ['EPf', 'P', 'EQf'], function (varMap) {
+            var degreeVar = varMap.EPf;
+            if (degreeVar) {
+                $scope.degreeVarSn = degreeVar.sn;
+                $scope.chargeTexts = [];
+                $scope.degreeTexts = [];
+                varDataService.getDegreeSummary(degreeVar.sn, $scope.selectedDate, function (data) {
+                    if (data) {
+                        var keys = ['s', 'p', 'v', 'f'];
+                        var degreeMap = {};
+                        var chargeMap = {};
+                        var degreeTexts = [];
+                        var chargeTexts = [];
+                        if (data.allCharge) {
+                            keys.forEach(function (key) {
+                                var degree = data[key+'Degree'];
+                                var charge = data[key+'Charge'];
+                                degreeMap[key] = degree;
+                                chargeMap[key] = charge;
+                                if (degree) {
+                                    degreeTexts.push({
+                                        label: g_pvf_label[key],
+                                        value: degree,
+                                        ratio: (degree/data.allDegree*100).toFixed(2),
+                                        color: g_pvf_colors[key]
+                                    });
+                                }
+                                if (charge) {
+                                    chargeTexts.push({
+                                        label: g_pvf_label[key],
+                                        value: charge,
+                                        ratio: (charge/data.allCharge*100).toFixed(2),
+                                        color: g_pvf_colors[key]
+                                    });
+                                }
+                            });
+                            $scope.degreeTexts = degreeTexts;
+                            $scope.chargeTexts = chargeTexts;
+                            paintPfvPie(degreeMap, 'kWh', 'chart1');
+                            paintPfvPie(chargeMap, '元', 'chart2');
+                        }
+                    }
+                });
+            } else {
+                $scope.degreeVarSn = null;
+            }
+        });
+    }
+    
+    function paintPfvPie(data, unit, chartId) {
+        var seriesData = [];
+        var colors = [];
+        var total = 0;
+        var legendData = [];
+        Object.keys(data).forEach(function (key) {
+            seriesData.push({
+                name: g_pvf_label[key],
+                value: data[key],
+                selected: false,
+            });
+            total += data[key];
+            colors.push(g_pvf_colors[key]);
+            legendData.push(g_pvf_label[key]);
+        });
+        total = parseFloat(total.toFixed(1));
+        var option = {
+            title: {
+                text: total + (unit ? '\n' + unit : ''),
+                textStyle: {
+                    fontSize: 13,
+                    color: '#666666',
+                    align: 'center'
+                },
+                x: 'center',
+                y: 'center',
+            },
+            tooltip: {
+                show: false,
+                trigger: 'none',
+                triggerOn: 'none',
+                formatter: '{b} : {c} ({d}%)',
+            },
+            backgroundColor:'#ffffff',
+            grid: {
+                top: '20%',
+                left: 0,
+                right: 0,
+                bottom: 0,
+                containLabel: true,
+            },
+            color: colors,
+            series: [
+                {
+                    avoidLabelOverlap: false,
+                    hoverAnimation: true, //设置饼图默认的展开样式
+                    radius: ['60%', '80%'],
+                    center: ['50%', '50%'],
+                    name: 'pie',
+                    type: 'pie',
+                    selectedMode: 'single',
+                    clockwise: true,
+                    startAngle: 90,
+                    data: seriesData,
+                    itemStyle: {
+                        emphasis: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)',
+                        },
+                    },
+                    label: {
+                        normal: {
+                            show: false,
+                        },
+                    },
+                    labelLine: {
+                        normal: {
+                            show: false
+                        }
+                    },
+                },
+            ],
+        };
+        echarts.init(document.getElementById(chartId)).setOption(option);
+    }
+
+    refreshData($scope.currentDevice);
+
+});
+
+app.controller('EnergyLoadAnalysisCtrl', function ($scope, ajax, platformService) {
+    $scope.capacityCharge = '-';
+    $scope.maxLoad = '-';
+    $scope.maxLoadRatio = '-';
 });

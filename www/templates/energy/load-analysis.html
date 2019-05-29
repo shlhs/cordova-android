@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>电费分析</title>
+    <title>用电负荷</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -27,7 +27,7 @@
 <body ng-app="myApp" ng-cloak ng-controller="EnergyBaseCtrl" class="energy-page timeType-MONTH">
 <header class="mui-bar bg-header mui-segmented-control-vertical">
     <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
-    <h1 class="mui-title">电费分析</h1>
+    <h1 class="mui-title">用电负荷</h1>
 </header>
 <div class="mui-content" style="background-color: transparent;">
     <div class="head-select-tabs">
@@ -40,54 +40,36 @@
             <label class="value">{{showDateName}}</label>
         </div>
     </div>
-    <div ng-controller="EnergyCostAnalysisCtrl">
-        <div style="display: flex;width: 100%;padding-top: 12px;">
+    <div ng-controller="EnergyLoadAnalysisCtrl">
+        <div style="display: flex;width: 100%;padding-top: 12px;" class="sides-values">
             <div class="value-tab">
-                <label class="top">{{isCurrentMonth ? '平均电度电价' : '平均电价'}}</label>
-                <label class="value">{{statisticsObj.monthDegree}}<span class="unit">元</span></label>
+                <label class="top">变压器容量</label>
+                <label class="value">{{currentDevice.vc}}<span class="unit">kVA</span></label>
+            </div>
+            <div class="value-tab">
+                <label class="top">基本电费</label>
+                <label class="value">{{capacityCharge}}<span class="unit">元</span></label>
             </div>
         </div>
-        <div style="margin-top: 16px; background-color: #fff;min-height: {{contentHeight - 158}}px;">
+        <div style="margin-top: 16px; background-color: #fff;min-height: {{contentHeight - 148}}px;">
             <div class="light-value-tabs">
                 <div class="value-tab">
-                    <label class="top">电度电费</label>
-                    <label class="value">{{charge.degree}}</label>
+                    <label class="top">最大负荷</label>
+                    <label class="value">{{maxLoad}}</label>
                 </div>
                 <div class="value-tab">
-                    <label class="top">基本电费</label>
-                    <label class="value">{{charge.capacity}}</label>
-                </div>
-            </div>
-            <div class="light-value-tabs border-top">
-                <div class="value-tab">
-                    <label class="top">力率电费</label>
-                    <label class="value">{{charge.cos}}</label>
-                </div>
-                <div class="value-tab">
-                    <label class="top">加征(收)电费</label>
-                    <label class="value">{{charge.addition}}</label>
+                    <label class="top">最大负荷率</label>
+                    <label class="value">{{maxLoadRatio}}</label>
                 </div>
             </div>
             <div>
-                <div class="chart-title">分时电量</div>
-                <div style="position: relative;">
-                    <div id="chart1" style="height: 130px;width: 60%;"></div>
-                    <div style="position: absolute;height: 100%;right: 0;top: 0;" class="pfv-texts">
-                        <div class="item" ng-repeat="item in degreeTexts" style="color: {{item.color}}">
-                            <label class="value">{{item.label + '： ' + item.value}}</label> <label class="ratio">{{item.ratio}}%</label>
-                        </div>
-                    </div>
+                <div class="chart-title">按时段统计平均负荷率</div>
+                <div style="height: 130px;" id="chart1">
                 </div>
             </div>
             <div>
-                <div class="chart-title">分时电费</div>
-                <div style="position: relative;">
-                    <div id="chart2" style="height: 130px;width: 60%;"></div>
-                    <div style="position: absolute;height: 100%;right: 0;top: 0;" class="pfv-texts">
-                        <div class="item" ng-repeat="item in chargeTexts" style="color: {{item.color}}">
-                            <label class="value">{{item.label + '： ' + item.value}}</label> <label class="ratio">{{item.ratio}}%</label>
-                        </div>
-                    </div>
+                <div class="chart-title">日最大负荷率</div>
+                <div style="height: 130px;" id="chart2">
                 </div>
             </div>
         </div>
