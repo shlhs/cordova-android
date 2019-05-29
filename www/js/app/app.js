@@ -221,6 +221,12 @@ app.service('platformService', function () {
     };
 
     this.getImageUrl = function (width, height, imageUrl) {
+        // When using gifsicle engine, filters will be skipped. Thumbor will not do smart cropping as well
+        var urlLength = imageUrl.length;
+        if(urlLength > 4 && imageUrl.toLocaleLowerCase().lastIndexOf('.gif') === (urlLength -4)) {
+            return imageUrl;
+        }
+        
         return this.thumbHost + '/' + width + 'x' + height + '/' + imageUrl;
     };
 
