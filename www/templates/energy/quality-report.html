@@ -3,8 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <title>电能质量报告</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <link rel="stylesheet" href="../../components/mui/css/mui.min.css">
+    <link rel="stylesheet" href="../../components/mui/css/mui.picker.min.css">
+    <link rel="stylesheet" href="../../css/iconfont/iconfont.css">
+    <link rel="stylesheet" href="../../css/animate.css">
+    <link rel="stylesheet" href="../../css/my.css">
+    <link rel="stylesheet" href="../../css/energy.css">
+    <link rel="stylesheet" type="text/css" href="../../js/lib/datatables/jquery.dataTables.min.css">
+    <script type="text/javascript" src="../../components/libs/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script type="text/javascript" src="../../components/angular-animate/angular-animate.js"></script>
+    <script type="text/javascript" src="../../components/angular-ui-router/release/stateEvents.min.js"></script>
+    <script type="text/javascript" src="../../js/app/utils.js"></script>
+    <script type="text/javascript" src="../../js/app/app.js"></script>
+    <script type="text/javascript" src="../../js/controller/user-energy.js"></script>
+    <script type="text/javascript" src="../../js/controller/sites.js"></script>
 </head>
-<body>
+<body ng-app="myApp" ng-cloak ng-controller="EnergyBaseCtrl" class="timeType-MONTH">
+<header class="mui-bar bg-header mui-segmented-control-vertical">
+    <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
+    <h1 class="mui-title">电能质量报告</h1>
+</header>
+<div class="mui-content" ng-controller="EnergyQualityReportCtrl">
+    <div style="box-shadow: 0 0 2px 2px #eaeaea;display: flex;">
+        <div class="device-selector-line" ng-click="openDeviceSelector()" style="flex: 1;">
+            <label class="value">{{currentDevice.name}}</label>
+        </div>
+        <div class="device-selector-line" style="flex: 1;" id="datePicker">
+            <label class="value">{{showDateName}}</label>
+        </div>
+    </div>
+    <div class="report-card">
+        <div class="header">
+            <label class="title">电压质量分析</label>
+            <label style="color: #333;font-size: 12px;float: right;margin-left: 6px;width: 100px;margin-top: 1px;">标称电压：{{currentDevice.vc}}</label>
+            <label style="color: #333;font-size: 12px;float: right;width: 100px;margin-top: 1px;">监测点数：{{volt.count || 0}}</label>
+        </div>
+        <div class="report-list" ng-if="currentDevice.vc">
+            <div class="report-item">
+                <div class="title">A相电压</div>
+                <div class="group"><label class="value">{{showData(volt.ua.overCount)}}</label><label class="title">超限次数</label> </div>
+                <div class="group"><label class="value">{{showRate(volt.ua.passRate)}}</label><label class="title">合格率</label> </div>
+                <div class="conclusion" ng-class="{'pass': volt.ua.isPass===true, fail: volt.ua.isPass===false}">{{showConclution(volt.ua.isPass)}}</div>
+            </div>
+            <div class="report-item">
+                <div class="title">B相电压</div>
+                <div class="group"><label class="value">{{showData(volt.ub.overCount)}}</label><label class="title">超限次数</label> </div>
+                <div class="group"><label class="value">{{showRate(volt.ub.passRate)}}</label><label class="title">合格率</label> </div>
+                <div class="conclusion" ng-class="{'pass': volt.ub.isPass===true, fail: volt.ub.isPass===false}">{{showConclution(volt.ub.isPass)}}</div>
+            </div>
+            <div class="report-item">
+                <div class="title">C相电压</div>
+                <div class="group"><label class="value">{{showData(volt.uc.overCount)}}</label><label class="title">超限次数</label> </div>
+                <div class="group"><label class="value">{{showRate(volt.uc.passRate)}}</label><label class="title">合格率</label> </div>
+                <div class="conclusion" ng-class="{'pass': volt.uc.isPass===true, fail: volt.uc.isPass===false}">{{showConclution(volt.uc.isPass)}}</div>
+            </div>
+        </div>
+        <div class="report-list" ng-if="!currentDevice.vc">
+            <div class="report-item nodata">
+                未配置电压等级，无法计算合格率
+            </div>
+        </div>
+    </div>
+    <div class="report-card">
+        <div class="header">
+            <label class="title">频率分析</label>
+            <label style="color: #333;font-size: 12px;float: right;margin-left: 6px;width: 100px;margin-top: 1px;">标称频率：50Hz</label>
+            <label style="color: #333;font-size: 12px;float: right;width: 100px;margin-top: 1px;">监测点数：{{freq.count || 0}}</label>
+        </div>
+        <div class="report-list">
+            <div class="report-item">
+                <div class="title">频率</div>
+                <div class="group"><label class="value">{{showData(freq.overCount)}}</label><label class="title">超限次数</label> </div>
+                <div class="group"><label class="value">{{showRate(freq.passRate)}}</label><label class="title">合格率</label> </div>
+                <div class="conclusion" ng-class="{'pass': freq.isPass===true, fail: freq.isPass===false}">{{showConclution(freq.isPass)}}</div>
+            </div>
+        </div>
+        <div class="report-list" ng-if="!currentDevice.vc">
+            <div class="report-item nodata">
+                未配置电压等级，无法计算合格率
+            </div>
+        </div>
+    </div>
+    <div class="report-card">
+        <div class="header">
+            <label class="title">功率因素分析</label>
+            <label style="color: #333;font-size: 12px;float: right;margin-left: 6px;width: 100px;margin-top: 1px;">标称频率：50Hz</label>
+            <label style="color: #333;font-size: 12px;float: right;width: 100px;margin-top: 1px;">监测点数：{{freq.count || 0}}</label>
+        </div>
+        <div class="report-list">
+            <div class="report-item">
+                <div class="title">功率因素</div>
+                <div class="group"><label class="value">{{showData(cos.limit)}}</label><label class="title">考核限制</label> </div>
+                <div class="group"><label class="value">{{showData(cos.cos)}}</label><label class="title">实际值</label> </div>
+                <div class="conclusion" ng-class="{'pass': cos.isPass===true, fail: cos.isPass===false}">{{showConclution(cos.isPass)}}</div>
+            </div>
+        </div>
+        <div class="report-list" ng-if="!currentDevice.vc">
+            <div class="report-item nodata">
+                未配置电压等级，无法计算合格率
+            </div>
+        </div>
+    </div>
+    <div class="report-card">
+        <div class="header">
+            <label class="title">谐波含量分析</label>
+            <label style="color: #333;font-size: 12px;float: right;width: 100px;margin-top: 1px;">监测点数：{{harm.count || 0}}</label>
+        </div>
+        <div class="report-list" ng-if="currentDevice.vc">
+            <div class="report-item">
+                <div class="title">A相电压谐波</div>
+                <div class="group"><label class="value">{{showData(harm.ua.overCount)}}</label><label class="title">超限次数</label> </div>
+                <div class="group"><label class="value">{{showRate(harm.ua.passRate)}}</label><label class="title">合格率</label> </div>
+                <div class="conclusion" ng-class="{'pass': harm.ua.isPass===true, fail: harm.ua.isPass===false}">{{showConclution(harm.ua.isPass)}}</div>
+            </div>
+            <div class="report-item">
+                <div class="title">B相电压谐波</div>
+                <div class="group"><label class="value">{{showData(harm.ub.overCount)}}</label><label class="title">超限次数</label> </div>
+                <div class="group"><label class="value">{{showRate(harm.ub.passRate)}}</label><label class="title">合格率</label> </div>
+                <div class="conclusion" ng-class="{'pass': harm.ub.isPass===true, fail: harm.ub.isPass===false}">{{showConclution(harm.ub.isPass)}}</div>
+            </div>
+            <div class="report-item">
+                <div class="title">C相电压谐波</div>
+                <div class="group"><label class="value">{{showData(harm.uc.overCount)}}</label><label class="title">超限次数</label> </div>
+                <div class="group"><label class="value">{{showRate(harm.uc.passRate)}}</label><label class="title">合格率</label> </div>
+                <div class="conclusion" ng-class="{'pass': harm.uc.isPass===true, fail: harm.uc.isPass===false}">{{showConclution(harm.uc.isPass)}}</div>
+            </div>
+        </div>
+        <div class="report-list" ng-if="!currentDevice.vc">
+            <div class="report-item nodata">
+                未配置电压等级，无法计算合格率
+            </div>
+        </div>
+    </div>
+</div>
 
+<script src="../../components/fastclick-master/lib/fastclick.js"></script>
+<script src="../../js/my/notify.js"></script>
+<script src="../../components/moment.min.js"></script>
+<script src="../../components/mui/js/mui.min.js"></script>
+<script src="../../components/mui/js/mui.picker.min.js"></script>
+<script src="../../components/echart/echarts.min-3.x.js"></script>
+<script type="text/javascript" src="../../js/service/varData.js"></script>
 </body>
 </html>

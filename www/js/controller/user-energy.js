@@ -1822,3 +1822,81 @@ app.controller('EnergyQualityMonitorCtrl', function ($scope, varDataService) {
     initCodes();
     getVarsOfDevice();
 });
+
+app.controller('EnergyQualityReportCtrl', function ($scope, ajax) {
+    $scope.volt = {ua: {}, ub: {}, uc: {}};
+    $scope.harm = {ua: {}, ub: {}, uc: {}};
+    $scope.freq = {};
+    $scope.cos = {};
+    $scope.isLoading = true;
+
+    $scope.registerDeviceChangeListener(function (device) {
+        getReport();
+    });
+
+    $scope.registerDateChangeListener(function (date) {
+        getReport();
+    });
+
+    $scope.showData = function (v) {
+        if (v === undefined || v === null) {
+            return '-';
+        }
+        return v;
+    };
+
+    $scope.showRate = function (v) {
+        if (v === undefined || v === null) {
+            return '-';
+        }
+        return (v*100).toFixed(2) + '%';
+    };
+
+    $scope.showConclution = function (isPass) {
+        if (isPass === true) {
+            return '合格';
+        }
+        if (isPass === false) {
+            return '不合格';
+        }
+        return '';
+    };
+
+    function getReport() {
+        $scope.isLoading = true;
+        $.notify.progressStart();
+        ajax.get({
+            url: '/evaluation_report',
+            data: {
+                stationSn: $scope.stationSn,
+                deviceSn: $scope.currentDevice.sn,
+                startTime: $scope.selectedDate.format('YYYY-MM-01THH:mm:ss.000') + 'Z',
+                endTime: $scope.selectedDate.endOf('month').format('YYYY-MM-DDTHH:mm:ss.000') + 'Z'
+            },
+            success: function (data) {
+                $.notify.progressStop();
+                $scope.isLoading = false;
+                if (data ) {
+                    $scope.volt = data.volt;
+                    $scope.harm = data.harm;
+                    $scope.freq = data.freq;
+                    $scope.cos = data.cos
+                } else {
+                    $scope.volt = {ua: {}, ub: {}, uc: {}};
+                    $scope.harm = {ua: {}, ub: {}, uc: {}};
+                    $scope.freq = {};
+                    $scope.cos = {};
+                }
+                $scope.$apply();
+            },
+            error: function () {
+                $.notify.progressStop();
+                $.notify.error('获取报告失败');
+                $scope.isLoading = true;
+                $scope.$apply();
+            }
+        })
+    }
+
+    getReport();
+});
