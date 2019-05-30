@@ -24,7 +24,7 @@
                     <label class="bottom">同比上月
                         <span ng-if="currentMonthData.priceChangeRatio === undefined">-</span>
                         <span ng-if="currentMonthData.priceChangeRatio > 0" class="energy-rate up">{{currentMonthData.priceChangeRatio}}%</span>
-                        <span ng-if="currentMonthData.priceChangeRatio <= 0" class="energy-rate down">{{currentMonthData.priceChangeRatio}}%</span>
+                        <span ng-if="currentMonthData.priceChangeRatio <= 0" class="energy-rate down">{{-currentMonthData.priceChangeRatio}}%</span>
                     </label>
                 </div>
                 <div class="value-tab">

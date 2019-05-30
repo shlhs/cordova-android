@@ -239,3 +239,102 @@
     width: 90px;
     display: inline-block;
 }
+.device-selector-line {
+    background: #fff;
+    padding: 9px;
+    text-align: center;
+    color: #666;
+    box-shadow: 0 0 2px 2px #eaeaea;
+}
+.device-selector-line>label {
+    position: relative;
+}
+.device-selector-line>label:after {
+    position: absolute;
+    content: '\a604';
+    font-family: "iconfont" !important;
+    right: -20px;
+    display: block;
+    color: #666;
+    font-size: 8px;
+    top: 50%;
+    margin-top: -10px;
+}
+.energy-realtime-values {
+    padding: 10px;
+    display: flex;
+}
+.energy-realtime-values>.item {
+    flex: 1;
+    margin-right: 4px;
+    padding: 10px 0;
+    text-align: center;
+    background-color: #ECF0F9;
+    position: relative;
+}
+.energy-realtime-values>.item.warning:after {
+    display: block;
+    position: absolute;
+    content: '\e6be';
+    font-family: "iconfont" !important;
+    top: 0;
+    right: 4px;
+    font-size: 12px;
+    color: #EC4B62;
+}
+.energy-realtime-values>.item .title {
+    color: #596CAD;
+    font-size: 12px;
+}
+.energy-realtime-values>.item .unit {
+    color: #596CAD;
+    font-size: 10px;
+}
+.energy-realtime-values>.item .value {
+    color: #596CAD;
+    font-size: 13px;
+    display: block;
+    margin-top: -2px;
+}
+.energy-realtime-values>.item:last-child {
+    margin-right: 0;
+}
+.monitor-table {
+    font-size: 13px;
+    width: calc(100% - 12px);
+    margin-left: 6px;
+}
+.monitor-table th, .monitor-table td {
+    border: #fff 2px solid;
+}
+.monitor-table th {
+    color: #333;
+    font-weight: bold;
+    background-color: #E5E5E5;
+    padding: 10px 0;
+    text-align: center;
+}
+.monitor-table td {
+    background-color: #F4F4F4;
+    color: #666666;
+    font-size: 12px;
+    padding: 10px 0;
+    text-align: center;
+}
+.monitor-table td.title {
+    font-size: 13px;
+    color: #333;
+}
+.monitor-table td.warning {
+    position: relative;
+}
+.monitor-table td.warning:after {
+    display: block;
+    position: absolute;
+    content: '\e6be';
+    font-family: "iconfont" !important;
+    top: 0;
+    right: 4px;
+    font-size: 12px;
+    color: #EC4B62;
+}

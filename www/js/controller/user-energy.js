@@ -1129,7 +1129,7 @@ app.controller('EnergyLoadAnalysisCtrl', function ($scope, varDataService) {
 
     function statisticAvgLoadByHour(timeKeys, datas) {
         // 将所有负荷按小时统计平均
-        const loadTotalList = [];
+        var loadTotalList = [];
         for (var i=0; i<=23; i++) {
             loadTotalList.push([]);
         }
@@ -1283,4 +1283,542 @@ app.controller('EnergyLoadAnalysisCtrl', function ($scope, varDataService) {
     }
 
     refreshData($scope.currentDevice);
+});
+
+app.controller('EnergyMaxDemandCtrl', function ($scope, varDataService) {
+    var charges = $scope.getDefaultDeviceDegreeData($scope.currentDevice.sn);
+    var electricConfig = $scope.getThisMonthElectricConfig();
+    $scope.maxDemand = '-';
+    $scope.maxDemandTime = '';
+    $scope.requiredMaxDemand = null;       // 核定最大需量
+    var pSn = null;
+
+    var energyApi = new EnergyFuncApi($scope, varDataService);
+
+    $scope.registerDateChangeListener(function (date) {
+        $scope.charges = {};
+        refreshData($scope.currentDevice);
+    });
+
+    $scope.registerDeviceChangeListener(function (device) {
+        $scope.charges = {};
+        refreshDeviceVar(device);
+    });
+
+    function refreshDeviceVar(device) {
+        varDataService.getVarsOfDevice(device.sn, ['P'], function (varMap) {
+            if (varMap.P) {
+                pSn = varMap.P.sn;
+                refreshData();
+            }
+        });
+    }
+
+    function getRequiredMaxDemand(config) {
+        if (config && config.capacity_charge) {
+            var obj = JSON.parse(config.capacity_charge);
+            $scope.requiredMaxDemand = obj.normal_capacity;
+        }  else {
+            $scope.requiredMaxDemand = null;
+        }
+    }
+
+    function refreshData() {
+        echarts.dispose(document.getElementById('chart1'));
+        if (!pSn) {
+            $scope.maxDemand = '-';
+            $scope.maxDemandTime = '';
+            return;
+        }
+        var startTime = $scope.selectedDate.format('YYYY-MM-01 00:00:00.000');
+        var endTime = $scope.selectedDate.endOf('month').format('YYYY-MM-DD 23:59:59.000');
+        varDataService.getVarSummarizedData([pSn], startTime, endTime, ['MAX'], function (dataList) {
+            $scope.maxDemand = '-';
+            $scope.maxDemandTime = '';
+           if (dataList && dataList.length) {
+               var data = dataList[0];
+               if (data.max_value_data !== null) {
+                   $scope.maxDemand = data.max_value_data;
+                   $scope.maxDemandTime = data.max_value_time;
+               }
+           }
+           $scope.$apply();
+        });
+        paintDemandTrend(startTime, $scope.selectedDate.format('YYYY-MM-01 23:59:59.000'));
+    }
+
+    function paintDemandTrend(startTime, endTime) {
+        varDataService.getHistoryTrend([pSn], startTime, endTime, 'NORMAL', 'MAX', function (dataList) {
+           var data = dataList[0];
+            var times = [], yAxis = [];
+            data.time_keys.forEach(function (t, i) {
+                times.push(t.substring(5, 16));
+            });
+            var option = {
+                grid: {
+                    top: 15,
+                    left: 60,
+                    right: 10,
+                    bottom: 25
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    formatter: '{b0}: {c0}kW'
+                },
+                xAxis: {
+                    type: 'category',
+                    data: times,
+                    axisLabel: {
+                        fontSize: 11,
+                        color: '#6b6b6b'
+                    },
+                    axisLine: {
+                        lineStyle: {
+                            color: '#E7EAED'
+                        }
+                    }
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLabel: {
+                        fontSize: 11,
+                        color: '#6b6b6b',
+                        formatter: '{value}'
+                    },
+                    axisLine: {
+                        lineStyle: {
+                            color: '#E7EAED'
+                        }
+                    },
+                    splitLine: {
+                        lineStyle: {
+                            color: '#E7EAED'
+                        }
+                    },
+                },
+                series: [{
+                    data: data.datas,
+                    type: 'line',
+                    symbolSize: 0,
+                    itemStyle: {
+                        color: '#8D6ADD'
+                    }
+                }]
+            };
+            echarts.init(document.getElementById('chart1')).setOption(option);
+        });
+    }
+
+    refreshDeviceVar($scope.currentDevice);
+    getRequiredMaxDemand(electricConfig);
+});
+
+app.controller('EnergyQualityMonitorCtrl', function ($scope, varDataService) {
+    var codes = [];
+    var varSnsMap = {};
+    var electricConfig = $scope.getThisMonthElectricConfig();
+    $scope.current = {};
+    $scope.warning = {};        // 告警数据
+
+    $scope.registerDeviceChangeListener(function (device) {
+        getVarsOfDevice();
+    });
+
+    function initCodes() {
+        var phases = ['a', 'b', 'c'];
+        var keys = ['U', 'I'];
+        phases.forEach(function (phase) {
+            keys.forEach(function (k) {
+                codes.push(k+phase);
+            });
+            // 谐波
+            for (var i=1; i<=13; i+=2) {
+                codes.push('harm'+i+'u'+phase);
+                codes.push('harm'+i+'i'+phase)
+            }
+        });
+        codes.push('f');
+        codes.push('PF');
+        codes.push('P');
+        codes.push('Q');
+    }
+    
+    function getVarsOfDevice() {
+        $scope.current = {};
+        varDataService.getVarsOfDevice($scope.currentDevice.sn, codes, function (varMap) {
+            varSnsMap = {};
+            Object.keys(varMap).forEach(function (code) { 
+                varSnsMap[code] = varMap[code].sn;
+            });
+            refresh();
+        });
+    }
+
+    function refresh() {
+
+        var sns = [];
+        Object.keys(varSnsMap).forEach(function (t) { 
+            sns.push(varSnsMap[t]);
+        });
+        varDataService.getRealtimeValue(sns, function (dataList) {
+            var valueMap = {};
+            dataList.forEach(function (d) {
+                valueMap[d.var.var_code] = d.data;
+            });
+            $scope.current = valueMap;
+            paintPolar('chart1', 'voltage', valueMap);
+            paintPolar('chart2', 'current', valueMap);
+            paintThdTrend('chart3', 'voltage', valueMap);
+            paintThdTrend('chart4', 'current', valueMap);
+            calcThd(valueMap);
+            calcUblu(valueMap);
+            calcWarning(valueMap);
+            $scope.$apply();
+        });
+    }
+
+    function getBaseCosFromConfig() {
+        // 从电费配置中获取功率因数标准值，没有的话默认为0.9
+        if (electricConfig && electricConfig.cos_charge) {
+            var obj = JSON.parse(electricConfig.cos_charge);
+            if (obj && obj.normal_cos) {
+                return parseFloat(obj.normal_cos);
+            }
+        }
+        return 0.9;
+    }
+
+    function calcWarning(valueMap) {
+        function _isNumber(v) {
+            if (v === undefined || v === null) {
+                return false;
+            }
+            return true;
+        }
+        // 计算告警的数据
+        var warning = {};
+        if (_isNumber(valueMap.f)) {
+            if (valueMap.f > 50.2 || valueMap.f < 49.8) {
+                warning.f = true;
+            }
+        }
+        // 计算功率因素是否告警
+        var baseCos = getBaseCosFromConfig();
+        if (_isNumber(valueMap.PF)) {
+            if (valueMap.PF < baseCos) {
+                warning.PF = true;
+            }
+        }
+        // 计算无功功率是否告警
+        if (_isNumber(valueMap.P) && _isNumber(valueMap.Q) && valueMap.P>0) {
+            var cos = (valueMap.P) / Math.sqrt(Math.pow(valueMap.P) + Math.pow(valueMap.Q));
+            if (cos < baseCos) {
+                warning.Q = true;
+            }
+        }
+
+        // 电压是否告警
+        ['a', 'b', 'c'].forEach(function (phase) {
+            var voltage = valueMap['U'+phase];
+            if (_isNumber(voltage)) {
+                if (voltage > 220*1.07 || voltage < 220*0.93) {
+                    warning['U' + phase] = true;
+                }
+            }
+
+            // 谐波畸变率，额定电压<=400V时，需<5%
+            if (_isNumber(valueMap['thdu' + phase])) {
+                var thdu = valueMap['thdu' + phase];
+                if (thdu > 5) {
+                    warning['thdu' + phase] = true;
+                }
+            }
+        });
+        // 不平衡度，<2%
+        if (_isNumber(valueMap['ublup'])) {
+            if (valueMap['ublup'] > 2) {
+                warning['ublup'] = true;
+            }
+        }
+        $scope.warning = warning;
+    }
+    
+    function calcUblu(valueMap) {     // 计算电压/电流不平衡度
+        var codes = ['U', 'I'];
+        var phases = ['a', 'b', 'c'];
+        var data = {};
+        codes.forEach(function (code) {
+            var dataList = [];
+            var max = null, min = null;
+            phases.forEach(function (p) {
+                var varCode = code + p;
+                var value = valueMap[varCode];
+                if (value !== null && value !== undefined) {
+                    dataList.push(value);
+                    if (max === null || max < value) {
+                        max = value;
+                    }
+                    if (min === null || min < value) {
+                        min = value;
+                    }
+                }
+            });
+            var key = 'ubl' + code.toLowerCase() + 'p';
+            var value = null;
+            if (max) {
+                value = parseFloat(((max-min)/max*100).toFixed(2));
+            }
+            $scope.current[key] = value;
+        });
+        return data;
+    }
+    
+    function calcThd(valueMap) {
+        var phases = ['ua', 'ub', 'uc', 'ia', 'ib', 'ic'];
+        var thdMap = {};
+        phases.forEach(function (phase) {
+            var dataList = [];
+            for (var i=1; i<=13; i+=2) {
+                dataList.push(valueMap['harm' + i + phase]);
+            }
+            if (!dataList || !dataList.length) {
+                thdMap[phase] = null;
+                return;
+            }
+            var count = null;
+            for (var i=1; i<dataList.length; i++) {
+                if (dataList[i] !== null && dataList[i] !== undefined) {
+                    var v = dataList[i]*dataList[i];
+                    count = count === null ? v : (count + v);
+                }
+            }
+            if (count === null || dataList[0] === null) {
+                thdMap[phase] = null;
+                return;
+            }
+            // 对和进行开根号，并除以一次谐波
+            thdMap[phase] = parseFloat((Math.sqrt(count) / dataList[0] * 100).toFixed(2));
+        });
+        Object.keys(thdMap).forEach(function (key) {
+            $scope.current['thd' + key] = thdMap[key];
+        })
+    }
+    
+    function paintPolar(chartId, type, varDatas) {
+        // 三相不平衡图， type=current、voltage
+        var aseries = [];
+        var keys = type === 'current' ? [{code: 'I', ang: 'angi', name: '电流', unit: 'A'}] : [{code: 'U', ang: 'angu', name: '电压', unit: 'V'}];
+        keys.forEach(function (key) {
+            var phases = [
+                {color: '#F5BC4F', name: 'A相', code: 'a', startAngle: 0},
+                {color: '#45c6b1', name: 'B相', code: 'b', startAngle: 120},
+                {color: '#e94a45', name: 'C相', code: 'c', startAngle: 240}];
+            phases.forEach(function (phase) {
+
+                var tmpAng = varDatas[key.ang + phase.code];
+                var value = varDatas[key.ang + phase.code];
+                if (value === null || value === undefined) {
+                    aseries.push({
+                        type: 'graph',
+                        data: [0, 0],
+                        edgeSymbol: ['', ''],
+                    });
+                    return;
+                }
+                var angle = (tmpAng === null || tmpAng === undefined) ? 0 : (tmpAng);
+                var tempSeries = {
+                    type: 'graph',
+                    coordinateSystem: 'polar',
+                    name: '',
+                    symbolSize: 1,
+                    edgeSymbol: ['', 'arrow'],
+                    data: [[0, 0], {name: (phase.name + key.name), value: [value, angle]}],
+                    label: {
+                        normal: {
+                            show: true,
+                        },
+                    },
+                    links: [{
+                        source:0,
+                        target:1,
+                    }],
+                    tooltip:{
+                        formatter: "{a}",
+                    },
+                    itemStyle: {
+                        normal: {
+                            label: {
+                                position: ['500%', '500%'],
+                                textStyle: {
+                                    fontSize: 16,
+                                    color: phase.color,
+                                },
+                            },
+                        }
+                    },
+                    lineStyle: {
+                        normal: {
+                            width: 3,
+                            color: phase.color,
+                        },
+                    },
+                };
+                aseries.push(tempSeries);
+            });
+        });
+        var option = {
+            title: {
+                left: 'center',
+                text: '',
+                textStyle: {
+                    color: '#787878',
+                },
+            },
+            polar: {
+                radius: 50,
+            },
+            tooltip: {
+                trigger: 'item',
+                axisPointer: {
+                    type: 'cross',
+                },
+            },
+            grid: {
+                top: 100,
+                show: false,
+            },
+            angleAxis: {
+                type: 'value',
+                startAngle: 0,
+                min: 0,
+                max: 360,
+            },
+            radiusAxis: {
+                splitNumber: 3,
+                axisLabel: {
+                    color: '#999',
+                },
+            },
+            series: aseries,
+        };
+        echarts.init(document.getElementById(chartId)).setOption(option);
+    }
+
+    function paintThdTrend(chartId, type, varDatas) {
+        /**
+         * 画谐波趋势图
+         * type: current、voltage
+         */
+        var phases = [
+            {color: '#F5BC4F', name: 'A相', code: 'a'},
+            {color: '#45c6b1', name: 'B相', code: 'b'},
+            {color: '#e94a45', name: 'C相', code: 'c'}];
+        var keys = type === 'current' ? {code: 'i', name: '电流', unit: 'A'} : {code: 'u', name: '电压', unit: 'V'};
+        var xAxis = [];
+        for (var i=1; i<=13; i+=2) {
+            if (i === 1) {
+                xAxis.push('基波');
+            } else {
+                xAxis.push(i + '次');
+            }
+        }
+        var series = [];
+        phases.forEach(function (phase) {
+            var datas = [];
+            for (var i=1; i<=13; i++) {
+                var key = 'harm' + i + keys.code + phase.code;
+                if (i === 1) {
+                    // 如果一次谐波不存在，就用电压或电流值来替代
+                    if (varDatas[key] === undefined) {
+                        datas.push(varDatas[keys.code.toUpperCase() + phase.code]);
+                    } else {
+                        datas.push(varDatas[key]);
+                    }
+                } else {
+                    datas.push(varDatas[key]);
+                }
+            }
+            series.push({
+                type: 'line',
+                name: phase.name,
+                data: datas,
+                symbolSize: 2,
+                itemStyle: {
+                    color: phase.color
+                }
+            });
+        });
+        var option = {
+            grid: {
+                top: 25,
+                left: 35,
+                right: 10,
+                bottom: 25
+            },
+            legend: {
+                data: ['A相', 'B相', 'C相'],
+                right: 0,
+                textStyle: {
+                    color: '#6b6b6b',
+                    fontSize: 10
+                },
+                itemHeight: 10
+            },
+            tooltip: {
+                trigger: 'axis',
+            },
+            xAxis: {
+                type: 'category',
+                data: xAxis,
+                axisLabel: {
+                    fontSize: 11,
+                    color: '#6b6b6b'
+                },
+                axisLine: {
+                    lineStyle: {
+                        color: '#E7EAED'
+                    }
+                }
+            },
+            yAxis: {
+                name: keys.unit,
+                type: 'value',
+                splitNumber: 4,
+                nameTextStyle: {
+                    color: '#6b6b6b',
+                },
+                nameGap: 5,
+                axisLabel: {
+                    fontSize: 11,
+                    color: '#6b6b6b',
+                    formatter: '{value}'
+                },
+                axisLine: {
+                    lineStyle: {
+                        color: '#E7EAED'
+                    }
+                },
+                splitLine: {
+                    lineStyle: {
+                        color: '#E7EAED'
+                    }
+                },
+                axisTick: {
+                    show: false
+                }
+            },
+            series: series
+        };
+        echarts.init(document.getElementById(chartId)).setOption(option);
+    }
+
+    $scope.getPercent = function (v) {      // 用于界面显示百分比数据
+        if (v === undefined || v === null) {
+            return '-';
+        }
+        return v + '%';
+    };
+
+    initCodes();
+    getVarsOfDevice();
 });

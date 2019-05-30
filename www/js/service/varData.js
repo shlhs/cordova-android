@@ -1,5 +1,18 @@
 app.service('varDataService', function (ajax, platformService) {
 
+    // 获取变量实时值
+    this.getRealtimeValue = function (sns, callback) {
+        ajax.get({
+            url: platformService.getDeviceMgmtHost() + '/variables/data/realtime?sns=' + sns.join(','),
+            success: function (dataList) {
+                callback(dataList);
+            },
+            error: function (dataList) {
+                callback([]);
+            }
+        })
+    };
+
     // 获取变量历史趋势
     this.getHistoryTrend = function (sns, startTime, endTime, queryPeriod, calcMethod, callback) {
         /**
@@ -17,11 +30,13 @@ app.service('varDataService', function (ajax, platformService) {
                 queryPeriod: queryPeriod
             },
             success: function (data) {
-                data.forEach(function (item) {
-                    var result = fillTrendDataVacancy(startTime, endTime, queryPeriod, item.time_keys, item.datas, 'YYYY-MM-DD HH:mm:ss.000');
-                    item.time_keys = result.time_keys;
-                    item.datas = result.datas;
-                });
+                if (queryPeriod !== 'NORMAL') {
+                    data.forEach(function (item) {
+                        var result = fillTrendDataVacancy(startTime, endTime, queryPeriod, item.time_keys, item.datas, 'YYYY-MM-DD HH:mm:ss.000');
+                        item.time_keys = result.time_keys;
+                        item.datas = result.datas;
+                    });
+                }
                 callback(data);
             }
         })
