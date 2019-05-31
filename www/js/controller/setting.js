@@ -1,6 +1,6 @@
 "use strict";
 
-app.controller('SettingCtrl', function ($scope, platformService, userService, $state) {
+app.controller('SettingCtrl', function ($scope, platformService, userService, routerService) {
     $scope.pwd1 = '';
     $scope.pwd2 = '';
     $scope.pwdError = '';
@@ -16,6 +16,27 @@ app.controller('SettingCtrl', function ($scope, platformService, userService, $s
             window.android.logout();
         }
         location.href = '/templates/login.html?finishPage=1';
+    };
+
+    $scope.openUiSwitchModal = function () {
+        routerService.openPage($scope, '/templates/setting/uiModeSwitchModal.html', {
+            mode: $scope.uiMode === ENERGY_MODE ? ENERGY_MODE : 'cloud'
+        }, {
+            hidePrev: false
+        });
+    };
+});
+
+app.controller('UiModeSwitchCtrl', function ($scope, platformService) {
+
+    var oldMode = $scope.mode;
+
+    $scope.confirmModel = function () {
+        if ($scope.mode !== oldMode) {
+            platformService.setUiMode($scope.mode === ENERGY_MODE ? ENERGY_MODE : '');
+            $scope.$emit('onUiModeChange');
+        }
+        history.back();
     };
 });
 

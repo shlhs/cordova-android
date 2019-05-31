@@ -541,6 +541,18 @@ aside.light .mui-table-view-cell>a:not(.mui-btn){
 .nav-sites{
     background-image: url('../img/dashboard/icon-home-sites@2x.png');
 }
+.nav-energy {
+    background-image: url('../img/dashboard/icon-home-energy.jpg');
+}
+.nav-setting2 {
+    background-image: url('../img/dashboard/icon-home-profile2.jpg');
+}
+.mui-active>.nav-energy {
+    background-image: url('../img/dashboard/icon-home-energy-active.jpg');
+}
+.mui-active>.nav-setting2 {
+    background-image: url('../img/dashboard/icon-home-profile2-active.jpg');
+}
 .mui-active>.nav-sites {
     background-image: url('../img/dashboard/icon-home-sites-active@2x.png');
 }
@@ -552,6 +564,18 @@ aside.light .mui-table-view-cell>a:not(.mui-btn){
 }
 .mui-active>.nav-icon.todo{
     background-image: url("../img/dark/64X64/todo_active.png");
+}
+.energy .nav-icon.nav-sites {
+    background-image: url('../img/dashboard/icon-home-energy.jpg');
+}
+.energy .nav-icon.nav-setting {
+    background-image: url('../img/dashboard/icon-home-profile2.jpg');
+}
+.energy>.mui-active>.nav-icon.nav-sites {
+    background-image: url('../img/dashboard/icon-home-energy-active.jpg');
+}
+.energy>.mui-active>.nav-icon.nav-setting {
+    background-image: url('../img/dashboard/icon-home-profile2-active.jpg');
 }
 .profile{
 background-image: url("../img/light/64X64/profile.png");
@@ -593,6 +617,9 @@ background-image: url("../img/light/64X64/profile.png");
 }
 .mui-active>.mui-tab-label {
     color: rgb(88,107,243) !important;
+}
+.energy>.mui-active>.mui-tab-label {
+    color: #4889fe !important;
 }
 .mui-bar-tab.nav-horizontal .mui-tab-item .mui-icon{
     height: 22px;
@@ -2606,6 +2633,7 @@ color: #a7a7a7;
     transform: translate3d(-50%,-50%,0) scale(1);
     width: 80%;
     border-radius: 4px;
+    background-color: #fff;
 }
 .property-editor-popup .mui-popup-inner {
     border-radius: 4px 4px 0 0;

@@ -3,7 +3,11 @@
  * Created by liucaiyun on 2017/5/4.
  */
 var app = angular.module('myApp', ['ngAnimate', 'ui.router', 'ui.router.state.events']);
-const loginExpireCheckEnable = false;       // 是否检查鉴权过期
+var loginExpireCheckEnable = false;       // 是否检查鉴权过期
+
+
+var gEnableUiModeChange = true;     // 是否开启选择界面模式的功能
+var ENERGY_MODE = "energy";
 
 app.run(function ($animate) {
     $animate.enabled(true);
@@ -183,14 +187,6 @@ app.service('platformService', function () {
         return null;
     };
 
-    this.getUiMode = function () {
-        return getStorageItem('uiMode');
-    };
-
-    this.setUiMode = function (mode) {
-        setStorageItem('uiMode', mode);
-    };
-
     this.getHost = function () {
         // 格式为： http://ip:port/v1
         var platform = this.getLatestPlatform();
@@ -234,6 +230,14 @@ app.service('platformService', function () {
 
     this.getIpcServiceHost = function () {
         return this.ipAddress + ':8095/v1';
+    };
+
+    this.getUiMode = function () {      // 获取UI模式，如果是energy的话则使用能效管理界面
+        return getStorageItem('globalUiMode');
+    };
+
+    this.setUiMode = function (mode) {
+        setStorageItem('globalUiMode', mode);
     };
 
     this.host = this.getHost();

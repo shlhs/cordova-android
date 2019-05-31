@@ -7,7 +7,6 @@
 var gPublicApiHost = 'http://47.104.75.86:8090';        // 公有云接口
 // var gPublicApiHost = 'http://47.105.143.250:8090';        // 因泰来接口
 var defaultPlatCode = "";    // 如果有默认的平台编码，则不需要用户输入
-var uiMode = "energy";      // 界面模式，energy 或 cloud
 
 
 app.controller('LoginCtrl', function ($scope, $timeout, platformService, userService, $state, $http, ajax) {
@@ -21,12 +20,16 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
     $scope.isLogin = false;
     $scope.isAutoLogin = false;
     $scope.passwordVisible = false;
+    $scope.enableUiModeChange = gEnableUiModeChange;
+    $scope.energyMode = platformService.getUiMode() === ENERGY_MODE;
 
     $scope.togglePasswordVisible = function () {
         $scope.passwordVisible = !$scope.passwordVisible;
     };
 
-    platformService.setUiMode('energy');
+    $scope.onChangeUiMode = function ($event) {
+        $scope.energyMode = $event.target.checked;
+    };
 
     $scope.inputChange = function () {
         if ($scope.platformCode && $scope.username && $scope.password) {
@@ -60,7 +63,6 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
             username: $scope.username,
             password: $scope.password
         };
-        // loginUrl = 'http://118.190.51.135:8096/v1';
         loginUrl = platformService.getAuthHost();
         $scope.isLogin = true;
         $.ajax({
@@ -87,6 +89,7 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
                 } else {
                     toast('用户名或密码错误');
                 }
+                platformService.setUiMode($scope.energyMode ? ENERGY_MODE : '');
             },
             error :function () {
                 $scope.enable = true;
@@ -108,12 +111,12 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
             ignoreAuthExpire: true,
             success: function (data) {
                 userService.saveLoginUser(data, $scope.password);
-                // getCompany();
-                if (window.android){
-                    window.android.loginSuccess();
-                }else{
-                    location.href = '/templates/home.html?finishPage=1';
-                }
+                getCompany();
+                // if (window.android){
+                //     window.android.loginSuccess();
+                // }else{
+                //     location.href = '/templates/home.html?finishPage=1';
+                // }
             },
             error: function () {
                 $scope.enable = true;

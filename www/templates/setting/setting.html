@@ -19,12 +19,18 @@
             <li class="mui-table-view-cell light-border" ng-if="company && company.id">
                 <a ui-sref="index.company" class="mui-navigate-right">运维公司 <i class="mui-pull-right update mui-ellipsis" style="max-width: 60%;">{{company.name}}</i></a>
             </li>
+
             <li class="mui-table-view-cell light-border">
                 <a>关于{{appName}} <i class="mui-pull-right update">{{version}}</i></a>
             </li>
             <!--<li class="mui-table-view-cell">-->
                 <!--<a class="mui-navigate-right" ui-sref="index.share">分享 <i class="mui-pull-right update"></i></a>-->
             <!--</li>-->
+        </ul>
+        <ul class="mui-table-view mui-table-view-chevron no-out-border" style="margin-top: 10px;" ng-if="enableUiModeChange">
+            <li class="mui-table-view-cell light-border" ng-click="openUiSwitchModal()">
+                <a class="mui-navigate-right">界面模式 <i class="mui-pull-right update mui-ellipsis" style="max-width: 60%;">{{uiMode === 'energy' ? '能效管理' : '云平台'}}</i></a>
+            </li>
         </ul>
         <ul class="mui-table-view mt20 no-border" style="margin-top: 30px;">
             <li class="mui-table-view-cell mui-segmented-control-vertical" style="text-align: center;">
