@@ -19,6 +19,7 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
     $scope.isLogin = false;
     $scope.isAutoLogin = false;
     $scope.passwordVisible = false;
+    $scope.screenHeight = window.screen.height;
 
     $scope.togglePasswordVisible = function () {
         $scope.passwordVisible = !$scope.passwordVisible;
