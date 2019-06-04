@@ -123,7 +123,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                         }
                         haveChart = true;
                         needChartCount += 1;
-                        getTrendAnalysis(contentsResult[i].title, deviceVarSns, contentsResult[i].period, $scope.queryTime, contentsResult[i].pfvSettings, contentsResult[i].showType);
+                        getTrendAnalysis(contentsResult[i].title, deviceVarSns, contentsResult[i].period, $scope.queryTime, contentsResult[i].pfvSettings, contentsResult[i].showType, contentsResult[i].calcMethod);
                     }else if(contentsResult[i].type === 'ratio-pie'){
                         var ratioPieData = [];
                         var unit = '';
@@ -581,7 +581,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
         });
     }
 
-    function getTrendAnalysis(name, deviceVarSns, period, queryTime, pfvSettings, inputShowType) {
+    function getTrendAnalysis(name, deviceVarSns, period, queryTime, pfvSettings, inputShowType, inputCalcMethod) {
         var queryType = 'MONTH';
         if(period == 'current_day') {
             queryType = 'DAY';
@@ -589,6 +589,11 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
             queryType = 'YEAR';
         } else if(period == 'normal') {
             queryType = 'NORMAL';
+        }
+
+        var calcMethod = 'AVG';
+        if(inputCalcMethod && inputCalcMethod.toLowerCase() == 'max') {
+            calcMethod = 'MAX';
         }
 
         var showType = 'line';
@@ -605,7 +610,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
             data: {
                 sns: deviceVarSns.join(','),
                 type: queryType,
-                calcmethod: 'AVG',
+                calcmethod: calcMethod,
                 querytime: queryTime.substr(0,10) + 'T' + queryTime.substr(11,8) + '.000Z'
             },
             success: function (data) {
