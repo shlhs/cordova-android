@@ -4,18 +4,12 @@
         <a class="mui-icon mui-pull-left text-white" ng-click="cancel()" style="color: rgb(68,68,68);font-size: 16px;top:6px;">取消</a>
         <h1 class="mui-title" style="color: rgb(68,68,68);font-weight: bold;font-size: 18px;left: 60px;right:60px;">监测点选择</h1>
     </header>
-    <div style="position: fixed;bottom: 0;top: 60px;width: 100%;">
-        <div class="site-search-comp">
-            <div class="search-wrapper">
-                <i class="icon icon-search"></i>
-                <input placeholder="支持设备名称和编号搜索" oninput="angular.element(this).scope().searchInputChange(this)">
-            </div>
-        </div>
-        <div class="site-tree" style="position: absolute; top: 50px;bottom:0;width:100%;overflow-y: auto;">
-            <ul class="tree-group">
+    <div style="position: fixed;bottom: 0;top: 60px;width: 100%;background-color: #fff;">
+        <div class="site-tree" >
+            <ul class="tree-group device-tree-selector">
                 <li class="tree-cell" ng-repeat="item in treeData"
                     ng-class="{'active': item.$$isExpend, 'collapse': !isLeaf(item), 'is-leaf': isLeaf(item)}"
-                    ng-include="'/templates/site/site-tree/tree-item.html'"
+                    ng-include="'/templates/energy/device-selector/tree-item.html'"
                     ng-if="!item.unvisible"
                 ></li>
             </ul>

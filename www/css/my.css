@@ -3339,3 +3339,20 @@ table.dataTable tbody th, table.dataTable tbody td {
     color: #fff;
     background-color: #5690FF;
 }
+.device-tree-selector .node-group {
+    background-image: url("../img/device-node.png");
+}
+.device-tree-selector .tree-cell>a.selected {
+    background-color: transparent;
+}
+.device-tree-selector .tree-cell>a.selected {
+    position: relative;
+}
+.device-tree-selector .tree-cell>a.selected:after {
+    display: inline-block;
+    content: '\e605';
+    font-family: "iconfont" !important;
+    font-size: 24px;
+    color: #007aff;
+}
+

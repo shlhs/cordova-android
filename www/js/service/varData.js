@@ -148,7 +148,7 @@ app.service('varDataService', function (ajax, platformService) {
             data: {
                 sns: sn,
                 type: 'MONTH',
-                startTime: month.format('YYYY-MM-01 00:00:00.000')
+                querytime: month.format('YYYY-MM-01T00:00:00.000') + 'Z'
             },
             success: function (data) {
                 if (data && data.length) {
@@ -202,4 +202,23 @@ app.service('varDataService', function (ajax, platformService) {
             }
         })
     };
+});
+
+app.service('collectorService', function (ajax, platformService) {
+
+   this.getMonitorDevice = function (sn, callback) {
+       ajax.get({
+           url: platformService.getDeviceMgmtHost() + '/management/devices/' + sn,
+           success: function (response) {
+                if (response && response.data) {
+                    callback(response.data);
+                } else {
+                    callback(null);
+                }
+           },
+           error: function () {
+               callback(null);
+           }
+       })
+   }
 });

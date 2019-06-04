@@ -49,7 +49,7 @@ EnergyFuncApi.prototype.fetchAndCalcCharges = function (stationSn, electricConfi
     // 基本电费：不管有没有用电，都需要计算
     if (electricConfig) {
         var obj = JSON.parse(electricConfig.capacity_charge);
-        var capacityResult = this.calcCapacityCharge(obj, device.vc, null);
+        var capacityResult = this.calcCapacityCharge(obj, device.capacity, null);
         Object.assign(returnObj, capacityResult);
     }
 
@@ -119,7 +119,7 @@ EnergyFuncApi.prototype.fetchAndCalcCharges = function (stationSn, electricConfi
                         cos = parseFloat((pValue/s).toFixed(2));
                     }
                     // 计算总电费
-                    var result = self.calcFullCharge(electricConfig, device.vc, degreeData.allDegree, degreeData.allCharge, cos, maxDemand);
+                    var result = self.calcFullCharge(electricConfig, device.capacity, degreeData.allDegree, degreeData.allCharge, cos, maxDemand);
 
                     Object.assign(returnObj, result, {
                         cos: cos,
@@ -454,12 +454,12 @@ EnergyFuncApi.prototype.calcAvgMaxLoadAndTrend = function (dataList, month) {
 app.controller('EnergyBaseCtrl', function ($scope, ajax, platformService, routerService, varDataService) {
     $scope.stationSn = GetQueryString('sn');
     $scope.stationName = GetQueryString('name');
-    $scope.stationCapacity = GetQueryString("vc");
+    $scope.stationCapacity = GetQueryString("capacity");
     $scope.devices = [];
     $scope.currentDevice = {
         sn: GetQueryString('device_sn'),
         name: GetQueryString("device_name"),
-        vc: GetQueryString('vc') || null
+        capacity: GetQueryString('capacity') || null
     };
 
     $scope.contentHeight = window.screen.height - 60;
@@ -513,7 +513,7 @@ app.controller('EnergyBaseCtrl', function ($scope, ajax, platformService, router
                         var exist = false;
                         $scope.devices.forEach(function (d) {
                             d.sn = d.device_sn;
-                            d.vc = $scope.stationCapacity;
+                            d.capacity = $scope.stationCapacity;
                             if ($scope.currentDevice && $scope.currentDevice.sn === d.sn) {
                                 exist = true;
                             }
@@ -657,6 +657,96 @@ app.controller('EnergyBaseCtrl', function ($scope, ajax, platformService, router
 
     initDatePicker();
 });
+
+function paintAvgLoadTrendByDay(chartId, times, datas) {
+    if (!times || !times.length) {
+        return;
+    }
+    var option = {
+        grid: {
+            top: 25,
+            left: 40,
+            right: 35,
+            bottom: 25
+        },
+        tooltip: {
+            trigger: 'axis',
+            formatter: '{b0}: {c0}%'
+        },
+        xAxis: {
+            type: 'category',
+            data: times,
+            axisLabel: {
+                fontSize: 11,
+                color: '#6b6b6b'
+            },
+            axisLine: {
+                lineStyle: {
+                    color: '#E7EAED'
+                }
+            }
+        },
+        yAxis: {
+            type: 'value',
+            axisLabel: {
+                fontSize: 11,
+                color: '#6b6b6b',
+                formatter: '{value}%'
+            },
+            axisLine: {
+                lineStyle: {
+                    color: '#E7EAED'
+                }
+            },
+            splitLine: {
+                lineStyle: {
+                    color: '#E7EAED'
+                }
+            },
+        },
+        series: [{
+            data: datas,
+            type: 'line',
+            symbolSize: 0,
+            itemStyle: {
+                color: '#8D6ADD'
+            },
+            markPoint: {
+                data: [
+                    {type: 'max', name: '最大值', offset: [0, -12]},
+                    {
+                        type: 'min',
+                        name: '最大值',
+                        symbolRotate: 180,
+                        label: {
+                            offset: [0, -18],
+                        }
+                    },
+                ],
+                symbolSize: 15,
+                label: {
+                    fontSize: 10,
+                    color: '#666',
+                    offset: [0, -12],
+                    formatter: '{c}%'
+                }
+            },
+            markLine: {
+                data: [
+                    {type: 'average', name: '平均值'}
+                ],
+                label: {
+                    fontSize: 10,
+                    color: '#666',
+                    formatter: '{c}%',
+                    offset: [-5, 0]
+                },
+                symbolSize: [0, 8]
+            }
+        }]
+    };
+    echarts.init(document.getElementById(chartId)).setOption(option);
+}
 
 // 能源管理
 app.controller('EnergyHomeCtrl', function ($scope, ajax, platformService, varDataService) {
@@ -906,88 +996,10 @@ app.controller('EnergyOverviewCtrl', function ($scope, ajax, platformService, va
                     avgLoad: result.avgRate ? result.avgRate + '%' : '-',
                     maxLoad: result.maxRate ? result.maxRate + '%' : '-'
                 });
-                paintMaxLoadTrend(result.trend.times, result.trend.datas);
+                paintAvgLoadTrendByDay('load_chart', result.trend.times, result.trend.datas);
             }
             $scope.$apply();
         });
-    }
-
-    function paintMaxLoadTrend(times, data) {
-        if (!times.length) {
-            return;
-        }
-        var option = {
-            grid: {
-                top: 25,
-                left: 40,
-                right: 10,
-                bottom: 25
-            },
-            tooltip: {
-                trigger: 'axis',
-                formatter: '{b0}: {c0}%'
-            },
-            xAxis: {
-                type: 'category',
-                data: times,
-                axisLabel: {
-                    fontSize: 11,
-                    color: '#6b6b6b'
-                },
-                axisLine: {
-                    lineStyle: {
-                        color: '#E7EAED'
-                    }
-                }
-            },
-            yAxis: {
-                type: 'value',
-                axisLabel: {
-                    fontSize: 11,
-                    color: '#6b6b6b',
-                    formatter: '{value}%'
-                },
-                axisLine: {
-                    lineStyle: {
-                        color: '#E7EAED'
-                    }
-                },
-                splitLine: {
-                    lineStyle: {
-                        color: '#E7EAED'
-                    }
-                }
-            },
-            series: [{
-                data: data,
-                type: 'line',
-                symbolSize: 0,
-                itemStyle: {
-                    color: '#8D6ADD'
-                },
-                markPoint: {
-                    data: [
-                        {type: 'max', name: '最大值', offset: [0, -12]},
-                        {
-                            type: 'min',
-                            name: '最大值',
-                            symbolRotate: 180,
-                            label: {
-                                offset: [0, -18],
-                            }
-                        },
-                    ],
-                    symbolSize: 15,
-                    label: {
-                        fontSize: 10,
-                        color: '#666',
-                        offset: [0, -12],
-                        formatter: '{c}%'
-                    }
-                },
-            }]
-        };
-        echarts.init(document.getElementById('load_chart')).setOption(option);
     }
 
     refreshData($scope.currentDevice);
@@ -1202,7 +1214,7 @@ app.controller('EnergyLoadAnalysisCtrl', function ($scope, varDataService) {
                     var result = energyApi.calcAvgMaxLoadAndTrend(dataList, $scope.selectedDate);
                     $scope.maxLoad = result.maxLoad === null ? '-' : result.maxLoad;
                     $scope.maxLoadRatio = result.maxRate === null ? '-' : result.maxRate + '%';
-                    paintMaxLoadTrendByDay(result.trend.times, result.trend.datas);
+                    paintAvgLoadTrendByDay('chart2', result.trend.times, result.trend.datas);
                 }
                 $scope.$apply();
             });
@@ -1249,7 +1261,6 @@ app.controller('EnergyLoadAnalysisCtrl', function ($scope, varDataService) {
             }
         });
         // 再取平均
-        var vc = $scope.currentDevice.vc;
         var avgList = [];
         for (var i=0; i<=23; i++) {
             var total = 0;
@@ -1326,95 +1337,6 @@ app.controller('EnergyLoadAnalysisCtrl', function ($scope, varDataService) {
             }]
         };
         echarts.init(document.getElementById('chart1')).setOption(option);
-    }
-
-    function paintMaxLoadTrendByDay(times, datas) {
-        if (!times || !times.length) {
-            return;
-        }
-        var option = {
-            grid: {
-                top: 25,
-                left: 40,
-                right: 25,
-                bottom: 25
-            },
-            tooltip: {
-                trigger: 'axis',
-                formatter: '{b0}: {c0}%'
-            },
-            xAxis: {
-                type: 'category',
-                data: times,
-                axisLabel: {
-                    fontSize: 11,
-                    color: '#6b6b6b'
-                },
-                axisLine: {
-                    lineStyle: {
-                        color: '#E7EAED'
-                    }
-                }
-            },
-            yAxis: {
-                type: 'value',
-                axisLabel: {
-                    fontSize: 11,
-                    color: '#6b6b6b',
-                    formatter: '{value}%'
-                },
-                axisLine: {
-                    lineStyle: {
-                        color: '#E7EAED'
-                    }
-                },
-                splitLine: {
-                    lineStyle: {
-                        color: '#E7EAED'
-                    }
-                },
-            },
-            series: [{
-                data: datas,
-                type: 'line',
-                symbolSize: 0,
-                itemStyle: {
-                    color: '#8D6ADD'
-                },
-                markPoint: {
-                    data: [
-                        {type: 'max', name: '最大值', offset: [0, -12]},
-                        {
-                            type: 'min',
-                            name: '最大值',
-                            symbolRotate: 180,
-                            label: {
-                                offset: [0, -18],
-                            }
-                        },
-                    ],
-                    symbolSize: 15,
-                    label: {
-                        fontSize: 10,
-                        color: '#666',
-                        offset: [0, -12],
-                        formatter: '{c}%'
-                    }
-                },
-                markLine: {
-                    data: [
-                        {type: 'average', name: '平均值'}
-                    ],
-                    label: {
-                        fontSize: 10,
-                        color: '#666',
-                        formatter: '{c}%',
-                        offset: [-5, 0]
-                    }
-                }
-            }]
-        };
-        echarts.init(document.getElementById('chart2')).setOption(option);
     }
 
     refreshData($scope.currentDevice);
@@ -1604,7 +1526,7 @@ app.controller('EnergyMaxDemandCtrl', function ($scope, varDataService) {
     getRequiredMaxDemand(capacityConfig);
 });
 
-app.controller('EnergyQualityMonitorCtrl', function ($scope, varDataService) {
+app.controller('EnergyQualityMonitorCtrl', function ($scope, varDataService, collectorService) {
     var codes = [];
     var varSnsMap = {};
     var electricConfig = $scope.getThisMonthElectricConfig();
@@ -1635,6 +1557,10 @@ app.controller('EnergyQualityMonitorCtrl', function ($scope, varDataService) {
     }
     
     function getVarsOfDevice() {
+        collectorService.getMonitorDevice($scope.currentDevice.sn, function (data) {
+           $scope.currentDevice.vc = data.vc || 220;
+           $scope.$apply();
+        });
         $scope.current = {};
         varDataService.getVarsOfDevice($scope.currentDevice.sn, codes, function (varMap) {
             varSnsMap = {};
@@ -2036,7 +1962,7 @@ app.controller('EnergyQualityMonitorCtrl', function ($scope, varDataService) {
     getVarsOfDevice();
 });
 
-app.controller('EnergyQualityReportCtrl', function ($scope, ajax) {
+app.controller('EnergyQualityReportCtrl', function ($scope, ajax, collectorService) {
     $scope.volt = {ua: {}, ub: {}, uc: {}};
     $scope.harm = {ua: {}, ub: {}, uc: {}};
     $scope.freq = {};
@@ -2044,6 +1970,12 @@ app.controller('EnergyQualityReportCtrl', function ($scope, ajax) {
     $scope.isLoading = true;
 
     $scope.registerDeviceChangeListener(function (device) {
+
+        collectorService.getMonitorDevice($scope.currentDevice.sn, function (data) {
+            $scope.currentDevice.vc = data.vc || 220;
+            $scope.$apply();
+        });
+
         getReport();
     });
 
@@ -2097,5 +2029,9 @@ app.controller('EnergyQualityReportCtrl', function ($scope, ajax) {
         })
     }
 
+    collectorService.getMonitorDevice($scope.currentDevice.sn, function (data) {
+        $scope.currentDevice.vc = data.vc || 220;
+        $scope.$apply();
+    });
     getReport();
 });
