@@ -213,7 +213,7 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, appStoreProv
     initMenu();
 });
 
-app.controller('TaskBaseCtrl', function ($scope, ajax, userService, appStoreProvider) {
+app.controller('TaskBaseCtrl', function ($scope, ajax, userService, appStoreProvider, platformService) {
     var stationSn = GetQueryString("sn");
     var deviceSn = GetQueryString("device_sn");     // 如果设备sn不为空，则获取的是设备的运维记录
     $scope.pageTitle = deviceSn ? '运维记录' : '所有任务';

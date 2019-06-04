@@ -40,15 +40,15 @@
         <div class="item" ng-class="{'warning': warning.PF}"><label class="title">功率因数</label><label class="value">{{current.PF}}</label> </div>
     </div>
     <h3 style="color: #333333; font-size: 14px;margin: 10px 0 10px;text-align: center;">三相不平衡</h3>
-    <div>
-        <div style="float:left;height: 100%;width: 50%">
+    <div style="display: flex">
+        <div style="flex: 1;height: 100%;width: 50%">
             <div id="chart1" style="height: 150px;"></div>
             <div style="text-align: center;">
                 <label style="color: #333;font-size: 14px;">{{getPercent(current.ublup)}}</label>
-                <label style="color: #666666;display: block;font-size: 13px">三相电流不平衡度</label>
+                <label style="color: #666666;display: block;font-size: 13px">三相电压不平衡度</label>
             </div>
         </div>
-        <div style="float:left;height: 100%;width: 50%">
+        <div style="flex: 1;height: 100%;width: 50%">
             <div id="chart2" style="height: 150px;"></div>
             <div style="text-align: center;">
                 <label style="color: #333;font-size: 14px;">{{getPercent(current.ublip)}}</label>
@@ -56,19 +56,17 @@
             </div>
         </div>
     </div>
-    <div>
-        <div></div>
-    </div>
-    <table class="monitor-table">
-        <thead>
+    <div style="margin-top: 10px;">
+        <table class="monitor-table">
+            <thead>
             <tr>
                 <th style="width: 120px;"></th>
                 <th>A相</th>
                 <th>B相</th>
                 <th>C相</th>
             </tr>
-        </thead>
-        <tbody>
+            </thead>
+            <tbody>
             <tr>
                 <td class="title">电压(V)</td>
                 <td ng-class="{'warning': warning.Ua}">{{current.Ua}}</td>
@@ -88,8 +86,9 @@
                 <td ng-class="{'warning': warning.thduc}">{{getPercent(current.thduc)}}</td>
             </tr>
             <tr><td class="title">电流总谐波畸变率</td><td>{{getPercent(current.thdia)}}</td><td>{{getPercent(current.thdib)}}</td><td>{{getPercent(current.thdic)}}</td></tr>
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
     <div>
         <div class="chart-title">电压谐波</div>
         <div id="chart3" style="height: 140px"></div>

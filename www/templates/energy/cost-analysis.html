@@ -44,28 +44,28 @@
         <div style="display: flex;width: 100%;padding-top: 12px;">
             <div class="value-tab">
                 <label class="top">{{isCurrentMonth ? '平均电度电价' : '平均电价'}}</label>
-                <label class="value">{{isCurrentMonth ? statisticsObj.avgDegreePrice : statisticsObj.avgPrice}}<span class="unit">元</span></label>
+                <label class="value">{{isCurrentMonth ? showData(statisticsObj.avgDegreePrice) : showData(statisticsObj.avgPrice)}}<span class="unit">元</span></label>
             </div>
         </div>
         <div style="margin-top: 16px; background-color: #fff;min-height: {{contentHeight - 158}}px;">
             <div class="light-value-tabs">
                 <div class="value-tab">
                     <label class="top">电度电费</label>
-                    <label class="value">{{statisticsObj.degreeCharge}}</label>
+                    <label class="value">{{showData(statisticsObj.degreeCharge)}}</label>
                 </div>
                 <div class="value-tab">
                     <label class="top">基本电费</label>
-                    <label class="value">{{statisticsObj.capacityCharge}}</label>
+                    <label class="value">{{showData(statisticsObj.capacityCharge)}}</label>
                 </div>
             </div>
             <div class="light-value-tabs border-top">
                 <div class="value-tab">
                     <label class="top">力率电费</label>
-                    <label class="value">{{statisticsObj.cosCharge}}</label>
+                    <label class="value">{{isCurrentMonth ? '-' : showData(statisticsObj.cosCharge)}}</label>
                 </div>
                 <div class="value-tab">
                     <label class="top">加征(收)电费</label>
-                    <label class="value">{{statisticsObj.additionCharge}}</label>
+                    <label class="value">{{showData(statisticsObj.additionCharge)}}</label>
                 </div>
             </div>
             <div>

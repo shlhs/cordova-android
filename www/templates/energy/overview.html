@@ -53,9 +53,8 @@
         </div>
         <div style="padding-left: 16px; margin-top: 20px;">
             <label class="energy-value-title">{{isCurrentMonth ? '平均电度电价' : '平均电价'}}</label>
-            <label class="energy-value">{{statisticsObj.avgPrice}}</label>
+            <label class="energy-value">{{isCurrentMonth ? statisticsObj.avgDegreePrice : statisticsObj.avgPrice}}</label>
             <label class="energy-value-title">元</label>
-            <label class="energy-value-separate"></label>
             <label class="energy-value-separate"></label>
             <label class="energy-value-title">电度电费</label>
             <label class="energy-value">{{statisticsObj.degreeCharge}}</label>
@@ -65,11 +64,11 @@
             <div class="light-value-tabs">
                 <div class="value-tab">
                     <label class="top">功率因数</label>
-                    <label class="value">{{statisticsObj.cos}}</label>
+                    <label class="value">{{statisticsObj.cos || '-'}}</label>
                 </div>
                 <div class="value-tab">
                     <label class="top">最大需量</label>
-                    <label class="value">{{statisticsObj.maxDemand}}</label>
+                    <label class="value">{{statisticsObj.maxDemand || '-'}}</label>
                 </div>
             </div>
             <div class="light-value-tabs border-top">
@@ -91,7 +90,7 @@
                 <div id="price_chart" style="height: 130px;"></div>
             </div>
             <div>
-                <div class="chart-title">日负荷率最高曲线</div>
+                <div class="chart-title">日负荷率曲线</div>
                 <div id="load_chart" style="height: 130px;"></div>
             </div>
         </div>

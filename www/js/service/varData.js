@@ -76,6 +76,40 @@ app.service('varDataService', function (ajax, platformService) {
         });
     };
 
+    // 获取变量的天统计数据的日趋势
+    this.getVarSummarizedDataByDayTrend = function (sns, startDate, endDate, calcMethod, callback) {
+        /**
+         * startDate/endDate: 'YYYY-MM-DD'格式时间
+         * calcMethod: 列表，取值范围为：MIN,MAX,AVG
+         * callback:  ([
+         *     {
+         *          sn: '',
+         *          max_value_data: '',
+         *          max_value_time: '',
+         *          min_value_data: '',
+         *          min_value_time: '',
+         *          avg_value_data: '',
+         *          avg_value_time: ''
+         *     }
+         * ])
+         */
+        ajax.get({
+            url: platformService.getDeviceMgmtHost() + '/variables/data/summarized/daytrend',
+            data: {
+                sns: sns.join(','),
+                startDate: startDate,
+                endDate: endDate,
+                calcmethod: calcMethod.length ? calcMethod.join(',') : 'MIN,MAX,AVG'
+            },
+            success: function (data) {
+                callback(data);
+            },
+            error: function () {
+                callback([]);
+            }
+        });
+    };
+
     // 按变量属性查询设备的变量
     this.getVarsOfDevice= function (deviceSn, varCodes, callback) {
         // callback({sn1: var1, sn2: var2}) 如果一个code对应了多个变量，那么取返回的第一个变量
@@ -161,11 +195,7 @@ app.service('varDataService', function (ajax, platformService) {
                 queryTime: time.format('YYYY-MM-DDTHH:mm:ss.SSS') + 'Z'
             },
             success: function (data) {
-                callback({
-                    addition_charge: data.addition_charge,
-                    capacity_charge: data.capacity_charge,
-                    cos_charge: data.cos_charge
-                });
+                callback(data);
             },
             error: function () {
                 callback(null);

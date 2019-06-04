@@ -310,12 +310,14 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
         $scope.popup_visible=false;
     };
     $scope.chooseSite = function (site) {
-        $scope.currentSite = site;
-        $scope.searchSiteResult = $scope.sites;
-        localStorage.setItem("currentSite", JSON.stringify(site));
-        $scope.closePopover();
-        $scope.$broadcast('onSiteChange', site.sn, site.name);
-        getMenuDataOfStation();
+        if (!$scope.currentSite || $scope.currentSite.sn !== site.sn) {
+            $scope.currentSite = site;
+            $scope.searchSiteResult = $scope.sites;
+            localStorage.setItem("currentSite", JSON.stringify(site));
+            $scope.closePopover();
+            $scope.$broadcast('onSiteChange', site);
+            getMenuDataOfStation();
+        }
     };
 
     function getCurrentSite() {
@@ -327,7 +329,7 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
             for (var i=0; i<sites.length; i++) {
                 if (sites[i].sn === site.sn) {
                     $scope.currentSite = sites[i];
-                    $scope.$broadcast('onSiteChange', sites[i].sn, sites[i].name);
+                    $scope.$broadcast('onSiteChange', sites[i]);
                     getMenuDataOfStation();
                     return;
                 }
@@ -337,7 +339,7 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
             if (!sites[i].is_group) {
                 $scope.currentSite = sites[i];
                 localStorage.setItem("currentSite", JSON.stringify($scope.currentSite));
-                $scope.$broadcast('onSiteChange', sites[i].sn, sites[i].name);
+                $scope.$broadcast('onSiteChange', sites[i]);
                 getMenuDataOfStation();
                 break;
             }
@@ -555,12 +557,13 @@ app.controller('SiteBaseInfoCtrl', function ($scope, $timeout, $stateParams, aja
 });
 
 
-app.controller('EventListCtrl', function ($scope, $stateParams, scrollerService, userService, ajax, appStoreProvider) {
+app.controller('EventListCtrl', function ($scope, $stateParams, scrollerService, userService, ajax, appStoreProvider, platformService) {
     $scope.sn = GetQueryString('sn');
     var checked = GetQueryString('status') === '0' ? 0 : 1;
     $scope.isDevice = false;   // 是设备还是站点
     $scope.canCreateTask = userService.getUserRole() === UserRole.Normal ? false : true;
 
+    $scope.energyMode = platformService.getUiMode() === ENERGY_MODE;
     $scope.hasOpsAuth = appStoreProvider.hasOpsAuth();
 
     var deviceSn = GetQueryString("deviceSn");

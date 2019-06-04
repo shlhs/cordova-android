@@ -16,7 +16,7 @@
                 </a>
             </header>
         </div>
-        <div ng-controller="EnergyHomeCtrl">
+        <div ng-controller="EnergyHomeCtrl" style="height: calc(100% - 60px);">
             <div style="display: flex;height: 130px;width: 100%;padding-top: 12px;">
                 <div class="value-tab">
                     <label class="top">本月平均电度电价</label>
@@ -46,7 +46,7 @@
                 <div class="card round-card apps" style="padding: 0;margin-top: 0;" ng-if="stationSn">
                     <ul class="mui-table-view mui-grid-view mui-grid-9 no-border entrance-list" style="background-color: transparent;border-radius: 0;">
                         <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border" ng-repeat="app in selectedApps">
-                            <a href="{{app.templateUrl}}?sn={{stationSn}}&name={{stationName}}&device_sn={{currentDevice.sn}}&device_name={{currentDevice.name}}&vc={{currentDevice.vc || ''}}" style="padding: 6px 0 0 0;">
+                            <a href="{{app.templateUrl}}?sn={{stationSn}}&name={{stationName}}&device_sn={{currentDevice.sn}}&device_name={{currentDevice.name}}&vc={{stationCapacity}}" style="padding: 6px 0 0 0;">
                                 <span class="mui-icon icon icon-40 {{app.icon}}"></span>
                                 <div class="mui-media-body">{{app.name}}</div>
                             </a>
@@ -54,19 +54,19 @@
                     </ul>
                 </div>
             </div>
-            <div style="background-color: #fff;height: calc(100% - 230px)" ng-show="!isLoading && currentDevice && !degreeVarSn">
+            <div style="background-color: #fff;height: calc(100% - 170px)" ng-show="!isLoading && currentDevice && !degreeVarSn">
                 <div class="no-station" style="text-align: center;">
                     <i class="alert-icon"></i>
                     <label class="alert-info">监测点未配置电度变量，无法读取数据</label>
                 </div>
             </div>
-            <div style="background-color: #fff;height: {{contentHeight - 220}}px;" ng-show="!isLoading && !currentDevice">
+            <div style="background-color: #fff;height: {{contentHeight - 170}}px;" ng-show="!isLoading && !currentDevice">
                 <div class="no-station" style="text-align: center;">
                     <i class="alert-icon"></i>
-                    <label class="alert-info">站点未配置监测点</label>
+                    <label class="alert-info">站点未配置用电监测点</label>
                 </div>
             </div>
-            <div class="no-station" ng-if="!isLoading && !stationSn" style="text-align: center;height: {{contentHeight - 220}}px;">
+            <div class="no-station" ng-if="!isLoading && !stationSn" style="text-align: center;height: {{contentHeight - 170}}px;">
                 <i class="alert-icon"></i>
                 <label class="alert-info">未配置站点，<a ng-click="getDataList()">重新加载</a></label>
             </div>

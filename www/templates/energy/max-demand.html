@@ -48,8 +48,12 @@
                 <label class="bottom">发生时间：{{maxDemandTime}}</label>
             </div>
         </div>
-        <div class="h-values value-mask" style="padding: 10px 28px;margin-top: 20px;">
-            <div class="item" style="text-align: left;"><span class="name" style="font-size: 13px;">申报需量</span> <span class="value" style="font-size: 15px;">{{requiredMaxDemand}}</span> <span class="unit">kW</span></div>
+        <div class="h-values value-mask" style="padding: 10px 28px;margin-top: 20px;display: block;">
+            <div class="item" style="text-align: left;font-size: 14px;"><span class="name" style="font-size: 13px;">申报需量</span> <span class="value" style="font-size: 15px;">{{requiredMaxDemand}}</span> <span class="unit">kW</span></div>
+            <div class="opt-tip" style="margin-top: 4px;" ng-if="showTip">
+                需量调整为{{optMaxDemand}}kW，可节省电费{{saveMoney}}元
+                <span class="hand left"></span>
+            </div>
         </div>
         <div style="background-color: #fff;min-height: {{contentHeight - 226}}px;">
             <div>
