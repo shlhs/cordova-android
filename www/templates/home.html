@@ -22,6 +22,7 @@
     <script type="text/javascript" src="../js/service/common-service.js"></script>
     <script type="text/javascript" src="../js/router/router.js"></script>
     <link rel="stylesheet" href="../components/mui/css/mui.min.css">
+    <link rel="stylesheet" href="../components/mui/css/mui.picker.min.css">
     <link rel="stylesheet" href="../css/my.css">
     <link rel="stylesheet" href="../css/icon.css">
     <link rel="stylesheet" href="../css/task.css">
@@ -52,7 +53,7 @@
         }
     </style>
 
-<body class="box-vertical-center" ng-app="myApp" ng-controller="HomeCtrl">
+<body class="box-vertical-center timeType-MONTH" ng-app="myApp" ng-controller="HomeCtrl">
 <div ng-include="'/templates/top-menu.html'"></div>
     <div class="mui-content no-padding" style="height: auto;top: 0;">
         <div style="height: 100%;overflow-y: hidden;" ng-controller="TaskBaseCtrl">
@@ -101,7 +102,9 @@
     <script src="../js/controller/monitor.js"></script>
     <script src="../js/controller/kanban.js"></script>
     <script src="../components/moment.min.js"></script>
-    <script src="../components/echart/echarts.common.min.js"></script>
+    <script src="../components/echart/echarts.min-3.x.js"></script>
+    <script src="../components/mui/js/mui.min.js"></script>
+    <script src="../components/mui/js/mui.picker.min.js"></script>
     <script id="grab-task-template" type="text/x-handlebars-template">
         <div class="mui-popup mui-popup-in android-dialog" style="display: block;">
             <div class="mui-popup-inner">

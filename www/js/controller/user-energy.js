@@ -452,21 +452,20 @@ EnergyFuncApi.prototype.calcAvgMaxLoadAndTrend = function (dataList, month) {
 
 // 能源管理基础控制，主要用于获取所有监测点，并显示设备显示页面
 app.controller('EnergyBaseCtrl', function ($scope, ajax, platformService, routerService, varDataService) {
-    $scope.stationSn = GetQueryString('sn');
-    $scope.stationName = GetQueryString('name');
-    $scope.stationCapacity = GetQueryString("capacity");
+    $scope.stationSn = $scope.stationSn || GetQueryString('sn');
+    $scope.stationName = $scope.stationName || GetQueryString('name');
+    $scope.stationCapacity = $scope.capacity|| GetQueryString("capacity");
     $scope.devices = [];
     $scope.currentDevice = {
-        sn: GetQueryString('device_sn'),
-        name: GetQueryString("device_name"),
-        capacity: GetQueryString('capacity') || null
+        sn: $scope.device_sn || GetQueryString('device_sn'),
+        name: $scope.device_name || GetQueryString("device_name"),
+        capacity: $scope.capacity
     };
 
     $scope.contentHeight = window.screen.height - 60;
     $scope.isLoading = true;
     $scope.selectedDate = moment();
     $scope.showDateName = $scope.selectedDate.format('YYYY.MM');
-    $scope.chargesData = {};            // 设备总电费数据
     $scope.isCurrentMonth = true;       // 所选月份是否当前月份
     var datePicker = null;
     var energyApi = new EnergyFuncApi($scope, varDataService);
@@ -474,6 +473,20 @@ app.controller('EnergyBaseCtrl', function ($scope, ajax, platformService, router
     var deviceChangeFunc = function (device) {};    //
     var dateChangeFunc = function (date) {};
     var stationElectricConfig = null;
+
+    $scope.openAppPage = function (app, $index) {
+        if ($index < 6) {
+            routerService.openPage($scope, app.templateUrl, {
+                sn: $scope.stationSn,
+                name: $scope.stationName,
+                device_sn: $scope.currentDevice.sn,
+                device_name: $scope.currentDevice.name,
+                capacity: $scope.currentDevice.capacity
+            });
+        } else {
+            window.location.href = app.templateUrl + '?sn=' + $scope.stationSn + '&name=' + $scope.stationName + '&device_sn=' + $scope.currentDevice.sn + '&device_name=' + $scope.currentDevice.name;
+        }
+    };
 
     $scope.$on('onSiteChange', function (event, station) {
         if (station && $scope.stationSn !== station.sn) {
@@ -537,10 +550,6 @@ app.controller('EnergyBaseCtrl', function ($scope, ajax, platformService, router
     $scope.onChangeDevice = function (device) {
         if (device && (!$scope.currentDevice || device.sn !== $scope.currentDevice.sn)) {
             $scope.currentDevice = device;
-            energyApi.fetchAndCalcCharges($scope.stationSn, stationElectricConfig, device, $scope.selectedDate, function (result) {
-                $scope.chargesData = result;
-                $scope.$apply();
-            });
             if (deviceChangeFunc) {
                 deviceChangeFunc(device);
             }
@@ -654,8 +663,10 @@ app.controller('EnergyBaseCtrl', function ($scope, ajax, platformService, router
     });
 
     onSiteChange({sn: $scope.stationSn, name: $scope.stationName});
+    setTimeout(function () {
+        initDatePicker();
+    }, 600);
 
-    initDatePicker();
 });
 
 function paintAvgLoadTrendByDay(chartId, times, datas) {
@@ -1354,6 +1365,8 @@ app.controller('EnergyMaxDemandCtrl', function ($scope, varDataService) {
     $scope.showTip = false;     // 是否显示优化建议，只有显示当月电费时才需要计算
     $scope.optMaxDemand = null;     // 优化的核定需量
     $scope.saveMoney = null;        // 可节省的电费
+    $scope.startDate = moment().format('YYYY-MM-DD');
+    $scope.endDate = moment().format('YYYY-MM-DD');
 
     var pSn = null;
 
@@ -1369,11 +1382,61 @@ app.controller('EnergyMaxDemandCtrl', function ($scope, varDataService) {
         refreshDeviceVar(device);
     });
 
+    var startDatePicker = null, endDatePicker = null;
+    function initDatePicker() {
+        document.getElementById('datePicker1').addEventListener('tap', function() {
+            // 去掉月的样式限制
+            $('body').removeClass('timeType-MONTH');
+            if(startDatePicker) {
+                startDatePicker.show(function (rs) {
+                    $scope.startDate = rs.text;
+                    onDateChange();
+                    $scope.$apply();
+                });
+            } else {
+                var options = {type: 'date'};
+                startDatePicker = new mui.DtPicker(options);
+                startDatePicker.show(function(rs) {
+                    $scope.startDate = rs.text;
+                    onDateChange();
+                    $scope.$apply();
+                });
+            }
+        }, false);
+        document.getElementById('datePicker2').addEventListener('tap', function() {
+            $('body').removeClass('timeType-MONTH');
+            if(endDatePicker) {
+                endDatePicker.show(function (rs) {
+                    $scope.endDate = rs.text;
+                    onDateChange();
+                    $scope.$apply();
+                });
+            } else {
+                var options = {type: 'date'};
+                endDatePicker = new mui.DtPicker(options);
+                endDatePicker.show(function(rs) {
+                    $scope.endDate = rs.text;
+                    onDateChange();
+                    $scope.$apply();
+                });
+            }
+        }, false);
+    }
+
+    function onDateChange() {
+        $('body').addClass('timeType-MONTH');
+        paintDemandTrend();
+    }
+
     function refreshDeviceVar(device) {
         varDataService.getVarsOfDevice(device.sn, ['P', 'MD'], function (varMap) {
             if (varMap.MD || varMap.P) {
                 pSn = varMap.MD ? varMap.MD.sn : varMap.P.sn;       // 如果不存在最大需量的话，就用负荷代替
                 refreshData();
+                paintDemandTrend();
+            } else {
+                pSn = null;
+                echarts.dispose(document.getElementById('chart1'));
             }
         });
     }
@@ -1441,10 +1504,14 @@ app.controller('EnergyMaxDemandCtrl', function ($scope, varDataService) {
            }
            $scope.$apply();
         });
-        paintDemandTrend(startTime, $scope.selectedDate.format('YYYY-MM-01 23:59:59.000'));
     }
 
-    function paintDemandTrend(startTime, endTime) {
+    function paintDemandTrend() {
+        if ($scope.endDate < $scope.startDate) {
+            return;
+        }
+        var startTime = $scope.startDate + ' 00:00:00.000';
+        var endTime = $scope.endDate + ' 23:59:59.000';
         varDataService.getHistoryTrend([pSn], startTime, endTime, 'NORMAL', 'MAX', function (dataList) {
            var data = dataList[0];
             var times = [], yAxis = [];
@@ -1478,6 +1545,7 @@ app.controller('EnergyMaxDemandCtrl', function ($scope, varDataService) {
                 yAxis: {
                     name: 'kW',
                     type: 'value',
+                    nameGap: 8,
                     nameTextStyle: {
                         color: '#6b6b6b',
                     },
@@ -1522,8 +1590,20 @@ app.controller('EnergyMaxDemandCtrl', function ($scope, varDataService) {
         });
     }
 
+    $scope.$on('$destroy', function (event) {
+        if (startDatePicker) {
+            startDatePicker.dispose();
+            startDatePicker = null;
+        }
+        if (endDatePicker) {
+            endDatePicker.dispose();
+            endDatePicker = null;
+        }
+    });
+
     refreshDeviceVar($scope.currentDevice);
     getRequiredMaxDemand(capacityConfig);
+    initDatePicker();
 });
 
 app.controller('EnergyQualityMonitorCtrl', function ($scope, varDataService, collectorService) {
@@ -1532,6 +1612,7 @@ app.controller('EnergyQualityMonitorCtrl', function ($scope, varDataService, col
     var electricConfig = $scope.getThisMonthElectricConfig();
     $scope.current = {};
     $scope.warning = {};        // 告警数据
+    var realtimeInterval = null;
 
     $scope.registerDeviceChangeListener(function (device) {
         getVarsOfDevice();
@@ -1960,6 +2041,17 @@ app.controller('EnergyQualityMonitorCtrl', function ($scope, varDataService, col
 
     initCodes();
     getVarsOfDevice();
+
+    if (!realtimeInterval) {
+        realtimeInterval = setInterval(refresh, 6000);
+    }
+
+    $scope.$on('$destroy', function (event) {
+        if (realtimeInterval) {
+            clearInterval(realtimeInterval);
+            realtimeInterval = null;
+        }
+    })
 });
 
 app.controller('EnergyQualityReportCtrl', function ($scope, ajax, collectorService) {
