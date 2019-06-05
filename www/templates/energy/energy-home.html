@@ -37,7 +37,7 @@
                 <div class="item"><span class="name">当月用电量</span> <span class="value">{{currentMonthData.allDegree}}</span> <span class="unit">kWh</span></div>
                 <div class="item"> <span class="name">当月电费</span> <span class="value">{{currentMonthData.allCharge}}</span> <span class="unit">元</span></div>
             </div>
-            <div style="background-color: #fff;height:{{contentHeight - 220}}px;" ng-show="degreeVarSn">
+            <div style="background-color: #fff;height:{{contentHeight - 220}}px;" ng-show="degreeVarSn" ng-if="!isLoading && currentDevice">
                 <div style="height: calc(100% - 170px);max-height: 230px;">
                     <div style="text-align: center;padding-top: 8px;">日平均电度电价/元</div>
                     <div id="main_chart" style="width: 100%;height: {{contentHeight-420}}px"></div>

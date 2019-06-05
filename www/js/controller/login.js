@@ -82,6 +82,7 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
             },
             crossDomain: true,
             success: function (data) {
+                platformService.setUiMode($scope.energyMode ? ENERGY_MODE : '');
                 var result = KJUR.jws.JWS.verify(data.token, 'zjlhstest');
                 if (result) {
                     userService.setAccountToken(data.token);
@@ -89,7 +90,6 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
                 } else {
                     toast('用户名或密码错误');
                 }
-                platformService.setUiMode($scope.energyMode ? ENERGY_MODE : '');
             },
             error :function () {
                 $scope.enable = true;
@@ -111,12 +111,12 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
             ignoreAuthExpire: true,
             success: function (data) {
                 userService.saveLoginUser(data, $scope.password);
-                getCompany();
-                // if (window.android){
-                //     window.android.loginSuccess();
-                // }else{
-                //     location.href = '/templates/home.html?finishPage=1';
-                // }
+                // getCompany();
+                if (window.android){
+                    window.android.loginSuccess();
+                } else{
+                    location.href = '/templates/home.html?finishPage=1';
+                }
             },
             error: function () {
                 $scope.enable = true;
@@ -125,35 +125,6 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
                 $scope.$apply();
             }
         })
-    }
-
-    function getCompany() {
-        ajax.get({
-            url: platform.url + '/user/' + $scope.username + '/opscompany',
-            ignoreAuthExpire: true,
-            xhrFields: {
-                withCredentials: true
-            },
-            crossDomain: true,
-            success: function (data) {
-                if (data && data.length >= 1)
-                {
-                    userService.saveCompany(data[0]);
-                } else{
-                    userService.saveCompany([]);
-                }
-                if (window.android){
-                    window.android.loginSuccess();
-                }else{
-                    location.href = '/templates/home.html?finishPage=1';
-                }
-            },
-            error: function (xhr, status, error) {
-                $scope.isLogin = false;
-                userService.saveCompany([]);
-                console.log('get company info fail:' + xhr.status);
-            }
-        });
     }
 
     // 平台查询start

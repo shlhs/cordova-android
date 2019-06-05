@@ -119,6 +119,25 @@ function formatSiteTree(sites) {
     return sitesTree;
 }
 
+
+function findFirstLeafOfTree(data) {
+    if (!data || !data.length) {
+        return null;
+    }
+    for (var i=0; i<data.length; i++) {
+        if (!data[i].is_group) {
+            return data[i];
+        }
+        if (data[i].children) {
+            var found = findFirstLeafOfTree(data[i].children);
+            if (found) {
+                return found;
+            }
+        }
+    }
+    return null;
+}
+
 app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, routerService, platformService, userService, appStoreProvider) {
     $scope.sitesTree = [];
     $scope.sites = [];
@@ -335,14 +354,11 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
                 }
             }
         }
-        for (var i=0; i<sites.length; i++) {
-            if (!sites[i].is_group) {
-                $scope.currentSite = sites[i];
-                localStorage.setItem("currentSite", JSON.stringify($scope.currentSite));
-                $scope.$broadcast('onSiteChange', sites[i]);
-                getMenuDataOfStation();
-                break;
-            }
+        $scope.currentSite = findFirstLeafOfTree(sites);
+        if ($scope.currentSite) {
+            localStorage.setItem("currentSite", JSON.stringify($scope.currentSite));
+            $scope.$broadcast('onSiteChange', $scope.currentSite);
+            getMenuDataOfStation();
         }
     }
 

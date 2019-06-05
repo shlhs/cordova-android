@@ -1,7 +1,7 @@
 .energy-home {
     background: url(../img/site-title-bg@2x.png) no-repeat top left;
     background-size: cover;
-    overflow: hidden;
+    overflow-x: hidden;
 }
 .energy-page {
     background: url(../img/energy-page-bg.png) no-repeat top left;
