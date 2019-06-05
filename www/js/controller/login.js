@@ -7,7 +7,7 @@
 // var gPublicApiHost = 'http://47.104.75.86:8090';        // 公有云接口
 var gPublicApiHost = 'http://120.27.62.220:8090';        // 青岛源安
 var defaultPlatCode = "yuanan";    // 如果有默认的平台编码，则不需要用户输入
-var defaultActiveEnergyMode = false; // 是否默认使用能效管理模式
+var defaultActiveEnergyMode = true; // 是否默认使用能效管理模式
 
 
 app.controller('LoginCtrl', function ($scope, $timeout, platformService, userService, $state, $http, ajax) {
