@@ -1,13 +1,13 @@
 "use strict";
 
-app.controller('SettingCtrl', function ($scope, platformService, userService, $state) {
+app.controller('SettingCtrl', function ($scope,ajax, userService, routerService) {
     $scope.pwd1 = '';
     $scope.pwd2 = '';
     $scope.pwdError = '';
     $scope.user = userService.user;
-    $scope.company = userService.company;
     $scope.version = GetQueryString('version') || '0.0.0';
     $scope.appName = GetQueryString('appName') || '快控电管家';
+    $scope.company = null;
 
     $scope.logout = function () {
         userService.setPassword('');
@@ -16,6 +16,49 @@ app.controller('SettingCtrl', function ($scope, platformService, userService, $s
             window.android.logout();
         }
         location.href = '/templates/login.html?finishPage=1';
+    };
+
+    $scope.openUiSwitchModal = function () {
+        routerService.openPage($scope, '/templates/setting/uiModeSwitchModal.html', {
+            mode: $scope.uiMode === ENERGY_MODE ? ENERGY_MODE : 'cloud'
+        }, {
+            hidePrev: false
+        });
+    };
+
+
+
+    function getCompany() {
+        ajax.get({
+            url: '/user/' + $scope.user.account + '/opscompany',
+            ignoreAuthExpire: true,
+            xhrFields: {
+                withCredentials: true
+            },
+            crossDomain: true,
+            success: function (data) {
+                if (data && data.length >= 1)
+                {
+                    $scope.company = data[0];
+                    $scope.$apply();
+                }
+            }
+        });
+    }
+
+    setTimeout(getCompany, 1000);
+});
+
+app.controller('UiModeSwitchCtrl', function ($scope, platformService) {
+
+    var oldMode = $scope.mode;
+
+    $scope.confirmModel = function () {
+        if ($scope.mode !== oldMode) {
+            platformService.setUiMode($scope.mode === ENERGY_MODE ? ENERGY_MODE : '');
+            $scope.$emit('onUiModeChange');
+        }
+        history.back();
     };
 });
 
@@ -60,8 +103,8 @@ app.controller('PasswordCtrl', function ($scope, userService, $timeout, ajax) {
     };
 });
 
-app.controller('CompanyCtrl', function ($scope, userService) {
-    $scope.company = userService.company;
+app.controller('CompanyCtrl', function ($scope, $stateParams) {
+    $scope.company = $stateParams.company;
 });
 
 app.controller('AccountCtrl', function ($scope, userService) {

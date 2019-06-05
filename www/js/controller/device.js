@@ -680,13 +680,14 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile) {     
     $scope.getDataList();
 });
 
-app.controller('DeviceMonitorCtrl', function ($scope, ajax, appStoreProvider, userService) {
+app.controller('DeviceMonitorCtrl', function ($scope, ajax, appStoreProvider, userService, platformService) {
     $scope.isLoading = true;
     $scope.stationSn = GetQueryString('stationSn');
     $scope.deviceSn=GetQueryString('deviceSn');
     $scope.deviceName = GetQueryString('deviceName');
     // $scope.hasOpsAuthMenu = appStoreProvider.hasOpsAuth();
-    $scope.canControl = userService.getUserRole() === UserRole.OpsAdmin || userService.getUserRole() === UserRole.OpsOperator;
+    var uiMode = platformService.getUiMode();
+    $scope.canControl = uiMode !== ENERGY_MODE && (userService.getUserRole() === UserRole.OpsAdmin || userService.getUserRole() === UserRole.OpsOperator);  // 能效模式不能远程控制
     $scope.secondOptions = {
         '实时数据': [],
         '历史数据': []

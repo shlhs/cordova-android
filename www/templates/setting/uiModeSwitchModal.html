@@ -1,0 +1,22 @@
+<div class="page page-fade" ng-controller="UiModeSwitchCtrl">
+    <div class="mui-popup property-editor-popup" style="display: block;opacity: 1;">
+        <div class="mui-popup-title" style="border-bottom: #e1e1e1 1px solid;padding: 10px 16px;color: #666;text-align: left;">
+            <label>切换界面模式</label>
+        </div>
+        <div class="mui-popup-inner">
+            <div class="mui-input-row mui-radio mui-left" style="text-align: left;color: #666;">
+                <input id="uimode1" class="check-box" ng-value="'cloud'" type="radio" ng-model="mode" name="mode1">
+                <label for="uimode1">云平台模式</label>
+            </div>
+            <div class="mui-input-row mui-radio mui-left" style="text-align: left;color: #666;">
+                <input id="uimode2" class="check-box" ng-value="'energy'" type="radio" ng-model="mode" name="mode1">
+                <label for="uimode2">能效管理模式</label>
+            </div>
+        </div>
+        <div class="mui-popup-buttons">
+            <span class="mui-popup-button" onclick="history.back()" style="color: #848484;">取消</span>
+            <span class="mui-popup-button" ng-click="confirmModel()" style="color: #439AF2;">确认</span>
+        </div>
+    </div>
+    <div class="mui-popup-backdrop mui-active" style="display: block;"></div>
+</div>

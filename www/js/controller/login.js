@@ -8,6 +8,7 @@
 var gPublicApiHost = 'http://120.27.62.220:8090';        // 青岛源安
 var defaultPlatCode = "yuanan";    // 如果有默认的平台编码，则不需要用户输入
 
+
 app.controller('LoginCtrl', function ($scope, $timeout, platformService, userService, $state, $http, ajax) {
     $scope.error = '';
     var platform = null;
@@ -19,9 +20,15 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
     $scope.isLogin = false;
     $scope.isAutoLogin = false;
     $scope.passwordVisible = false;
+    $scope.enableUiModeChange = gEnableUiModeChange;
+    $scope.energyMode = platformService.getUiMode() === ENERGY_MODE;
 
     $scope.togglePasswordVisible = function () {
         $scope.passwordVisible = !$scope.passwordVisible;
+    };
+
+    $scope.onChangeUiMode = function ($event) {
+        $scope.energyMode = $event.target.checked;
     };
 
     $scope.inputChange = function () {
@@ -56,7 +63,6 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
             username: $scope.username,
             password: $scope.password
         };
-        // loginUrl = 'http://118.190.51.135:8096/v1';
         loginUrl = platformService.getAuthHost();
         $scope.isLogin = true;
         $.ajax({
@@ -76,6 +82,7 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
             },
             crossDomain: true,
             success: function (data) {
+                platformService.setUiMode($scope.energyMode ? ENERGY_MODE : '');
                 var result = KJUR.jws.JWS.verify(data.token, 'zjlhstest');
                 if (result) {
                     userService.setAccountToken(data.token);
@@ -107,7 +114,7 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
                 // getCompany();
                 if (window.android){
                     window.android.loginSuccess();
-                }else{
+                } else{
                     location.href = '/templates/home.html?finishPage=1';
                 }
             },
@@ -118,35 +125,6 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
                 $scope.$apply();
             }
         })
-    }
-
-    function getCompany() {
-        ajax.get({
-            url: platform.url + '/user/' + $scope.username + '/opscompany',
-            ignoreAuthExpire: true,
-            xhrFields: {
-                withCredentials: true
-            },
-            crossDomain: true,
-            success: function (data) {
-                if (data && data.length >= 1)
-                {
-                    userService.saveCompany(data[0]);
-                } else{
-                    userService.saveCompany([]);
-                }
-                if (window.android){
-                    window.android.loginSuccess();
-                }else{
-                    location.href = '/templates/home.html?finishPage=1';
-                }
-            },
-            error: function (xhr, status, error) {
-                $scope.isLogin = false;
-                userService.saveCompany([]);
-                console.log('get company info fail:' + xhr.status);
-            }
-        });
     }
 
     // 平台查询start

@@ -119,6 +119,25 @@ function formatSiteTree(sites) {
     return sitesTree;
 }
 
+
+function findFirstLeafOfTree(data) {
+    if (!data || !data.length) {
+        return null;
+    }
+    for (var i=0; i<data.length; i++) {
+        if (!data[i].is_group) {
+            return data[i];
+        }
+        if (data[i].children) {
+            var found = findFirstLeafOfTree(data[i].children);
+            if (found) {
+                return found;
+            }
+        }
+    }
+    return null;
+}
+
 app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, routerService, platformService, userService, appStoreProvider) {
     $scope.sitesTree = [];
     $scope.sites = [];
@@ -310,11 +329,14 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
         $scope.popup_visible=false;
     };
     $scope.chooseSite = function (site) {
-        $scope.currentSite = site;
-        $scope.searchSiteResult = $scope.sites;
-        localStorage.setItem("currentSite", JSON.stringify(site));
-        $scope.closePopover();
-        getMenuDataOfStation();
+        if (!$scope.currentSite || $scope.currentSite.sn !== site.sn) {
+            $scope.currentSite = site;
+            $scope.searchSiteResult = $scope.sites;
+            localStorage.setItem("currentSite", JSON.stringify(site));
+            $scope.closePopover();
+            $scope.$broadcast('onSiteChange', site);
+            getMenuDataOfStation();
+        }
     };
 
     function getCurrentSite() {
@@ -326,24 +348,19 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
             for (var i=0; i<sites.length; i++) {
                 if (sites[i].sn === site.sn) {
                     $scope.currentSite = sites[i];
+                    $scope.$broadcast('onSiteChange', sites[i]);
                     getMenuDataOfStation();
                     return;
                 }
             }
         }
-        for (var i=0; i<sites.length; i++) {
-            if (!sites[i].is_group) {
-                $scope.currentSite = sites[i];
-                localStorage.setItem("currentSite", JSON.stringify($scope.currentSite));
-                getMenuDataOfStation();
-                break;
-            }
+        $scope.currentSite = findFirstLeafOfTree(sites);
+        if ($scope.currentSite) {
+            localStorage.setItem("currentSite", JSON.stringify($scope.currentSite));
+            $scope.$broadcast('onSiteChange', $scope.currentSite);
+            getMenuDataOfStation();
         }
     }
-
-    $scope.gotoSite = function (sn, name) {
-        location.href = '/templates/site/site-detail.html?sn=' + sn + '&name=' + name;
-    };
 
     $scope.openSiteSelectPage = function () {
         $scope.refreshAllSiteStatus();
@@ -556,12 +573,13 @@ app.controller('SiteBaseInfoCtrl', function ($scope, $timeout, $stateParams, aja
 });
 
 
-app.controller('EventListCtrl', function ($scope, $stateParams, scrollerService, userService, ajax, appStoreProvider) {
+app.controller('EventListCtrl', function ($scope, $stateParams, scrollerService, userService, ajax, appStoreProvider, platformService) {
     $scope.sn = GetQueryString('sn');
     var checked = GetQueryString('status') === '0' ? 0 : 1;
     $scope.isDevice = false;   // 是设备还是站点
     $scope.canCreateTask = userService.getUserRole() === UserRole.Normal ? false : true;
 
+    $scope.energyMode = platformService.getUiMode() === ENERGY_MODE;
     $scope.hasOpsAuth = appStoreProvider.hasOpsAuth();
 
     var deviceSn = GetQueryString("deviceSn");

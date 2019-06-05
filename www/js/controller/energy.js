@@ -890,7 +890,7 @@ app.directive('energyReportTableRepeatFinish',function(){
     }
 });
 
-app.controller('EnergyOverviewCtrl', function ($scope, ajax, platformService, $compile) {
+app.controller('EnergyStatisticsCtrl', function ($scope, ajax, platformService, $compile) {
     var stationSn = GetQueryString("sn");
     $scope.categories = [];
     $scope.labelNames = [];
@@ -1067,7 +1067,7 @@ app.controller('EnergyOverviewCtrl', function ($scope, ajax, platformService, $c
 
 const ENERGY_LINE_COLORS = ['#41bed8','#fde664','#9283ea','#3cd3cb','#fe7979','#f9b344','#46be8a','#579fe4','#f37c54','#3995ea'];
 
-app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformService) {
+app.controller('EnergyStatisticsZhiluCtrl', function ($scope, ajax, platformService) {
     $scope.timeTypes = ['日', '月', '年'];
     $scope.timeType = '日';
     var currentItem = null;
@@ -1481,7 +1481,7 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
     
 });
 
-app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformService) {
+app.controller('EnergyStatisticsOtherCtrl', function ($scope, ajax, platformService) {
     var timeType = null;
     var energyItems = null;
     var currentDate = null;

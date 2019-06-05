@@ -127,67 +127,93 @@ app.service('Permission', function (userService, UserRole) {      // 权限服�
     };
 });
 
-app.controller('HomeCtrl', function ($scope, $timeout, userService, appStoreProvider) {
+app.controller('HomeCtrl', function ($scope, $timeout, userService, appStoreProvider, platformService) {
     var role = userService.getUserRole();
     $scope.viewName = '';
-    $scope.tabName = 'sites';
+    $scope.tabName = '';
     $scope.title = '';
-    $scope.navMenus = [];
+    $scope.uiMode = platformService.getUiMode();
+    $scope.enableUiModeChange = gEnableUiModeChange;
+    $scope.navMenus = [_getDefaultHomeMenu()];
 
-    $scope.chooseNav = function (tabName, title) {
-        $scope.tabName = tabName;
-        $scope.title = title;
-        var element=angular.element('#' + tabName).children().first(), scope = element.scope();
+    function _getDefaultHomeMenu() {
+        return {
+            id: 'sites',
+            name: $scope.uiMode === ENERGY_MODE? '能效监控' : '站点监控',
+            templateUrl: $scope.uiMode === ENERGY_MODE ? '/templates/energy/energy-home.html' : '/templates/site/site-home.html',
+            icon: 'nav-sites'
+        };
+    }
+
+    $scope.$on('onUiModeChange', function (event) {
+        $scope.uiMode = platformService.getUiMode();
+        $scope.navMenus = [_getDefaultHomeMenu()];
+        initMenu();
+    });
+
+    $scope.chooseNav = function (tabId) {
+        if (tabId === $scope.tabName) {
+            return;
+        }
+        $scope.tabName = tabId;
+        if (tabId === 'setting') {
+            $scope.title = '我';
+        } else {
+            for (var i=0; i<$scope.navMenus.length; i++) {
+                var menuData = $scope.navMenus[i];
+                if (menuData.id === tabId) {
+                    $scope.title = menuData.name;
+                    break;
+                }
+            }
+        }
+        var element=angular.element('#' + tabId).children().first(), scope = element.scope();
         if (scope && scope.getDataList && !element.data('inited')){
             scope.getDataList();
             element.data('inited', true);
         } else {
-            $scope.$broadcast('onChooseNav', tabName);
+            $scope.$broadcast('onChooseNav', tabId);
         }
-        angular.element('#' + tabName).addClass('mui-active').siblings().removeClass('mui-active');
+        angular.element('#' + tabId).addClass('mui-active').siblings().removeClass('mui-active');
     };
 
     function initMenu() {
+        updateMenus();
         // 所有用户都可看到这两个页面
-        // addMenuOfOps();
         $timeout(function () {
-            $scope.chooseNav('sites', '站点监控');
-
+            $scope.chooseNav($scope.navMenus[0].id);
         }, 500);
     }
 
-    function addMenuOfOps() {
-        $scope.navMenus.push(
-            {
-                id: 'competition_tasks',
-                name: '抢单',
-                templateUrl: '/templates/task/task-competition-list.html',
-                icon: 'nav-task-grab'
-            },
-            {
-                id: 'my_tasks',
-                name: '我的待办',
-                templateUrl: '/templates/task/task-todo-list.html',
-                icon: 'nav-all-tasks'
+    function updateMenus() {
+        // 判断是否包含ops-management权限
+        if ($scope.uiMode !== ENERGY_MODE) {
+            if (appStoreProvider.hasOpsAuth() && $scope.navMenus.length === 1) {
+                $scope.navMenus.push(
+                    {
+                        id: 'competition_tasks',
+                        name: '抢单',
+                        templateUrl: '/templates/task/task-competition-list.html',
+                        icon: 'nav-task-grab'
+                    },
+                    {
+                        id: 'my_tasks',
+                        name: '我的待办',
+                        templateUrl: '/templates/task/task-todo-list.html',
+                        icon: 'nav-all-tasks'
+                    }
+                );
             }
-        );
+        }
     }
 
     $scope.$on('$onMenuUpdate', function (event, menuSns) {
-        // 菜单权限刷新
-        // 判断是否包含ops-management权限
-        if (appStoreProvider.hasOpsAuth()) {
-            if (!$scope.navMenus.length) {
-                addMenuOfOps();
-            }
-        } else {
-            $scope.navMenus = [];
-        }
+        updateMenus();
     });
     initMenu();
 });
 
-app.controller('TaskBaseCtrl', function ($scope, ajax, userService, appStoreProvider) {
+app.controller('TaskBaseCtrl', function ($scope, ajax, userService, appStoreProvider, platformService) {
     var stationSn = GetQueryString("sn");
     var deviceSn = GetQueryString("device_sn");     // 如果设备sn不为空，则获取的是设备的运维记录
     $scope.pageTitle = deviceSn ? '运维记录' : '所有任务';

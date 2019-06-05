@@ -3,7 +3,11 @@
  * Created by liucaiyun on 2017/5/4.
  */
 var app = angular.module('myApp', ['ngAnimate', 'ui.router', 'ui.router.state.events']);
-const loginExpireCheckEnable = false;       // 是否检查鉴权过期
+var loginExpireCheckEnable = false;       // 是否检查鉴权过期
+
+
+var gEnableUiModeChange = false;     // 是否开启选择界面模式的功能
+var ENERGY_MODE = "energy";
 
 app.run(function ($animate) {
     $animate.enabled(true);
@@ -221,11 +225,25 @@ app.service('platformService', function () {
     };
 
     this.getImageUrl = function (width, height, imageUrl) {
+        // When using gifsicle engine, filters will be skipped. Thumbor will not do smart cropping as well
+        var urlLength = imageUrl.length;
+        if(urlLength > 4 && imageUrl.toLocaleLowerCase().lastIndexOf('.gif') === (urlLength -4)) {
+            return imageUrl;
+        }
+        
         return this.thumbHost + '/' + width + 'x' + height + '/' + imageUrl;
     };
 
     this.getIpcServiceHost = function () {
         return this.ipAddress + ':8095/v1';
+    };
+
+    this.getUiMode = function () {      // 获取UI模式，如果是energy的话则使用能效管理界面
+        return getStorageItem('globalUiMode');
+    };
+
+    this.setUiMode = function (mode) {
+        setStorageItem('globalUiMode', mode);
     };
 
     this.host = this.getHost();
