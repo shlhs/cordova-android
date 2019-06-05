@@ -6,7 +6,7 @@ var app = angular.module('myApp', ['ngAnimate', 'ui.router', 'ui.router.state.ev
 var loginExpireCheckEnable = false;       // 是否检查鉴权过期
 
 
-var gEnableUiModeChange = false;     // 是否开启选择界面模式的功能
+var gEnableUiModeChange = true;     // 是否开启选择界面模式的功能
 var ENERGY_MODE = "energy";
 
 app.run(function ($animate) {
