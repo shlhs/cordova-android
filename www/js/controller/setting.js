@@ -20,7 +20,7 @@ app.controller('SettingCtrl', function ($scope,ajax, userService, routerService)
 
     $scope.openUiSwitchModal = function () {
         routerService.openPage($scope, '/templates/setting/uiModeSwitchModal.html', {
-            mode: $scope.uiMode === ENERGY_MODE ? ENERGY_MODE : 'cloud'
+            mode: $scope.uiMode
         }, {
             hidePrev: false
         });
@@ -55,7 +55,7 @@ app.controller('UiModeSwitchCtrl', function ($scope, platformService) {
 
     $scope.confirmModel = function () {
         if ($scope.mode !== oldMode) {
-            platformService.setUiMode($scope.mode === ENERGY_MODE ? ENERGY_MODE : '');
+            platformService.setUiMode($scope.mode);
             $scope.$emit('onUiModeChange');
         }
         history.back();
