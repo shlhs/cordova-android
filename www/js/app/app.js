@@ -7,7 +7,10 @@ var loginExpireCheckEnable = false;       // 是否检查鉴权过期
 
 
 var gEnableUiModeChange = false;     // 是否开启选择界面模式的功能
-var ENERGY_MODE = "energy";
+var UIMODE = {
+    ENERGY: "energy",
+    DEFAULT: "cloud"
+};
 
 app.run(function ($animate) {
     $animate.enabled(true);

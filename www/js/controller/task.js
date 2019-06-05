@@ -139,8 +139,8 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, appStoreProv
     function _getDefaultHomeMenu() {
         return {
             id: 'sites',
-            name: $scope.uiMode === ENERGY_MODE? '能效监控' : '站点监控',
-            templateUrl: $scope.uiMode === ENERGY_MODE ? '/templates/energy/energy-home.html' : '/templates/site/site-home.html',
+            name: $scope.uiMode === UIMODE.ENERGY? '能效监控' : '站点监控',
+            templateUrl: $scope.uiMode === UIMODE.ENERGY ? '/templates/energy/energy-home.html' : '/templates/site/site-home.html',
             icon: 'nav-sites'
         };
     }
@@ -151,7 +151,8 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, appStoreProv
         initMenu();
     });
 
-    $scope.chooseNav = function (tabId) {
+    $scope.chooseNav = function ($event, tabId) {
+        $event && $event.preventDefault();
         if (tabId === $scope.tabName) {
             return;
         }
@@ -181,13 +182,13 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, appStoreProv
         updateMenus();
         // 所有用户都可看到这两个页面
         $timeout(function () {
-            $scope.chooseNav($scope.navMenus[0].id);
+            $scope.chooseNav(null, $scope.navMenus[0].id);
         }, 500);
     }
 
     function updateMenus() {
         // 判断是否包含ops-management权限
-        if ($scope.uiMode !== ENERGY_MODE) {
+        if ($scope.uiMode !== UIMODE.ENERGY) {
             if (appStoreProvider.hasOpsAuth() && $scope.navMenus.length === 1) {
                 $scope.navMenus.push(
                     {

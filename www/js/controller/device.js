@@ -687,7 +687,7 @@ app.controller('DeviceMonitorCtrl', function ($scope, ajax, appStoreProvider, us
     $scope.deviceName = GetQueryString('deviceName');
     // $scope.hasOpsAuthMenu = appStoreProvider.hasOpsAuth();
     var uiMode = platformService.getUiMode();
-    $scope.canControl = uiMode !== ENERGY_MODE && (userService.getUserRole() === UserRole.OpsAdmin || userService.getUserRole() === UserRole.OpsOperator);  // 能效模式不能远程控制
+    $scope.canControl = uiMode !== UIMODE.ENERGY && (userService.getUserRole() === UserRole.OpsAdmin || userService.getUserRole() === UserRole.OpsOperator);  // 能效模式不能远程控制
     $scope.secondOptions = {
         '实时数据': [],
         '历史数据': []

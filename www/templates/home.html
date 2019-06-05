@@ -70,21 +70,21 @@
             </div>
         </div>
     </div>
-<nav id="menu" class="mui-bar mui-bar-tab bg-footer nav-horizontal" ng-class="{energy: uiMode === 'energy'}" style="box-shadow: none !important;z-index:0;">
+<nav id="menu" class="mui-bar mui-bar-tab1 bg-footer nav-horizontal" ng-class="{energy: uiMode === 'energy'}" style="box-shadow: none !important;z-index:0;">
     <!--<a class="mui-tab-item" href="javascript:void(0)" ng-click="chooseNav('sites', '站点监控')"-->
        <!--ng-class="{'mui-active': tabName==='sites'}">-->
         <!--<span class="mui-icon nav-icon nav-sites"></span>-->
         <!--<span class="mui-tab-label">站点监控</span>-->
     <!--</a>-->
-    <a class="mui-tab-item" href="javascript:void(0)" ng-repeat="menu in navMenus"
-       ng-click="chooseNav(menu.id)" ng-class="{'mui-active': tabName===menu.id}">
+    <label class="mui-tab-item" ng-repeat="menu in navMenus"
+       ng-click="chooseNav($event, menu.id)" ng-class="{'mui-active': tabName===menu.id}">
         <span class="mui-icon nav-icon {{menu.icon}}"></span>
         <span class="mui-tab-label">{{menu.name}}</span>
-    </a>
-    <a class="mui-tab-item" href="javascript:void(0)" ng-click="chooseNav('setting')" ng-class="{'mui-active': tabName==='setting'}">
+    </label>
+    <label class="mui-tab-item" ng-click="chooseNav($event, 'setting')" ng-class="{'mui-active': tabName==='setting'}">
         <span class="mui-icon nav-icon nav-setting"></span>
         <span class="mui-tab-label">我的</span>
-    </a>
+    </label>
 </nav>
 <div ui-view></div>
 <div ng-include="'/templates/top-menu.html'"></div>

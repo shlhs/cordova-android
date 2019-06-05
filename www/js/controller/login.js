@@ -22,7 +22,7 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
     $scope.passwordVisible = false;
     $scope.enableUiModeChange = gEnableUiModeChange;
     var uiMode = platformService.getUiMode();
-    $scope.energyMode = uiMode === null ? defaultActiveEnergyMode : uiMode === ENERGY_MODE;
+    $scope.energyMode = !uiMode ? defaultActiveEnergyMode : uiMode === UIMODE.ENERGY;
 
     $scope.togglePasswordVisible = function () {
         $scope.passwordVisible = !$scope.passwordVisible;
@@ -83,7 +83,7 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
             },
             crossDomain: true,
             success: function (data) {
-                platformService.setUiMode($scope.energyMode ? ENERGY_MODE : '');
+                platformService.setUiMode($scope.energyMode ? UIMODE.ENERGY : UIMODE.DEFAULT);
                 var result = KJUR.jws.JWS.verify(data.token, 'zjlhstest');
                 if (result) {
                     userService.setAccountToken(data.token);

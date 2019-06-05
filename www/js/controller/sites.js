@@ -579,7 +579,7 @@ app.controller('EventListCtrl', function ($scope, $stateParams, scrollerService,
     $scope.isDevice = false;   // 是设备还是站点
     $scope.canCreateTask = userService.getUserRole() === UserRole.Normal ? false : true;
 
-    $scope.energyMode = platformService.getUiMode() === ENERGY_MODE;
+    $scope.energyMode = platformService.getUiMode() === UIMODE.ENERGY;
     $scope.hasOpsAuth = appStoreProvider.hasOpsAuth();
 
     var deviceSn = GetQueryString("deviceSn");
