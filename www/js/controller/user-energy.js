@@ -470,7 +470,7 @@ app.controller('EnergyBaseCtrl', function ($scope, ajax, platformService, router
         name: $scope.device_name || GetQueryString("device_name"),
         capacity: $scope.capacity
     };
-
+    $scope.screenWidth = window.screen.width;
     $scope.contentHeight = window.screen.height - 60;
     $scope.isLoading = true;
     $scope.selectedDate = moment();
@@ -1614,6 +1614,8 @@ app.controller('EnergyMaxDemandCtrl', function ($scope, varDataService) {
     }, 500);
 });
 
+const defaultVoltage = 220;     // 默认额定相电压
+
 app.controller('EnergyQualityMonitorCtrl', function ($scope, varDataService, collectorService) {
     var codes = [];
     var varSnsMap = {};
@@ -1628,13 +1630,13 @@ app.controller('EnergyQualityMonitorCtrl', function ($scope, varDataService, col
 
     function initCodes() {
         var phases = ['a', 'b', 'c'];
-        var keys = ['U', 'I'];
+        var keys = ['U', 'I', 'thdi', 'thdu', 'fdu', 'fdi'];        // thdu/thdi：总谐波畸变率，fdu/fdi：电压电流基波有效值
         phases.forEach(function (phase) {
             keys.forEach(function (k) {
                 codes.push(k+phase);
             });
             // 谐波
-            for (var i=1; i<=13; i+=2) {
+            for (var i=3; i<=13; i+=2) {
                 codes.push('harm'+i+'u'+phase);
                 codes.push('harm'+i+'i'+phase)
             }
@@ -1647,7 +1649,7 @@ app.controller('EnergyQualityMonitorCtrl', function ($scope, varDataService, col
     
     function getVarsOfDevice() {
         collectorService.getMonitorDevice($scope.currentDevice.sn, function (data) {
-           $scope.currentDevice.vc = data.vc || 220;
+           $scope.currentDevice.vc = data.vc || defaultVoltage;
            $scope.$apply();
         });
         $scope.current = {};
@@ -1658,6 +1660,13 @@ app.controller('EnergyQualityMonitorCtrl', function ($scope, varDataService, col
             });
             refresh();
         });
+    }
+
+    function _isNumber(v) {
+        if (v === undefined || v === null) {
+            return false;
+        }
+        return true;
     }
 
     function refresh() {
@@ -1671,6 +1680,10 @@ app.controller('EnergyQualityMonitorCtrl', function ($scope, varDataService, col
             dataList.forEach(function (d) {
                 valueMap[d.var.var_code] = d.data;
             });
+            // 如果功率因数不存在，则通过有功功率、无功功率计算功率因数
+            if ((valueMap.PF === null || valueMap.PF === undefined) &&_isNumber(valueMap.P) && _isNumber(valueMap.Q) && valueMap.P>0) {
+                valueMap.PF = parseFloat(((valueMap.P) / Math.sqrt(Math.pow(valueMap.P, 2) + Math.pow(Math.abs(valueMap.Q), 2))).toFixed(2));
+            }
             $scope.current = valueMap;
             paintPolar('chart1', 'voltage', valueMap);
             paintPolar('chart2', 'current', valueMap);
@@ -1695,12 +1708,6 @@ app.controller('EnergyQualityMonitorCtrl', function ($scope, varDataService, col
     }
 
     function calcWarning(valueMap) {
-        function _isNumber(v) {
-            if (v === undefined || v === null) {
-                return false;
-            }
-            return true;
-        }
         // 计算告警的数据
         var warning = {};
         if (_isNumber(valueMap.f)) {
@@ -1710,24 +1717,21 @@ app.controller('EnergyQualityMonitorCtrl', function ($scope, varDataService, col
         }
         // 计算功率因素是否告警
         var baseCos = getBaseCosFromConfig();
+        var cos = null;
         if (_isNumber(valueMap.PF)) {
             if (valueMap.PF < baseCos) {
                 warning.PF = true;
-            }
-        }
-        // 计算无功功率是否告警
-        if (_isNumber(valueMap.P) && _isNumber(valueMap.Q) && valueMap.P>0) {
-            var cos = (valueMap.P) / Math.sqrt(Math.pow(valueMap.P) + Math.pow(valueMap.Q));
-            if (cos < baseCos) {
                 warning.Q = true;
             }
         }
 
+        // var coefficient = Math.sqrt(3);
+        var vc = $scope.currentDevice.vc;
         // 电压是否告警
         ['a', 'b', 'c'].forEach(function (phase) {
             var voltage = valueMap['U'+phase];
             if (_isNumber(voltage)) {
-                if (voltage > 220*1.07 || voltage < 220*0.93) {
+                if (voltage > vc*1.07 || voltage < vc*0.93) {
                     warning['U' + phase] = true;
                 }
             }
@@ -1749,7 +1753,8 @@ app.controller('EnergyQualityMonitorCtrl', function ($scope, varDataService, col
         $scope.warning = warning;
     }
     
-    function calcUblu(valueMap) {     // 计算电压/电流不平衡度
+    function calcUblu(valueMap) {     // 计算电压/电流不平衡度：(最大-最小)/最大
+
         var codes = ['U', 'I'];
         var phases = ['a', 'b', 'c'];
         var data = {};
@@ -1764,7 +1769,7 @@ app.controller('EnergyQualityMonitorCtrl', function ($scope, varDataService, col
                     if (max === null || max < value) {
                         max = value;
                     }
-                    if (min === null || min < value) {
+                    if (min === null || min > value) {
                         min = value;
                     }
                 }
@@ -1783,12 +1788,25 @@ app.controller('EnergyQualityMonitorCtrl', function ($scope, varDataService, col
         var phases = ['ua', 'ub', 'uc', 'ia', 'ib', 'ic'];
         var thdMap = {};
         phases.forEach(function (phase) {
+            // if (valueMap['thd' + phase] !== undefined) {
+            //     thdMap[phase] = valueMap['thd' + phase];
+            //     return;
+            // }
             var dataList = [];
-            for (var i=1; i<=13; i+=2) {
+            dataList.push(valueMap['fd' + phase]);  // 基波
+            for (var i=3; i<=13; i+=2) {
                 dataList.push(valueMap['harm' + i + phase]);
             }
             if (!dataList || !dataList.length) {
-                thdMap[phase] = null;
+                thdMap[phase] = '-';
+                return;
+            }
+            // 如果一次谐波不存在，则使用ua/ia代替
+            if (dataList[0] === undefined) {
+                dataList[0] = valueMap[phase[0].toUpperCase() + phase[1]];
+            }
+            if (!dataList[0]) {
+                thdMap[phase] = '-';
                 return;
             }
             var count = null;
@@ -1942,18 +1960,16 @@ app.controller('EnergyQualityMonitorCtrl', function ($scope, varDataService, col
             {color: '#45c6b1', name: 'B相', code: 'b'},
             {color: '#e94a45', name: 'C相', code: 'c'}];
         var keys = type === 'current' ? {code: 'i', name: '电流', unit: 'A'} : {code: 'u', name: '电压', unit: 'V'};
-        var xAxis = [];
-        for (var i=1; i<=13; i+=2) {
-            if (i === 1) {
-                xAxis.push('基波');
-            } else {
-                xAxis.push(i + '次');
-            }
+        var xAxis = ['基波'];
+        for (var i=3; i<=13; i+=2) {
+            xAxis.push(i + '次');
         }
         var series = [];
         phases.forEach(function (phase) {
             var datas = [];
-            for (var i=1; i<=13; i++) {
+            // 基波数据，先取fdua/fdia
+            datas.push(varDatas['fd' + keys.code + phase.code]);
+            for (var i=3; i<=13; i+=2) {
                 var key = 'harm' + i + keys.code + phase.code;
                 if (i === 1) {
                     // 如果一次谐波不存在，就用电压或电流值来替代
@@ -1967,7 +1983,7 @@ app.controller('EnergyQualityMonitorCtrl', function ($scope, varDataService, col
                 }
             }
             series.push({
-                type: 'line',
+                type: 'bar',
                 name: phase.name,
                 data: datas,
                 symbolSize: 2,
@@ -2074,7 +2090,7 @@ app.controller('EnergyQualityReportCtrl', function ($scope, ajax, collectorServi
     $scope.registerDeviceChangeListener(function (device) {
 
         collectorService.getMonitorDevice($scope.currentDevice.sn, function (data) {
-            $scope.currentDevice.vc = data.vc || 220;
+            $scope.currentDevice.vc = data.vc || defaultVoltage;
             $scope.$apply();
         });
 
@@ -2132,7 +2148,7 @@ app.controller('EnergyQualityReportCtrl', function ($scope, ajax, collectorServi
     }
 
     collectorService.getMonitorDevice($scope.currentDevice.sn, function (data) {
-        $scope.currentDevice.vc = data.vc || 220;
+        $scope.currentDevice.vc = data.vc || defaultVoltage;
         $scope.$apply();
     });
     setTimeout(getReport, 500);

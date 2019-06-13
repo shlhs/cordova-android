@@ -42,7 +42,7 @@
     <div class="report-card">
         <div class="header">
             <label class="title">电压质量分析</label>
-            <label style="color: #333;font-size: 12px;float: right;margin-left: 6px;width: 100px;margin-top: 1px;">标称电压：{{currentDevice.vc}}</label>
+            <label style="color: #333;font-size: 12px;float: right;margin-left: 6px;width: 100px;margin-top: 1px;">额定电压：{{currentDevice.vc}}V</label>
             <label style="color: #333;font-size: 12px;float: right;width: 100px;margin-top: 1px;">监测点数：{{volt.count || 0}}</label>
         </div>
         <div class="report-list" ng-if="currentDevice.vc">
