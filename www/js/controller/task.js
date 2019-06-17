@@ -1389,7 +1389,7 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
 
     function getTaskHistory() {
         ajax.get({
-            url: '/opstasks/' + companyId + '/' + id + '/update_records',
+            url: '/opstasks/' + id + '/update_records',
             success: function (data) {
                 console.log('get task history success');
                 var history = cloneTaskList();
