@@ -33,7 +33,6 @@ app.filter(
 );
 
 app.controller('MainCtrl', function ($scope, $rootScope, userService) {
-
 });
 
 app.controller('LoginExpireCtrl', function ($scope, userService) {
@@ -242,6 +241,9 @@ app.service('platformService', function () {
     };
 
     this.getUiMode = function () {      // 获取UI模式，如果是energy的话则使用能效管理界面
+        if (!gEnableUiModeChange) {
+            return UIMODE.DEFAULT;
+        }
         return getStorageItem('globalUiMode');
     };
 

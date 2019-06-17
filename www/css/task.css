@@ -11,6 +11,9 @@
     padding: 0;
     position: relative;
 }
+.task-list .task-item.closed {
+    background-color: #e6e6e6;
+}
 .task-item .task-icon{
     height: 22px;
     margin-left: 0px;
@@ -42,6 +45,7 @@
 .task-item .sub-body {
     padding-left: 12px;
     border-top: #efeff1 0.5px solid;
+    padding-bottom: 10px;
 }
 .task-info-label {
     font-size: 13px;

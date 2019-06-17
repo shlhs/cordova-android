@@ -498,6 +498,8 @@ app.controller('EnergyBaseCtrl', function ($scope, ajax, platformService, router
     };
 
     $scope.$on('onSiteChange', function (event, station) {
+
+        console.log('energy onSiteChange');
         if (station && $scope.stationSn !== station.sn) {
             $scope.stationSn = station.sn;
             $scope.stationName = station.name;

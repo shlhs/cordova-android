@@ -550,6 +550,12 @@ aside.light .mui-table-view-cell>a:not(.mui-btn){
 .mui-active>.nav-energy {
     background-image: url('../img/dashboard/icon-home-energy-active.jpg');
 }
+.nav-service {
+    background-image: url("../img/dashboard/icon-nav-service.png");
+}
+.mui-active>.nav-service {
+    background-image: url("../img/dashboard/icon-nav-service-active.png");
+}
 .mui-active>.nav-setting2 {
     background-image: url('../img/dashboard/icon-home-profile2-active.jpg');
 }
@@ -561,6 +567,12 @@ aside.light .mui-table-view-cell>a:not(.mui-btn){
 }
 .nav-setting{
     background-image: url('../img/dashboard/icon-home-profile@2x.png');
+}
+.nav-energy {
+    background-image: url('../img/dashboard/icon-nav-energy.png');
+}
+.mui-active>.nav-energy {
+    background-image: url('../img/dashboard/icon-nav-energy-active.png');
 }
 .mui-active>.nav-icon.todo{
     background-image: url("../img/dark/64X64/todo_active.png");
@@ -638,6 +650,7 @@ background-image: url("../img/light/64X64/profile.png");
 }
 .nav-horizontal .mui-tab-item .mui-icon{
     height: 22px;
+    width: 22px;
     margin-top: 2px;
     display: block;
 }

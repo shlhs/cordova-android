@@ -8,5 +8,8 @@
         <div>
             <device-tree-view device-list="deviceDatas" click-callback="onSelect"></device-tree-view>
         </div>
+        <div ng-if="!deviceList || !deviceList.length" style="padding: 10px; color: #666;">
+            站点下无设备
+        </div>
     </div>
 </div>
