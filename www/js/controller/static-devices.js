@@ -256,14 +256,14 @@ function onAndroid_deviceImageImport(imageData, filename) {    // 从Android读�
 }
 
 app.controller('StaticDeviceEditCtrl', function ($scope, ajax, routerService, platformService) {
+    $scope.deviceImages = [];
     $scope.device = {};
     $scope.showTab = 'info';
     $scope.editObj = {};
-    $scope.deviceImage = null;
-    $scope.useMobileGallery = window.android && window.android.openGallery;
 
-    // 先清除上一次选择的图片
-    window.android && window.android.clearSelectedPhotos();
+    $scope.registerImageInfo = function (imageEleId) {
+      return $scope.deviceImages;
+    };
 
     $scope.changeTabType = function ($event, tab) {
         $scope.showTab = tab;
@@ -293,12 +293,12 @@ app.controller('StaticDeviceEditCtrl', function ($scope, ajax, routerService, pl
 
                 if (data.device_photo_src_link) {
                     data.device_photo_src_link = platformService.host + data.device_photo_src_link;
+                    $scope.deviceImages.push(data.device_photo_src_link);
                 }
                 if (data.qr_photo_src_link) {
                     data.qr_photo_src_link = platformService.host + data.qr_photo_src_link;
                 }
 
-                $scope.deviceImage = data.device_photo_src_link;
                 data.device_photo_src_link = null;
                 $scope.device = parseDeviceData(data);
                 $scope.$apply();
@@ -438,50 +438,15 @@ app.controller('StaticDeviceEditCtrl', function ($scope, ajax, routerService, pl
 
     };
 
-    $scope.chooseImage = function (files) {     // 选择图片
-        $scope.canDelete = true;
-        for (var i = 0; i < files.length; i++) {
-            var reader = new FileReader(), file=files[i];
-            reader.readAsDataURL(file);
-            reader.onloadstart = function () {
-                //用以在上传前加入一些事件或效果，如载入中...的动画效果
-            };
-            reader.onload = function (event) {
-                var img = new Image();
-                img.src = event.target.result;
-                img.onload = function(){
-                    var quality =  75;
-                    var dataUrl = imageHandler.compress(this, 75, file.orientation).src;
-                    $scope.deviceImage = dataUrl;
-                    $scope.device.device_photo_src_link = dataUrl;
-                    $scope.$apply();
-                };
-            };
-        }
-    } ;
-
-    $scope.openMobileGallery = function () {
-        window.android.openGallery(1, 'onAndroid_deviceImageImport', null);
-    };
-
-    $scope.chooseDeviceImage = function () {
-        // 上传设备图片
-
-    };
-
-    $scope.addImagesWithBase64 = function (data, filename) {
-        $scope.deviceImage = data;
-        $scope.device.device_photo_src_link = data;
-        $scope.$apply();
-    };
-
-
     $scope.chooseDeviceQr = function () {
         // 上传二维码
     };
 
     $scope.save = function () {
         $.notify.progressStart();
+        if ($scope.deviceImages.length) {
+            $scope.device.device_photo_src_link = $scope.deviceImages[0];
+        }
         var params = stringifyDeviceData($scope.device);
         ajax.patch({
             url: '/stations/' + $scope.device.station_sn + '/staticdevices/' + $scope.device.id,

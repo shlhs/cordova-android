@@ -805,6 +805,116 @@ app.controller('BaseGalleryCtrl', function ($scope, $stateParams, $timeout) {
     };
 });
 
+
+
+function onAndroid_taskImageImport(imageData, filename) {    // 从Android读取的图片
+    var scope = angular.element("#handlePage").scope();
+    if (scope) {
+        scope.addImagesWithBase64(imageData, filename);
+    }
+}
+
+function onAndroid_taskImageDelete(filename) {       // Android手机上删除所选图片
+    angular.element("#handlePage").scope().deleteImageFromMobile(filename);
+}
+// 图片选择控制器
+// 使用的父级controller需要实现方法： $scope.registerImageInfo(imageEleId) { return $scope.images }
+app.controller('ImageUploaderCtrl', function ($document, $scope, $timeout, routerService) {
+    $scope.singleImage = false;     // 是否只允许一张图片
+    $scope.files = [];
+    $scope.images = [];
+    $scope.isPC = IsPC();
+    $scope.useMobileGallery = window.android && window.android.openGallery;
+    var insertPosition = angular.element("#imageList>.upload-item");
+
+    // 先清除上一次选择的图片
+    window.android && window.android.clearSelectedPhotos();
+
+    $scope.chooseImage = function (files) {     // 选择图片
+        $scope.canDelete = true;
+        for (var i = 0; i < files.length; i++) {
+            var reader = new FileReader(), file=files[i];
+            reader.readAsDataURL(file);
+            reader.onloadstart = function () {
+                //用以在上传前加入一些事件或效果，如载入中...的动画效果
+            };
+            reader.onload = function (event) {
+                var img = new Image();
+                img.src = event.target.result;
+                img.onload = function(){
+                    var dataUrl = imageHandler.compress(this, 75, file.orientation).src;
+                    if ($scope.singleImage && $scope.files.length) {
+                        $scope.files[0] = {name: file.name};
+                        $scope.images[0] = dataUrl;
+                    } else {
+                        $scope.files.push({name: file.name});
+                        $scope.images.push(dataUrl);
+                    }
+                    $scope.$apply();
+                };
+            };
+        }
+    };
+
+    $scope.addImagesWithBase64 = function (data, filename) {
+        $scope.canDelete = true;
+        if (filename === undefined) {
+            filename = '';
+        }
+        $scope.files.push({name: filename});
+        $scope.images.push(data);
+        $scope.$apply();
+    };
+
+    $scope.deleteImageFromMobile = function (filename) {
+        for (var i=0; i<$scope.files.length; i++) {
+            if ($scope.files[i].name === filename) {
+                $scope.files.splice(i, 1);
+                $scope.images.splice(i, 1);
+                break;
+            }
+        }
+        $scope.$apply();
+    };
+
+    $scope.openMobileGallery = function () {
+        window.android.openGallery(9, 'onAndroid_taskImageImport', 'onAndroid_taskImageDelete');
+    };
+
+    $scope.cancel = function () {
+        window.android && window.android.clearSelectedPhotos && window.android.clearSelectedPhotos();      // 调用Android js接口，清除选择的所有照片
+        window.history.back();
+    };
+
+    $scope.deleteImage = function (index) {
+        // 删除某一张图片
+        var filename = $scope.files[index].name;
+        window.android && window.android.deleteSelectedPhoto && window.android.deleteSelectedPhoto(filename);
+        $scope.files.splice(index, 1);
+        $scope.images.splice(index, 1);
+    };
+
+    $scope.openGallery = function (index, images) {
+        routerService.openPage($scope, '/templates/base-gallery.html', {
+            index: index+1,
+            images: $scope.images,
+            canDelete: true,
+            onDelete: $scope.deleteImage
+        }, {
+            hidePrev: false
+        });
+    };
+
+    // 向上级注册图片列表信息，
+    setTimeout(function () {
+        $scope.images = $scope.registerImageInfo($scope.elementId);
+    }, 100);
+
+    $scope.$on('$destroy', function (event) {
+        window.android && window.android.clearSelectedPhotos && window.android.clearSelectedPhotos();      // 调用Android js接口，清除选择的所有照片
+    });
+});
+
 app.directive('dropDownMenu', function () {
     return {
         restrict: 'E',
