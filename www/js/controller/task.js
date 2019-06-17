@@ -4,6 +4,15 @@
  * Created by liucaiyun on 2017/7/20.
  */
 var TaskTypes = {
+    Security: 1,    // 安全评测,
+    Jianxiu: 2,     // 检修
+    Qiangxiu: 3,    // 抢修
+    Other: 4,       // 其他
+    Baoyang: 5,     // 保养
+    Poweroff: 6,    // 停电维护
+    NormalDts: 8,   // 一般缺陷
+    SeriousDts: 9,  // 严重缺陷
+    FatalDts: 10,   // 致命缺陷
     Xunjian: 11
 };
 var OpsTaskType = [1, 2, 3, 4, 5, 6, 7];
@@ -848,8 +857,109 @@ app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, us
     $scope.isDeviceOps = deviceSn ? true : false;
     $scope.pageTitle = deviceSn ? '运维记录' : '所有任务';
     var role = userService.getUserRole();
-    var opsCompanyIdList = [];
     var userAccount = userService.getUser().account;
+    var requestFilterParams = null;
+    $scope.showFilter = false;
+    $scope.filterItems = [
+        {
+            title: '状态',
+            key: 'stage',
+            items: [{
+                id: 'stage_finished',
+                name: '已完成',
+                value: [TaskStatus.Closed]
+            }, {
+                id: 'stage_unfinished',
+                name: '未完成',
+                value: [TaskStatus.ToAssign, TaskStatus.ToAccept, TaskStatus.Accepted, TaskStatus.Coming, TaskStatus.Arrived]
+            }]
+        }, {
+            title: '来源',
+            key: 'creater',
+            items: [{
+                id: 'creator_my',
+                name: '我提交的',
+                value: userAccount
+            }]
+        }, {
+            title: '类型',
+            key: 'task_type',
+            items: [{
+                id: 'type_xunjian',
+                name: '巡检',
+                value: TaskTypes.Xunjian
+            }, {
+                id: 'type_qiangxiu',
+                name: '抢修',
+                value: TaskTypes.Qiangxiu
+            }, {
+                id: 'type_jianxiu',
+                name: '检修',
+                value: TaskTypes.Jianxiu
+            }, {
+                id: 'type_baoyang',
+                name: '保养',
+                value: TaskTypes.Baoyang
+            }, {
+                id: 'type_security',
+                name: '安全评测',
+                value: TaskTypes.Security
+            }, {
+                id: 'type_poweroff',
+                name: '停电维护',
+                value: TaskTypes.Poweroff
+            }, {
+                id: 'type_other',
+                name: '其他',
+                value: TaskTypes.Other
+            }]
+        }
+    ];
+    $scope.selectedFilter = {};     // 确定选中的
+    $scope.tmpSelectedFilter = {};      // 在确定选中前，记录选中状态的
+
+    $scope.toggleFilterItem = function (id) {
+        $scope.tmpSelectedFilter[id] = !$scope.tmpSelectedFilter[id];
+    };
+
+    $scope.confirmFilter = function () {
+        $scope.selectedFilter = $scope.tmpSelectedFilter;
+        var filterParams = {};
+        $scope.filterItems.forEach(function (group) {
+            group.items.forEach(function (item) {
+                if ($scope.selectedFilter[item.id]) {
+                    var values = filterParams[group.key] || [];
+                    if (typeof(item.value) === 'object') {
+                        values = values.concat(item.value);
+                    } else {
+                        values.push(item.value);
+                    }
+                    filterParams[group.key] = values;
+                }
+            });
+        });
+        $scope.toggleFilter(false);
+        requestFilterParams = filterParams;
+        $scope.getDataList();
+    };
+
+    $scope.clearFilter = function () {
+        $scope.selectedFilter = {};
+        $scope.toggleFilter(false);
+        requestFilterParams = null;
+        $scope.getDataList();
+    };
+
+    $scope.toggleFilter = function (show) {
+        if (show === undefined) {
+            $scope.showFilter = !$scope.showFilter;
+        } else {
+            $scope.showFilter = show;
+        }
+        if ($scope.showFilter) {
+            $scope.tmpSelectedFilter = $scope.selectedFilter;
+        }
+    };
 
     function sortFunc(d1, d2) {
 
@@ -894,30 +1004,37 @@ app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, us
         return 0;
     }
 
-    $scope.getDataList = function() {
+    $scope.getDataList = function(filterParams) {
         scrollerService.initScroll("#taskList", $scope.getDataList);
         $scope.isLoading = true;
         $scope.loadingFailed = false;
         var companyId = userService.getTaskCompanyId();
         var url = "/opstasks?company_id=" + companyId;
-        if (role === 'USER') {  // 如果是用户的话，所有任务取的是所有站点的任务
-            var stationSns = [];
-            $scope.sites.map(function (s) {
-                if (!s.is_group) {
-                    stationSns.push(s.sn);
-                }
-            });
-            url = '/opstasks?station=' + stationSns.join(',') + '&task_type=' + OpsTaskType.join(',') + ',11';
-        } else if (deviceSn) {
+        if (deviceSn) {
             url = "/staticdevices/opstasks/" + deviceSn + '?types=' + OpsTaskType.join(',');
+        } else if (role === 'USER') {  // 如果是用户的话，所有任务取的是所有站点的任务
+             var stationSns = [];
+             $scope.sites.map(function (s) {
+                 if (!s.is_group) {
+                     stationSns.push(s.sn);
+                 }
+             });
+             url = '/opstasks?station=' + stationSns.join(',') + '&task_type=' + OpsTaskType.join(',') + ',11';
+             // 筛选
+         }
+         var params = {
+             page_size: 100,
+             page_index: 0,
+             s_echo: 0
+         };
+        if (requestFilterParams) {
+            Object.keys(requestFilterParams).forEach(function (key) {
+                params[key] = requestFilterParams[key].join(',');
+            });
         }
         ajax.get({
             url: url,
-            data:{
-                page_size: 100,
-                page_index: 0,
-                s_echo: 0
-            },
+            data: params,
             success: function(result) {
                 $scope.isLoading = false;
                 var tasks = result.aaData ? result.aaData : result, task = null;

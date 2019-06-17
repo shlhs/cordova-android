@@ -1,6 +1,9 @@
-<div id="taskList" class="scroll-wrapper">
-    <div class="mui-scroll1" ng-if="!isLoading && !loadingFailed">
-        <ul class="mui-table-view mui-table-view-striped mui-table-view-condensed task-list no-out-border" ng-if="tasks.length">
+<div id="taskList" class="scroll-wrapper" style="position: relative;height: 100%;">
+    <div class="filter-btn" ng-click="toggleFilter()">
+        筛选<label class="iconfont anticon-filter" style="font-size: 13px;"></label>
+    </div>
+    <div class="mui-scroll1" ng-if="!isLoading && !loadingFailed" style="margin-top: 38px;">
+        <ul class="mui-table-view-striped mui-table-view-condensed task-list no-out-border" ng-if="tasks.length">
             <li class="mui-table-view-cell mui-media task-item" ng-repeat="task in tasks"
                 ng-click="openTask(task)" ng-class="{'closed': task.stage_id == TaskStatus.Closed}">
                 <div ng-if="task.task_type_id !== 11">
@@ -91,6 +94,24 @@
             <i class="alert-icon warning"></i>
             <div class="alert-text info">加载失败，请检查网络</div>
             <div class="alert-reload" ng-click="getDataList()">重新加载</div>
+        </div>
+    </div>
+    <div class="dropdown-filter-wrapper" ng-if="showFilter">
+        <div class="filter-mask" ng-click="toggleFilter(false)"></div>
+        <div class="filter-inner">
+            <div class="filter-body">
+                <div class="group" ng-repeat="group in filterItems">
+                    <div class="title">{{group.title}}</div>
+                    <div class="items">
+                        <label class="item" ng-repeat="item in group.items" ng-class="{'checked': tmpSelectedFilter[item.id]}"
+                               ng-click="toggleFilterItem(item.id)">{{item.name}}</label>
+                    </div>
+                </div>
+            </div>
+            <div class="filter-footer">
+                <div class="btn default" ng-click="clearFilter()">重置</div>
+                <div class="btn primary" ng-click="confirmFilter()">查询</div>
+            </div>
         </div>
     </div>
 </div>
