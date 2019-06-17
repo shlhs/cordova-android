@@ -27,17 +27,10 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
     $scope.taskData = {};
     $scope.name = $scope.device.path ? $scope.device.path + '/' + $scope.device.name : $scope.device.name;
 
-    $scope.files = [];
     $scope.images = [];
     $scope.description = '';
-    $scope.isPC = IsPC();
-    $scope.useMobileGallery = window.android && window.android.openGallery;
     var staticDevices = [];
 
-    // 先清除上一次选择的图片
-    window.android && window.android.clearSelectedPhotos();
-
-    var insertPosition = angular.element("#imageList>.upload-item");
     var companyId = userService.getTaskCompanyId();
 
     function init() {
@@ -53,6 +46,9 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
         initMembers();
     }
 
+    $scope.registerImageInfo = function (imageEleId) {
+        return $scope.images;
+    };
 
     function getStaticDevicesOfStation() {
         ajax.get({
@@ -199,96 +195,6 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
                 history.back();
             }
         })
-    };
-
-    $scope.chooseImage = function (files) {     // 选择图片
-        $scope.canDelete = true;
-        for (var i = 0; i < files.length; i++) {
-            var reader = new FileReader(), file=files[i];
-            reader.readAsDataURL(file);
-            reader.onloadstart = function () {
-                //用以在上传前加入一些事件或效果，如载入中...的动画效果
-            };
-            reader.onload = function (event) {
-                var img = new Image();
-                img.src = event.target.result;
-                img.onload = function(){
-                    var quality =  75;
-                    var dataUrl = imageHandler.compress(this, 75, file.orientation).src;
-                    $scope.files.push({name: file.name});
-                    $scope.images.push(dataUrl);
-                    $scope.$apply();
-                };
-            };
-        }
-    } ;
-
-    $scope.submitAndBack = function() {   //上传描述和图片
-        if (!$scope.description && !$scope.files.length){
-            mui.alert('评论与图片不能同时为空', '无法提交', function() {
-            });
-            return;
-        }
-        var images = [];
-        insertPosition.prevAll().each(function (i, n) {
-            var imageUrl = $(n).find('.img-file').css('background-image');
-            images.push(imageUrl.substring(5, imageUrl.length-2));
-        });
-        $scope.postAction(TaskAction.Update, $scope.description, images, function () {       // 上传成功，清空本次信息
-            $timeout(function () {
-                $scope.cancel();
-            }, 500);
-        });
-    };
-
-    $scope.addImagesWithBase64 = function (data, filename) {
-        // alert('add images for dts create');
-        $scope.canDelete = true;
-        if (filename === undefined) {
-            filename = '';
-        }
-        $scope.files.push({name: filename});
-        $scope.images.push(data);
-        $scope.$apply();
-    };
-
-    $scope.deleteImageFromMobile = function (filename) {
-        for (var i=0; i<$scope.files.length; i++) {
-            if ($scope.files[i].name === filename) {
-                $scope.files.splice(i, 1);
-                $scope.images.splice(i, 1);
-                break;
-            }
-        }
-        $scope.$apply();
-    };
-
-    $scope.openMobileGallery = function () {
-        window.android.openGallery(9, 'onAndroid_dtsImageImport', 'onAndroid_dtsImageDelete');
-    };
-
-    $scope.cancel = function () {
-        window.android && window.android.clearSelectedPhotos && window.android.clearSelectedPhotos();      // 调用Android js接口，清除选择的所有照片
-        window.history.back();
-    };
-
-    $scope.openGallery = function (index) {
-        routerService.openPage($scope, '/templates/base-gallery.html', {
-            index: index+1,
-            images: $scope.images,
-            canDelete: true,
-            onDelete: $scope.deleteImage
-        }, {
-            hidePrev: false
-        });
-    };
-
-    $scope.deleteImage = function (index) {
-        // 删除某一张图片
-        var filename = $scope.files[index].name;
-        window.android && window.android.deleteSelectedPhoto && window.android.deleteSelectedPhoto(filename);
-        $scope.files.splice(index, 1);
-        $scope.images.splice(index, 1);
     };
 
     $scope.submitForm = function() {

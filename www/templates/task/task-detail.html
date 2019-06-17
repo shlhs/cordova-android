@@ -54,7 +54,7 @@
             background-color: transparent;
         }
         .mui-bar-tab>a{
-            padding: 8px 2px 4px 2px;
+            padding: 0px 2px 4px 2px;
         }
         .mui-bar-tab>a:first-child {
             padding-left: 4px;
@@ -118,15 +118,23 @@
             <div class="count">{{taskData.device_record.length}}</div>
             <button ng-click="gotoDeviceHandlerPage()">查看设备详情</button>
         </div>
-        <div class="xunjian-devices-area vertical" ng-if="xunjianStage === 'toHandle' || xunjianStage==='toClose' ">
-            <div style="height: 80px;">
+        <div class="xunjian-devices-area vertical" ng-if="xunjianStage === 'toHandle' || xunjianStage==='toClose'">
+            <div style="height: 80px;display: -webkit-box;">
                 <div class="item">
                     <span class="count">{{taskData.device_record.length}}</span>
                     <span class="name">应检设备数</span>
                 </div>
-                <div class="item">
+                <div class="item" ng-if="xunjianStage === 'toHandle'">
                     <span class="count" style="color: #FD6D27;">{{checkedDeviceCount}}</span>
                     <span class="name">已检设备数</span>
+                </div>
+                <div class="item" ng-if="xunjianStage === 'toClose'">
+                    <span class="count" style="color: #FD6D27;">{{taskData.dts_count}}</span>
+                    <span class="name">发现缺陷数</span>
+                </div>
+                <div class="item" ng-if="xunjianStage === 'toClose' && taskData.dts_count">
+                    <span class="count" style="color: #FD6D27;">{{taskData.resolved_dts_count}}</span>
+                    <span class="name">已解决缺陷</span>
                 </div>
             </div>
             <button ng-click="gotoDeviceHandlerPage()" ng-if="xunjianStage === 'toClose'">查看设备</button>

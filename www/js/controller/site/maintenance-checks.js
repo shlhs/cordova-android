@@ -26,7 +26,6 @@ app.controller('MaintenanceCheckHistoryCtrl', function ($scope, ajax, routerServ
         routerService.openPage($scope, template, params, config);
     };
 
-
     $scope.getDataList = function() {
         $scope.isLoading = true;
         $scope.loadingFailed = false;
@@ -43,7 +42,7 @@ app.controller('MaintenanceCheckHistoryCtrl', function ($scope, ajax, routerServ
                 $scope.$apply();
             }
         });
-    }
+    };
 
     $scope.addReport = function (data) {
         $scope.history.unshift(data);
@@ -63,6 +62,7 @@ app.controller("MaintenanceCheckRecordItemCtrl", function ($scope, ajax, routerS
     $scope.image_in_check = [];
     $scope.image_after_check = [];
     $scope.isPC = IsPC();
+    $scope.useMobileGallery = window.android && window.android.openGallery;
     $scope.canEdit = false;
     var apiHost = GetQueryString("apiHost") || '';      // 适配网页
 
@@ -78,7 +78,6 @@ app.controller("MaintenanceCheckRecordItemCtrl", function ($scope, ajax, routerS
     };
 
     $scope.openGallery = function(startIndex, images) {
-
         routerService.openPage($scope, '/templates/maintenance-check/gallery.html', {
             index: startIndex,
             images: images
@@ -93,21 +92,21 @@ app.controller("MaintenanceCheckRecordItemCtrl", function ($scope, ajax, routerS
         }
     };
 
-    function splitImagePath(images) {
-        if (!images) {
-            return [];
-        }
-        if (images.lastIndexOf(';') === (images.length-1)) {
-            images = images.substring(0, images.length-1);
-        }
-        var paths = [], urlHost = $rootScope.host || apiHost;
-        images.split(';').forEach(function (n) {
-            paths.push(urlHost+ '/' + n);
-        });
-        return paths;
-    }
-
     function getData() {
+        function _splitImagePath(images) {
+            if (!images) {
+                return [];
+            }
+            if (images.lastIndexOf(';') === (images.length-1)) {
+                images = images.substring(0, images.length-1);
+            }
+            var paths = [], urlHost = $rootScope.host || apiHost;
+            images.split(';').forEach(function (n) {
+                paths.push(urlHost+ '/' + n);
+            });
+            return paths;
+        }
+
         if ($scope.isCreate) {
             $scope.canEdit = true;
             ajax.get({
@@ -125,9 +124,9 @@ app.controller("MaintenanceCheckRecordItemCtrl", function ($scope, ajax, routerS
                 url: apiHost + '/poweroff_reports/' + $scope.id,
                 success: function (data) {
                     $scope.recordData = $.extend({}, data, {template: JSON.parse(data.template)});
-                    $scope.recordData.image_before_check = splitImagePath(data.image_before_check);
-                    $scope.recordData.image_in_check = splitImagePath(data.image_in_check);
-                    $scope.recordData.image_after_check = splitImagePath(data.image_after_check);
+                    $scope.recordData.image_before_check = _splitImagePath(data.image_before_check);
+                    $scope.recordData.image_in_check = _splitImagePath(data.image_in_check);
+                    $scope.recordData.image_after_check = _splitImagePath(data.image_after_check);
                     // 判断当前用户是否有操作权限
                     checkEditable();
                     $scope.$apply();
@@ -314,8 +313,6 @@ app.controller('MaintenanceChecklistCtrl', function ($scope, ajax) {
 
     init();
 });
-
-
 
 app.controller('PowerOffGalleryCtrl', function ($scope, $stateParams, $timeout) {
     $scope.show = false;
