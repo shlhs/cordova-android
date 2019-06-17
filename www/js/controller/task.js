@@ -123,7 +123,7 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, appStoreProv
     $scope.title = '';
     $scope.uiMode = platformService.getUiMode();
     $scope.enableUiModeChange = gEnableUiModeChange;
-    $scope.navMenus = [_getDefaultHomeMenu()];
+    $scope.navMenus = [_getDefaultHomeMenu(), _getEnergyMenu()];
     $scope.sitesTree = [];
     $scope.sites = [];
     $scope.currentSite = {};
@@ -330,10 +330,18 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, appStoreProv
             icon: 'nav-sites'
         };
     }
+    function _getEnergyMenu() {
+        return {
+            id: 'energy_mgmt',
+            name: '能效管理',
+            templateUrl: '/templates/energy/energy-home.html',
+            icon: 'nav-energy'
+        };
+    }
 
     $scope.$on('onUiModeChange', function (event) {
         $scope.uiMode = platformService.getUiMode();
-        $scope.navMenus = [_getDefaultHomeMenu()];
+        $scope.navMenus = [_getDefaultHomeMenu(), _getEnergyMenu()];
         initMenu();
     });
 
@@ -361,46 +369,36 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, appStoreProv
         }, 500);
     }
 
-    function updateMenus() {
+    function updateMenus(platHasOps) {
         // 判断是否包含ops-management权限
         if ($scope.uiMode !== UIMODE.ENERGY) {
-            if ($scope.navMenus.length === 1) {
-                $scope.navMenus.push(
-                    {
-                        id: 'energy_mgmt',
-                        name: '能效管理',
-                        templateUrl: '/templates/energy/energy-home.html',
-                        icon: 'nav-energy'
-                    }
-                );
-                if (appStoreProvider.hasOpsAuth()) {
-                    if (role === 'USER') {
-                        $scope.navMenus.push(
-                            {
-                                id: 'my_tasks',
-                                name: '我的服务',
-                                templateUrl: '/templates/task/user-task-list.html',
-                                icon: 'nav-service'
-                            }
-                        );
-                    } else {
-                        $scope.navMenus.push(
-                            {
-                                id: 'my_tasks',
-                                name: '我的待办',
-                                templateUrl: '/templates/task/task-todo-list.html',
-                                icon: 'nav-all-tasks'
-                            }
-                        );
-                    }
+            if (platHasOps && $scope.navMenus.length <= 2) {
+                if (role === 'USER') {
+                    $scope.navMenus.push(
+                        {
+                            id: 'my_tasks',
+                            name: '我的服务',
+                            templateUrl: '/templates/task/user-task-list.html',
+                            icon: 'nav-service'
+                        }
+                    );
+                } else {
+                    $scope.navMenus.push(
+                        {
+                            id: 'my_tasks',
+                            name: '我的待办',
+                            templateUrl: '/templates/task/task-todo-list.html',
+                            icon: 'nav-all-tasks'
+                        }
+                    );
                 }
             }
-
         }
     }
 
-    $scope.$on('$onMenuUpdate', function (event, menuSns) {
-        updateMenus();
+    $scope.$on('$onMenuUpdate', function (event, platFuncs, menuSns) {
+        var platFormHasOpsAuth = platFuncs ? platFuncs.opsManagement : true;
+        updateMenus(platFormHasOpsAuth);
     });
     initMenu();
 });
@@ -1208,6 +1206,16 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
                 default:
                     $scope.xunjianStage = 'toStart';
             }
+            taskData.dts_count = taskData.children_tasks ? taskData.children_tasks.length : 0;
+            var resolved_dts_count = 0;
+            if (taskData.children_tasks) {
+                taskData.children_tasks.forEach(function (t) {
+                    if (t.stage_id === TaskStatus.ToClose || t.stage_id === TaskStatus.Closed) {
+                        resolved_dts_count += 1;
+                    }
+                })
+            }
+            taskData.resolved_dts_count = resolved_dts_count;
         }
         return taskData;
     }

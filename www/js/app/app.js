@@ -805,30 +805,30 @@ app.controller('BaseGalleryCtrl', function ($scope, $stateParams, $timeout) {
     };
 });
 
-
-
 function onAndroid_taskImageImport(imageData, filename) {    // 从Android读取的图片
-    var scope = angular.element("#handlePage").scope();
+    var scope = angular.element("#imageList").scope();
     if (scope) {
         scope.addImagesWithBase64(imageData, filename);
     }
 }
 
 function onAndroid_taskImageDelete(filename) {       // Android手机上删除所选图片
-    angular.element("#handlePage").scope().deleteImageFromMobile(filename);
+    angular.element("#imageList").scope().deleteImageFromMobile(filename);
 }
 // 图片选择控制器
 // 使用的父级controller需要实现方法： $scope.registerImageInfo(imageEleId) { return $scope.images }
 app.controller('ImageUploaderCtrl', function ($document, $scope, $timeout, routerService) {
+    $scope.elementId = '';
     $scope.singleImage = false;     // 是否只允许一张图片
     $scope.files = [];
     $scope.images = [];
     $scope.isPC = IsPC();
     $scope.useMobileGallery = window.android && window.android.openGallery;
-    var insertPosition = angular.element("#imageList>.upload-item");
 
-    // 先清除上一次选择的图片
-    window.android && window.android.clearSelectedPhotos();
+
+    function clearAllExist() {
+        window.android && window.android.clearSelectedPhotos && window.android.clearSelectedPhotos();      // 调用Android js接口，清除选择的所有照片
+    }
 
     $scope.chooseImage = function (files) {     // 选择图片
         $scope.canDelete = true;
@@ -850,6 +850,9 @@ app.controller('ImageUploaderCtrl', function ($document, $scope, $timeout, route
                         $scope.files.push({name: file.name});
                         $scope.images.push(dataUrl);
                     }
+                    if ($scope.onAddImage) {
+                        $scope.onAddImage($scope.elementId, dataUrl);
+                    }
                     $scope.$apply();
                 };
             };
@@ -861,8 +864,16 @@ app.controller('ImageUploaderCtrl', function ($document, $scope, $timeout, route
         if (filename === undefined) {
             filename = '';
         }
-        $scope.files.push({name: filename});
-        $scope.images.push(data);
+        if ($scope.singleImage && $scope.files.length) {
+            $scope.files[0] = {name: filename};
+            $scope.images[0] = data;
+        } else {
+            $scope.files.push({name: filename});
+            $scope.images.push(data);
+        }
+        if ($scope.onAddImage) {
+            $scope.onAddImage($scope.elementId, data);
+        }
         $scope.$apply();
     };
 
@@ -871,6 +882,9 @@ app.controller('ImageUploaderCtrl', function ($document, $scope, $timeout, route
             if ($scope.files[i].name === filename) {
                 $scope.files.splice(i, 1);
                 $scope.images.splice(i, 1);
+                if ($scope.onDeleteImage) {
+                    $scope.onDeleteImage($scope.elementId, i);
+                }
                 break;
             }
         }
@@ -878,12 +892,12 @@ app.controller('ImageUploaderCtrl', function ($document, $scope, $timeout, route
     };
 
     $scope.openMobileGallery = function () {
-        window.android.openGallery(9, 'onAndroid_taskImageImport', 'onAndroid_taskImageDelete');
-    };
-
-    $scope.cancel = function () {
-        window.android && window.android.clearSelectedPhotos && window.android.clearSelectedPhotos();      // 调用Android js接口，清除选择的所有照片
-        window.history.back();
+        if ($scope.singleImage) {
+            clearAllExist();
+            window.android.openGallery(9, 'onAndroid_taskImageImport', 'onAndroid_taskImageDelete');
+        } else {
+            window.android.openGallery(9, 'onAndroid_taskImageImport', 'onAndroid_taskImageDelete');
+        }
     };
 
     $scope.deleteImage = function (index) {
@@ -892,6 +906,9 @@ app.controller('ImageUploaderCtrl', function ($document, $scope, $timeout, route
         window.android && window.android.deleteSelectedPhoto && window.android.deleteSelectedPhoto(filename);
         $scope.files.splice(index, 1);
         $scope.images.splice(index, 1);
+        if ($scope.onDeleteImage) {
+            $scope.onDeleteImage($scope.elementId, index);
+        }
     };
 
     $scope.openGallery = function (index, images) {
@@ -908,10 +925,18 @@ app.controller('ImageUploaderCtrl', function ($document, $scope, $timeout, route
     // 向上级注册图片列表信息，
     setTimeout(function () {
         $scope.images = $scope.registerImageInfo($scope.elementId);
+        if ($scope.images.length) {
+            $scope.images.forEach(function (n) {
+               $scope.files.push({
+                   name: ''
+               }) ;
+            });
+        }
     }, 100);
+    clearAllExist();
 
     $scope.$on('$destroy', function (event) {
-        window.android && window.android.clearSelectedPhotos && window.android.clearSelectedPhotos();      // 调用Android js接口，清除选择的所有照片
+        clearAllExist();
     });
 });
 

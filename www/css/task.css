@@ -539,12 +539,13 @@
 }
 .xunjian-devices-area .item {
     height: 80px;
-    float: left;
-    width: 50%;
+    /*float: left;*/
+    /*width: 50%;*/
+    -webkit-box-flex: 1;
     padding-top: 16px;
     position: relative;
 }
-.xunjian-devices-area .item:last-child:before {
+.xunjian-devices-area .item:before {
     content: '';
     display: block;
     width: 1px;
@@ -553,6 +554,9 @@
     position: absolute;
     left: 0;
     top: 14px;
+}
+.xunjian-devices-area .item:first-child:before {
+    display: none;
 }
 .xunjian-devices-area .name {
     color: #666666;

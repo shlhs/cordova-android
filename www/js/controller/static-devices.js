@@ -122,13 +122,14 @@ app.controller('StaticDeviceSubListCtrl', function ($scope, ajax) {
 var OpsTaskType = [1, 2, 3, 4, 5, 6, 7, 11];
 
 
-app.controller('StaticDeviceDetailCtrl', function ($scope, ajax, routerService, platformService) {
+app.controller('StaticDeviceDetailCtrl', function ($scope, ajax, routerService, platformService, userService) {
     $scope.device = {};
     $scope.showTab = 'info';
     $scope.isPC = IsPC();
     $scope.opsTaskCount = 0;        // 运维个数
     $scope.unhandledDtsCount = 0;   // 未解决缺陷个数
     $scope.closedDtsCount = 0;      // 已关闭缺陷个数
+    $scope.canEdit = userService.getUserRole().indexOf('OPS') >= 0;
     var TaskStatus = {ToAccept: 1, ToAssign: 2, Accepted: 3, ToClose: 4, Closed: 5, Competition: 6, Coming: 7, Arrived: 8};
 
     function init() {
@@ -464,7 +465,9 @@ app.controller('StaticDeviceEditCtrl', function ($scope, ajax, routerService, pl
                 }
                 $scope.device.device_photo_src_link = null;      // 默认使用$scope.deviceImage显示图片
                 $scope.$apply();
-                setTimeout(pageBack, 1000);
+                setTimeout(function () {
+                    history.back();
+                }, 1000);
             },
             error: function () {
                 $.notify.progressStop();

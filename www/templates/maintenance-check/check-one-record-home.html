@@ -48,8 +48,9 @@
             <div class="info-group"><span class="title dark" style="float: none;">维护前照片：</span>
                 <div class="icon icon-20 icon-camera" style="position: absolute;" ng-if="canEdit">
                     <div class="image-uploader">
-                        <input type="file" accept="image/*" name="upload" multiple="" onchange="angular.element(this).scope().chooseImage('image_before_check', this)" ng-if="isPC">
-                        <input type="file" accept="image/*" name="upload" multiple="" ng-if="!isPC"
+                        <input type="file" accept="image/*" name="upload" multiple="" style="width: 25px;overflow: hidden;padding-left: 25px;"
+                               onchange="angular.element(this).scope().chooseImage('image_before_check', this)" ng-if="!useMobileGallery">
+                        <input type="file" accept="image/*" name="upload" multiple="" ng-if="useMobileGallery"
                                ng-click="setCurrentImageModel('image_before_check')" style="width: 25px;overflow: hidden;padding-left: 25px;">
                     </div>
                 </div>
@@ -68,8 +69,9 @@
             <div class="info-group"><span class="title dark" style="float: none;">维护过程照片：</span>
                 <div class="icon icon-20 icon-camera" style="position: absolute;" ng-if="canEdit">
                     <div class="image-uploader">
-                        <input type="file" accept="image/*" name="upload" multiple="" onchange="angular.element(this).scope().chooseImage('image_in_check', this)" ng-if="isPC">
-                        <input type="file" accept="image/*" name="upload" multiple="" ng-if="!isPC"
+                        <input type="file" accept="image/*" name="upload" multiple=""
+                               onchange="angular.element(this).scope().chooseImage('image_in_check', this)" ng-if="!useMobileGallery" style="width: 25px;overflow: hidden;padding-left: 25px;">
+                        <input type="file" accept="image/*" name="upload" multiple="" ng-if="useMobileGallery"
                                ng-click="setCurrentImageModel('image_in_check')" style="width: 25px;overflow: hidden;padding-left: 25px;">
                     </div>
                 </div>
@@ -88,8 +90,9 @@
             <div class="info-group"><span class="title dark" style="float: none;">维护后照片：</span>
                 <div class="icon icon-20 icon-camera" style="position: absolute;" ng-if="canEdit">
                     <div class="image-uploader">
-                        <input type="file" accept="image/*" name="upload" multiple="" onchange="angular.element(this).scope().chooseImage('image_after_check', this)" ng-if="isPC">
-                        <input type="file" accept="image/*" name="upload" multiple="" ng-if="!isPC"
+                        <input type="file" accept="image/*" name="upload" multiple="" style="width: 25px;overflow: hidden;padding-left: 25px;"
+                               onchange="angular.element(this).scope().chooseImage('image_after_check', this)" ng-if="!useMobileGallery">
+                        <input type="file" accept="image/*" name="upload" multiple="" ng-if="useMobileGallery"
                                ng-click="setCurrentImageModel('image_after_check')" style="width: 25px;overflow: hidden;padding-left: 25px;">
                     </div>
                 </div>

@@ -176,7 +176,7 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
                     }
                     var platFuncs = response.plat_function_switch ? JSON.parse(response.plat_function_switch) : null;
                     appStoreProvider.setMenuSns($scope.role, menuSns, platFuncs);
-                    $scope.$emit('$onMenuUpdate', menuSns);
+                    $scope.$emit('$onMenuUpdate', platFuncs, menuSns);
                     $scope.selectedApps = appStoreProvider.getSelectedApps();
                     $scope.$apply();
                 }
