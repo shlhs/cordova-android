@@ -1616,7 +1616,7 @@ app.controller('EnergyMaxDemandCtrl', function ($scope, varDataService) {
     }, 500);
 });
 
-const defaultVoltage = 220;     // 默认额定相电压
+const defaultVoltage = null;     // 默认额定相电压
 
 app.controller('EnergyQualityMonitorCtrl', function ($scope, varDataService, collectorService) {
     var codes = [];
@@ -1651,7 +1651,7 @@ app.controller('EnergyQualityMonitorCtrl', function ($scope, varDataService, col
     
     function getVarsOfDevice() {
         collectorService.getMonitorDevice($scope.currentDevice.sn, function (data) {
-           $scope.currentDevice.vc = data.vc || defaultVoltage;
+           $scope.currentDevice.vc = data.vc ? parseFloat(data.vc) : null;
            $scope.$apply();
         });
         $scope.current = {};
@@ -1730,22 +1730,24 @@ app.controller('EnergyQualityMonitorCtrl', function ($scope, varDataService, col
         // var coefficient = Math.sqrt(3);
         var vc = $scope.currentDevice.vc;
         // 电压是否告警
-        ['a', 'b', 'c'].forEach(function (phase) {
-            var voltage = valueMap['U'+phase];
-            if (_isNumber(voltage)) {
-                if (voltage > vc*1.07 || voltage < vc*0.93) {
-                    warning['U' + phase] = true;
+        if (vc) {
+            ['a', 'b', 'c'].forEach(function (phase) {
+                var voltage = valueMap['U'+phase];
+                if (_isNumber(voltage)) {
+                    if (voltage > vc*1.07 || voltage < vc*0.93) {
+                        warning['U' + phase] = true;
+                    }
                 }
-            }
 
-            // 谐波畸变率，额定电压<=400V时，需<5%
-            if (_isNumber(valueMap['thdu' + phase])) {
-                var thdu = valueMap['thdu' + phase];
-                if (thdu > 5) {
-                    warning['thdu' + phase] = true;
+                // 谐波畸变率，额定电压<=400V时，需<5%
+                if (_isNumber(valueMap['thdu' + phase])) {
+                    var thdu = valueMap['thdu' + phase];
+                    if (thdu > 5) {
+                        warning['thdu' + phase] = true;
+                    }
                 }
-            }
-        });
+            });
+        }
         // 不平衡度，<2%
         if (_isNumber(valueMap['ublup'])) {
             if (valueMap['ublup'] > 2) {
@@ -1790,10 +1792,10 @@ app.controller('EnergyQualityMonitorCtrl', function ($scope, varDataService, col
         var phases = ['ua', 'ub', 'uc', 'ia', 'ib', 'ic'];
         var thdMap = {};
         phases.forEach(function (phase) {
-            // if (valueMap['thd' + phase] !== undefined) {
-            //     thdMap[phase] = valueMap['thd' + phase];
-            //     return;
-            // }
+            if (valueMap['thd' + phase] !== undefined) {
+                thdMap[phase] = valueMap['thd' + phase];
+                return;
+            }
             var dataList = [];
             dataList.push(valueMap['fd' + phase]);  // 基波
             for (var i=3; i<=13; i+=2) {
@@ -2092,7 +2094,7 @@ app.controller('EnergyQualityReportCtrl', function ($scope, ajax, collectorServi
     $scope.registerDeviceChangeListener(function (device) {
 
         collectorService.getMonitorDevice($scope.currentDevice.sn, function (data) {
-            $scope.currentDevice.vc = data.vc || defaultVoltage;
+            $scope.currentDevice.vc = data.vc ? parseFloat(data.vc) : null;
             $scope.$apply();
         });
 
@@ -2150,7 +2152,7 @@ app.controller('EnergyQualityReportCtrl', function ($scope, ajax, collectorServi
     }
 
     collectorService.getMonitorDevice($scope.currentDevice.sn, function (data) {
-        $scope.currentDevice.vc = data.vc || defaultVoltage;
+        $scope.currentDevice.vc = data.vc ? parseFloat(data.vc) : null;
         $scope.$apply();
     });
     setTimeout(getReport, 500);
