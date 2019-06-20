@@ -85,11 +85,6 @@
                 <div class="conclusion" ng-class="{'pass': freq.isPass===true, fail: freq.isPass===false}">{{showConclution(freq.isPass)}}</div>
             </div>
         </div>
-        <div class="report-list" ng-if="!currentDevice.vc">
-            <div class="report-item nodata">
-                未配置电压等级，无法计算合格率
-            </div>
-        </div>
     </div>
     <div class="report-card">
         <div class="header">
@@ -103,15 +98,10 @@
                 <div class="conclusion" ng-class="{'pass': cos.isPass===true, fail: cos.isPass===false}">{{showConclution(cos.isPass)}}</div>
             </div>
         </div>
-        <div class="report-list" ng-if="!currentDevice.vc">
-            <div class="report-item nodata">
-                未配置电压等级，无法计算合格率
-            </div>
-        </div>
     </div>
     <div class="report-card">
         <div class="header">
-            <label class="title">谐波含量分析</label>
+            <label class="title">电压谐波含量分析</label>
             <label style="color: #333;font-size: 12px;float: right;width: 100px;margin-top: 1px;">监测点数：{{harm.count || 0}}</label>
         </div>
         <div class="report-list" ng-if="currentDevice.vc">
