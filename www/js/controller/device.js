@@ -753,13 +753,11 @@ app.controller('DeviceMonitorCtrl', function ($scope, ajax, appStoreProvider, us
     function getDeviceVars() {  // 获取设备的所有变量
         $scope.isLoading = true;
         ajax.get({
-            url: '/devices/' + $scope.deviceSn + '/devicevars',
-            success: function (data) {
+            url: platformService.getDeviceMgmtHost() + '/management/devices/' + $scope.deviceSn + '/variables',
+            success: function (response) {
+                var data = response.data;
                 $scope.isLoading = false;
                 $scope.vars = data;
-                if(data.length > 0) {
-                    $scope.deviceName = data[0].device_name;
-                }
                 groupVars(data);
             }, error: function () {
                 $scope.isLoading = false;
@@ -770,21 +768,21 @@ app.controller('DeviceMonitorCtrl', function ($scope, ajax, appStoreProvider, us
     function groupVars(vars) {      // 将变量按模拟量、状态量进行分组，再将模拟量进行分类
         var analogs=[], digitals=[], varGroups={};
         vars.forEach(function (n) {
-           if (n.type === 'Analog') {
-               analogs.push(n.sn);
-               // 如果是模拟量的话，再根据var_define_name进行分类
-               var groupName = n.var_group_name;
-               if (!groupName) {
-                   return;
-               }
-               if (varGroups[groupName]) {
-                   varGroups[groupName].push(n);
-               } else {
-                   varGroups[groupName] = [n];
-               }
-           } else {
-               digitals.push(n.sn);
-           }
+            if (n.type === 'Analog') {
+                analogs.push(n.sn);
+                // 如果是模拟量的话，再根据var_define_name进行分类
+                var groupName = n.var_group_name;
+                if (!groupName) {
+                    return;
+                }
+                if (varGroups[groupName]) {
+                    varGroups[groupName].push(n);
+                } else {
+                    varGroups[groupName] = [n];
+                }
+            } else {
+                digitals.push(n.sn);
+            }
         });
         if (analogs.length) {
             $scope.realtime.push({name: '模拟量', type: 'analog', sns: analogs});
@@ -855,10 +853,10 @@ app.controller('DeviceRemoteControlCtrl', function ($scope, $interval, routerSer
                 });
                 // 修改状态量的0/1描述
                 $scope.varList.forEach(function (v) {
-                   if (v.type === 'Digital') {
-                       v.one_meaning = v.one_meaning || 'ON';
-                       v.zero_meaning = v.zero_meaning || 'OFF';
-                   }
+                    if (v.type === 'Digital') {
+                        v.one_meaning = v.one_meaning || 'ON';
+                        v.zero_meaning = v.zero_meaning || 'OFF';
+                    }
 
                 });
                 getRealTimeData();
@@ -885,17 +883,17 @@ app.controller('DeviceRemoteControlCtrl', function ($scope, $interval, routerSer
             data: {sns: sns.join(",")},
             success: function(data) {
                 $scope.varList.forEach(function (v) {
-                   var exist = false;
-                   for (var i=0; i<data.length; i++) {
-                       if (data[i].var.sn === v.sn) {
-                           v.value = (data[i].data === null ? 1 : data[i].data) + (data[i].unit || '');
-                           exist = true;
-                           break;
-                       }
-                   }
-                   if (!exist) {
-                       v.value = null;
-                   }
+                    var exist = false;
+                    for (var i=0; i<data.length; i++) {
+                        if (data[i].var.sn === v.sn) {
+                            v.value = (data[i].data === null ? 1 : data[i].data) + (data[i].unit || '');
+                            exist = true;
+                            break;
+                        }
+                    }
+                    if (!exist) {
+                        v.value = null;
+                    }
                 });
                 $scope.$apply();
             }
@@ -1085,7 +1083,15 @@ app.controller('VarRealtimeCtrl', function ($scope, ajax) {
                         }
                     });
                 }
-                $scope.realtimeValues = data;
+                var dataMap = {};
+                data.forEach(function (d) {
+                    dataMap[d.var.sn] = d;
+                });
+                var sorted = [];
+                sns.forEach(function (sn) {
+                    sorted.push(dataMap[sn]);
+                });
+                $scope.realtimeValues = sorted;
                 $scope.$apply();
             },
             error: function(err) {
