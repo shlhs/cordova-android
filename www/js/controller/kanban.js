@@ -115,15 +115,17 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                         getElectricalDegreeandCharge(contentsResult[i].title, deviceVarSn, contentsResult[i].period, $scope.queryTime, contentsResult[i].degreeOrCharge);
                     }else if(contentsResult[i].type === 'trend-analysis'){
                         var deviceVarSns = [];
+                        var deviceVarAliasMap = {};
                         for(var j in contentsResult[i].content) {
                             deviceVarSns.push(contentsResult[i].content[j].varInfo.deviceVarSn);
+                            deviceVarAliasMap[contentsResult[i].content[j].varInfo.deviceVarSn] = contentsResult[i].content[j].varInfo.deviceVarAlias;
                         }
                         if(deviceVarSns.length == 0) {
                             continue;
                         }
                         haveChart = true;
                         needChartCount += 1;
-                        getTrendAnalysis(contentsResult[i].title, deviceVarSns, contentsResult[i].period, $scope.queryTime, contentsResult[i].pfvSettings, contentsResult[i].showType, contentsResult[i].calcMethod);
+                        getTrendAnalysis(contentsResult[i].title, deviceVarSns, deviceVarAliasMap, contentsResult[i].period, $scope.queryTime, contentsResult[i].pfvSettings, contentsResult[i].showType, contentsResult[i].calcMethod);
                     }else if(contentsResult[i].type === 'ratio-pie'){
                         var ratioPieData = [];
                         var unit = '';
@@ -133,7 +135,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                                 continue;
                             }
                             var tempData = {};
-                            var tempName = contentsResult[i].content[j].varInfo.deviceVarName;
+                            var tempName = contentsResult[i].content[j].varInfo.deviceVarAlias ? contentsResult[i].content[j].varInfo.deviceVarAlias : contentsResult[i].content[j].varInfo.deviceVarName;
                             if(tempName.length > 8) {
                                 var pos = parseInt(tempName.length/2);
                                 tempName = tempName.substring(0, pos) + "\n" + tempName.substring(pos)
@@ -581,7 +583,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
         });
     }
 
-    function getTrendAnalysis(name, deviceVarSns, period, queryTime, pfvSettings, inputShowType, inputCalcMethod) {
+    function getTrendAnalysis(name, deviceVarSns, deviceVarAliasMap, period, queryTime, pfvSettings, inputShowType, inputCalcMethod) { 
         var queryType = 'MONTH';
         if(period == 'current_day') {
             queryType = 'DAY';
@@ -634,7 +636,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
 
                 var chartDatas = [];
                 for(var j in data) {
-                    chartDatas.push({name: data[j].name+' '+data[j].unit, type:showType, data: data[j].datas, yAxisIndex: 0});
+                    chartDatas.push({name: (deviceVarAliasMap[data[j].var.sn] ? deviceVarAliasMap[data[j].var.sn] : data[j].name)+' '+data[j].unit, type:showType, data: data[j].datas, yAxisIndex: 0});
                 }
 
                 var showPfvSetting = (period == 'current_day' || period == 'normal')&& (pfvSettings == 'pfv-settings-f' || pfvSettings == 'pfv-settings-r')
