@@ -4,13 +4,8 @@
  */
 var app = angular.module('myApp', ['ngAnimate', 'ui.router', 'ui.router.state.events']);
 var loginExpireCheckEnable = false;       // 是否检查鉴权过期
-
-
-var gEnableUiModeChange = false;     // 是否开启选择界面模式的功能
-var UIMODE = {
-    ENERGY: "energy",
-    DEFAULT: "cloud"
-};
+var defaultPlatIpAddr = "";     // 平台默认ip，格式为：http://118.190.51.135
+var gShowEnergyPage = false;     // 是否显示能效页面，不显示能效页面时运维人员会看到抢单页面
 
 app.run(function ($animate) {
     $animate.enabled(true);
@@ -175,8 +170,7 @@ app.service('platformService', function () {
 
     this.setLatestPlatform = function (platform) {
         setStorageItem('latestPlatform', JSON.stringify(platform));
-        this.host = platform.url;
-        this.ipAddress = this.host.substring(0, this.host.indexOf(':', 5));
+        this.host = platform.url.substring(0, platform.url.indexOf(':', 5));
         this.thumbHost = this.getImageThumbHost();
     };
 
@@ -191,39 +185,46 @@ app.service('platformService', function () {
 
     this.getHost = function () {
         // 格式为： http://ip:port/v1
+        if (defaultPlatIpAddr) {
+            return defaultPlatIpAddr;
+        }
         var platform = this.getLatestPlatform();
-        return platform ? platform.url : null;
+        return platform ? platform.url.substring(0, platform.url.indexOf(':', 5)) : null;
+    };
+
+    this.getCloudHost = function () {
+        return this.host + ':8099/v1';
     };
 
     this.getAuthHost = function () {
-        return this.ipAddress + ":8096/v1"
+        return this.host + ":8096/v1"
     };
 
     this.getImageThumbHost = function () {      // 获取图片压缩服务的地址
         // 格式为： http://ip:8888/unsafe
-        if (this.ipAddress)
+        if (this.host)
         {
-            return this.ipAddress + ":8888/unsafe"
+            return this.host + ":8888/unsafe"
         }
         return null;
     };
 
     this.getGraphHost = function () {
-        return this.ipAddress + ':8920/v1';
+        return this.host + ':8920/v1';
     };
 
     this.getGraphScreenUrl = function (graphSn) {
         // 新的监控画面服务
-        return this.ipAddress + ':8921/monitor.html?sn=' + graphSn;
+        return this.host + ':8921/monitor.html?sn=' + graphSn;
     };
 
     this.getDeviceMgmtHost = function () {
-        return this.ipAddress + ':8097';
+        return this.host + ':8097';
     };
 
     this.getOldMonitorScreenUrl = function (screenSn) {
         // 老的监控画面服务
-        return this.ipAddress + ':8098/monitor_screen?sn=' + screenSn;
+        return this.host + ':8098/monitor_screen?sn=' + screenSn;
     };
 
     this.getImageUrl = function (width, height, imageUrl) {
@@ -237,14 +238,7 @@ app.service('platformService', function () {
     };
 
     this.getIpcServiceHost = function () {
-        return this.ipAddress + ':8095/v1';
-    };
-
-    this.getUiMode = function () {      // 获取UI模式，如果是energy的话则使用能效管理界面
-        if (!gEnableUiModeChange) {
-            return UIMODE.DEFAULT;
-        }
-        return getStorageItem('globalUiMode');
+        return this.host + ':8095/v1';
     };
 
     this.setUiMode = function (mode) {
@@ -253,7 +247,6 @@ app.service('platformService', function () {
 
     this.host = this.getHost();
     // this.host = 'http://127.0.0.1:8099/v1';
-    this.ipAddress = this.host ? this.host.substring(0, this.host.indexOf(':', 5)) : '';
     this.thumbHost = this.getImageThumbHost();
 });
 
@@ -427,7 +420,7 @@ app.service('ajax', function ($rootScope, platformService, userService, routerSe
 
     $rootScope.getCompany = function(callback) {
         $.ajax({
-            url: platformService.host + '/user/' + username + '/opscompany',
+            url: platformService.getCloudHost() + '/user/' + username + '/opscompany',
             xhrFields: {
                 withCredentials: true
             },
@@ -467,7 +460,7 @@ app.service('ajax', function ($rootScope, platformService, userService, routerSe
 
     function request(option) {
         if (option.url.indexOf("http://") !== 0){
-            option.url = platformService.host + option.url;
+            option.url = platformService.getCloudHost() + option.url;
             // option.url = 'http://127.0.0.1:8099/v1' + option.url;
         }
         var headers = $.extend({

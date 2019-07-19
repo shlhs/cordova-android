@@ -60,7 +60,7 @@
                             {{e.info}}
                         </div>
                         <div style="font-size: 13px;">
-                            <a class="event-task" ng-click="goToCreateTaskHtml($event, e.id, e.info)" ng-if="hasOpsAuth && !energyMode">发布任务</a>
+                            <a class="event-task" ng-click="goToCreateTaskHtml($event, e.id, e.info)" ng-if="hasOpsAuth">发布任务</a>
                             <a class="close" ng-click="postCheckEventAction($event, e.id)">确认</a>
                             <div style="clear: both"></div>
                         </div>

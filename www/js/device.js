@@ -685,8 +685,8 @@ app.controller('DeviceMonitorCtrl', function ($scope, ajax, appStoreProvider, us
     $scope.stationSn = GetQueryString('stationSn');
     $scope.deviceSn=GetQueryString('deviceSn');
     $scope.deviceName = GetQueryString('deviceName');
-
-    $scope.canControl = userService.getUserRole() === UserRole.OpsAdmin || userService.getUserRole() === UserRole.OpsOperator;  // 能效模式不能远程控制
+    // $scope.hasOpsAuthMenu = appStoreProvider.hasOpsAuth();
+    $scope.canControl = userService.getUserRole() === UserRole.OpsAdmin || userService.getUserRole() === UserRole.OpsOperator;
     $scope.secondOptions = {
         '实时数据': [],
         '历史数据': []
@@ -752,14 +752,14 @@ app.controller('DeviceMonitorCtrl', function ($scope, ajax, appStoreProvider, us
     function getDeviceVars() {  // 获取设备的所有变量
         $scope.isLoading = true;
         ajax.get({
-            url: '/devices/devicevars?with_group=true&device_sns=' + $scope.deviceSn,
+            url: platformService.getDeviceMgmtHost() + '/management/devices/' + $scope.deviceSn + '/variables',
             success: function (response) {
-                var data = response;
-                data.sort(function (v1, v2) {
-                    return v1.id - v2.id;
-                });
+                var data = response.data;
                 $scope.isLoading = false;
                 $scope.vars = data;
+                // if(data.length > 0) {
+                //     $scope.deviceName = data[0].device_name;
+                // }
                 groupVars(data);
             }, error: function () {
                 $scope.isLoading = false;
@@ -770,21 +770,21 @@ app.controller('DeviceMonitorCtrl', function ($scope, ajax, appStoreProvider, us
     function groupVars(vars) {      // 将变量按模拟量、状态量进行分组，再将模拟量进行分类
         var analogs=[], digitals=[], varGroups={};
         vars.forEach(function (n) {
-            if (n.type === 'Analog') {
-                analogs.push(n.sn);
-                // 如果是模拟量的话，再根据var_define_name进行分类
-                var groupName = n.var_group_name;
-                if (!groupName) {
-                    return;
-                }
-                if (varGroups[groupName]) {
-                    varGroups[groupName].push(n);
-                } else {
-                    varGroups[groupName] = [n];
-                }
-            } else {
-                digitals.push(n.sn);
-            }
+           if (n.type === 'Analog') {
+               analogs.push(n.sn);
+               // 如果是模拟量的话，再根据var_define_name进行分类
+               var groupName = n.var_group_name;
+               if (!groupName) {
+                   return;
+               }
+               if (varGroups[groupName]) {
+                   varGroups[groupName].push(n);
+               } else {
+                   varGroups[groupName] = [n];
+               }
+           } else {
+               digitals.push(n.sn);
+           }
         });
         if (analogs.length) {
             $scope.realtime.push({name: '模拟量', type: 'analog', sns: analogs});
@@ -855,10 +855,10 @@ app.controller('DeviceRemoteControlCtrl', function ($scope, $interval, routerSer
                 });
                 // 修改状态量的0/1描述
                 $scope.varList.forEach(function (v) {
-                    if (v.type === 'Digital') {
-                        v.one_meaning = v.one_meaning || 'ON';
-                        v.zero_meaning = v.zero_meaning || 'OFF';
-                    }
+                   if (v.type === 'Digital') {
+                       v.one_meaning = v.one_meaning || 'ON';
+                       v.zero_meaning = v.zero_meaning || 'OFF';
+                   }
 
                 });
                 getRealTimeData();
@@ -885,17 +885,17 @@ app.controller('DeviceRemoteControlCtrl', function ($scope, $interval, routerSer
             data: {sns: sns.join(",")},
             success: function(data) {
                 $scope.varList.forEach(function (v) {
-                    var exist = false;
-                    for (var i=0; i<data.length; i++) {
-                        if (data[i].var.sn === v.sn) {
-                            v.value = (data[i].data === null ? 1 : data[i].data) + (data[i].unit || '');
-                            exist = true;
-                            break;
-                        }
-                    }
-                    if (!exist) {
-                        v.value = null;
-                    }
+                   var exist = false;
+                   for (var i=0; i<data.length; i++) {
+                       if (data[i].var.sn === v.sn) {
+                           v.value = (data[i].data === null ? 1 : data[i].data) + (data[i].unit || '');
+                           exist = true;
+                           break;
+                       }
+                   }
+                   if (!exist) {
+                       v.value = null;
+                   }
                 });
                 $scope.$apply();
             }
@@ -1192,7 +1192,7 @@ app.controller('HistoryVarCtrl', function ($scope, ajax, $timeout) {
             for (var i=0; i<data.length; i++) {
                 if (data[i].name === n.name) {
                     exist = true;
-                    series.push({name: n.name, data: data[i].datas, symbolSize: 0, type: 'line'});
+                    series.push({name: n.name, data: data[i].datas});
                     break;
                 }
             }
@@ -1201,68 +1201,66 @@ app.controller('HistoryVarCtrl', function ($scope, ajax, $timeout) {
                 xAxis.forEach(function (n) {
                     tmpData.push(null);
                 });
-                series.push({name: n.name, data: tmpData, symbolSize: 0, type: 'line'});
+                series.push({name: n.name, data: tmpData});
             }
         });
-        var option = {
+        var config = {
+            chart: {
+                spacingLeft: 0,
+                spacingRight: 0
+            },
             title: {
                 text: currentGroup.name + ($scope.timeRange==='DAY' ? '今日' : '本月') + '趋势图' + (currentGroup.unit ? ('(' + currentGroup.unit + ')') : ''),
-                x: 'center',
-                align: 'right',
-                textStyle: {
-                    fontSize: 14,
-                    fontWeight: 'normal',
-                    fontColor: '#333',
+                style: {
+                    fontSize: '14px'
                 }
             },
-            grid: {
-                top: 50,
-                left: 40,
-                right: 10,
-                bottom: 25
-            },
-            tooltip: {
-                trigger: 'axis',
+            credits: {
+                enabled: false
             },
             xAxis: {
-                type: 'category',
-                data: xAxis,
-                axisLabel: {
-                    fontSize: 11,
-                    color: '#6b6b6b'
-                },
-                axisLine: {
-                    lineStyle: {
-                        color: '#E7EAED'
-                    }
-                }
+                categories: xAxis,
+                tickInterval: 6
             },
             yAxis: {
-                name: currentGroup.unit,
-                nameGap: 0,
-                nameTextStyle: {
-                    color: '#6b6b6b'
-                },
-                type: 'value',
-                axisLabel: {
-                    fontSize: 11,
-                    color: '#6b6b6b'
-                },
-                axisLine: {
-                    lineStyle: {
-                        color: '#E7EAED'
-                    }
-                },
-                splitLine: {
-                    lineStyle: {
-                        color: '#E7EAED'
+                title: {
+                    text: currentGroup.unit,
+                    align: 'high',
+                    offset: 0,
+                    rotation: 0,
+                    y:-10
+                }
+            },
+            tooltip: {
+                formatter: function () {
+                    return this.x + '<br/>' + this.series.name + ':' + this.y + currentGroup.unit
+                }
+            },
+            plotOptions: {
+                series: {
+                    marker: {
+                        enabled: false
                     }
                 }
             },
             series: series,
+            colors: ['#369FFF', '#F9CC13', '#F04863', '#12C1C1', '#8442E0', '#2FC15B']
         };
-        echarts.init(document.getElementById('chartContainer')).setOption(option);
+        Highcharts.chart('chartContainer', config);
     }
+
+    // $scope.$on('loaded', function (event, realtimeVars, historyVars) {
+    //     $scope.history = historyVars;
+    //     if (historyVars && historyVars.length)
+    //     {
+    //         $scope.currentGroupName = historyVars[0].name;
+    //         $timeout(function () {
+    //             $scope.switchGroup($scope.currentGroupName);
+    //         }, 500);
+    //
+    //     }
+    //
+    // })
 });
 
 app.directive('treeView',[function(){

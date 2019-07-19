@@ -100,7 +100,7 @@ app.controller("MaintenanceCheckRecordItemCtrl", function ($scope, ajax, routerS
             if (images.lastIndexOf(';') === (images.length-1)) {
                 images = images.substring(0, images.length-1);
             }
-            var paths = [], urlHost = $rootScope.host || apiHost;
+            var paths = [], urlHost = $rootScope.host + ":8099/v1" || apiHost;
             images.split(';').forEach(function (n) {
                 paths.push(urlHost+ '/' + n);
             });

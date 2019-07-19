@@ -6,34 +6,26 @@
 
 var gPublicApiHost = 'http://47.104.75.86:8090';        // 公有云接口
 // var gPublicApiHost = 'http://47.105.143.250:8090';        // 因泰来接口
-var defaultPlatCode = "";    // 如果有默认的平台编码，则不需要用户输入
 var defaultActiveEnergyMode = false; // 是否默认使用能效管理模式
 
 app.controller('LoginCtrl', function ($scope, $timeout, platformService, userService, $state, $http, ajax) {
     $scope.error = '';
     var platform = null;
     $scope.enable = false;
-    $scope.platformCodeVisible = !defaultPlatCode;
-    $scope.platformCode = defaultPlatCode ? defaultPlatCode : (platformService.getLatestPlatform() ? platformService.getLatestPlatform().code : null);
+    $scope.platformCodeVisible = !defaultPlatIpAddr;
+    $scope.platformCode = platformService.getLatestPlatform() ? platformService.getLatestPlatform().code : null;
     $scope.username = userService.getUsername();
     $scope.password = userService.getPassword();
     $scope.isLogin = false;
     $scope.isAutoLogin = false;
     $scope.passwordVisible = false;
-    $scope.enableUiModeChange = gEnableUiModeChange;
-    var uiMode = platformService.getUiMode();
-    $scope.energyMode = !uiMode ? defaultActiveEnergyMode : uiMode === UIMODE.ENERGY;
 
     $scope.togglePasswordVisible = function () {
         $scope.passwordVisible = !$scope.passwordVisible;
     };
 
-    $scope.onChangeUiMode = function ($event) {
-        $scope.energyMode = $event.target.checked;
-    };
-
     $scope.inputChange = function () {
-        if ($scope.platformCode && $scope.username && $scope.password) {
+        if ((!$scope.platformCodeVisible || $scope.platformCode) && $scope.username && $scope.password) {
             $scope.enable = true;
         } else {
             $scope.enable = false;
@@ -43,7 +35,11 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
 
     $scope.login = function () {
         $scope.enable = false;
-        queryPlatform(login);
+        if (defaultPlatIpAddr) {
+            login();
+        } else {
+            queryPlatform(login);
+        }
     };
 
     $scope.setAutoLogin = function(isAutoLogin){
@@ -59,12 +55,12 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
 
     function login() {
         $scope.error = '';
-        var loginUrl = platform.url.substring(0, platform.url.indexOf(':', 6)) + ':8900/v1';
+        var host = platformService.getHost();
         var data = {
             username: $scope.username,
             password: $scope.password
         };
-        loginUrl = platformService.getAuthHost();
+        var loginUrl = platformService.getAuthHost();
         $scope.isLogin = true;
         $.ajax({
             url: loginUrl + '/auth',
@@ -83,7 +79,6 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
             },
             crossDomain: true,
             success: function (data) {
-                platformService.setUiMode($scope.energyMode ? UIMODE.ENERGY : UIMODE.DEFAULT);
                 var result = KJUR.jws.JWS.verify(data.token, 'zjlhstest');
                 if (result) {
                     userService.setAccountToken(data.token);
@@ -146,7 +141,7 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
                 if ($scope.isAutoLogin){
                     userService.setPassword('');
                     location.href = 'login.html';
-                }else{
+                } else{
                     $scope.enable = true;
                     toast('平台编号错误');
                     $scope.$apply();

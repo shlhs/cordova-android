@@ -130,9 +130,7 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, appStoreProv
     $scope.viewName = '';
     $scope.tabName = '';
     $scope.title = '';
-    $scope.uiMode = platformService.getUiMode();
-    $scope.enableUiModeChange = gEnableUiModeChange;
-    $scope.navMenus = [_getDefaultHomeMenu(), _getEnergyMenu()];
+    $scope.navMenus = [ _getEnergyMenu()];
     $scope.sitesTree = [];
     $scope.sites = [];
     $scope.currentSite = {};
@@ -334,8 +332,8 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, appStoreProv
     function _getDefaultHomeMenu() {
         return {
             id: 'sites',
-            name: $scope.uiMode === UIMODE.ENERGY? '能效监控' : '首页',
-            templateUrl: $scope.uiMode === UIMODE.ENERGY ? '/templates/energy/energy-home.html' : '/templates/site/site-home.html',
+            name: '首页',
+            templateUrl: '/templates/site/site-home.html',
             icon: 'nav-sites'
         };
     }
@@ -347,13 +345,14 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, appStoreProv
             icon: 'nav-energy'
         };
     }
-
-    $scope.$on('onUiModeChange', function (event) {
-        $scope.uiMode = platformService.getUiMode();
-        $scope.navMenus = [_getDefaultHomeMenu(), _getEnergyMenu()];
-        initMenu();
-    });
-
+    function _getGrabTaskMenu() {
+        return {
+            id: 'grab',
+            name: '抢单',
+            templateUrl: '/templates/task/task-competition-list.html',
+            icon: 'nav-task-grab'
+        };
+    }
     $scope.chooseNav = function ($event, tabId) {
         $event && $event.preventDefault();
         if (tabId === $scope.tabName) {
@@ -374,33 +373,40 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, appStoreProv
         updateMenus();
         // 所有用户都可看到这两个页面
         $timeout(function () {
-            $scope.chooseNav(null, $scope.navMenus[0].id);
+            $scope.chooseNav(null, 'sites');
         }, 500);
     }
 
     function updateMenus(platHasOps) {
         // 判断是否包含ops-management权限
-        if ($scope.uiMode !== UIMODE.ENERGY) {
-            if (platHasOps && $scope.navMenus.length <= 2) {
-                if (role === 'USER') {
-                    $scope.navMenus.push(
-                        {
-                            id: 'my_tasks',
-                            name: '我的服务',
-                            templateUrl: '/templates/task/user-task-list.html',
-                            icon: 'nav-service'
-                        }
-                    );
-                } else {
-                    $scope.navMenus.push(
-                        {
-                            id: 'my_tasks',
-                            name: '我的待办',
-                            templateUrl: '/templates/task/task-todo-list.html',
-                            icon: 'nav-all-tasks'
-                        }
-                    );
+        if (gShowEnergyPage) {
+            $scope.navMenus = [_getEnergyMenu()];
+        } else {
+            $scope.navMenus = [];
+        }
+
+        if (platHasOps) {
+            if (role === 'USER') {
+                $scope.navMenus.push(
+                    {
+                        id: 'my_tasks',
+                        name: '我的服务',
+                        templateUrl: '/templates/task/user-task-list.html',
+                        icon: 'nav-service'
+                    }
+                );
+            } else {
+                if (!gShowEnergyPage) {     // 不显示能效页面时，默认显示抢单页面
+                    $scope.navMenus.push(_getGrabTaskMenu());
                 }
+                $scope.navMenus.push(
+                    {
+                        id: 'my_tasks',
+                        name: '我的待办',
+                        templateUrl: '/templates/task/task-todo-list.html',
+                        icon: 'nav-all-tasks'
+                    }
+                );
             }
         }
     }
@@ -1010,8 +1016,14 @@ app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, us
         $scope.loadingFailed = false;
         var companyId = userService.getTaskCompanyId();
         var url = "/opstasks?company_id=" + companyId;
+        var params = {
+            page_size: 100,
+            page_index: 0,
+            s_echo: 0
+        };
         if (deviceSn) {
-            url = "/staticdevices/opstasks/" + deviceSn + '?types=' + OpsTaskType.join(',');
+            url = "/staticdevices/opstasks/" + deviceSn;
+            params.task_type = OpsTaskType.join(',');
         } else if (role === 'USER') {  // 如果是用户的话，所有任务取的是所有站点的任务
              var stationSns = [];
              $scope.sites.map(function (s) {
@@ -1019,14 +1031,11 @@ app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, us
                      stationSns.push(s.sn);
                  }
              });
-             url = '/opstasks?station=' + stationSns.join(',') + '&task_type=' + OpsTaskType.join(',') + ',11';
+             url = '/opstasks';
+             params.station = stationSns.join(',');
+             params.task_type = OpsTaskType.join(',') + ',11';
              // 筛选
          }
-         var params = {
-             page_size: 100,
-             page_index: 0,
-             s_echo: 0
-         };
         if (requestFilterParams) {
             Object.keys(requestFilterParams).forEach(function (key) {
                 params[key] = requestFilterParams[key].join(',');
