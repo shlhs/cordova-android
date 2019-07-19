@@ -215,7 +215,9 @@ function formatToTreeData(data) {
     }
 
     // 根据父节点的indexs对树再次进行排序
-    _indexs_sort(formatted[0]);
+    if (formatted.length) {
+        _indexs_sort(formatted[0]);
+    }
     return formatted;
 }
 

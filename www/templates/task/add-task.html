@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="../../components/mui/css/mui.picker.min.css">
     <link rel="stylesheet" href="../../css/my.css" />
     <link rel="stylesheet" href="../../css/task.css" />
+    <link rel="stylesheet" href="../../components/libs/font-awesome-4.7.0/css/font-awesome.min.css">
     <script type="text/javascript" src="../../components/libs/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
     <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
@@ -23,6 +24,7 @@
     <script type="text/javascript" src="../../js/app/app.js"></script>
     <script type="text/javascript" src="../../js/service/common-service.js"></script>
     <script type="text/javascript" src="../../js/controller/task.js"></script>
+    <script type="text/javascript" src="../../js/service/cloudApi.js"></script>
     <style>
         .mui-input-row label{
             width: 160px;
@@ -74,7 +76,7 @@
 <body class="mui-android mui-android-5 mui-android-5-1 mui-android-5-1-1" ng-app="myApp">
 <header class="mui-bar bg-header mui-segmented-control-vertical">
     <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
-    <h1 class="mui-title">派单</h1>
+    <h1 class="mui-title">服务工单</h1>
 </header>
 <div class="mui-content bg-white" ng-controller="TaskCreateCtrl" ng-cloak="" ng-submit="submitForm()" id="main">
     <form class="mui-input-group task-create-rows" name="myForm" novalidate >
@@ -102,23 +104,26 @@
             </label>
         </div>
         <div class="mui-input-row">
-            <label class="label">站点</label>
-            <input type="text" style="position: absolute;" ng-model="stationName" placeholder="可不填">
+            <label class="label">站点<span style="color:red">*</span></label>
+            <input type="text" style="position: absolute;" name="stationName" ng-model="stationName" placeholder="选择需要服务的站点" required>
             <button type="button" id='stationPicker' data-options='{}' class="btn mui-btn mui-btn-block">&nbsp;</button>
+            <label class="error" ng-show="myForm.stationName.$invalid && (myForm.stationName.$dirty || myForm.$submitted)">
+                <span ng-show="myForm.stationName.$error.required">请选择站点</span>
+            </label>
         </div>
         <div class="mui-input-row">
             <label class="label">设备</label>
             <input type="text" style="position: absolute;" ng-model="deviceName" placeholder="可不填">
             <button type="button" ng-click="openDeviceSelector()" data-options='{}' class="btn mui-btn mui-btn-block">&nbsp;</button>
         </div>
-        <div class="mui-input-row">
+        <div class="mui-input-row" style="display: none;">
             <label class="label">是否抢单任务</label>
             <div class="mui-switch mui-switch-blue mui-switch-mini" style="float: none;left:160px;margin-top: 10px;">
                 <div class="mui-switch-handle"></div>
             </div>
         </div>
         <div class="mui-input-row">
-            <label style="line-height: 28px;">责任人</label>
+            <label style="line-height: 28px;">责任人<span style="color:red">*</span></label>
             <input type="text" style="position: absolute;" ng-model="handlerName" placeholder="选择任务责任人">
             <button type="button" id='handlerPicker' data-options='{}' class="btn mui-btn mui-btn-block">&nbsp;</button>
             <label class="error" ng-show="handlerIsInvalid(myForm)">
@@ -132,6 +137,7 @@
         <div class="mui-input-row" style="margin: 10px 5px;height: auto;">
             <textarea rows="3" placeholder="任务具体描述" name="desp" ng-model="taskData.desp"></textarea>
         </div>
+        <div ng-include="'/templates/image-uploader.html'" ng-init="elementId='imageList'"></div>
         <div class="mui-button-row" style="padding: 8px 16px;">
             <button type="submit" class="mui-btn mui-btn-primary mui-btn-block"
                     style="background-color: rgba(88,107,243,0.88);border-color: rgba(88,107,243,0.88);height: 42px;">确认发布</button>
@@ -142,6 +148,7 @@
 <script src="../../components/fastclick-master/lib/fastclick.js"></script>
 <script src="../../components/mui/js/mui.picker.min.js"></script>
 <script src="../../components/mui/js/mui.poppicker.js"></script>
+<script src="../../components/slides-playing/js/jquery.slides.js"></script>
 <script src="../../js/my/notify.js"></script>
 <script>
 

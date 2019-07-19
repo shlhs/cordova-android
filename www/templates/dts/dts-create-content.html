@@ -66,21 +66,7 @@
                         <span ng-show="myForm.name.$error.required">缺陷描述不能为空</span>
                     </label>
                 </div>
-                <ul class="image-list" id="imageList">
-                    <li class="image-item" ng-repeat="file in images">
-                        <div class="content">
-                            <a class="img-file" style="background-image: url({{file}})" ng-click="openGallery($index)"></a>
-                        </div>
-                    </li>
-                    <li class="upload-item">
-                        <div class="content">
-                            <div class="image-uploader">
-                                <input class="add-btn" type="file" accept="image/*" name="upload" multiple onchange="angular.element(this).scope().chooseImage(this.files)" ng-if="!useMobileGallery">
-                                <input class="add-btn" name="upload" ng-model="chosenFile" ng-click="openMobileGallery()" ng-if="useMobileGallery">
-                            </div>
-                        </div>
-                    </li>
-                </ul>
+                <div ng-include="'/templates/image-uploader.html'" ng-init="elementId='imageList'"></div>
             </div>
             <div class="mui-button-row" style="padding: 8px 16px;">
                 <button type="submit" class="mui-btn mui-btn-primary mui-btn-block"

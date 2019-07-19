@@ -29,7 +29,7 @@
         <h1 class="mui-title">设备档案</h1>
         <a ng-click="startCaptureQR()" class="mui-action-menu mui-icon mui-pull-right"><i class="header-icon white icon-scan"></i></a>
     </header>
-    <div class="mui-content" ng-cloak style="padding-left: 8px;background-color: #fff;">
+    <div class="mui-content" ng-cloak style="background-color: #fff;">
         <div ng-if="!isLoading && !loadingFailed">
             <device-tree-view device-list="deviceDatas" click-callback="gotoDevice"></device-tree-view>
             <div class="page-alert-wrapper" ng-if="deviceDatas.length <= 1">

@@ -1,0 +1,16 @@
+
+<div class="site-search-comp">
+    <div class="search-wrapper">
+        <i class="icon icon-search"></i>
+        <input placeholder="支持名称和站点编号搜索" oninput="angular.element(this).scope().searchInputChange(this)">
+    </div>
+</div>
+<div class="site-tree" style="position: absolute; top: 50px;bottom:0;width:100%;overflow-y: auto;">
+<ul class="tree-group">
+    <li class="tree-cell" ng-repeat="item in treeData"
+        ng-class="{'active': item.$$isExpend, 'collapse': !isLeaf(item), 'is-leaf': isLeaf(item)}"
+        ng-include="'/templates/site/site-tree/tree-item.html'"
+        ng-if="!item.unvisible"
+    ></li>
+</ul>
+</div>

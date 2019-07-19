@@ -36,16 +36,16 @@
         margin-left: 21.5%;
     }
     .login-area {
-        padding: 0px;
+        padding: 0;
         overflow: hidden;
         left: 0;
         width: 100%;
         bottom: 40px;
-        margin-top: 15%;
+        margin-top: 12%;
     }
     .form-item {
         border-bottom: rgb(232,232,232) 1px solid;
-        /*padding: 12px 0;*/
+        padding: 2px 0;
         box-sizing: border-box;
         margin: 0 44px;
         position: relative;
@@ -56,15 +56,16 @@
         position: absolute;
         left: 0;
         line-height: 46px;
-        top: 2px;
+        /*top: 2px;*/
     }
     .form-item input {
         outline: none;
         border: none;
         padding-left: 84px;
-        width: calc(100% - 115px);
+        /*width: calc(100% - 115px);*/
         font-size: 18px;
         line-height: 46px;
+        margin: 0;
     }
     .form-item .password-not-seen {
         width: 16px;
@@ -97,7 +98,7 @@
     .login-btn {
         background-color: rgb(195,227,249);
         border-radius: 4px;
-        margin: 42px 4% 0 4%;
+        margin: 20px 4% 0 4%;
         box-sizing: border-box;
         height: 48px;
         line-height: 48px;
@@ -126,6 +127,46 @@
             line-height: 40px;
         }
     }
+    .login-checkbox {
+        position: relative;
+        color: #666;
+        font-size: 14px;
+    }
+    .login-checkbox input[type=checkbox] {
+        position: absolute;
+        display: inline-block;
+        outline: 0!important;
+        background-color: transparent;
+        -webkit-appearance: none;
+        border: #d2d2d2 1px solid;
+        border-radius: 4px;
+        width: 16px;
+        height: 16px;
+        top: -2px;
+        left: 0;
+    }
+    .login-checkbox label {
+        display: inline-block;
+        float: none;
+        width: 100%;
+        padding-left: 24px;
+    }
+    .login-checkbox input[type=checkbox]:checked {
+        background-color: #007aff;
+        border-color: #007aff;
+    }
+    .login-checkbox input[type=checkbox]:checked:before{
+        content: '';
+        position: absolute;
+        display: block;
+        width: 8px;
+        height: 4px;
+        border-left: #fff 2px solid;
+        border-bottom: #fff 2px solid;
+        transform: rotate(-45deg);
+        top: 2px;
+        left: 2px;
+    }
 </style>
 <body class="box-vertical-center" ng-app="myApp" >
     <img class="main-icon" src="../img/login/login-icon.png">
@@ -145,7 +186,6 @@
                 <input type="text" ng-model="password" ng-change="inputChange('password')" placeholder="请输入密码" ng-show="passwordVisible">
                 <i class="password-can-seen" ng-if="passwordVisible" ng-click="togglePasswordVisible()"></i>
             </div>
-            <!--<div class="error">{{error}}</div>-->
             <div class="login-btn" ng-class="{'enable': enable}" ng-click="login()">
                 <span ng-if="!isLogin">登录</span>
                 <span ng-if="isLogin">正在登录...</span>
