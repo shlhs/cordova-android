@@ -162,6 +162,7 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
             url: '/station/' + $scope.currentSite.sn + '/menudata',
             success: function (response) {
                 if (response) {
+                    var opsManagementEnabled = true;
                     var menuData = response.extend_js ? JSON.parse(response.extend_js) : {};
                     var menuSns = {};
                     if (menuData.data) {
@@ -172,11 +173,15 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
                                     menuSns[menu.sn] = enabled && menu.enabled;
                                 });
                             }
+                            if (menuGroup.sn === 'ops-management') {
+                                opsManagementEnabled = enabled;
+                            }
                         });
                     }
                     var platFuncs = response.plat_function_switch ? JSON.parse(response.plat_function_switch) : null;
                     appStoreProvider.setMenuSns($scope.role, menuSns, platFuncs);
-                    $scope.$emit('$onMenuUpdate', platFuncs, menuSns);
+                    var opsEnabled = (!platFuncs || platFuncs.opsManagement) && opsManagementEnabled;
+                    $scope.$emit('$onMenuUpdate', opsEnabled, menuSns);
                     $scope.selectedApps = appStoreProvider.getSelectedApps();
                     $scope.$apply();
                 }
