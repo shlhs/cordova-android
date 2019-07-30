@@ -172,7 +172,7 @@ app.controller('AutoLoginCtrl', function ($scope, $timeout, userService, platfor
     $scope.autoLogin = function () {
         //先等1.5s
         // 先判断是否可以自动登录
-        if ($scope.username && $scope.password && $scope.platformCode){
+        if ($scope.username && $scope.password){
             $scope.setAutoLogin(true);
             $timeout(function () {
                 $scope.login();
