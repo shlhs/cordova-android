@@ -752,73 +752,60 @@ app.controller('DeviceMonitorCtrl', function ($scope, ajax, appStoreProvider, us
     function getDeviceVars() {  // 获取设备的所有变量
         $scope.isLoading = true;
         ajax.get({
-            url: '/devices/devicevars?with_group=true&device_sns=' + $scope.deviceSn,
+            url: platformService.getDeviceMgmtHost() + '/management/devices/' + $scope.deviceSn + '/variables',
             success: function (response) {
-                var data = response;
-                data.sort(function (v1, v2) {
-                    return v1.id - v2.id;
+                var data = response.data;
+                var analogs=[], digitals=[];
+                data.forEach(function (n) {
+                    if (n.type === 'Analog') {
+                        analogs.push(n.sn);
+                    } else {
+                        digitals.push(n.sn);
+                    }
                 });
+                if (analogs.length) {
+                    $scope.realtime.push({name: '模拟量', type: 'analog', sns: analogs});
+                    $scope.secondOptions['实时数据'].push({name: '模拟量', type: 'analog', sns: analogs})
+                }
+                if (digitals.length) {
+                    $scope.realtime.push({name: '状态量', type: 'digital', sns: digitals});
+                    $scope.secondOptions['实时数据'].push({name: '状态量', type: 'digital', sns: digitals})
+                }
                 $scope.isLoading = false;
                 $scope.vars = data;
-                groupVars(data);
+
+                getVarGroups(data);
             }, error: function () {
                 $scope.isLoading = false;
             }
         });
     }
 
-    function groupVars(vars) {      // 将变量按模拟量、状态量进行分组，再将模拟量进行分类
-        var analogs=[], digitals=[], varGroups={};
-        vars.forEach(function (n) {
-            if (n.type === 'Analog') {
-                analogs.push(n.sn);
-                // 如果是模拟量的话，再根据var_define_name进行分类
-                var groupName = n.var_group_name;
-                if (!groupName) {
-                    return;
-                }
-                if (varGroups[groupName]) {
-                    varGroups[groupName].push(n);
-                } else {
-                    varGroups[groupName] = [n];
-                }
-            } else {
-                digitals.push(n.sn);
-            }
-        });
-        if (analogs.length) {
-            $scope.realtime.push({name: '模拟量', type: 'analog', sns: analogs});
-            $scope.secondOptions['实时数据'].push({name: '模拟量', type: 'analog', sns: analogs})
-        }
-        if (digitals.length) {
-            $scope.realtime.push({name: '状态量', type: 'digital', sns: digitals});
-            $scope.secondOptions['实时数据'].push({name: '状态量', type: 'digital', sns: digitals})
-        }
-        for (var groupName in varGroups){
-            $scope.history.push({name: groupName, vars: varGroups[groupName], unit: varGroups[groupName][0].unit});
-            $scope.secondOptions['历史数据'].push({name: groupName, vars: varGroups[groupName], unit: varGroups[groupName][0].unit});
-        }
-        $scope.selectShowType('实时数据', true);
-        $scope.$apply();
-    }
-
-    function getRealTimeData(type, sns) {        // 获取变量的实时值
-        var url = "/devicevars/getrealtimevalues";
+    function getVarGroups() {      // 将变量按模拟量、状态量进行分组，再将模拟量进行分类
+        var varGroups={};
         ajax.get({
-            url: url,
-            data: "sns=" + sns.join(","),
-            success: function(data) {
-                $scope.digitalValues = data;
-                $scope.isLoading = false;
+            url: '/devices/devicevars?with_group=true&device_sns=' + $scope.deviceSn,
+            success: function (data) {
+                data.forEach(function (n) {
+                    var groupName = n.var_group_name;
+                    if (!groupName) {
+                        return;
+                    }
+                    if (varGroups[groupName]) {
+                        varGroups[groupName].push(n);
+                    } else {
+                        varGroups[groupName] = [n];
+                    }
+                });
+                for (var groupName in varGroups){
+                    $scope.history.push({name: groupName, vars: varGroups[groupName], unit: varGroups[groupName][0].unit});
+                    $scope.secondOptions['历史数据'].push({name: groupName, vars: varGroups[groupName], unit: varGroups[groupName][0].unit});
+                }
+                $scope.selectShowType('实时数据', true);
                 $scope.$apply();
-            },
-            error: function(err) {
-                $.notify.error("获取设备变量实时值失败");
-                $scope.isLoading = false;
-                $scope.$apply();
-                console.log(err);
             }
         });
+
     }
 
     getDeviceVars();
