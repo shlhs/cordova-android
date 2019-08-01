@@ -93,12 +93,16 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                                 // 将processed_value分解除值和单位
                                 var value = processedValue.processed_value;
                                 if (value !== ''  && value !== null && value !== undefined) {
-                                    if (contentItem.valueFixNum && parseInt(contentItem.valueFixNum)) {
-                                        tempVarData.value = value.toFixed(parseInt(contentItem.valueFixNum));
-                                    } else {
+                                    if(processedValue.isDigital) {
                                         tempVarData.value = value;
+                                    } else {  
+                                        if (contentItem.valueFixNum && parseInt(contentItem.valueFixNum)) {
+                                            tempVarData.value = value.toFixed(parseInt(contentItem.valueFixNum));
+                                        } else {
+                                            tempVarData.value = value;
+                                        }
+                                        tempVarData.unit = processedValue.unit;
                                     }
-                                    tempVarData.unit = processedValue.unit;
                                 }
                                 else {
                                     tempVarData.value = '--';
@@ -282,6 +286,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
             var result = getDeviceVarData(tempContent.varInfo.deviceVarSn, queryTime, tempContent.period, tempContent.calcMethod);
             processedValue.processed_value = result[0];
             processedValue.unit = result[1];
+            processedValue.isDigital = result[2];
             return processedValue;
         }
         processedValue.processed_value = tempValue;
@@ -292,21 +297,22 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
     function getDeviceVarData(deviceSn, queryTime, queryPeriod, calcMethod){
         var resultValue = '';
         var unit = '';
+        var isDigital = false;
         if(deviceSn == null || deviceSn == '') {
             console.warn('no deviceSn for getDeviceVarData');
-            return [resultValue, unit];
+            return [resultValue, unit, isDigital];
         }
         if(queryTime == null || queryTime == '') {
             console.warn('no queryTime for getDeviceVarData');
-            return [resultValue, unit];
+            return [resultValue, unit, isDigital];
         }
         if(queryPeriod == null || queryPeriod == '') {
             console.warn('no queryPeriod for getDeviceVarData');
-            return [resultValue, unit];
+            return [resultValue, unit, isDigital];
         }
         if(calcMethod == null || calcMethod == '') {
             console.warn('no calcMethod for getDeviceVarData');
-            return [resultValue, unit];
+            return [resultValue, unit, isDigital];
         }
 
         if(queryPeriod == 'real_time') {
@@ -315,7 +321,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                 async: false,
                 success: function (data) {
                     if(!data || data.length == 0) {
-                        return;
+                        return [resultValue, unit, isDigital];;
                     }
                     var value = data[0].data;
                     var varInfo = data[0].var;
@@ -327,6 +333,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                             resultValue = value;
                         }
                     } else {
+                        isDigital = true;
                         if (value > 0) {
                             resultValue = varInfo.one_meaning;
                         } else {
@@ -339,7 +346,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                     console.warn('获取设备变量实时值失败 '+deviceSn);
                 }
             });
-            return [resultValue, unit];
+            return [resultValue, unit, isDigital];
         }
 
 
