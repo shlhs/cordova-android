@@ -162,6 +162,7 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, appStoreProv
                     {
                         s.search_key = s.name.toLowerCase() + ' ' + s.sn.toLowerCase();
                     }
+                    s.full_address = (s.address_province || '') + (s.address_city || '') + (s.address_district || '') + (s.address || '');
                     sites.push(s);
                 });
                 $scope.sites = sites;
