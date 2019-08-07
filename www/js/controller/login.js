@@ -81,6 +81,9 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
             success: function (data) {
                 var result = KJUR.jws.JWS.verify(data.token, 'zjlhstest');
                 if (result) {
+                    if (!getStorageItem('latestPlatform')) {
+                        platformService.setLatestPlatform({url: defaultPlatIpAddr + ":8099/v1"})
+                    }
                     userService.setAccountToken(data.token);
                     getUserInfo();
                 } else {
