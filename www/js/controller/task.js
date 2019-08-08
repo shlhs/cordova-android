@@ -130,11 +130,6 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, appStoreProv
     $scope.viewName = '';
     $scope.tabName = '';
     $scope.title = '';
-    if (gShowEnergyPage) {
-        $scope.navMenus = [_getDefaultHomeMenu(), _getEnergyMenu()];
-    } else {
-        $scope.navMenus = [_getDefaultHomeMenu()];
-    }
 
     $scope.sitesTree = [];
     $scope.sites = [];
@@ -143,6 +138,12 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, appStoreProv
     $scope.popup_visible = false;
     $scope.searchSiteResult = [];
     $scope.role = userService.getUserRole();
+    if (gShowEnergyPage) {
+        $scope.navMenus = [_getDefaultHomeMenu(), _getEnergyMenu()];
+    } else {
+        $scope.navMenus = [_getDefaultHomeMenu()];
+    }
+    var menuInited = false;     // 导航栏菜单是否初始化
 
     $scope.getDataList = function () {
         $scope.isLoading = true;
@@ -352,21 +353,24 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, appStoreProv
         };
     }
 
-    function _getTaskGrabMenu() {
-        return {
-            id: 'grab',
-            name: '抢单',
-            templateUrl: '/templates/task/task-competition-list.html',
-            icon: 'nav-task-grab'
-        };
+    function _getTaskTodoMenu() {
+        if (role === 'OPS_ADMIN' || role === 'OPS_OPERATOR') {
+            return {
+                id: 'my_tasks',
+                name: '我的待办',
+                templateUrl: '/templates/task/task-todo-list.html',
+                icon: 'nav-all-tasks'
+            };
+        } else if (role === 'USER') {
+            return {
+                id: 'my_tasks',
+                name: '我的服务',
+                templateUrl: '/templates/task/user-task-list.html',
+                icon: 'nav-service'
+            };
+        }
+        return null;
     }
-
-    // $scope.$on('onUiModeChange', function (event) {
-    //     $scope.uiMode = platformService.getUiMode();
-    //     $scope.navMenus = [_getDefaultHomeMenu(), _getSecondMenu()];
-    //     initMenu();
-    // });
-
     $scope.chooseNav = function ($event, tabId) {
         $event && $event.preventDefault();
         if (tabId === $scope.tabName) {
@@ -384,7 +388,6 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, appStoreProv
     };
 
     function initMenu() {
-        updateMenus();
         // 所有用户都可看到这两个页面
         $timeout(function () {
             $scope.chooseNav(null, $scope.navMenus[0].id);
@@ -393,55 +396,24 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, appStoreProv
 
     function updateMenus(platHasOps) {
         // 判断是否包含ops-management权限
-        if (platHasOps) {
+        if (platHasOps && !menuInited) {
             // 有运维权限
-            if (!gShowEnergyPage && !hasMenu('grab') && role !== 'USER') {
-                $scope.navMenus.push(_getTaskGrabMenu());
-            }
-            if (!hasMenu('my_tasks')) {
-                if (role === 'USER') {
-                    $scope.navMenus.push(
-                        {
-                            id: 'my_tasks',
-                            name: '我的服务',
-                            templateUrl: '/templates/task/user-task-list.html',
-                            icon: 'nav-service'
-                        }
-                    );
-                } else {
-                    $scope.navMenus.push(
-                        {
-                            id: 'my_tasks',
-                            name: '我的待办',
-                            templateUrl: '/templates/task/task-todo-list.html',
-                            icon: 'nav-all-tasks'
-                        }
-                    );
+            if (!gShowEnergyPage) {
+                // 如果不显示能效页面，那么运维管理员默认显示抢单页和待办页
+                if (role === 'OPS_ADMIN' || role === 'OPS_OPERATOR') {
+                    $scope.navMenus.push({
+                        id: 'grab',
+                        name: '抢单',
+                        templateUrl: '/templates/task/task-competition-list.html',
+                        icon: 'nav-task-grab'
+                    });
                 }
             }
-        } else {
-            // 没有运维权限
-            removeMenu('grab');
-            removeMenu('my_tasks');
-        }
-
-    }
-
-    function hasMenu(menuId) {
-        for (var i=0; i<$scope.navMenus.length; i++) {
-            if ($scope.navMenus[i].id === menuId) {
-                return true;
+            var todoMenu = _getTaskTodoMenu();
+            if (todoMenu) {
+                $scope.navMenus.push(todoMenu);
             }
-        }
-        return false;
-    }
-
-    function removeMenu(menuId) {
-        for (var i=0; i<$scope.navMenus.length; i++) {
-            if ($scope.navMenus[i].id === menuId) {
-                $scope.navMenus.splice(i, 1);
-                break;
-            }
+            menuInited = true;
         }
     }
 

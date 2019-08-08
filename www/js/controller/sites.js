@@ -150,10 +150,8 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
     });
 
     $scope.$on('onChooseNav', function (event, tabName) {       // 点击菜单事件
-        if (tabName === 'sites') {      // 点击"站点监控"菜单，刷新当前站点状态
-            if ($scope.currentSite.sn) {
-                $scope.refreshStationStatus($scope.currentSite.sn);
-            }
+        if (tabName === 'sites' && $scope.currentSite && $scope.currentSite.sn) {      // 点击"站点监控"菜单，刷新当前站点状态
+            $scope.refreshStationStatus($scope.currentSite.sn);
         }
     });
 
@@ -180,8 +178,7 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
                     }
                     var platFuncs = response.plat_function_switch ? JSON.parse(response.plat_function_switch) : null;
                     appStoreProvider.setMenuSns($scope.role, menuSns, platFuncs);
-                    var opsEnabled = (!platFuncs || platFuncs.opsManagement) && opsManagementEnabled;
-                    $scope.$emit('$onMenuUpdate', opsEnabled, menuSns);
+                    $scope.$emit('$onMenuUpdate', !platFuncs || platFuncs.opsManagement, menuSns);
                     $scope.selectedApps = appStoreProvider.getSelectedApps();
                     $scope.$apply();
                 }
