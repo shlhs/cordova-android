@@ -621,8 +621,9 @@ background-image: url("../img/light/64X64/profile.png");
     display: -webkit-box;
     padding-top: 2px;
     position: fixed;
+    background-color: #fff;
 }
-.nav-horizontal .mui-tab-item{
+.nav-horizontal .tab-item{
     overflow: hidden;
     width: 1%;
     height: 50px;
@@ -636,7 +637,7 @@ background-image: url("../img/light/64X64/profile.png");
     -webkit-box-pack: center;
     -webkit-box-align: center;
 }
-.nav-horizontal .mui-tab-item .mui-icon~.mui-tab-label{
+.nav-horizontal .tab-item .mui-icon~.mui-tab-label{
     display: inline-block;
     padding-top: 6px;
     color: rgb(141,140,143);
@@ -648,7 +649,7 @@ background-image: url("../img/light/64X64/profile.png");
 .energy>.mui-active>.mui-tab-label {
     color: #4889fe !important;
 }
-.nav-horizontal .mui-tab-item .mui-icon{
+.nav-horizontal .tab-item .mui-icon{
     height: 22px;
     width: 22px;
     margin-top: 2px;
