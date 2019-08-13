@@ -19,6 +19,7 @@ var OpsTaskType = [1, 2, 3, 4, 5, 6, 7];
 var DtsTaskType = [8, 9, 10];
 var TaskAction = {Create: 0, Accept: 1, Refuse: 2, Assign: 3, Go: 4, Apply: 5, Reject: 6, Close: 7, Comment: 8, Grab: 9, Arrive: 10, Update: 11, Transfer: 12};
 var TaskStatus = {ToAccept: 1, ToAssign: 2, Accepted: 3, ToClose: 4, Closed: 5, Competition: 6, Coming: 7, Arrived: 8};
+var TaskSource = {Repaire: 1, Event: 2, Inspect: 3};
 function formatTaskHistoryDesp(taskHistory) {     // 根据任务的action_id处理任务描述
     switch (taskHistory.action_id){
         case TaskAction.Apply:
@@ -400,14 +401,14 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, appStoreProv
             // 有运维权限
             if (!gShowEnergyPage) {
                 // 如果不显示能效页面，那么运维管理员默认显示抢单页和待办页
-                if (role === 'OPS_ADMIN' || role === 'OPS_OPERATOR') {
-                    $scope.navMenus.push({
-                        id: 'grab',
-                        name: '抢单',
-                        templateUrl: '/templates/task/task-competition-list.html',
-                        icon: 'nav-task-grab'
-                    });
-                }
+                // if (role === 'OPS_ADMIN' || role === 'OPS_OPERATOR') {
+                //     $scope.navMenus.push({
+                //         id: 'grab',
+                //         name: '抢单',
+                //         templateUrl: '/templates/task/task-competition-list.html',
+                //         icon: 'nav-task-grab'
+                //     });
+                // }
             }
             var todoMenu = _getTaskTodoMenu();
             if (todoMenu) {
@@ -422,6 +423,15 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, appStoreProv
     });
     initMenu();
 });
+
+function isTodoTask(task, username) {
+    if (task.stage_id !== TaskStatus.Closed && task.current_handler){
+        if (task.current_handler.split(',').indexOf(username) >= 0) {
+            return true;
+        }
+    }
+    return false;
+}
 
 app.controller('TaskBaseCtrl', function ($scope, ajax, userService, appStoreProvider, platformService) {
     var stationSn = GetQueryString("sn");
@@ -460,9 +470,7 @@ app.controller('TaskBaseCtrl', function ($scope, ajax, userService, appStoreProv
             data.description = description;
         }
         if (images && images.length){
-            for (var i=0; i<images.length; i++){
-                data['file' + (i+1)] = images[i];
-            }
+            data['pictures'] = images;
         }
         $.notify.progressStart();
         ajax.post({
@@ -788,7 +796,7 @@ app.controller('TaskTodoListCtrl', function ($scope, $rootScope, scrollerService
         for (var i in allTasks){
             if (allTasks[i].id === taskData.id){
                 // 如果责任人不是当前用户，则从列表中删除
-                if (isTodoTask(taskData)) {
+                if (isTodoTask(taskData, username)) {
                     allTasks[i] = taskData;
                 } else {
                     allTasks.splice(i, 1);
@@ -797,20 +805,13 @@ app.controller('TaskTodoListCtrl', function ($scope, $rootScope, scrollerService
                 break;
             }
         }
-        if (!exist && isTodoTask(taskData)){        // 如果不存在，则加入到最前面
+        if (!exist && isTodoTask(taskData, username)){        // 如果不存在，则加入到最前面
             allTasks.unshift(taskData);
         }
         // allTasks.sort(sortByUpdateTime);
         $scope.changeTaskType(null, $scope.showType);
         $scope.$apply();
     };
-
-    function isTodoTask(task) {
-        if (task.stage_id !== TaskStatus.Closed && task.current_handler === username){
-            return true;
-        }
-        return false;
-    }
 
     $scope.changeTaskType = function ($event, type) {
         console.log('change type');
@@ -830,7 +831,7 @@ app.controller('TaskTodoListCtrl', function ($scope, $rootScope, scrollerService
         else if (type === 'todo'){
             for(var i in allTasks){
                 task = allTasks[i];
-                if (task.stage_id !== TaskStatus.Closed && task.current_handler === username){
+                if (isTodoTask(task, username)){
                     showTasks.push(task);
                 }
             }
@@ -1066,7 +1067,7 @@ app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, us
                         }
                         task.device_record = deviceRecord;
                     }
-                    if (task.current_handler === userAccount) {
+                    if (isTodoTask(task, userAccount)) {
                         task.isMyself = true;
                     }
                     task.isTimeout = $scope.taskTimeout(task);
@@ -1172,16 +1173,18 @@ function onAndroidCb_updateDeviceRecord(strRecord) {
 app.controller('TaskDetailCtrl', function ($scope, $location, $state, userService, platformService, $http, $timeout, $window, ajax, routerService) {
     $scope.TaskAction = TaskAction;
     $scope.TaskStatus = TaskStatus;
-    $scope.imageScope = [1,2,3,4,5,6,7,8,9];
+    $scope.TaskSource = TaskSource;
     $scope.history = [];
     $scope.lastHistory = null;
     $scope.checkedDeviceCount = 0;
     $scope.xunjianStage = '';
+    $scope.host = platformService.getHost() + ":8099/v1";
     var taskType = GetQueryString("taskType");
     if (taskType) {
         taskType = parseInt(taskType);
     }
     $scope.taskName = DtsTaskType.indexOf(taskType) >= 0 ? '缺陷' : '任务';
+    var companyId = userService.getCompanyId();
 
     var id = GetQueryString('id'), username=userService.username;
     $scope.taskData = {};
@@ -1195,27 +1198,12 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
     var innerPageQuery=null,historyState = [];    // 浏览器历史状态
     $scope.actions = [];
 
-    var companyId = userService.getTaskCompanyId();
-    function updateUserActions() {      // 更新用户的操作权限
-        if (taskData.current_handler !== username){
-            $scope.canHandle = false;
-            return;
-        }
-        $scope.canHandle = true;
-
-    }
-
     function getTaskDetail() {
 
         var option = {
-            url: '/opstasks',
-            data: {
-                task_ids: id
-            },
+            url: '/opstasks/' + companyId + '/' + id,
             success: function (data) {
-                var task = data[0];
-                console.log('get task detail success');
-                updateTaskInfo(task);
+                updateTaskInfo(data);
 
                 // mother_task_id不为空，说明该任务是由巡检任务创建的缺陷，需要通知巡检任务更新设备状态
                 // if (GetQueryString('mother_task_id')) {
@@ -1232,7 +1220,7 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
 
     function updateTaskInfo(data) {
         $scope.taskData = formatTaskStatusName(data);
-        $scope.taskData.expect_complete_time = data.expect_complete_time.substring(0, 16);
+        $scope.taskData.expect_complete_time = data.expect_complete_time ? data.expect_complete_time.substring(0, 16) : '';
         console.log('task canhandle:' + $scope.canHandle);
         $scope.$apply();
         stationLongitude = data.station_longitude;
@@ -1244,8 +1232,10 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
         formatTaskStatus();
         if (DtsTaskType.indexOf(data.task_type_id) >= 0) {
             $scope.taskName = '缺陷';
+        } else if (data.source === TaskSource.Inspect) {
+            $scope.taskName = '巡检';
         } else {
-            $scope.taskName = '任务';
+            $scope.taskName = '报修';
         }
     }
 
@@ -1283,7 +1273,7 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
 
     function formatTaskStatus() {   // 将任务状态转成适合页面显示的格式
         var taskData = $scope.taskData, stageId = taskData.stage_id, activeIndex=0, finishIndex=0, progress=0, canHandle = false;
-        if (taskData.current_handler === username || taskData.stage_id == TaskStatus.Competition){
+        if (isTodoTask(taskData, username) || taskData.stage_id == TaskStatus.Competition){
             canHandle = true;
         }
         switch (stageId){
@@ -1310,10 +1300,10 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
         taskData.activeIndex = activeIndex;
         taskData.finishIndex = finishIndex;
         taskData.progress = progress + '%';
-        $scope.canHandle = (taskData.current_handler === username) && canHandle;
+        $scope.canHandle = isTodoTask(taskData, username) && canHandle;
 
         var checkedCount = 0;
-        taskData.device_record.forEach(function (r) {
+        taskData.device_record && taskData.device_record.forEach(function (r) {
             if (r.status !== '未处理') {
                 checkedCount += 1;
             }
@@ -1354,6 +1344,8 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
         for (var i=0; i<historyList.length; i++){
             task = historyList[i];
             formatTaskHistoryDesp(task);
+            // 处理图片列表
+            task.pictures
             if (task.action_id === TaskAction.Apply || task.action_id == TaskAction.Update){
                 formattedList.push(task);
                 var j = i+1, last=true;
@@ -1454,10 +1446,8 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
 
     $scope.showImageGallery = function (images, index) {        // 点击任务处理历史中的图片显示相册
         var imageList = [];
-        for (var i in $scope.imageScope){
-            if (images['picture' + i]){
-                imageList.push(platformService.host + images['picture' + i]);
-            }
+        for (var i=0; i<images.length; i++){
+            imageList.push($scope.host + images[i]);
         }
         // $state.go('task.gallery', {index: index, images: imageList});
 
@@ -1580,12 +1570,12 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
         var userPicker = null;
         ajax.getCompanyMembers(function (data) {
             // 去掉当前处理人
-            var currentHandler = $scope.taskData.current_handler;
+            var currentHandlers = $scope.taskData.current_handler.split(",");
             var stageId = $scope.taskData.stage_id;
             if (stageId === TaskStatus.ToAccept) {
                 // 如果是待接单，那么不能将任务转给自己，如果是待指派，可以将任务指派给自己
                 data.forEach(function (user, i) {
-                    if (user.account === currentHandler) {
+                    if (currentHandlers.indexOf(user.account) >= 0) {
                         data.splice(i, 1);
                         return false;
                     }
@@ -2001,7 +1991,7 @@ app.controller('TaskCreateCtrl', function ($scope, $timeout, userService, router
     $scope.submitForm = function() {
         if($scope.myForm.$invalid || $scope.handlerIsInvalid($scope.myForm)){
             console.log('form invalid');
-        }else {
+        } else {
             $scope.createTask();
         }
     };
@@ -2009,6 +1999,7 @@ app.controller('TaskCreateCtrl', function ($scope, $timeout, userService, router
     init();
 });
 
+// 巡检所有设备处理页面
 app.controller('TaskDevicesHandlerCtrl', function ($scope, routerService, ajax) {
 
     $scope.device_record = $scope.task.device_record;
@@ -2017,12 +2008,15 @@ app.controller('TaskDevicesHandlerCtrl', function ($scope, routerService, ajax) 
     $scope.isSubmitting = false;
 
     $scope.device_record.forEach(function (r) {
-        if (r.status === '未处理' || !r.status) {
-            r.status = '';
-        } else if (r.status === '运行良好') {
-            r.status_name = 'normal';
+        if (r.status === '1') {
+            r.status_name = '正常';
+            r.className = 'normal';
+        } else if (r.status === '2') {
+            r.status_name = '异常';
+            r.className = 'danger';
         } else {
-            r.status_name = 'danger';
+            r.status_name = "待巡检";
+            r.className = "undo";
         }
         r.checked = false;
     });
@@ -2031,28 +2025,28 @@ app.controller('TaskDevicesHandlerCtrl', function ($scope, routerService, ajax) 
         var deviceSns = [];
         var pathExist = false;
         $scope.device_record.forEach(function (r) {
-            if (r.device.path) {
-                pathExist = true;
-                return false;
-            }
+            // if (r.device.path) {
+            //     pathExist = true;
+            //     return false;
+            // }
             deviceSns.push(r.device_sn);
         });
-        if (!pathExist && deviceSns.length) {
-            ajax.get({
-                url: '/staticdevices/path',
-                data: {
-                    station_sn: $scope.task.station_sn,
-                    device_sns: deviceSns.join(',')
-                },
-                success: function (response) {
-                    $scope.device_record.forEach(function (record) {
-                        record.device.path = response[record.device_sn];
-                    });
-                    $scope.$apply();
-
-                }
-            });
-        }
+        // if (!pathExist && deviceSns.length) {
+        //     ajax.get({
+        //         url: '/staticdevices/path',
+        //         data: {
+        //             station_sn: $scope.task.station_sn,
+        //             device_sns: deviceSns.join(',')
+        //         },
+        //         success: function (response) {
+        //             $scope.device_record.forEach(function (record) {
+        //                 record.device.path = response[record.device_sn];
+        //             });
+        //             $scope.$apply();
+        //
+        //         }
+        //     });
+        // }
     }
 
     $scope.checkDevice = function ($event, sn) {
@@ -2104,7 +2098,7 @@ app.controller('TaskDevicesHandlerCtrl', function ($scope, routerService, ajax) 
             params.push({
                 task_id: $scope.task.id,
                 device_sn: t,
-                status: '运行良好'
+                status: '1'
             })
         });
         $scope.isSubmitting = true;
@@ -2121,8 +2115,9 @@ app.controller('TaskDevicesHandlerCtrl', function ($scope, routerService, ajax) 
                     $.notify.toast('设置成功', 1000);
                     $scope.device_record.forEach(function (r) {
                         if (r.checked) {
-                            r.status = '运行良好';
-                            r.status_name = 'normal';
+                            r.status = '1';
+                            r.status_name = '正常';
+                            r.className = "normal";
                             $scope.checkDevice(null, r.device_sn);
                         }
                     });
@@ -2177,7 +2172,8 @@ app.controller('TaskDevicesHandlerCtrl', function ($scope, routerService, ajax) 
                 r.status = deviceRecord.status;
                 r.desp = deviceRecord.desp;
                 r.photo_links = deviceRecord.photo_links;
-                r.status_name = 'danger';
+                r.status_name = '有缺陷';
+                r.className = "danger";
                 $scope.checkDevice(null, deviceRecord.device_sn);
                 return false;
             }
@@ -2186,6 +2182,85 @@ app.controller('TaskDevicesHandlerCtrl', function ($scope, routerService, ajax) 
     };
 
     init();
+});
+
+// 巡检单个设备的处理页面
+app.controller('TaskDeviceCheckCtrl', function ($scope, ajax) {
+    var taskId = 386;
+    var deviceSn = 'zjdemo__ZsHdYj__DEVICE00009';
+    $scope.deviceName = "设备1";
+    $scope.result = {};
+    $scope.checkItems = [];
+    $scope.total = 0;
+    $scope.checked = 0;
+    $scope.exception = 0;
+    $scope.isLoading = false;
+    $scope.canEdit = true;
+
+    function getDeviceCheckItems() {
+        ajax.get({
+            url: '/opstasks/' + taskId + '/devices/' + deviceSn + "?withCheckItems=true",
+            success: function (data) {
+                $scope.result = data;
+                if (data.check_items) {
+                    $scope.total = data.check_items.length;
+                    data.check_items.forEach(function (item) {
+                        if (item.pass) {
+                            $scope.checked += 1;
+                            if (item.pass === 2) {
+                                $scope.exception += 1;
+                            }
+                        }
+                    });
+                    $scope.checkItems = data.check_items;
+                }
+                $scope.isLoading = false;
+                $scope.$apply();
+            },
+            error: function () {
+                $scope.isLoading = false;
+                $scope.$apply();
+            }
+        })
+    }
+
+    $scope.setItemPass = function (checkItem, pass) {
+        checkItem.pass = pass;
+    };
+
+    $scope.saveCheckItems = function () {
+        var params = [];
+        $scope.checkItems.forEach(function (t) {
+            params.push({
+                id: t.id,
+                pass: t.pass,
+                result_desp: t.result_desp
+            });
+        });
+        $.notify.progressStart();
+        ajax.post({
+            url: '/opstasks/' + taskId + '/setStepsResult',
+            data: JSON.stringify(params),
+            contentType:"application/json",
+            headers: {
+                Accept: "application/json"
+            },
+            success: function (response) {
+                $.notify.progressStop();
+                $.notify.info('结果已保存', 500);
+            },
+            error: function () {
+                $.notify.progressStop();
+                $.notify.error('保存巡检结果失败');
+            }
+        })
+    };
+
+    $scope.setDevicePass = function (pass) {
+      $scope.result.pass = pass;
+    };
+
+    getDeviceCheckItems();
 });
 
 app.controller('DeviceXunjianTaskDetailCtrl', function ($scope, ajax, platformService, routerService) {
@@ -2211,13 +2286,15 @@ app.controller('DeviceXunjianTaskDetailCtrl', function ($scope, ajax, platformSe
                             });
                             r.images = images;
                         }
-                        if (r.status === '有缺陷') {
-                            r.status_name ='danger';
-                        } else if (r.status === '未处理') {
-                            r.status = '待检查...';
-                            r.status_name ='waiting';
+                        if (r.status === '1') {
+                            r.status_name = '正常';
+                            r.className = 'normal';
+                        } else if (r.status === '2') {
+                            r.status_name = '异常';
+                            r.className = 'danger';
                         } else {
-                            r.status_name = 'normal';
+                            r.status_name = "待巡检";
+                            r.className = "undo";
                         }
                         $scope.checkResult = r;
                         return false;

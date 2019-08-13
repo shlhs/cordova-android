@@ -2731,24 +2731,32 @@ color: #a7a7a7;
 }
 .static-device-list li {
     padding-left: 10px;
+    position: relative;
 }
 .static-device-list .device-body {
     border-bottom: #E6E6E6 1px solid;
     width: calc(100% - 24px);
-    padding: 12px 12px 12px 8px;
+    padding: 12px 12px 8px 8px;
     position: relative;
+    font-size: 14px;
+}
+.static-device-list .device-name {
+    /*margin-right: 30px;*/
 }
 .static-device-list .status {
-    position: absolute;
-    right: 10px;
-    top: 12px;
-    font-size: 14px;
+    /*position: absolute;*/
+    /*right: 10px;*/
+    /*top: 12px;*/
+    font-size: 13px;
 }
 .static-device-list .status.normal {
     color: #44D36B;
 }
 .static-device-list .status.danger {
     color: #FB6868;
+}
+.static-device-list .status.undo {
+    color: #969696;
 }
 .status-danger {
     color: #FB6868;

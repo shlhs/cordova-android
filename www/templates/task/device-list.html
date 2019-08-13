@@ -10,13 +10,11 @@
                     <a class="checkbox" ng-class="{checked: record.checked}" ng-click="checkDevice($event, record.device_sn)"></a>
                 </div>
                 <div class="device-body box-horizontal box-vertical-middle" ng-click="gotoDevice(record.device)">
-                    <i class="icon icon-20 icon-static-device" style="margin-right: 8px;"></i>
+                    <!--<i class="icon icon-20 icon-static-device" style="margin-right: 8px;"></i>-->
                     <div>
-                        <div class="box-horizontal">
-                            <label style="margin-right: 110px;display: block;">{{record.device.name}}</label>
-                            <label class="status {{record.status_name}}">{{record.status}}</label>
-                        </div>
-                        <h5 style="margin: 6px 0 0 0;font-size: 12px;" class="ng-binding mui-ellipsis">{{record.device.path}}
+                        <div class="device-name">{{record.device_name}}</div>
+                        <h5 style="margin: 6px 0 0 0;font-size: 12px;" class="ng-binding mui-ellipsis">
+                            <label class="status {{record.className}}">{{record.status_name}}</label>
                         </h5>
                     </div>
                 </div>
@@ -25,12 +23,12 @@
 
     </div>
     <nav class="mui-bar mui-bar-tab" style="z-index: 0;background-color: #fff;border-top: #efefef 1px solid;" ng-if="canHandle">
-        <a class="mui-tab-item mui-active mui-segmented-control-vertical mui-checkbox checkbox-square" style="padding-left: 10px;">
+        <a class="mui-tab-item mui-active mui-segmented-control-vertical mui-checkbox checkbox-square" style="padding-left: 10px;text-align: left;padding-top: 6px;">
             <label class="checkbox" ng-class="{checked: checkAll}" ng-click="toggleCheckAll()" style="color: #03a9f4"><span style="margin-left: 8px;">全选</span></label>
         </a>
         <a class="mui-tab-item mui-active mui-segmented-control-vertical" href="#">
             <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-btn-outlined mui-control-item task-btn"
-                    ng-click="setStatusOk()" ng-disabled="isSubmitting">确认运行良好</button>
+                    ng-click="setStatusOk()" ng-disabled="isSubmitting">设备正常</button>
         </a>
         <a class="mui-tab-item mui-active mui-segmented-control-vertical" href="#">
             <button type="button" class="mui-btn mui-btn-danger mui-btn-block mui-btn-outlined mui-control-item task-btn"

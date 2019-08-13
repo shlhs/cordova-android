@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>任务详情</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <!--标准mui.css-->
+    <link rel="stylesheet" href="../../components/mui/css/mui.min.css">
+    <link rel="stylesheet" href="../../components/mui/css/mui.picker.min.css">
+    <link rel="stylesheet" href="../../components/libs/font-awesome-4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../../css/my.css" />
+    <link rel="stylesheet" href="../../css/icon.css" />
+    <link rel="stylesheet" href="../../css/task.css" />
+    <link rel="stylesheet" href="../../css/animate.css">
+    <link rel="stylesheet" href="../../css/iconfont/iconfont.css">
+
+    <!--<link rel="stylesheet" href="./components/slides-playing/css/example.css">-->
+    <!--<script type="text/javascript" src="../../cordova.js"></script>-->
+    <!--<script type="text/javascript" src="../../cordova_plugins.js"></script>-->
+    <script type="text/javascript" src="../../components/libs/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="../../components/angular-animate/angular-animate.js"></script>
+    <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script type="text/javascript" src="../../components/angular-ui-router/release/stateEvents.min.js"></script>
+    <script type="text/javascript" src="../../components/me-lazyimg-master/me-lazyimg.js"></script>
+    <script type="text/javascript" src="../../js/app/utils.js"></script>
+    <script type="text/javascript" src="../../js/app/app.js"></script>
+    <script type="text/javascript" src="../../js/controller/task.js"></script>
+    <script type="text/javascript" src="../../js/controller/static-devices.js"></script>
+    <script type="text/javascript" src="../../js/service/appstore.js"></script>
+    <style>
+        html,
+        body {
+            height: 100%;
+            overflow: hidden;
+        }
+        .mui-bar {
+            -webkit-box-shadow: none;
+            box-shadow: none;
+        }
+        .mui-table-view.mui-grid-view .mui-table-view-cell .mui-media-body{
+            height: 18px;
+        }
+        strong{
+            height: 18px;
+            display: inline-block;
+        }
+        .mui-bar-tab{
+            box-shadow: none;
+            background-color: transparent;
+        }
+        .mui-bar-tab>a{
+            padding: 0px 2px 4px 2px;
+        }
+        .mui-bar-tab>a:first-child {
+            padding-left: 4px;
+        }
+        .mui-bar-tab>a:last-child {
+            padding-right: 4px;
+        }
+        .mui-bar-tab>a>button{
+            margin-bottom: 6px !important;
+        }
+        .device-list{
+            margin-left: 60px;
+        }
+        .device-list .device{
+            display: block;
+        }
+        .info-group>li{
+            line-height: 24px;
+        }
+        .info-group .title {
+            width: auto;
+        }
+        .info-group .value {
+            margin-left: 0;
+        }
+        .mui-input-row .mui-btn{
+            width: calc(100% - 160px);
+            outline: none;
+            background: transparent;
+            border: none;
+        }
+        .create-form input{
+            position: absolute;
+        }
+        .create-form .mui-input-row label~input, .create-form .mui-input-row label~select, .create-form .mui-input-row label~textarea{
+            width: calc(100% - 160px);
+            right: 0;
+        }
+    </style>
+</head>
+
+<body class="mui-android mui-android-5 mui-android-5-1 mui-android-5-1-1 mui-segmented-control-vertical" ng-app="myApp" ng-controller="TaskDeviceCheckCtrl" ng-cloak>
+<header class="mui-bar bg-header">
+    <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
+    <h1 class="mui-title">设备巡检详情</h1>
+</header>
+<div class="mui-content">
+    <div style="background-color: #fff; padding: 12px;">
+        <label style="font-size: 13px;font-weight: bold;">巡检设备：</label>
+        <label style="font-size: 13px;">{{deviceName}}</label>
+    </div>
+    <div>
+        <div style="padding: 12px 0 4px 12px; font-size: 13px;">检查项：检查项{{total}}，异常项{{exception}}</div>
+        <div ng-repeat="item in checkItems" class="check-item">
+            <div><label class="title">检查项：</label>{{item.name}}</div>
+            <div><label class="title">正常结果：</label>{{item.reference_relation}} {{item.reference_value}}</div>
+            <div ng-if="item.desp"><label class="title">检查方法：</label>{{item.desp}}</div>
+            <div style="margin-top: 8px;">
+                <label class="title">检查结果：</label>
+                <label>
+                    <button class="pass" ng-class="{normal: item.pass !== 2}" ng-click="setItemPass(item, 1)">正常</button>
+                    <button class="pass" ng-class="{normal: item.pass === 2}" ng-click="setItemPass(item, 2)">异常</button>
+                </label>
+            </div>
+            <div ng-if="item.pass !== 2">
+                <label class="title">结果描述：</label><input placeholder="请输入结果数值" ng-model="item.result_desp">
+            </div>
+            <div ng-if="item.pass === 2">
+                <label class="title">异常描述：</label><input placeholder="请输入异常描述" ng-model="item.result_desp" >
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-content">
+            <div style="color: #333;font-size: 13px;font-weight: 600;margin: 6px;">
+                设备巡检结果
+            </div>
+            <div class="device-check-pass-result">
+                <div ng-class="{'checked': result.pass !== 2}" ng-click="setDevicePass(1)">
+                    <i class="radio"></i><label>正常</label>
+                </div>
+                <div ng-class="{'checked': result.pass === 2}" ng-click="setDevicePass(2)">
+                    <i class="radio"></i><label>异常</label>
+                </div>
+            </div>
+            <div style="color: #333;font-size: 13px;font-weight: 600;margin: 6px;">异常情况描述</div>
+            <textarea rows="4" placeholder="请输入设备异常情况描述" style="background-color: #F4F5F6; border: none;border-radius: 4px;font-size: 12px;padding: 8px;"></textarea>
+        </div>
+    </div>
+    <nav class="mui-bar mui-bar-tab" ng-if="canEdit">
+        <a class="mui-tab-item">
+            <button type="button" class="mui-btn mui-btn-primary mui-btn-block task-btn" style="background-color: #79C679;" ng-click="saveCheckItems()">保存结果</button>
+        </a>
+    </nav>
+</div>
+<script src="../../components/mui/js/mui.min.js"></script>
+<script src="../../components/fastclick-master/lib/fastclick.js"></script>
+<script src="../../components/slides-playing/js/jquery.slides.js"></script>
+<!--<script src="http://api.map.baidu.com/api?v=2.0&ak=ITbaaCqA7nMWRjEIycEpddoUW1AvZvRq"></script>-->
+<!--<script src="../../components/baidu/map/MarkerManager-1.2.min.js"></script>-->
+<script src="../../js/my/notify.js"></script>
+<script src="../../js/controller/static-devices.js"></script>
+<script src="../../components/mui/js/mui.picker.min.js"></script>
+<script src="../../js/controller/dts.js"></script>
+
+</body>
+
+</html>
