@@ -1465,7 +1465,35 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
             var btnArray = ['取消', '是'];
             mui.confirm('是否接受该任务？', '接受该任务', btnArray, function(e) {
                 if (e.index === 1) {     // 是
-                    $scope.postAction(TaskAction.Accept);
+                    // $scope.postAction(TaskAction.Accept);
+                    $.notify.progressStart();
+                    var data = {
+                        transfer_user: username
+                    };
+                    ajax.post({
+                        url: '/opstasks/' + companyId + '/' + id + '/actions?action_type=' + TaskAction.Accept,
+                        data: JSON.stringify(data),
+                        contentType:"application/json",
+                        headers: {
+                            Accept: "application/json"
+                        },
+                        timeout: 30000,
+                        success: function (data) {
+                            $.notify.progressStop();
+                            $.notify.info('操作成功');
+                            $scope.taskData = formatTaskStatusName(data);
+                            // 调用Android接口
+                            notifyPrevPageToUpdateTask(data);
+                            formatTaskStatus();
+                            getTaskHistory();
+                            $scope.$apply();
+                        },
+                        error: function (data) {
+                            $.notify.progressStop();
+                            console.log('post action fail');
+                            $.notify.error('操作失败');
+                        }
+                    });
                 }
             });
         },
