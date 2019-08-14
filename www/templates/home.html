@@ -76,12 +76,12 @@
         <!--<span class="mui-icon nav-icon nav-sites"></span>-->
         <!--<span class="mui-tab-label">站点监控</span>-->
     <!--</a>-->
-    <label class="mui-tab-item" ng-repeat="menu in navMenus"
+    <label class="tab-item" ng-repeat="menu in navMenus"
        ng-click="chooseNav($event, menu.id)" ng-class="{'mui-active': tabName===menu.id}">
         <span class="mui-icon nav-icon {{menu.icon}}"></span>
         <span class="mui-tab-label">{{menu.name}}</span>
     </label>
-    <label class="mui-tab-item" ng-click="chooseNav($event, 'setting')" ng-class="{'mui-active': tabName==='setting'}">
+    <label class="tab-item" ng-click="chooseNav($event, 'setting')" ng-class="{'mui-active': tabName==='setting'}">
         <span class="mui-icon nav-icon nav-setting"></span>
         <span class="mui-tab-label">我的</span>
     </label>

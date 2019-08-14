@@ -54,6 +54,13 @@ app.service('userService', function ($rootScope) {
         setStorageItem('user', JSON.stringify(user));
         setStorageItem('username', user.account);
         setStorageItem('password', password);
+        if (user.permissions) {
+            const permissions = [];
+            user.permissions.forEach(function (perm) {
+                permissions.push(perm.authrity_name);
+            });
+            setStorageItem('permissions', permissions.join(','));
+        }
         setStorageItem('company', '');
         this.username = user.account;
         this.password = password;
@@ -68,6 +75,24 @@ app.service('userService', function ($rootScope) {
         } else {
             return null;
         }
+    };
+
+    this.getCompanyId = function () {
+        if (!localStorage.getItem("permissions")) {
+            return null;
+        }
+        var roles = localStorage.getItem("permissions").split(',');
+        for (var i=0; i<roles.length; i++) {
+            var role = roles[i];
+            if (role.indexOf("COMPANY_OPS_COMPANY_VIEWCOMPANY") === 0) {
+                return role.substring("COMPANY_OPS_COMPANY_VIEWCOMPANY".length);
+            }
+            //用户公司
+            if (role.indexOf("USER_COMPANY_USERUSER_COMPANY") === 0) {
+                return 'user' + role.substring("USER_COMPANY_USERUSER_COMPANY".length);
+            }
+        }
+        return null;
     };
 
     /* 获取用户角色：
@@ -233,7 +258,7 @@ app.service('platformService', function () {
         if(urlLength > 4 && imageUrl.toLocaleLowerCase().lastIndexOf('.gif') === (urlLength -4)) {
             return imageUrl;
         }
-        
+
         return this.thumbHost + '/' + width + 'x' + height + '/' + imageUrl;
     };
 
