@@ -1,5 +1,11 @@
-<div class="card" ng-if="taskData.stage_id !== TaskStatus.Competition" ng-class="{'page-bottom': canHandle}">
-    <ul class="timeline-vertical" style="padding-top: 8px;">
+<div class="card" ng-if="taskData.stage_id !== TaskStatus.Competition">
+    <div class="card-header" style="font-size: 14px;">工单操作记录：
+        <a ng-click="onToggleUpdateRecord()" style="color: rgb(96, 181, 255)">
+            <label ng-if="updateRecordsVisible">收起<i class="mui-icon mui-icon-arrowup" style="font-size: 14px;"></i></label>
+            <label ng-if="!updateRecordsVisible">展开<i class="mui-icon mui-icon-arrowdown" style="font-size: 14px;"></i></label>
+        </a>
+    </div>
+    <ul class="timeline-vertical" ng-if="updateRecordsVisible">
         <li class="timeline-one" ng-repeat="item in history" ng-class="{'active': $index == 0}">
             <span class="time-icon"  ng-class="{'handle-item': item.action_name=='更新进展'}" ng-if="item.action_id != TaskAction.Comment"></span>
             <div class="timeline-body">

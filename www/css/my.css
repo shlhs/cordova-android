@@ -273,7 +273,7 @@ header.mui-bar{
     background-color: #fff;
 }
 .task-result textarea{
-    font-size: 16px;
+    font-size: 14px;
     border: #fff;
     margin-bottom: 0;
 }
@@ -1375,6 +1375,17 @@ a:hover.slidesjs-stop {
 }
 .info-group .icon{
     margin-right: 4px;
+}
+.btn-status {
+    color: #fff;
+    font-size: 13px;
+    padding: 4px 8px;
+}
+.btn-status.running {
+    background: #F28150;
+}
+.btn-status.closed {
+    background-color: #8B8B8B;
 }
 .media-lg{
     width: 60px;
@@ -2596,17 +2607,18 @@ color: #a7a7a7;
     position: absolute;
     left: 0;
 }
+.mui-checkbox .checkbox {
+    font-size: 16px;
+}
 .mui-checkbox .checkbox:before {
     font-family: iconfont;
     content: '\a601';
-    font-size: 20px;
     display: inline-block;
     color: #D0D4D8;
 }
 .mui-checkbox .checkbox.checked:before {
     font-family: iconfont;
     content: '\a600';
-    font-size: 20px;
     display: inline-block;
     color: #03a9f4;
 }
@@ -2741,7 +2753,7 @@ color: #a7a7a7;
     font-size: 14px;
 }
 .static-device-list .device-name {
-    /*margin-right: 30px;*/
+    margin-right: 30px;
 }
 .static-device-list .status {
     /*position: absolute;*/
@@ -3393,3 +3405,11 @@ table.dataTable tbody th, table.dataTable tbody td {
     color: #007aff;
 }
 
+.my-picker .mui-poppicker-body{
+    border-top: none;
+    background-color: #fff;
+    height: 280px;
+}
+.my-picker.mui-poppicker {
+    transform: translateY(380px);
+}

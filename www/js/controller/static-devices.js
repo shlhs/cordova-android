@@ -242,7 +242,7 @@ app.controller('StaticDeviceDetailCtrl', function ($scope, ajax, routerService, 
     };
 
     $scope.gotoOpsList = function () {
-        window.location.href = '/templates/task/task-list.html?device_sn=' + $scope.device.sn;
+        window.location.href = '/templates/site/static-devices/device-ops-history.html?device_sn=' + $scope.device.sn;
     };
 
     init();

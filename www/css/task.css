@@ -50,10 +50,10 @@
 .task-info-label {
     font-size: 13px;
     color: #999999;
-    padding-right: 12px;
+    /*padding-right: 12px;*/
 }
 .task-info-value {
-    font-size: 14px;
+    font-size: 13px;
     color: #666666;
     font-family: 'PingFang-SC-Medium';
 }
@@ -312,7 +312,7 @@
 .timeline-vertical{
     position: relative;
     list-style: none;
-    padding: 16px 12px 0px 16px;
+    padding: 0;
     background-color: #fff;
     margin: 0px;
 }
@@ -498,8 +498,51 @@
     left: 4px;
     font-size: 10px;
 }
-.task-create-rows .mui-input-row>.label {
-    width: 160px;
+.mui-input-group.task-create-rows .mui-input-row>.label {
+    width: 115px;
+    font-size: 14px;
+    padding: 8px 15px;
+}
+.mui-input-group.task-create-rows .mui-input-row input, .mui-input-group.task-create-rows .mui-input-row textarea {
+    min-height: 44px;
+    font-size: 14px;
+    height: auto;
+    width: calc(100% - 115px);
+}
+.mui-input-group.task-create-rows .mui-input-row textarea {
+    margin-top: 4px;
+}
+.mui-input-group.task-create-rows .mui-input-row .value {
+    min-height: 44px;
+    font-size: 14px;
+    height: auto;
+    width: calc(100% - 115px);
+    float: right;
+}
+
+.task-create-rows .mui-input-row .mui-btn{
+    width: calc(100% - 115px);
+    outline: none;
+    background: transparent;
+    border: none;
+    margin: 0;
+}
+.task-create-rows.mui-input-group .mui-input-row {
+    min-height: 40px;
+    height: auto;
+}
+.task-create-rows.mui-input-group:before, .task-create-rows.mui-input-group:after{
+    display: none;
+}
+.task-create-rows .error {
+    color: red;
+    margin-left: 115px;
+    font-size: 12px;
+    margin-top: -16px;
+    padding: 4px 0;
+}
+.task-create-rows input {
+    position: absolute;
 }
 .mui-input-group .mui-input-row {
     height: 50px;
@@ -707,16 +750,19 @@
 }
 .check-item {
     background-color: #fff;
-    width: 100%;
-    margin: 0 10px 8px 10px;
+    /*width: 100%;*/
+    margin: 0 10px 10px 10px;
     font-size: 13px;
     padding: 8px 12px;
+}
+.check-item>div {
+    margin: 2px 0;
 }
 .check-item .title {
     font-weight: 600;
 
 }
-.check-item .pass {
+.item-pass {
     font-size: 12px;
     padding: 1px 8px;
     border: 1px solid #8e8e8e;
@@ -724,15 +770,15 @@
     margin-right: 10px;
     border-radius: 2px;
 }
-.check-item .pass.normal {
+.item-pass.normal {
     background-color: #4E83FD;
     color: #fff;
     border-color: #4E83FD;
 }
-.check-item .pass.exception {
-    background-color: red;
+.item-pass.exception {
+    background-color: #dd524d;
     color: #fff;
-    border-color: red;
+    border-color: #dd524d;
 }
 .check-item input, .check-item textarea {
     background-color: #F4F5F6;
@@ -740,7 +786,7 @@
     outline: 0;
     width: 100%;
     font-size: 12px;
-    padding: 6px 8px;
+    padding: 8px;
 }
 .device-check-pass-result {
     display: flex;
@@ -791,4 +837,87 @@
     position: absolute;
     left: 2px;
     top: 2px;
+}
+.task-detail-info-group{
+    margin: 0;
+    padding: 0;
+}
+
+.task-detail-info-group .icon-xs{
+    float: left;
+    margin-top:4px;
+}
+.task-detail-info-group>li{
+    list-style: none;
+    background-color: rgba(244, 244, 244, 0.5);
+    margin: 4px 0;
+    padding: 5px 10px;
+    font-size: 13px;
+}
+.task-detail-info-group>li:after {
+    display: block;
+    content: '';
+    clear: both;
+}
+.task-detail-info-group .title{
+    color: #333;
+    width: 80px;
+    display: inline-block;
+    float: left;
+}
+.task-detail-info-group .title.dark {
+    color: rgb(51,51,51);
+}
+.task-detail-info-group .value{
+    color: #666;
+    display: block;
+    padding-left: 80px;
+}
+.task-detail-info-group .icon{
+    margin-right: 4px;
+}
+
+.teams-selector {
+    overflow-y: auto;
+    height: 100%;
+    padding-bottom: 10px;
+}
+.teams-selector >div {
+    margin-top: 10px;
+    text-align: center;
+}
+.teams-selector>div>label {
+    background-color: #FAFAFA;
+    display: inline-block;
+    color: #666;
+    font-size: 14px;
+    padding: 4px 32px;
+    border-radius: 14px;
+    min-width: 70%;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+    border: #d5d5d5 1px solid;
+}
+.teams-selector>div>label:active {
+    background-color: rgb(228, 228, 228);
+}
+.teams-selector label.selected {
+    background-color: rgb(27, 127, 255) !important;
+    border-color: rgb(27, 127, 255);
+    color: #fff;
+}
+.teams-selector label.selected:before {
+    display: inline-block;
+    content: "";
+    color: #fff;
+    width: 12px;
+    height: 6px;
+    border: #fff 2px solid;
+    border-top: none;
+    border-right: none;
+    transform: rotate(-45deg);
+    position: absolute;
+    top: 8px;
+    left: 12px;
 }

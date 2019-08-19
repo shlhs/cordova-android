@@ -78,10 +78,10 @@ app.service('userService', function ($rootScope) {
     };
 
     this.getCompanyId = function () {
-        if (!localStorage.getItem("permissions")) {
+        if (!getStorageItem("permissions")) {
             return null;
         }
-        var roles = localStorage.getItem("permissions").split(',');
+        var roles = getStorageItem("permissions").split(',');
         for (var i=0; i<roles.length; i++) {
             var role = roles[i];
             if (role.indexOf("COMPANY_OPS_COMPANY_VIEWCOMPANY") === 0) {
@@ -486,7 +486,7 @@ app.service('ajax', function ($rootScope, platformService, userService, routerSe
     function request(option) {
         if (option.url.indexOf("http://") !== 0){
             option.url = platformService.getCloudHost() + option.url;
-            // option.url = 'http://127.0.0.1:8099/v1' + option.url;
+            // option.url = 'http://192.168.1.129:8099/v1' + option.url;
         }
         var headers = $.extend({
             Authorization: userService.getAccountToken(),
@@ -848,10 +848,26 @@ app.controller('ImageUploaderCtrl', function ($document, $scope, $timeout, route
         window.android && window.android.clearSelectedPhotos && window.android.clearSelectedPhotos();      // 调用Android js接口，清除选择的所有照片
     }
 
+    function fileExist(fileName) {
+        if (!fileName) {
+            return false;
+        }
+        for (var i=0; i<$scope.files.length; i++) {
+            if (fileName === $scope.files[0].name) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     $scope.chooseImage = function (files) {     // 选择图片
         $scope.canDelete = true;
         for (var i = 0; i < files.length; i++) {
             var reader = new FileReader(), file=files[i];
+            // 如果文件已选择过，则无法再选择
+            if (fileExist(file.name)) {
+                continue;
+            }
             reader.readAsDataURL(file);
             reader.onloadstart = function () {
                 //用以在上传前加入一些事件或效果，如载入中...的动画效果
@@ -881,6 +897,9 @@ app.controller('ImageUploaderCtrl', function ($document, $scope, $timeout, route
         $scope.canDelete = true;
         if (filename === undefined) {
             filename = '';
+        }
+        if (fileExist(filename)) {
+            return;
         }
         if ($scope.singleImage && $scope.files.length) {
             $scope.files[0] = {name: filename};

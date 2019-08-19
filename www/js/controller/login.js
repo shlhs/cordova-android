@@ -88,6 +88,10 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
                     getUserInfo();
                 } else {
                     toast('用户名或密码错误');
+                    if ($scope.isAutoLogin) {
+                        userService.setPassword('');
+                        location.href = 'login.html';
+                    }
                 }
             },
             error :function () {

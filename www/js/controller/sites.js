@@ -492,8 +492,8 @@ app.controller('EventListCtrl', function ($scope, $stateParams, scrollerService,
         });
     };
 
-    $scope.goToCreateTaskHtml = function($event, eventId, eventInfo) {
-        window.location.href = '/templates/task/add-task.html?eventId=' + eventId + '&eventInfo=' + eventInfo;
+    $scope.goToCreateTaskHtml = function($event, eventObj) {
+        window.location.href = '/templates/task/add-task.html?eventId=' + eventObj.id + '&station_sn=' + eventObj.station_sn;
     };
 });
 
