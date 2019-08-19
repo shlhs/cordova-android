@@ -292,7 +292,7 @@ app.controller('SiteDetailCtrl', function ($scope, ajax, platformService) {
                             s.status_name = '离线';
                         }
                         if (s.station.photo_src_link) {
-                            s.site_image = platformService.getImageUrl(180, 180, platformService.host + s.station.photo_src_link);
+                            s.site_image = platformService.getImageUrl(180, 180, platformService.getCloudHost() + s.station.photo_src_link);
                         }
                         else {
                             s.site_image = '/img/site-default.png';
@@ -329,7 +329,7 @@ app.controller('SiteBaseInfoCtrl', function ($scope, $timeout, $stateParams, aja
                 // 站点图片
                 var width = window.screen.width*3, height=Math.round(width/2);
                 if (data.photo_src_link) {
-                    data.site_image = platformService.getImageUrl(width, height, platformService.host + data.photo_src_link);
+                    data.site_image = platformService.getImageUrl(width, height, platformService.getCloudHost() + data.photo_src_link);
                 }
                 else {
                     data.site_image = '/img/background/site-default.jpeg';
