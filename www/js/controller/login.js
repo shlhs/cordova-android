@@ -5,7 +5,7 @@
  */
 
 var gPublicApiHost = 'http://47.104.75.86:8090';     // 公有云
-// var gPublicApiHost = 'http://47.97.167.195:8090';
+// var gPublicApiHost = 'http://27.115.22.254:8090';
 
 function onFinishVersionCheck() {
     var scope = angular.element('div[ng-controller="AutoLoginCtrl"]').scope();
@@ -18,6 +18,7 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
     $scope.error = '';
     var platform = null;
     $scope.enable = false;
+    $scope.platformCodeVisible = !defaultPlatIpAddr;
     $scope.platformCode = platformService.getLatestPlatform() ? platformService.getLatestPlatform().code : null;
     $scope.username = userService.getUsername();
     $scope.password = userService.getPassword();
@@ -47,7 +48,11 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
             return false;
         }
         $scope.enable = false;
-        queryPlatform(login);
+        if (defaultPlatIpAddr) {
+            login();
+        } else {
+            queryPlatform(login);
+        }
     };
 
     $scope.setAutoLogin = function(isAutoLogin){
@@ -89,6 +94,9 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
             success: function (data) {
                 var result = KJUR.jws.JWS.verify(data.token, 'zjlhstest');
                 if (result) {
+                    if (!getStorageItem('latestPlatform')) {
+                        platformService.setLatestPlatform({url: defaultPlatIpAddr + ":8099/v1"})
+                    }
                     userService.setAccountToken(data.token);
                     getUserInfo();
                 } else {
@@ -118,7 +126,8 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
             url: '/user/' + $scope.username,
             success: function (data) {
                 userService.saveLoginUser(data, $scope.password);
-                getCompany();
+                // getCompany();
+                $scope.gotoHome();
             },
             error: function () {
                 $scope.enable = true;
@@ -129,29 +138,29 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
         })
     }
 
-    function getCompany() {
-        ajax.get({
-            url: platform.url + '/user/' + $scope.username + '/opscompany',
-            xhrFields: {
-                withCredentials: true
-            },
-            crossDomain: true,
-            success: function (data) {
-                if (data && data.length >= 1)
-                {
-                    userService.saveCompany(data[0]);
-                } else{
-                    userService.saveCompany([]);
-                }
-                $scope.gotoHome();
-            },
-            error: function (xhr, status, error) {
-                $scope.isLogin = false;
-                userService.saveCompany([]);
-                console.log('get company info fail:' + xhr.status);
-            }
-        });
-    }
+    // function getCompany() {
+    //     ajax.get({
+    //         url: platform.url + '/user/' + $scope.username + '/opscompany',
+    //         xhrFields: {
+    //             withCredentials: true
+    //         },
+    //         crossDomain: true,
+    //         success: function (data) {
+    //             if (data && data.length >= 1)
+    //             {
+    //                 userService.saveCompany(data[0]);
+    //             } else{
+    //                 userService.saveCompany([]);
+    //             }
+    //             $scope.gotoHome();
+    //         },
+    //         error: function (xhr, status, error) {
+    //             $scope.isLogin = false;
+    //             userService.saveCompany([]);
+    //             console.log('get company info fail:' + xhr.status);
+    //         }
+    //     });
+    // }
 
     $scope.gotoHome = function() {
         $state.go('index');

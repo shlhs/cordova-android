@@ -219,7 +219,7 @@ app.controller('TaskBaseCtrl', function ($scope, ajax, userService, routerServic
         //data.expect_complete_time
     };
 
-    var companyId = userService.getTaskCompanyId();
+    var companyId = userService.getCompanyId();
     $scope.commonPostAction = function(taskId, actionType, description, images, cb) {
         var data = {};
         if (description){
@@ -416,7 +416,7 @@ app.controller('CompetitionTaskListCtrl', function ($scope, $rootScope, scroller
         });
     }
 
-    var companyId = userService.getTaskCompanyId();
+    var companyId = userService.getCompanyId();
     $scope.getDataList = function() {
         scrollerService.initScroll('#competition_tasks_scroll', $scope.getDataList);
         if (!companyId) {
@@ -486,7 +486,7 @@ app.controller('CompetitionTaskListCtrl', function ($scope, $rootScope, scroller
 app.controller('GrabTaskCtrl', function ($scope, userService, ajax) {
     $scope.postGrabAction = function($event, taskId) {
         $event.stopPropagation();
-        var companyId = userService.getTaskCompanyId();
+        var companyId = userService.getCompanyId();
         var data = {};
         $.notify.progressStart();
         ajax.post({
@@ -699,7 +699,7 @@ app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, us
         scrollerService.initScroll("#taskList", $scope.getDataList);
         $scope.isLoading = true;
         $scope.loadingFailed = false;
-        var companyId = userService.getTaskCompanyId();
+        var companyId = userService.getCompanyId();
         var url = "/opstasks/history/" + companyId;
         if (deviceSn) {
             url = "/staticdevices/opstasks/" + deviceSn + '?types=' + OpsTaskType.join(',');
@@ -820,7 +820,7 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
     var userPicker = null;
 
 
-    var companyId = userService.getTaskCompanyId();
+    var companyId = userService.getCompanyId();
     function updateUserActions() {      // 更新用户的操作权限
         if (taskData.current_handler !== username){
             $scope.canHandle = false;
@@ -833,13 +833,9 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
     function getTaskDetail() {
 
         var option = {
-            url: '/opstasks',
-            data: {
-                task_ids: id
-            },
+            url: '/opstasks/' + companyId + '/' + id,
             success: function (data) {
-                var task = data[0];
-                updateTaskInfo(task);
+                updateTaskInfo(data);
             },
             error: function (a, b, c) {
                 console.log('get task detail fail');
@@ -852,7 +848,7 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
 
     function updateTaskInfo(data) {
         $scope.taskData = formatTaskStatusName(data);
-        $scope.taskData.expect_complete_time = data.expect_complete_time.substring(0, 16);
+        $scope.taskData.expect_complete_time = data.expect_complete_time ? data.expect_complete_time.substring(0, 16) : '';
         $scope.$apply();
         stationLongitude = data.station_longitude;
         stationLatitude = data.station_latitude;
@@ -1354,7 +1350,7 @@ app.controller('TaskCloseRejectCtrl', function ($scope) {      //驳回关闭请
 
 
 app.controller('TaskCreateCtrl', function ($scope, $stateParams, $timeout, routerService, userService, ajax) {
-    var companyId = userService.getTaskCompanyId();
+    var companyId = userService.getCompanyId();
     $scope.stationName = null;
     $scope.taskTypeName = null;
     $scope.handlerName = null;

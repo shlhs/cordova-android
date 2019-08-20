@@ -3,6 +3,7 @@
  * Created by liucaiyun on 2017/5/4.
  */
 var app = angular.module('myApp', ['ngAnimate', 'ui.router', 'ui.router.state.events']);
+var defaultPlatIpAddr = "";     // 平台默认ip，格式为：http://118.190.51.135
 
 app.run(function ($animate) {
     $animate.enabled(true);
@@ -58,6 +59,13 @@ app.service('userService', function ($rootScope) {
         setStorageItem('user', JSON.stringify(user));
         setStorageItem('username', user.account);
         setStorageItem('password', password);
+        if (user.permissions) {
+            const permissions = [];
+            user.permissions.forEach(function (perm) {
+                permissions.push(perm.authrity_name);
+            });
+            setStorageItem('permissions', permissions.join(','));
+        }
         setStorageItem('company', '');
         this.username = user.account;
         this.password = password;
@@ -95,6 +103,24 @@ app.service('userService', function ($rootScope) {
             this.username = username;
         }
         return username;
+    };
+
+    this.getCompanyId = function () {
+        if (!getStorageItem("permissions")) {
+            return null;
+        }
+        var roles = getStorageItem("permissions").split(',');
+        for (var i=0; i<roles.length; i++) {
+            var role = roles[i];
+            if (role.indexOf("COMPANY_OPS_COMPANY_VIEWCOMPANY") === 0) {
+                return role.substring("COMPANY_OPS_COMPANY_VIEWCOMPANY".length);
+            }
+            //用户公司
+            if (role.indexOf("USER_COMPANY_USERUSER_COMPANY") === 0) {
+                return 'user' + role.substring("USER_COMPANY_USERUSER_COMPANY".length);
+            }
+        }
+        return null;
     };
 
     this.hasPermission = function (permName) {
@@ -136,23 +162,6 @@ app.service('userService', function ($rootScope) {
     this.getCompany = function () {
         return getStorageItem('company') ? JSON.parse(getStorageItem('company')) : null;
 
-    };
-
-    this.getTaskCompanyId = function () {
-        // 获取任务时需要用到的用户id
-        var perms = JSON.parse(getStorageItem("user")).permissions;
-        for (var i=0; i<perms.length; i++) {
-            var auth = perms[i].authrity_name;
-            //运维公司
-            if (auth.indexOf("COMPANY_OPS_COMPANY_VIEWCOMPANY") === 0) {
-                return auth.substring("COMPANY_OPS_COMPANY_VIEWCOMPANY".length);
-            }
-            //用户公司
-            if (auth.indexOf("USER_COMPANY_USERUSER_COMPANY") === 0) {
-                return 'user' + auth.substring("USER_COMPANY_USERUSER_COMPANY".length);
-            }
-        }
-        return null;
     };
 
     this.user = this.getUser();
@@ -230,7 +239,8 @@ app.service('platformService', function () {
 
     this.getGraphScreenUrl = function (graphSn) {
         // 新的监控画面服务
-        return this.ipAddress + ':8921/monitor.html?sn=' + graphSn;
+        // return this.ipAddress + ':8921/monitor.html?sn=' + graphSn;
+        return 'http://192.168.1.129:8080/monitor2.html?sn=' + graphSn;
     };
 
     this.getOldMonitorScreenUrl = function (screenSn) {
@@ -284,7 +294,7 @@ app.service('ajax', function ($rootScope, platformService, userService, $http, c
     };
 
     this.getCompanyMembers = function (callback) {
-        var companyId = userService.getTaskCompanyId();
+        var companyId = userService.getCompanyId();
         var url = '/opscompanies/' + companyId + '/members';
         if (companyId.indexOf('user') === 0) {
             url = '/usercompanies/'+ companyId.substring(4) + '/members';

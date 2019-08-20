@@ -95,6 +95,16 @@ app.controller('MonitorDetailCtrl', function ($scope, cordovaService) {
         // 页面离开时，恢复竖屏
         if (cordovaService.deviceReady) {
             screen.orientation.lock('portrait');
+        } else if (window.android && window.android.setPortrait) {
+            window.android.setPortrait();
         }
     });
+
+    // 先删掉iframe，再后退，防止出现页面卡顿
+    function deleteIframe() {
+        $("#iframe").remove();
+        window.removeEventListener('popstate', deleteIframe);
+    }
+
+    window.addEventListener('popstate', deleteIframe);
 });
