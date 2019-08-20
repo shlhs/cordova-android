@@ -31,7 +31,7 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
     };
 
     $scope.inputChange = function () {
-        if ($scope.platformCode && $scope.username && $scope.password) {
+        if ((!$scope.platformCodeVisible || $scope.platformCode) && $scope.username && $scope.password) {
             $scope.enable = true;
         } else {
             $scope.enable = false;
@@ -124,6 +124,7 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
     function getUserInfo() {
         ajax.get({
             url: '/user/' + $scope.username,
+            ignoreAuthExpire: true,
             success: function (data) {
                 userService.saveLoginUser(data, $scope.password);
                 // getCompany();
@@ -216,7 +217,7 @@ app.controller('AutoLoginCtrl', function ($scope, $timeout, $state, userService,
     $scope.autoLogin = function () {
         //先等1.5s
         // 先判断是否可以自动登录
-        if ($scope.username && $scope.password && $scope.platformCode){
+        if ($scope.username && $scope.password && (defaultPlatIpAddr || $scope.platformCode)){
             $scope.setAutoLogin(true);
             $timeout(function () {
                 $scope.login();

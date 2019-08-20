@@ -123,10 +123,10 @@ app.controller('StaticDeviceDetailCtrl', function ($scope, $stateParams, ajax, r
                 }
                 if (data.device_photo_src_link) {
                     var width = window.screen.width*2, height=Math.round(width/2);
-                    data.device_photo_src_link = platformService.host + data.device_photo_src_link;
+                    data.device_photo_src_link = platformService.getCloudHost() + data.device_photo_src_link;
                 }
                 if (data.qr_photo_src_link) {
-                    data.qr_photo_src_link = platformService.host + data.qr_photo_src_link;
+                    data.qr_photo_src_link = platformService.getCloudHost() + data.qr_photo_src_link;
                 }
                 $scope.device = data;
                 $scope.$apply();
@@ -184,7 +184,7 @@ app.controller('StaticDeviceDetailCtrl', function ($scope, $stateParams, ajax, r
                 device_sn: $scope.device_sn,
                 onSave: function (data, photoLink) {
                     $.extend($scope.device, data, {
-                        device_photo_src_link: photoLink ? (platformService.host + photoLink) : null,
+                        device_photo_src_link: photoLink ? (platformService.getCloudHost() + photoLink) : null,
                         qr_photo_src_link: $scope.device.qr_photo_src_link
                     });
                 }
@@ -255,10 +255,10 @@ app.controller('StaticDeviceEditCtrl', function ($scope, ajax, routerService, pl
                 }
 
                 if (data.device_photo_src_link) {
-                    data.device_photo_src_link = platformService.host + data.device_photo_src_link;
+                    data.device_photo_src_link = platformService.getCloudHost() + data.device_photo_src_link;
                 }
                 if (data.qr_photo_src_link) {
-                    data.qr_photo_src_link = platformService.host + data.qr_photo_src_link;
+                    data.qr_photo_src_link = platformService.getCloudHost() + data.qr_photo_src_link;
                 }
 
                 $scope.deviceImage = data.device_photo_src_link;

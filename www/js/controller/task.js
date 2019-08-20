@@ -1039,7 +1039,7 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
         var imageList = [];
         for (var i in $scope.imageScope){
             if (images['picture' + i]){
-                imageList.push(platformService.host + images['picture' + i]);
+                imageList.push(platformService.getCloudHost() + images['picture' + i]);
             }
         }
         // $state.go('task.gallery', {index: index, images: imageList});
@@ -1865,7 +1865,7 @@ app.controller('DeviceXunjianTaskDetailCtrl', function ($scope, ajax, platformSe
                             var images = [];
                             r.photo_links.split(',').forEach(function (src) {
                                 // images.push(platformService.getImageUrl(width, height, platformService.host + src));
-                                images.push(platformService.host + '/images/' + src);
+                                images.push(platformService.getCloudHost() + src);
                             });
                             r.images = images;
                         }

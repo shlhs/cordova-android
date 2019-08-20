@@ -26,7 +26,7 @@ app.controller('SiteListCtrl', function ($scope, $http, $state, scrollerService,
                 result.forEach(function (s) {
                     var width = window.screen.width*3, height=Math.round(width/2);
                     if (s.photo_src_link) {
-                        s.site_image = platformService.getImageUrl(width, height, platformService.host + s.photo_src_link);
+                        s.site_image = platformService.getImageUrl(width, height, platformService.getCloudHost() + s.photo_src_link);
                     } else {
                         s.site_image = 'img/site-default.png';
                     }
@@ -383,7 +383,7 @@ app.controller('SiteBaseInfoCtrl', function ($scope, $timeout, $stateParams, aja
                 // 站点图片
                 var width = window.screen.width*3, height=Math.round(width/2);
                 if (data.photo_src_link) {
-                    data.site_image = platformService.getImageUrl(width, height, platformService.host + data.photo_src_link);
+                    data.site_image = platformService.getImageUrl(width, height, platformService.getCloudHost() + data.photo_src_link);
                 }
                 else {
                     data.site_image = 'img/background/site-default.png';
@@ -567,7 +567,7 @@ app.controller('EventListCtrl', function ($scope, scrollerService, userService, 
 
 
 app.controller('SiteDocsCtrl', function ($scope, routerService, platformService, ajax, cordovaService) {
-    var sn = $scope.sn, host = platformService.getHost();
+    var sn = $scope.sn, host = platformService.getCloudHost();
     $scope.docList = [];
     $scope.docLoading = false;
     $scope.loadingFailed = false;
@@ -656,7 +656,6 @@ app.controller('SiteDocsCtrl', function ($scope, routerService, platformService,
             $("#slides").hide();
             window.removeEventListener("popstate", hide);
         }
-        var host = platformService.host;
         if (doc.isImage){
             $scope.currentImage = host + doc.src_link;
             // $("#slides").show().on('click', function () {
@@ -699,7 +698,7 @@ app.controller('SiteReportsCtrl', function ($scope, $state,ajax, scrollerService
                 var outputs = [];
                 data.forEach(function (d) {
                     if (d.output_src_link) {
-                        d.output_src_link = platformService.host + d.output_src_link;
+                        d.output_src_link = platformService.getCloudHost() + d.output_src_link;
                         outputs.push(d);
                     }
                 });
