@@ -34,6 +34,7 @@ app.controller('SiteListCtrl', function ($scope, $http, $state, scrollerService,
                     {
                         s.search_key = s.name+s.sn.toLowerCase();
                     }
+                    s.full_address = (s.address_province || '') + (s.address_city || '') + (s.address_district || '') + (s.address || '');
                     sites.push(s);
                 });
                 $scope.sites = sites;
