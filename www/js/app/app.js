@@ -3,7 +3,7 @@
  * Created by liucaiyun on 2017/5/4.
  */
 var app = angular.module('myApp', ['ngAnimate', 'ui.router', 'ui.router.state.events']);
-var defaultPlatIpAddr = "http://118.190.51.135";     // 平台默认ip，格式为：http://118.190.51.135
+var defaultPlatIpAddr = "http://47.104.27.152";     // 中睿和
 
 app.run(function ($animate) {
     $animate.enabled(true);
