@@ -499,7 +499,7 @@ app.controller('EventListCtrl', function ($scope, $stateParams, scrollerService,
 
 
 app.controller('SiteDocsCtrl', function ($scope, $stateParams, platformService, ajax) {
-    var sn = GetQueryString('sn'), host = platformService.getHost();
+    var sn = GetQueryString('sn'), host = platformService.getCloudHost();
     $scope.docList = [];
     $scope.docLoading = false;
     $scope.loadingFailed = false;
@@ -626,7 +626,7 @@ app.controller('SiteReportsCtrl', function ($scope, ajax, scrollerService, route
                 var outputs = [];
                 data.forEach(function (d) {
                     if (d.output_src_link) {
-                        d.output_src_link = platformService.host + d.output_src_link;
+                        d.output_src_link = platformService.getCloudHost() + d.output_src_link;
                         outputs.push(d);
                     }
                 });

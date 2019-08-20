@@ -55,7 +55,6 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
 
     function login() {
         $scope.error = '';
-        var host = platformService.getHost();
         var data = {
             username: $scope.username,
             password: $scope.password
@@ -179,7 +178,7 @@ app.controller('AutoLoginCtrl', function ($scope, $timeout, userService, platfor
     $scope.autoLogin = function () {
         //先等1.5s
         // 先判断是否可以自动登录
-        if ($scope.username && $scope.password){
+        if ($scope.username && $scope.password && (defaultPlatIpAddr || $scope.platformCode)){
             $scope.setAutoLogin(true);
             $timeout(function () {
                 $scope.login();

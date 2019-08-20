@@ -2471,8 +2471,7 @@ app.controller('DeviceXunjianTaskDetailCtrl', function ($scope, ajax, platformSe
                         if (r.photo_links) {
                             var images = [];
                             r.photo_links.split(',').forEach(function (src) {
-                                // images.push(platformService.getImageUrl(width, height, platformService.host + src));
-                                images.push(platformService.host + '/images/' + src);
+                                images.push(platformService.getCloudHost() + src);
                             });
                             r.images = images;
                         }
