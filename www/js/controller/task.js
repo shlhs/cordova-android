@@ -468,6 +468,15 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, ajax, platfo
     initMenu();
 });
 
+function isTodoTask(task, username) {
+    if (task.stage_id !== TaskStatus.Closed && task.current_handler){
+        if (task.current_handler.split(',').indexOf(username) >= 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
 app.controller('TaskBaseCtrl', function ($scope, ajax, userService, routerService, appStoreProvider) {
     var map = null;
     $scope.hasOpsAuth = appStoreProvider.hasOpsAuth();
@@ -926,40 +935,119 @@ app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, us
     var deviceSn = $scope.device ? $scope.device.sn : null;     // 如果设备sn不为空，则获取的是设备的运维记录
     $scope.isDeviceOps = deviceSn ? true : false;
     $scope.pageTitle = deviceSn ? '运维记录' : '所有任务';
+    var role = userService.getUserRole();
+    var userAccount = userService.getUser().account;
+    var requestFilterParams = null;
+    $scope.showFilter = false;
+    $scope.selectedFilter = {};     // 确定选中的
+    $scope.tmpSelectedFilter = {};      // 在确定选中前，记录选中状态的
+    $scope.filterItems = [
+        {
+            title: '状态',
+            key: 'stage',
+            items: [{
+                id: 'stage_finished',
+                name: '已完成',
+                value: [TaskStatus.Closed]
+            }, {
+                id: 'stage_unfinished',
+                name: '未完成',
+                value: [TaskStatus.ToAssign, TaskStatus.ToAccept, TaskStatus.Accepted, TaskStatus.Coming, TaskStatus.Arrived]
+            }]
+        }, {
+            title: '来源',
+            key: 'creater',
+            items: [{
+                id: 'creator_my',
+                name: '我提交的',
+                value: userAccount
+            }]
+        }, {
+            title: '类型',
+            key: 'task_type',
+            items: [{
+                id: 'type_xunjian',
+                name: '巡检',
+                value: TaskTypes.Xunjian
+            }, {
+                id: 'type_qiangxiu',
+                name: '抢修',
+                value: TaskTypes.Qiangxiu
+            }, {
+                id: 'type_jianxiu',
+                name: '检修',
+                value: TaskTypes.Jianxiu
+            }, {
+                id: 'type_baoyang',
+                name: '保养',
+                value: TaskTypes.Baoyang
+            }, {
+                id: 'type_security',
+                name: '安全评测',
+                value: TaskTypes.Security
+            }, {
+                id: 'type_poweroff',
+                name: '停电维护',
+                value: TaskTypes.Poweroff
+            }, {
+                id: 'type_other',
+                name: '其他',
+                value: TaskTypes.Other
+            }]
+        }
+    ];
+
+    $scope.toggleFilterItem = function (id) {
+        $scope.tmpSelectedFilter[id] = !$scope.tmpSelectedFilter[id];
+    };
+
+    $scope.confirmFilter = function () {
+        $scope.selectedFilter = $scope.tmpSelectedFilter;
+        var filterParams = {};
+        $scope.filterItems.forEach(function (group) {
+            group.items.forEach(function (item) {
+                if ($scope.selectedFilter[item.id]) {
+                    var values = filterParams[group.key] || [];
+                    if (typeof(item.value) === 'object') {
+                        values = values.concat(item.value);
+                    } else {
+                        values.push(item.value);
+                    }
+                    filterParams[group.key] = values;
+                }
+            });
+        });
+        $scope.toggleFilter(false);
+        requestFilterParams = filterParams;
+        $scope.getDataList();
+    };
+
+    $scope.clearFilter = function () {
+        $scope.selectedFilter = {};
+        $scope.toggleFilter(false);
+        requestFilterParams = null;
+        $scope.getDataList();
+    };
+
+    $scope.toggleFilter = function (show) {
+        if (show === undefined) {
+            $scope.showFilter = !$scope.showFilter;
+        } else {
+            $scope.showFilter = show;
+        }
+        if ($scope.showFilter) {
+            $scope.tmpSelectedFilter = $scope.selectedFilter;
+        }
+    };
 
     function sortFunc(d1, d2) {
-
-        // 排序规则：未完成、待审批、已关闭，同样状态的按截止日期排序
-        var stage1 = d1.stage_id;
-        var stage2 = d2.stage_id;
-        var status1 = 0;        // 0:未完成，1：待审批，2：已关闭
-        var status2 = 0;        // 0:未完成，1：待审批，2：已关闭
-        switch (stage1) {
-            case TaskStatus.Closed:
-                status1 = 2;
-                break;
-            // case TaskStatus.ToClose:
-            //     status1 = 1;
-            //     break;
-        }
-        switch (stage2) {
-            case TaskStatus.Closed:
-                status2 = 2;
-                break;
-            // case TaskStatus.ToClose:
-            //     status2 = 1;
-            //     break;
-        }
-        if (status1 !== status2) {
-            return status1 - status2;
-        }
-        if (d1.expect_complete_time > d2.expect_complete_time){
+        if (d1.last_modified_time < d2.last_modified_time) {
             return 1;
         }
-        if (d1.expect_complete_time === d2.expect_complete_time){
-            return 0;
+        if (d1.last_modified_time > d2.last_modified_time) {
+            return -1;
         }
-        return -1;
+        return 0;
     }
 
     $scope.getDataList = function() {
@@ -967,41 +1055,69 @@ app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, us
         $scope.isLoading = true;
         $scope.loadingFailed = false;
         var companyId = userService.getCompanyId();
-        var url = "/opstasks/history/" + companyId;
+        var url = "/opstasks?company_id=" + companyId;
         if (deviceSn) {
             url = "/staticdevices/opstasks/" + deviceSn + '?types=' + OpsTaskType.join(',');
+        } else if (role === 'USER') {  // 如果是用户的话，所有任务取的是所有站点的任务
+            var stationSns = [];
+            $scope.sites.map(function (s) {
+                if (!s.is_group) {
+                    stationSns.push(s.sn);
+                }
+            });
+            url = '/opstasks?station=' + stationSns.join(',') + '&task_type=' + OpsTaskType.join(',') + ',11';
+            // 筛选
+        }
+        var params = {
+            page_size: 100,
+            page_index: 0,
+            s_echo: 0
+        };
+        if (requestFilterParams) {
+            Object.keys(requestFilterParams).forEach(function (key) {
+                params[key] = requestFilterParams[key].join(',');
+            });
         }
         ajax.get({
             url: url,
-            data:{
-                page_size: 100,
-                page_index: 0,
-                s_echo: 0
-            },
+            data: params,
             success: function(result) {
                 $scope.isLoading = false;
-                result.aaData.sort(sortFunc);
-                var tasks = result.aaData, task = null;
+                var tasks = result.aaData ? result.aaData : result, task = null;
                 for (var i in tasks){
                     task = tasks[i];
                     formatTaskStatusName(task);
                     // 如果是设备巡检记录的话，处理设备状态
                     if ($scope.isDeviceOps && task.device_record && task.device_record.length) {
-                        var deviceRecord = task.device_record[0];
-                        if (deviceRecord.status === '有缺陷') {
-                            deviceRecord.status_name ='danger';
-                        } else if (deviceRecord.status === '未处理') {
-                            deviceRecord.status = '待检查';
-                            deviceRecord.status_name ='waiting';
-                            task.operator_name = task.operator_name || task.current_handler_name;   // 巡检人
-                        } else {
-                            deviceRecord.status_name = 'normal';
-                        }
-                        task.device_record = deviceRecord;
+                        task.device_record = task.device_record[0];
+                    }
+                    if (isTodoTask(task, userAccount)) {
+                        task.isMyself = true;
                     }
                     task.isTimeout = $scope.taskTimeout(task);
+                    if (task.expect_complete_time) {
+                        task.expect_complete_time = task.expect_complete_time.substring(0, 16);
+                    }
+                    if (task.finish_time) {
+                        task.finish_time = task.finish_time.substring(0,16);
+                    }
+                    task.last_modified_time = task.last_modified_time.substring(0, 16);
+                    // 统计巡检信息
+                    var dtsCount = 0;
+                    var resolvedDtsCount = 0;
+                    if (task.children_tasks) {
+                        dtsCount = task.children_tasks.length;
+                        task.children_tasks.forEach(function (t) {
+                            if (t.statge_id === TaskStatus.Closed || t.statge_id === TaskStatus.ToClose) {
+                                resolvedDtsCount += 1;
+                            }
+                        });
+                    }
+                    task.dts_count = dtsCount;
+                    task.resolved_dts_count = resolvedDtsCount;
                 }
-                $scope.tasks = result.aaData;
+                tasks.sort(sortFunc);
+                $scope.tasks = tasks;
                 $scope.$apply();
             },
             error: function (a,b,c) {

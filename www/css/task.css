@@ -14,6 +14,9 @@
     padding: 0;
     position: relative;
 }
+.task-list .task-item.closed {
+    background-color: #e6e6e6;
+}
 .task-item .task-icon{
     height: 22px;
     margin-left: 0px;
@@ -45,14 +48,15 @@
 .task-item .sub-body {
     padding-left: 12px;
     border-top: #efeff1 0.5px solid;
+    padding-bottom: 10px;
 }
 .task-info-label {
     font-size: 13px;
     color: #999999;
-    padding-right: 12px;
+    /*padding-right: 12px;*/
 }
 .task-info-value {
-    font-size: 14px;
+    font-size: 13px;
     color: #666666;
     font-family: 'PingFang-SC-Medium';
 }
@@ -607,4 +611,102 @@
     margin-left: 50px;
     padding: 6px 30px;
     margin-bottom: 0;
+}
+.filter-btn {
+    background-color: #fff;
+    width: 100%;
+    text-align: center;
+    line-height: 32px;
+    font-size: 13px;
+    border-bottom: #e6e6e6 1px solid;
+    position: fixed;
+    top: 60px;
+    z-index: 1;
+}
+.dropdown-filter-wrapper {
+    width: 100%;
+    position: fixed;
+    top: 92px;
+    bottom: 0;
+}
+.dropdown-filter-wrapper .filter-mask {
+    width: 100%;
+    position: absolute;
+    top: 0px;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+.dropdown-filter-wrapper .filter-inner {
+    background-color: #fff;
+    width: 100%;
+    position: absolute;
+    top: 0;
+}
+.filter-inner .filter-body {
+    padding: 10px 12px 0 24px;
+}
+.filter-body .group .title{
+    color: #000;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+.filter-body .group .items {
+    width: 100%;
+}
+.filter-body .group .items:after{
+    content: '';
+    display: block;
+    clear: both;
+}
+.filter-body .group .items .item {
+    width: calc(33% - 12px);
+    text-align: center;
+    float: left;
+    margin-bottom: 11px;
+    background-color: #F5F5F5;
+    line-height: 24px;
+    border-radius: 12px;
+    border: #f5f5f5 1px solid;
+    color: #7b7b7b;
+    display: inline-block;
+    margin-right: 12px;
+    font-size: 12px;
+}
+.filter-body .group .items .item.checked {
+    border-color: #659CFF;
+    color: #659CFF;
+    background-color: rgba(101, 156, 255, 0.10);
+}
+.dropdown-filter-wrapper .filter-footer {
+    width: 100%;
+    height: 48px;
+    font-size: 13px;
+    background-color: #fff;
+    border-top: #E1E1E1 1px solid;
+    display: -webkit-box;
+}
+.filter-footer .btn {
+    -webkit-box-flex: 1;
+    line-height: 48px;
+    text-align: center;
+}
+.filter-footer .btn:before {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background-color: #e1e1e1;
+}
+.filter-footer .btn:first-child:before {
+    display: none;
+}
+.filter-footer .btn.primary {
+    background: linear-gradient(to right bottom, #6C93F2, #4063DF);
+    color: #fff;
+}
+.filter-footer .btn.default {
+    color: #1C1B1B
 }
