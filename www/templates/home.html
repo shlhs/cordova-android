@@ -1,34 +1,25 @@
 <div ng-controller="HomeCtrl">
     <div class="mui-content no-padding" style="height: auto;top: 0;">
         <div style="height: 100%;overflow-y: hidden;" ng-controller="TaskBaseCtrl">
-
-            <div id='sites' class="no-padding mui-control-content content-wrapper"
-                 ng-class="{'mui-active': tabName === 'sites'}" ng-include="'templates/site/site-home.html'" style="bottom:54px;">
-            </div>
             <div ng-repeat="menu in navMenus" id={{menu.id}} class="no-padding mui-control-content content-wrapper"
                  ng-class="{'mui-active': tabName === menu.id}" ng-include="menu.templateUrl" style="bottom:54px;">
             </div>
             <div ng-controller="SettingCtrl" id="setting" class=" no-padding mui-control-content"
                  ng-class="{'mui-active': tabName === 'setting'}" style="height: 100%;">
-                <div ng-include="'templates/setting/setting.html'"></div>
+                <div ng-include="'/templates/setting/setting.html'"></div>
             </div>
         </div>
     </div>
     <nav id="menu" class="mui-bar mui-bar-tab bg-footer nav-horizontal" style="box-shadow: none !important;z-index:0;">
-        <a class="mui-tab-item" href="javascript:void(0)" ng-click="chooseNav('sites', '站点监控')"
-           ng-class="{'mui-active': tabName==='sites'}">
-            <span class="mui-icon nav-icon nav-sites"></span>
-            <span class="mui-tab-label">站点监控</span>
-        </a>
-        <a class="mui-tab-item" href="javascript:void(0)" ng-repeat="menu in navMenus"
-           ng-click="chooseNav(menu.id, menu.name)" ng-class="{'mui-active': tabName===menu.id}">
+        <label class="tab-item" ng-repeat="menu in navMenus"
+               ng-click="chooseNav($event, menu.id)" ng-class="{'mui-active': tabName===menu.id}">
             <span class="mui-icon nav-icon {{menu.icon}}"></span>
             <span class="mui-tab-label">{{menu.name}}</span>
-        </a>
-        <a class="mui-tab-item" href="javascript:void(0)" ng-click="chooseNav('setting', '我')" ng-class="{'mui-active': tabName==='setting'}">
+        </label>
+        <label class="tab-item" ng-click="chooseNav($event, 'setting')" ng-class="{'mui-active': tabName==='setting'}">
             <span class="mui-icon nav-icon nav-setting"></span>
             <span class="mui-tab-label">我的</span>
-        </a>
+        </label>
     </nav>
     <div ui-view=""></div>
 </div>
