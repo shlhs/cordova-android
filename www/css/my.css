@@ -1380,6 +1380,7 @@ a:hover.slidesjs-stop {
     color: #fff;
     font-size: 13px;
     padding: 4px 8px;
+    line-height: 14px;
 }
 .btn-status.running {
     background: #F28150;
@@ -2756,10 +2757,11 @@ color: #a7a7a7;
     margin-right: 30px;
 }
 .static-device-list .status {
-    /*position: absolute;*/
-    /*right: 10px;*/
-    /*top: 12px;*/
+    position: absolute;
+    right: 10px;
+    top: 50%;
     font-size: 13px;
+    margin-top: -10px;
 }
 .static-device-list .status.normal {
     color: #44D36B;

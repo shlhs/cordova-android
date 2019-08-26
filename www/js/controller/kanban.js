@@ -31,14 +31,14 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
 
     function paintFailed() {        // 检测图表绘制是否已完成
         paintFailedCount += 1;
-        if (paintedChartCount + paintFailedCount == needChartCount) {
+        if (paintedChartCount + paintFailedCount === needChartCount) {
             _initSlider(paintedChartCount);
         }
     }
 
     function paintSuccess() {
         paintedChartCount += 1;
-        if (paintedChartCount + paintFailedCount == needChartCount) {
+        if (paintedChartCount + paintFailedCount === needChartCount) {
             _initSlider(paintedChartCount);
         }
     }
@@ -128,7 +128,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                             deviceVarSns.push(contentsResult[i].content[j].varInfo.deviceVarSn);
                             deviceVarAliasMap[contentsResult[i].content[j].varInfo.deviceVarSn] = contentsResult[i].content[j].varInfo.deviceVarAlias;
                         }
-                        if(deviceVarSns.length == 0) {
+                        if(deviceVarSns.length === 0) {
                             continue;
                         }
                         haveChart = true;
@@ -139,7 +139,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                         var unit = '';
                         for(var j in contentsResult[i].content) {
                             var tempVarSn = contentsResult[i].content[j].varInfo.deviceVarSn;
-                            if(!tempVarSn || tempVarSn == '') {
+                            if(!tempVarSn || tempVarSn === '') {
                                 continue;
                             }
                             var tempData = {};
@@ -299,30 +299,30 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
         var resultValue = '';
         var unit = '';
         var isDigital = false;
-        if(deviceSn == null || deviceSn == '') {
+        if(!deviceSn) {
             console.warn('no deviceSn for getDeviceVarData');
             return [resultValue, unit, isDigital];
         }
-        if(queryTime == null || queryTime == '') {
+        if(!queryTime) {
             console.warn('no queryTime for getDeviceVarData');
             return [resultValue, unit, isDigital];
         }
-        if(queryPeriod == null || queryPeriod == '') {
+        if(!queryPeriod) {
             console.warn('no queryPeriod for getDeviceVarData');
             return [resultValue, unit, isDigital];
         }
-        if(calcMethod == null || calcMethod == '') {
+        if(!calcMethod) {
             console.warn('no calcMethod for getDeviceVarData');
             return [resultValue, unit, isDigital];
         }
 
-        if(queryPeriod == 'real_time') {
+        if(queryPeriod === 'real_time') {
             ajax.get({
                 url: '/devicevars/getrealtimevalues?sns=' + deviceSn,
                 async: false,
                 success: function (data) {
-                    if(!data || data.length == 0) {
-                        return [resultValue, unit, isDigital];;
+                    if(!data || !data.length) {
+                        return [resultValue, unit, isDigital];
                     }
                     var value = data[0].data;
                     var varInfo = data[0].var;
@@ -353,8 +353,8 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
 
         var tempQueryTime = queryTime.substr(0,10) + 'T' + queryTime.substr(11,8) + '.000Z';
 
-        if(calcMethod == 'average') {
-            if(queryPeriod == 'current_month') {
+        if(calcMethod === 'average') {
+            if(queryPeriod === 'current_month') {
                 ajax.get({
                     url: '/devicevars/getstatisticalvalues?type=YEAR&calcmethod=AVG&sns=' + deviceSn + '&querytime=' + tempQueryTime,
                     async: false,
@@ -364,23 +364,23 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                     },
                     crossDomain: true,
                     success: function(data) {
-                        if(data.length == 0) {
+                        if(!data.length) {
                             return;
                         }
                         var varData = data[0];
                         var queryMonth = parseInt(tempQueryTime.substr(5,2));
                         var index = null;
-                        if(varData.time_keys != null) {
+                        if(varData.time_keys) {
                             for(var i=0; i<varData.time_keys.length; i++) {
                                 var temp = parseInt(varData.time_keys[i].substr(5,2));
-                                if(temp == queryMonth) {
+                                if(temp === queryMonth) {
                                     index=i;
                                     break;
                                 }
                             }
                         }
-                        if(index != null && varData.datas != null && varData.datas.length > index) {
-                            if(varData.datas[index] != null) {
+                        if(index !== null && varData.datas !== null && varData.datas.length > index) {
+                            if(varData.datas[index] !== null) {
                                 var tempValue = varData.datas[index];
                                 resultValue = tempValue;
                                 unit = data[0].unit;
@@ -396,8 +396,8 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
             }
         }
 
-        if(calcMethod == 'max') {
-            if(queryPeriod == 'current_month') {
+        if(calcMethod === 'max') {
+            if(queryPeriod === 'current_month') {
                 var resultValue = '';
                 ajax.get({
                     url: '/devicevars/getstatisticalvalues?type=YEAR&calcmethod=MAX&sns=' + deviceSn + '&querytime=' + tempQueryTime,
@@ -408,23 +408,23 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                     },
                     crossDomain: true,
                     success: function(data) {
-                        if(data.length == 0) {
+                        if(!data.length) {
                             return;
                         }
                         var varData = data[0];
                         var queryMonth = parseInt(tempQueryTime.substr(5,2));
                         var index = null;
-                        if(varData.time_keys != null) {
+                        if(varData.time_keys) {
                             for(var i=0; i<varData.time_keys.length; i++) {
                                 var temp = parseInt(varData.time_keys[i].substr(5,2));
-                                if(temp == queryMonth) {
+                                if(temp === queryMonth) {
                                     index=i;
                                     break;
                                 }
                             }
                         }
-                        if(index != null && varData.datas != null && varData.datas.length > index) {
-                            if(varData.datas[index] != null) {
+                        if(index !== null && varData.datas !== null && varData.datas.length > index) {
+                            if(varData.datas[index] !== null) {
                                 var tempValue = varData.datas[index];
                                 resultValue = tempValue;
                                 unit = data[0].unit;
@@ -440,8 +440,8 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
             }
         }
 
-        if(calcMethod == 'diff'){
-            if(queryPeriod == 'current_month') {
+        if(calcMethod === 'diff'){
+            if(queryPeriod === 'current_month') {
                 var diffValue = "";
 
                 var startQueryTime = queryTime.substr(0,7) + '-01T00:00:00.000Z';
@@ -462,20 +462,20 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                     success: function(values) {
                         var startValues, endValues = null;
                         for(var i=0; i<values.length; i++) {
-                            if(values[i].time == startQueryTime) {
+                            if(values[i].time === startQueryTime) {
                                 startValues = values[i].values;
                                 continue;
                             }
-                            if(values[i].time == endQueryTime) {
+                            if(values[i].time === endQueryTime) {
                                 endValues = values[i].values;
                                 continue;
                             }
                         }
-                        if(startValues == null || endValues == null){
-                            if(startValues == null) {
+                        if(startValues === null || endValues === null){
+                            if(startValues === null) {
                                 console.warn('获取时间点的值失败: '+startQueryTime+deviceSn);
                             }
-                            if(endValues == null) {
+                            if(endValues === null) {
                                 console.warn('获取时间点的值失败: '+endQueryTime+deviceSn);
                             }
                         } else {
@@ -513,7 +513,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
         var queryType = 'MONTH';
         if(period === 'current_day') {
             queryType = 'DAY';
-        } else if(period == 'current_year') {
+        } else if(period === 'current_year') {
             queryType = 'YEAR';
         }
 
@@ -533,9 +533,9 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                 var f = 0;
                 var v = 0;
                 var sum = 0;
-                var unit = degreeOrCharge == 'charge' ? '元' : 'kWh';
+                var unit = degreeOrCharge === 'charge' ? '元' : 'kWh';
 
-                if(degreeOrCharge == 'charge') {
+                if(degreeOrCharge === 'charge') {
                     for(var i=0; i < data.length; i++) {
                         p += data[i].pCharge;
                         f += data[i].fCharge;
@@ -608,25 +608,25 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
 
     function getTrendAnalysis(name, deviceVarSns, deviceVarAliasMap, period, queryTime, pfvSettings, inputShowType, inputCalcMethod) { 
         var queryType = 'MONTH';
-        if(period == 'current_day') {
+        if(period === 'current_day') {
             queryType = 'DAY';
-        } else if(period == 'current_year') {
+        } else if(period === 'current_year') {
             queryType = 'YEAR';
-        } else if(period == 'normal') {
+        } else if(period === 'normal') {
             queryType = 'NORMAL';
         }
 
         var calcMethod = 'AVG';
-        if(inputCalcMethod && inputCalcMethod.toLowerCase() == 'max') {
+        if(inputCalcMethod && inputCalcMethod.toLowerCase() === 'max') {
             calcMethod = 'MAX';
         }
 
         var showType = 'line';
         var boundaryGap = true;
-        if(inputShowType != null && inputShowType != '') {
+        if(inputShowType) {
             showType = inputShowType;
         }
-        if(showType == 'line') {
+        if(showType === 'line') {
             boundaryGap = false;
         }
 
@@ -646,11 +646,11 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                 var times = [];
                 for(var i in data[0].time_keys) {
                     var t = data[0].time_keys[i];
-                    if(queryType == 'DAY' || queryType == 'NORMAL') {
+                    if(queryType === 'DAY' || queryType === 'NORMAL') {
                         times.push(t.substring(11, 16));
-                    } else if(queryType == 'MONTH') {
+                    } else if(queryType === 'MONTH') {
                         times.push(t.substring(5, 10));
-                    } else if(queryType == 'YEAR') {
+                    } else if(queryType === 'YEAR') {
                         times.push(t.substring(0, 7));
                     } else {
                         times.push(t);
@@ -662,7 +662,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                     chartDatas.push({name: (deviceVarAliasMap[data[j].var.sn] ? deviceVarAliasMap[data[j].var.sn] : data[j].name)+' '+data[j].unit, type:showType, data: data[j].datas, yAxisIndex: 0});
                 }
 
-                var showPfvSetting = (period == 'current_day' || period == 'normal')&& (pfvSettings == 'pfv-settings-f' || pfvSettings == 'pfv-settings-r')
+                var showPfvSetting = (period === 'current_day' || period === 'normal')&& (pfvSettings === 'pfv-settings-f' || pfvSettings === 'pfv-settings-r');
                 drawEchart(name, getTrendAnalysisEchartOption(showPfvSetting, pfvSettings, times, chartDatas, boundaryGap));
             },
             error: function () {
@@ -681,8 +681,8 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
             }];
 
         if(showPfvSetting) {
-            var tempPfvSettings = pfvSettings == 'pfv-settings-f' ? pfvSettingsF : pfvSettingsR;
-            if(tempPfvSettings != null) {
+            var tempPfvSettings = pfvSettings === 'pfv-settings-f' ? pfvSettingsF : pfvSettingsR;
+            if(tempPfvSettings !== null) {
                 yAxis[1]={
                     type: 'value'
                 };
@@ -715,21 +715,21 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                     var tempStartIndex = null;
                     var tempEndIndex = null;
                     for(var j=0; j<timesInt.length; j++) {
-                        if(tempStartIndex != null && tempEndIndex != null) {
+                        if(tempStartIndex !== null && tempEndIndex !== null) {
                             break;
                         }
-                        if(tempStartIndex == null && timesInt[j] >= tempStartTimeInt) {
+                        if(tempStartIndex === null && timesInt[j] >= tempStartTimeInt) {
                             tempStartIndex = j;
                         }
-                        if(tempEndIndex == null && timesInt[j] > tempEndTimeInt) {
+                        if(tempEndIndex === null && timesInt[j] > tempEndTimeInt) {
                             tempEndIndex = j > 0 ? (j-1) : 0;
                         }
-                        if(tempEndIndex == null && j==timesInt.length-1 && timesInt[j] <= tempEndTimeInt) {
+                        if(tempEndIndex === null && j===timesInt.length-1 && timesInt[j] <= tempEndTimeInt) {
                             tempEndIndex = j;
                         }
                     }
 
-                    if(tempStartIndex == null || tempEndIndex == null || tempStartIndex >= tempEndIndex) {
+                    if(tempStartIndex === null || tempEndIndex === null || tempStartIndex >= tempEndIndex) {
                         continue;
                     }
 
@@ -738,15 +738,15 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                     var tempName = '';
                     var tempColor = 'gray';
                     var tempLabelColor = 'gray';
-                    if(tempPfv == 'p') {
+                    if(tempPfv === 'p') {
                         tempName = '峰';
                         tempColor = 'rgba(193,35,35,0.2)';
                         tempLabelColor = 'rgba(193,35,35)';
-                    } else if(tempPfv == 'f') {
+                    } else if(tempPfv === 'f') {
                         tempName = '平';
                         tempColor = 'rgba(0,152,217,0.2)';
                         tempLabelColor = 'rgba(0,152,217)';
-                    } else if(tempPfv == 'v') {
+                    } else if(tempPfv === 'v') {
                         tempName = '谷';
                         tempColor = 'rgba(46,165,1,0.2)';
                         tempLabelColor = 'rgba(46,165,1)';
@@ -847,10 +847,10 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
             url: '/stations/' + $scope.sn,
             async: false,
             success: function (data) {
-                if(data.pfv_settings_f && data.pfv_settings_f != '') {
+                if(data.pfv_settings_f && data.pfv_settings_f !== '') {
                     pfvSettingsF = JSON.parse(data.pfv_settings_f);
                 }
-                if(data.pfv_settings_r && data.pfv_settings_r != '') {
+                if(data.pfv_settings_r && data.pfv_settings_r !== '') {
                     pfvSettingsR = JSON.parse(data.pfv_settings_r);
                 }
             },

@@ -592,6 +592,9 @@ app.controller('TaskBaseCtrl', function ($scope, ajax, userService, appStoreProv
     };
 
     $scope.getUserNameAndPhone = function (user) {
+        if (!user) {
+            return '';
+        }
         return user.name + (user.phone ? '/' + user.phone : '');
     };
 });
@@ -1472,7 +1475,7 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
     $scope.showImageGallery = function (images, index) {        // 点击任务处理历史中的图片显示相册
         var imageList = [];
         for (var i=0; i<images.length; i++){
-            imageList.push($scope.host + images[i]);
+            imageList.push(images[i]);
         }
         // $state.go('task.gallery', {index: index, images: imageList});
 
@@ -1706,7 +1709,11 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
         });
         $scope.checkedDeviceCount = checkedCount;
         $scope.exceptionDeviceCount = exceptionCount;
-    }
+    };
+
+    $scope.gotoDevice = function(deviceData){
+        routerService.openPage($scope, '/templates/site/static-devices/device-detail.html', {device_sn: deviceData.device_sn, disableEdit: true});
+    };
 });
 
 app.controller('TaskHandlerUpload', function ($document, $scope, $timeout, routerService) {
@@ -2136,15 +2143,15 @@ app.controller('TaskDevicesHandlerCtrl', function ($scope, routerService, ajax) 
     });
 
     function init() {
-        var deviceSns = [];
-        var pathExist = false;
-        $scope.device_record.forEach(function (r) {
-            // if (r.device.path) {
-            //     pathExist = true;
-            //     return false;
-            // }
-            deviceSns.push(r.device_sn);
-        });
+        // var deviceSns = [];
+        // var pathExist = false;
+        // $scope.device_record.forEach(function (r) {
+        //     if (r.path) {
+        //         pathExist = true;
+        //         return false;
+        //     }
+        //     deviceSns.push(r.device_sn);
+        // });
         // if (!pathExist && deviceSns.length) {
         //     ajax.get({
         //         url: '/staticdevices/path',
@@ -2154,7 +2161,7 @@ app.controller('TaskDevicesHandlerCtrl', function ($scope, routerService, ajax) 
         //         },
         //         success: function (response) {
         //             $scope.device_record.forEach(function (record) {
-        //                 record.device.path = response[record.device_sn];
+        //                 record.path = response[record.device_sn];
         //             });
         //             $scope.$apply();
         //
@@ -2318,9 +2325,19 @@ app.controller('TaskDeviceCheckCtrl', function ($scope, ajax, platformService) {
     $scope.isLoading = false;
     $scope.enableSubmitDts = false;
 
+
     $scope.registerImageInfo = function (imageEleId) {
         return $scope.deviceImages;
     };
+    
+    function getDeviceBySn(deviceSn) {
+        ajax.get({
+            url: '/staticdevices?sn=' + deviceSn,
+            success: function (data) {
+
+            }
+        })
+    }
 
     function getDeviceCheckItems() {
         ajax.get({

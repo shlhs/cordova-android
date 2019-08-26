@@ -250,7 +250,8 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
     $scope.createTask = function () {
         var taskData = $scope.taskData;
         taskData.devices = [{
-            sn: $scope.device.sn
+            sn: $scope.device.sn,
+            name: $scope.device.name
         }];
         // 增加图片信息
         if ($scope.images.length) {
