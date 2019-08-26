@@ -378,7 +378,7 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, ajax, platfo
         return {
             id: 'sites',
             name: '首页',
-            templateUrl: '/templates/site/site-home.html',
+            templateUrl: 'templates/site/site-home.html',
             icon: 'nav-sites'
         };
     }
@@ -386,7 +386,7 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, ajax, platfo
         return {
             id: 'energy_mgmt',
             name: '能效管理',
-            templateUrl: '/templates/energy/energy-home.html',
+            templateUrl: 'templates/energy/energy-home.html',
             icon: 'nav-energy'
         };
     }
@@ -396,14 +396,14 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, ajax, platfo
             return {
                 id: 'my_tasks',
                 name: '我的待办',
-                templateUrl: '/templates/task/task-todo-list.html',
+                templateUrl: 'templates/task/task-todo-list.html',
                 icon: 'nav-all-tasks'
             };
         } else if (role === 'USER') {
             return {
                 id: 'my_tasks',
                 name: '我的服务',
-                templateUrl: '/templates/task/user-task-list.html',
+                templateUrl: 'templates/task/user-task-list.html',
                 icon: 'nav-service'
             };
         }
@@ -442,7 +442,7 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, ajax, platfo
                     $scope.navMenus.push({
                         id: 'grab',
                         name: '抢单',
-                        templateUrl: '/templates/task/task-competition-list.html',
+                        templateUrl: 'templates/task/task-competition-list.html',
                         icon: 'nav-task-grab'
                     });
                 }

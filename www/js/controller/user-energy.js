@@ -471,7 +471,8 @@ app.controller('EnergyBaseCtrl', function ($scope, ajax, platformService, router
         capacity: $scope.capacity
     };
     $scope.screenWidth = window.screen.width;
-    $scope.contentHeight = window.screen.height - 60;
+    $scope.contentHeight = $('body').height() - 60;
+    console.log('energy height:' + $scope.contentHeight);
     $scope.isLoading = true;
     $scope.selectedDate = moment();
     $scope.showDateName = $scope.selectedDate.format('YYYY.MM');
