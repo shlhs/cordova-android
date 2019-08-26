@@ -7,7 +7,7 @@
     </header>
     <div class="mui-content" ng-cloak style="background-color: #fff;">
         <div ng-if="!isLoading && !loadingFailed">
-            <device-tree-view device-list="deviceDatas" click-callback="gotoDevice"></device-tree-view>
+            <device-tree-view device-list="deviceDatas" click-callback="gotoDevice" show-status="true"></device-tree-view>
             <div class="page-alert-wrapper" ng-if="deviceDatas.length <= 1">
                 <div class="page-alert">
                     <i class="alert-icon nodata"></i>

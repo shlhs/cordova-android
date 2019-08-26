@@ -10,7 +10,7 @@
 <ul class="tree-group" ng-if="item.is_group && item.children.length && !item.unvisible">
     <li class="tree-cell" ng-repeat="item in item.children"
         ng-class="{'active': item.$$isExpend, 'collapse': !isLeaf(item), 'is-leaf': isLeaf(item)}"
-        ng-include="'/templates/site/site-tree/tree-item.html'"
+        ng-include="'templates/site/site-tree/tree-item.html'"
         ng-if="!item.unvisible"
     >
     </li>
