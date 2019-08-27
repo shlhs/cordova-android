@@ -912,7 +912,7 @@ app.directive('energyReportTableRepeatFinish',function(){
     }
 });
 
-app.controller('EnergyOverviewCtrl', function ($scope, ajax, platformService, $compile) {
+app.controller('EnergyStatisticsCtrl', function ($scope, ajax, platformService, $compile) {
     var stationSn = $scope.sn;
     $scope.categories = [];
     $scope.labelNames = [];

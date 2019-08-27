@@ -9,7 +9,7 @@
             <ul class="tree-group device-tree-selector">
                 <li class="tree-cell" ng-repeat="item in treeData"
                     ng-class="{'active': item.$$isExpend, 'collapse': !isLeaf(item), 'is-leaf': isLeaf(item)}"
-                    ng-include="'/templates/energy/device-selector/tree-item.html'"
+                    ng-include="'templates/energy/device-selector/tree-item.html'"
                     ng-if="!item.unvisible"
                 ></li>
             </ul>
