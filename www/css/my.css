@@ -2757,6 +2757,7 @@ table.monitor-table {
 .monitor-table tbody tr:nth-child(even) {background: #FFF}
 .monitor-table td, th{
     padding-left: 16px;
+    border: none;
 }
 @media screen and (max-width: 360px) {
     .monitor-table th, td {

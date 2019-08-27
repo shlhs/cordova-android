@@ -4,15 +4,19 @@
     overflow-x: hidden;
 }
 .energy-page {
-    background: url(../img/energy-page-bg.png) no-repeat top left;
-    background-size: cover;
+    /*background: url(../img/energy-page-bg.png) no-repeat top left;*/
+    /*background-size: cover;*/
 }
 .energy-page>header {
-    background: none;
-    box-shadow: none;
+    /*background: none;*/
+    /*box-shadow: none;*/
 }
 .energy-header {
     background: none;
+}
+.energy-page-body {
+    background: url(../img/energy-body-bg.png) no-repeat top left;
+    background-size: cover;
 }
 .site-header .mui-title {
     font-size: 18px;
@@ -299,35 +303,35 @@
 .energy-realtime-values>.item:last-child {
     margin-right: 0;
 }
-.monitor-table {
+.quality-monitor-table {
     font-size: 13px;
     width: calc(100% - 12px);
 }
-.monitor-table th, .monitor-table td {
+.quality-monitor-table th, .quality-monitor-table td {
     border: #fff 2px solid;
 }
-.monitor-table th {
+.quality-monitor-table th {
     color: #333;
     font-weight: bold;
     background-color: #E5E5E5;
     padding: 10px 0;
     text-align: center;
 }
-.monitor-table td {
+.quality-monitor-table td {
     background-color: #F4F4F4;
     color: #666666;
     font-size: 12px;
     padding: 10px 0;
     text-align: center;
 }
-.monitor-table td.title {
+.quality-monitor-table td.title {
     font-size: 13px;
     color: #333;
 }
-.monitor-table td.warning {
+.quality-monitor-table td.warning {
     position: relative;
 }
-.monitor-table td.warning:after {
+.quality-monitor-table td.warning:after {
     display: block;
     position: absolute;
     content: '\e6be';

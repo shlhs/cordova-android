@@ -282,7 +282,7 @@ app.config(['appStoreProviderProvider', function (appStoreServiceProvider) {
                 {
                     name: '用能统计',
                     icon: 'icon-energy-statistics',
-                    templateUrl: '/templates/energy/overview.html',
+                    templateUrl: '/templates/energy/statistics.html',
                     url: 'energy-overview',
                     sn: 'energy/overview',
                     defaultChecked: true
