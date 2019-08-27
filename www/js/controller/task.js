@@ -921,6 +921,10 @@ app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, us
                 name: '检修',
                 value: TaskTypes.Jianxiu
             }, {
+                id: 'type_dts',
+                name: '缺陷',
+                value: [TaskTypes.NormalDts, TaskTypes.SeriousDts, TaskTypes.FatalDts]
+            }, {
                 id: 'type_baoyang',
                 name: '保养',
                 value: TaskTypes.Baoyang
@@ -1043,7 +1047,7 @@ app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, us
                      stationSns.push(s.sn);
                  }
              });
-             url = '/opstasks?station=' + stationSns.join(',') + '&task_type=' + OpsTaskType.join(',') + ',11';
+             url = '/opstasks?station=' + stationSns.join(',');
              // 筛选
          }
          var params = {
