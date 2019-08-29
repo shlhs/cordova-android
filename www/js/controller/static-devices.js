@@ -5,7 +5,7 @@ function openDeviceFromQR(data) {   //根据扫码结果打开设备详情
     }
 }
 
-app.controller('StaticDevicesHomeCtrl', function ($scope, ajax, routerService) {
+app.controller('StaticDevicesHomeCtrl', ['$scope', 'ajax', 'routerService', function ($scope, ajax, routerService) {
     var stationSn = GetQueryString("sn");
     $scope.deviceDatas = [];
     $scope.isLoading = false;
@@ -40,9 +40,9 @@ app.controller('StaticDevicesHomeCtrl', function ($scope, ajax, routerService) {
     };
 
     $scope.getDataList();
-});
+}]);
 
-app.controller('StaticDeviceSubListCtrl', function ($scope, ajax) {
+app.controller('StaticDeviceSubListCtrl', ['$scope', 'ajax', function ($scope, ajax) {
     $scope.noDevice = false;
     $scope.groups = [];
     $scope.devices = [];
@@ -117,12 +117,12 @@ app.controller('StaticDeviceSubListCtrl', function ($scope, ajax) {
     };
 
     init();
-});
+}]);
 
 var OpsTaskType = [1, 2, 3, 4, 5, 6, 7, 11];
 
 
-app.controller('StaticDeviceDetailCtrl', function ($scope, ajax, routerService, platformService, userService) {
+app.controller('StaticDeviceDetailCtrl', ['$scope', 'ajax', 'routerService', 'platformService', 'userService', function ($scope, ajax, routerService, platformService, userService) {
     $scope.device = {};
     $scope.showTab = 'info';
     $scope.isPC = IsPC();
@@ -246,7 +246,7 @@ app.controller('StaticDeviceDetailCtrl', function ($scope, ajax, routerService, 
     };
 
     init();
-});
+}]);
 
 function onAndroid_deviceImageImport(imageData, filename) {    // 从Android读取的图片
     var scope = angular.element('#staticDeviceEditPage').scope();
@@ -256,7 +256,7 @@ function onAndroid_deviceImageImport(imageData, filename) {    // 从Android读�
     }
 }
 
-app.controller('StaticDeviceEditCtrl', function ($scope, ajax, routerService, platformService) {
+app.controller('StaticDeviceEditCtrl', ['$scope', 'ajax', 'routerService', 'platformService', function ($scope, ajax, routerService, platformService) {
     $scope.deviceImages = [];
     $scope.device = {};
     $scope.showTab = 'info';
@@ -479,4 +479,4 @@ app.controller('StaticDeviceEditCtrl', function ($scope, ajax, routerService, pl
 
 
     $scope.getDataList();
-});
+}]);

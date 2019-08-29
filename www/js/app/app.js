@@ -27,20 +27,20 @@ app.filter(
     }]
 );
 
-app.controller('MainCtrl', function ($scope, $rootScope, userService) {
-});
+app.controller('MainCtrl', ['$scope', '$rootScope', 'userService', function ($scope, $rootScope, userService) {
+}]);
 
-app.controller('LoginExpireCtrl', function ($scope, userService) {
+app.controller('LoginExpireCtrl', ['$scope', 'userService', function ($scope, userService) {
     $scope.gotoLogin = function () {
         // 先清空密码
         userService.setPassword('');
         window.location.href = '/templates/login.html';
     };
-});
+}]);
 
 var UserRole = {SuperUser: 'SUPERUSER', OpsAdmin: 'OPS_ADMIN', OpsOperator: 'OPS_OPERATOR', Normal: 'USER'};
 
-app.service('userService', function ($rootScope) {
+app.service('userService', ['$rootScope', function ($rootScope) {
 
     this.setAccountToken = function (token) {
         setStorageItem('accountToken', token);
@@ -169,7 +169,7 @@ app.service('userService', function ($rootScope) {
     this.company = this.getCompany();
 
     $rootScope.permission = {canEditTask: this.getUserRole() != UserRole.Normal && this.getUserRole() != UserRole.OpsOperator};
-});
+}]);
 
 app.service('platformService', function () {
     this.addPlatform = function (username, platform) {
@@ -276,7 +276,7 @@ app.service('platformService', function () {
 });
 
 // routerService
-app.service('routerService', function ($timeout, $compile) {
+app.service('routerService', ['$timeout', '$compile', function ($timeout, $compile) {
     var pages = [], pageLength=0, currentIndex=0;
     var nextPage = {};      // 保存下一个页面的数据
     window.addEventListener('popstate', function () {
@@ -372,7 +372,7 @@ app.service('routerService', function ($timeout, $compile) {
             return false;
         }
     };
-});
+}]);
 
 app.directive('routePage', ['$log', 'routerService', function($log, routerService){
     return {
@@ -434,7 +434,7 @@ app.directive('rootPage', ['$log', 'routerService', function($log, routerService
 }]);
 // routerService end
 
-app.service('ajax', function ($rootScope, platformService, userService, routerService) {
+app.service('ajax', ['$rootScope', 'platformService', 'userService', 'routerService', function ($rootScope, platformService, userService, routerService) {
     var host = platformService.host;
     $rootScope.host = host;
     var username = userService.getUsername(), password = userService.getPassword();
@@ -550,7 +550,7 @@ app.service('ajax', function ($rootScope, platformService, userService, routerSe
        option.type = 'patch';
        return request(option);
    }
-});
+}]);
 
 
 Date.prototype.format = function(fmt) {
@@ -781,7 +781,7 @@ app.controller('ImageZoomCtrl', function ($scope, $timeout) {
 
 });
 
-app.controller('BaseGalleryCtrl', function ($scope, $stateParams, $timeout) {
+app.controller('BaseGalleryCtrl', ['$scope', '$stateParams', '$timeout', function ($scope, $stateParams, $timeout) {
     // $scope.canDelete = false;
     // $scope.index = $stateParams.index;
     // $scope.images = $stateParams.images;
@@ -821,7 +821,7 @@ app.controller('BaseGalleryCtrl', function ($scope, $stateParams, $timeout) {
     $scope.hide = function () {
         history.back();
     };
-});
+}]);
 
 function onAndroid_taskImageImport(imageData, filename) {    // 从Android读取的图片
     var scope = angular.element("#imageList").scope();
@@ -835,7 +835,7 @@ function onAndroid_taskImageDelete(filename) {       // Android手机上删除�
 }
 // 图片选择控制器
 // 使用的父级controller需要实现方法： $scope.registerImageInfo(imageEleId) { return $scope.images }
-app.controller('ImageUploaderCtrl', function ($document, $scope, $timeout, routerService) {
+app.controller('ImageUploaderCtrl', ['$document', '$scope', '$timeout', 'routerService', function ($document, $scope, $timeout, routerService) {
     $scope.elementId = '';
     $scope.singleImage = false;     // 是否只允许一张图片
     $scope.files = [];
@@ -975,7 +975,7 @@ app.controller('ImageUploaderCtrl', function ($document, $scope, $timeout, route
     $scope.$on('$destroy', function (event) {
         clearAllExist();
     });
-});
+}]);
 
 app.directive('dropDownMenu', function () {
     return {

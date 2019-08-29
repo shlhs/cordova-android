@@ -137,7 +137,7 @@ function findFirstLeafOfTree(data) {
     return null;
 }
 
-app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, routerService, platformService, userService, appStoreProvider) {
+app.controller('SiteListCtrl', ['$scope', 'ajax', 'userService', 'appStoreProvider', function ($scope, ajax, userService, appStoreProvider) {
     $scope.role = userService.getUserRole();
     $scope.selectedApps = [];
 
@@ -185,9 +185,9 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
             }
         });
     }
-});
+}]);
 
-app.controller('SiteTreeCtrl', function ($scope) {
+app.controller('SiteTreeCtrl', ['$scope', function ($scope) {
     $scope.showedTreeData = JSON.parse(JSON.stringify($scope.treeData));
 
     function setSearchKey(data) {
@@ -261,9 +261,9 @@ app.controller('SiteTreeCtrl', function ($scope) {
     $scope.cancel = function () {
         history.back();
     }
-});
+}]);
 
-app.controller('SiteDetailCtrl', function ($scope, ajax, platformService) {
+app.controller('SiteDetailCtrl', ['$scope', 'ajax', 'platformService', function ($scope, ajax, platformService) {
     $scope.sn = GetQueryString("sn");
     $scope.currentSite = {};
     $scope.isSiteDetail = true;
@@ -313,9 +313,9 @@ app.controller('SiteDetailCtrl', function ($scope, ajax, platformService) {
     };
 
     $scope.getDataList();
-});
+}]);
 
-app.controller('SiteBaseInfoCtrl', function ($scope, $timeout, $stateParams, ajax, platformService) {      //  站点基本信息
+app.controller('SiteBaseInfoCtrl', ['$scope', 'ajax', 'platformService', function ($scope, ajax, platformService) {      //  站点基本信息
     var sn = $scope.sn;
     $scope.baseLoading = true;
     $scope.unhandledEventCount = 0;
@@ -376,10 +376,10 @@ app.controller('SiteBaseInfoCtrl', function ($scope, $timeout, $stateParams, aja
     }
 
     $scope.getDataList();
-});
+}]);
 
 
-app.controller('EventListCtrl', function ($scope, $stateParams, scrollerService, userService, ajax, appStoreProvider, platformService) {
+app.controller('EventListCtrl', ['$scope', 'scrollerService', 'userService', 'ajax', 'appStoreProvider', function ($scope, scrollerService, userService, ajax, appStoreProvider) {
     $scope.sn = GetQueryString('sn');
     var checked = GetQueryString('status') === '0' ? 0 : 1;
     $scope.isDevice = false;   // 是设备还是站点
@@ -495,10 +495,10 @@ app.controller('EventListCtrl', function ($scope, $stateParams, scrollerService,
     $scope.goToCreateTaskHtml = function($event, eventObj) {
         window.location.href = '/templates/task/add-task.html?eventId=' + eventObj.id + '&station_sn=' + eventObj.station_sn;
     };
-});
+}]);
 
 
-app.controller('SiteDocsCtrl', function ($scope, $stateParams, platformService, ajax) {
+app.controller('SiteDocsCtrl', ['$scope', 'ajax', 'platformService', function ($scope, ajax, platformService) {
     var sn = GetQueryString('sn'), host = platformService.getCloudHost();
     $scope.docList = [];
     $scope.docLoading = false;
@@ -607,10 +607,10 @@ app.controller('SiteDocsCtrl', function ($scope, $stateParams, platformService, 
     };
 
     $scope.getDataList();
-});
+}]);
 
 
-app.controller('SiteReportsCtrl', function ($scope, ajax, scrollerService, routerService, platformService) {
+app.controller('SiteReportsCtrl', ['$scope', 'ajax', 'routerService', 'platformService', function ($scope, ajax, routerService, platformService) {
     var stationSn = GetQueryString('sn');
     $scope.reports = [];
     $scope.isLoading = false;
@@ -653,4 +653,4 @@ app.controller('SiteReportsCtrl', function ($scope, ajax, scrollerService, route
     };
 
     $scope.getDataList();
-});
+}]);

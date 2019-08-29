@@ -1,6 +1,6 @@
 "use strict";
 
-app.service('scrollerService', function ($timeout) {
+app.service('scrollerService', function () {
 
     this.initScroll = function(elementQuery, upFn) {
         var element = angular.element(elementQuery);
