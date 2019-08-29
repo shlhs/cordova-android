@@ -2,10 +2,10 @@
 <div style="height: 100%;" ng-style="{'background-color': currentSite.sn ? '' : '#fff'}">
     <div class="site-header">
         <header class="mui-bar bg-header bg-transparent" style="box-shadow: none;position: static;">
-            <a class=" mui-pull-left site-popover" ng-click="openSiteSelectPage()" ng-show="sites.length > 1" ng-if="!isSiteDetail">站点选择</a>
+            <a class=" mui-pull-left site-popover" ng-click="openSiteSelectPage()" ng-show="sites.length > 1" ng-if="!isSiteDetail">站点切换</a>
             <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()" ng-if="isSiteDetail"></a>
             <h1 class="mui-title" style="font-size: 18px;left: 70px;right: 70px;">{{currentSite.name}}</h1>
-            <a class="mui-pull-right" href="/templates/site/event-list.html?sn={{currentSite.sn}}" style="position: relative;margin-right: 8px;" ng-if="currentSite.sn">
+            <a class="mui-pull-right" href="/templates/site/event-list.html?sn={{currentSite.sn}}&name={{currentSite.name}}" style="position: relative;margin-right: 8px;" ng-if="currentSite.sn">
                 <i class="icon white icon-events" style="width: 18px;height: 18px;">
                 </i>
                 <span class="mui-badge mui-badge-danger" ng-if="currentSite.unclosed_envet_amount"
@@ -51,7 +51,7 @@
                 <li class="mui-table-view-cell">
                     <label class="title">站点地址</label>
                     <span class="value" ng-click="openMap()" ng-if="currentSite.longitude">
-                        {{currentSite.address}}
+                        {{currentSite.full_address}}
                         <i class="icon icon-location" style="width: 18px; height: 18px; float: right"></i>
                     </span>
                     <span class="value" ng-if="!currentSite.longitude">

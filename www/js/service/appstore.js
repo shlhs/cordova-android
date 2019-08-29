@@ -65,7 +65,7 @@ app.provider('appStoreProvider', function () {
         return JSON.parse(getStorageItem("allApps"));
     }
 
-    function setMenuSns(snsObj, platFuncs) {
+    function setMenuSns(userRole, snsObj, platFuncs) {
         var platFormHasOpsAuth = platFuncs ? platFuncs.opsManagement : true;
 
         // 再判断菜单是否配置了运维权限
@@ -101,7 +101,10 @@ app.provider('appStoreProvider', function () {
                    // 如果没有保存过该菜单的配置，则根据平台功能权限显示菜单
                    if (sn.indexOf('ops-management') >= 0) {
                        if (hasOpsAuth) {
-                           children.push(child);
+                           // 根据是用户还是运维人员，判断增加哪个菜单
+                           if (child.role && child.role.indexOf(userRole) >= 0) {
+                               children.push(child);
+                           }
                        }
                        return;
                    }
@@ -254,26 +257,37 @@ app.config(['appStoreProviderProvider', function (appStoreServiceProvider) {
             name: '运维中心',
             children: [
                 {
+                    name: '服务申请',
+                    icon: 'icon-add-task',
+                    templateUrl: '/templates/task/add-task.html',
+                    url: 'add-task',
+                    sn: 'ops-management/add-task',
+                    defaultChecked: true,
+                    role: ['USER']
+                }, {
                     name: '缺陷记录',
                     icon: 'icon-dashboard-dts',
                     templateUrl: '/templates/dts/dts-list.html',
                     url: 'dts-list',
                     sn: 'ops-management/defect-tasks',
-                    defaultChecked: true
+                    defaultChecked: true,
+                    role: ['OPS_OPERATOR', 'OPS_ADMIN']
                 }, {
                     name: '安全评测',
                     icon: 'icon-security',
                     templateUrl: '/templates/evaluate/evaluate-history.html',
                     sn: 'ops-management',
                     url: 'evaluate-security',
-                    defaultChecked: true
+                    defaultChecked: true,
+                    role: ['OPS_OPERATOR', 'OPS_ADMIN']
                 }, {
                     name: '停电维护',
                     icon: 'icon-poweroff',
                     templateUrl: '/templates/maintenance-check/check-history.html',
                     sn: 'ops-management',
                     url: 'poweroff-maintenance',
-                    defaultChecked: true
+                    defaultChecked: true,
+                    role: ['OPS_OPERATOR', 'OPS_ADMIN']
                 }
             ]
         }, {
@@ -306,7 +320,7 @@ app.config(['appStoreProviderProvider', function (appStoreServiceProvider) {
     ]);
 }]);
 
-app.controller('AppStoreCtrl', function ($scope, appStoreProvider) {
+app.controller('AppStoreCtrl', ['$scope', 'appStoreProvider', function ($scope, appStoreProvider) {
     $scope.allApps = appStoreProvider.getAllApps();
     $scope.selectedApps = appStoreProvider.getSelectedApps();
     $scope.isEditing = false;
@@ -365,4 +379,4 @@ app.controller('AppStoreCtrl', function ($scope, appStoreProvider) {
         $scope.$emit('onNotifyAppUpdate');
     };
     setSelectedState();
-});
+}]);

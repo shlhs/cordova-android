@@ -51,6 +51,9 @@
 .icon-dashboard-dts{
     background-image: url("../img/dashboard/icon-dts@2x.png");
 }
+.icon-add-task {
+    background-image: url("../img/dashboard/icon-add-task.png");
+}
 .icon-events{
     background-image: url("../img/light/icon-events@2x.png");
     position: relative;

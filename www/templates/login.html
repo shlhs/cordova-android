@@ -186,12 +186,6 @@
                 <input type="text" ng-model="password" ng-change="inputChange('password')" placeholder="请输入密码" ng-show="passwordVisible">
                 <i class="password-can-seen" ng-if="passwordVisible" ng-click="togglePasswordVisible()"></i>
             </div>
-            <div style="margin-left: 44px;margin-top: 12px;" ng-if="enableUiModeChange">
-                <div class="login-checkbox">
-                    <input id="modeChecker" type="checkbox" name="model" ng-checked="energyMode" ng-click="onChangeUiMode($event)">
-                    <label for="modeChecker">进入能效管理模式</label>
-                </div>
-            </div>
             <div class="login-btn" ng-class="{'enable': enable}" ng-click="login()">
                 <span ng-if="!isLogin">登录</span>
                 <span ng-if="isLogin">正在登录...</span>

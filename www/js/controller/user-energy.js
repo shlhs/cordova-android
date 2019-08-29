@@ -460,7 +460,7 @@ EnergyFuncApi.prototype.calcAvgMaxLoadAndTrend = function (dataList, month) {
 };
 
 // 能源管理基础控制，主要用于获取所有监测点，并显示设备显示页面
-app.controller('EnergyBaseCtrl', function ($scope, ajax, platformService, routerService, varDataService) {
+app.controller('EnergyBaseCtrl', ['$scope', 'ajax', 'platformService', 'routerService', 'varDataService', function ($scope, ajax, platformService, routerService, varDataService) {
     $scope.stationSn = $scope.stationSn || GetQueryString('sn');
     $scope.stationName = $scope.stationName || GetQueryString('name');
     $scope.stationCapacity = $scope.capacity|| GetQueryString("capacity");
@@ -498,6 +498,8 @@ app.controller('EnergyBaseCtrl', function ($scope, ajax, platformService, router
     };
 
     $scope.$on('onSiteChange', function (event, station) {
+
+        console.log('energy onSiteChange');
         if (station && $scope.stationSn !== station.sn) {
             $scope.stationSn = station.sn;
             $scope.stationName = station.name;
@@ -658,7 +660,7 @@ app.controller('EnergyBaseCtrl', function ($scope, ajax, platformService, router
         initDatePicker();
     }, 600);
 
-});
+}]);
 
 function paintAvgLoadTrendByDay(chartId, times, datas) {
     if (!times || !times.length) {
@@ -760,7 +762,7 @@ function paintAvgLoadTrendByDay(chartId, times, datas) {
 }
 
 // 能源管理
-app.controller('EnergyHomeCtrl', function ($scope, ajax, platformService, varDataService) {
+app.controller('EnergyHomeCtrl', ['$scope', 'ajax', 'platformService', 'varDataService', function ($scope, ajax, platformService, varDataService) {
 
     $scope.selectedApps = defaultEnergyMenus;
     $scope.degreeVarSn = null;     // 设备的电度变量sn
@@ -843,10 +845,10 @@ app.controller('EnergyHomeCtrl', function ($scope, ajax, platformService, varDat
             $scope.currentMonthData.priceChangeRatio = parseFloat((($scope.currentMonthData.avgDegreePrice - $scope.lastMonthPrice)/$scope.lastMonthPrice*100).toFixed(1));
         }
     }
-});
+}]);
 
 // 用电概况
-app.controller('EnergyOverviewCtrl', function ($scope, ajax, platformService, varDataService) {
+app.controller('EnergyOverviewCtrl', ['$scope', 'ajax', 'platformService', 'varDataService', function ($scope, ajax, platformService, varDataService) {
     $scope.statisticsObj = $scope.getDefaultDeviceDegreeData($scope.currentDevice.sn);
     var electricConfig = $scope.getThisMonthElectricConfig();
     $scope.charges = {};
@@ -1017,10 +1019,10 @@ app.controller('EnergyOverviewCtrl', function ($scope, ajax, platformService, va
         refreshData($scope.currentDevice);
     }, 500);
 
-});
+}]);
 
 // 电费分析
-app.controller('EnergyCostAnalysisCtrl', function ($scope, ajax, platformService, varDataService) {
+app.controller('EnergyCostAnalysisCtrl', ['$scope', 'ajax', 'platformService', 'varDataService', function ($scope, ajax, platformService, varDataService) {
     $scope.degreeTexts = [];
     $scope.chargeTexts = [];
     $scope.degreeVarSn = null;
@@ -1178,9 +1180,9 @@ app.controller('EnergyCostAnalysisCtrl', function ($scope, ajax, platformService
         refreshData($scope.currentDevice);
     }, 500);
 
-});
+}]);
 
-app.controller('EnergyLoadAnalysisCtrl', function ($scope, varDataService) {
+app.controller('EnergyLoadAnalysisCtrl', ['$scope', 'varDataService', function ($scope, varDataService) {
     $scope.charges = $scope.getDefaultDeviceDegreeData($scope.currentDevice.sn);
     var electricConfig = $scope.getThisMonthElectricConfig();
     $scope.maxLoad = '-';
@@ -1358,9 +1360,9 @@ app.controller('EnergyLoadAnalysisCtrl', function ($scope, varDataService) {
     setTimeout(function () {
         refreshData($scope.currentDevice);
     }, 500);
-});
+}]);
 
-app.controller('EnergyMaxDemandCtrl', function ($scope, varDataService) {
+app.controller('EnergyMaxDemandCtrl', ['$scope', 'varDataService', function ($scope, varDataService) {
     var electricConfig = $scope.getThisMonthElectricConfig();
     var capacityConfig = null;
     if (electricConfig) {
@@ -1612,11 +1614,11 @@ app.controller('EnergyMaxDemandCtrl', function ($scope, varDataService) {
         getRequiredMaxDemand(capacityConfig);
         initDatePicker();
     }, 500);
-});
+}]);
 
-const defaultVoltage = 220;     // 默认额定相电压
+const defaultVoltage = null;     // 默认额定相电压
 
-app.controller('EnergyQualityMonitorCtrl', function ($scope, varDataService, collectorService) {
+app.controller('EnergyQualityMonitorCtrl', ['$scope', 'varDataService', 'collectorService', function ($scope, varDataService, collectorService) {
     var codes = [];
     var varSnsMap = {};
     var electricConfig = $scope.getThisMonthElectricConfig();
@@ -1649,7 +1651,7 @@ app.controller('EnergyQualityMonitorCtrl', function ($scope, varDataService, col
     
     function getVarsOfDevice() {
         collectorService.getMonitorDevice($scope.currentDevice.sn, function (data) {
-           $scope.currentDevice.vc = data.vc || defaultVoltage;
+           $scope.currentDevice.vc = data.vc ? parseFloat(data.vc) : null;
            $scope.$apply();
         });
         $scope.current = {};
@@ -1728,22 +1730,24 @@ app.controller('EnergyQualityMonitorCtrl', function ($scope, varDataService, col
         // var coefficient = Math.sqrt(3);
         var vc = $scope.currentDevice.vc;
         // 电压是否告警
-        ['a', 'b', 'c'].forEach(function (phase) {
-            var voltage = valueMap['U'+phase];
-            if (_isNumber(voltage)) {
-                if (voltage > vc*1.07 || voltage < vc*0.93) {
-                    warning['U' + phase] = true;
+        if (vc) {
+            ['a', 'b', 'c'].forEach(function (phase) {
+                var voltage = valueMap['U'+phase];
+                if (_isNumber(voltage)) {
+                    if (voltage > vc*1.07 || voltage < vc*0.93) {
+                        warning['U' + phase] = true;
+                    }
                 }
-            }
 
-            // 谐波畸变率，额定电压<=400V时，需<5%
-            if (_isNumber(valueMap['thdu' + phase])) {
-                var thdu = valueMap['thdu' + phase];
-                if (thdu > 5) {
-                    warning['thdu' + phase] = true;
+                // 谐波畸变率，额定电压<=400V时，需<5%
+                if (_isNumber(valueMap['thdu' + phase])) {
+                    var thdu = valueMap['thdu' + phase];
+                    if (thdu > 5) {
+                        warning['thdu' + phase] = true;
+                    }
                 }
-            }
-        });
+            });
+        }
         // 不平衡度，<2%
         if (_isNumber(valueMap['ublup'])) {
             if (valueMap['ublup'] > 2) {
@@ -1788,10 +1792,10 @@ app.controller('EnergyQualityMonitorCtrl', function ($scope, varDataService, col
         var phases = ['ua', 'ub', 'uc', 'ia', 'ib', 'ic'];
         var thdMap = {};
         phases.forEach(function (phase) {
-            // if (valueMap['thd' + phase] !== undefined) {
-            //     thdMap[phase] = valueMap['thd' + phase];
-            //     return;
-            // }
+            if (valueMap['thd' + phase] !== undefined) {
+                thdMap[phase] = valueMap['thd' + phase];
+                return;
+            }
             var dataList = [];
             dataList.push(valueMap['fd' + phase]);  // 基波
             for (var i=3; i<=13; i+=2) {
@@ -2078,9 +2082,9 @@ app.controller('EnergyQualityMonitorCtrl', function ($scope, varDataService, col
             realtimeInterval = null;
         }
     })
-});
+}]);
 
-app.controller('EnergyQualityReportCtrl', function ($scope, ajax, collectorService) {
+app.controller('EnergyQualityReportCtrl', ['$scope', 'ajax', 'collectorService', function ($scope, ajax, collectorService) {
     $scope.volt = {ua: {}, ub: {}, uc: {}};
     $scope.harm = {ua: {}, ub: {}, uc: {}};
     $scope.freq = {};
@@ -2090,7 +2094,7 @@ app.controller('EnergyQualityReportCtrl', function ($scope, ajax, collectorServi
     $scope.registerDeviceChangeListener(function (device) {
 
         collectorService.getMonitorDevice($scope.currentDevice.sn, function (data) {
-            $scope.currentDevice.vc = data.vc || defaultVoltage;
+            $scope.currentDevice.vc = data.vc ? parseFloat(data.vc) : null;
             $scope.$apply();
         });
 
@@ -2148,8 +2152,8 @@ app.controller('EnergyQualityReportCtrl', function ($scope, ajax, collectorServi
     }
 
     collectorService.getMonitorDevice($scope.currentDevice.sn, function (data) {
-        $scope.currentDevice.vc = data.vc || defaultVoltage;
+        $scope.currentDevice.vc = data.vc ? parseFloat(data.vc) : null;
         $scope.$apply();
     });
     setTimeout(getReport, 500);
-});
+}]);
