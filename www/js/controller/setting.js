@@ -31,6 +31,7 @@ app.controller('SettingCtrl', function ($scope, platformService, userService, $s
                 if (data && data.length >= 1)
                 {
                     $scope.company = data[0];
+                    $scope.company.full_address = (data[0].province || '') + (data[0].city || '') + (data[0].detail || '');
                     $scope.$apply();
                 }
             }
