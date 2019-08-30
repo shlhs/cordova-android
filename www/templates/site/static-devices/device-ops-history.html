@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="../../../css/task.css" />
     <link rel="stylesheet" href="../../../css/animate.css">
     <link rel="stylesheet" href="../../../css/iconfont/iconfont.css">
+    <!-- build:js -->
     <script type="text/javascript" src="../../../components/libs/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="../../../components/angular/angular.min.js"></script>
     <script type="text/javascript" src="../../../components/angular-animate/angular-animate.js"></script>
@@ -26,6 +27,11 @@
     <script type="text/javascript" src="../../../js/service/appstore.js"></script>
     <script type="text/javascript" src="../../../js/controller/task.js"></script>
     <script type="text/javascript" src="../../../js/service/common-service.js"></script>
+    <script src="../../../components/fastclick-master/lib/fastclick.js"></script>
+    <script src="../../../js/my/notify.js"></script>
+    <script src="../../../js/controller/static-devices.js"></script>
+    <script src="../../../components/dropload-gh-pages/dist/dropload.min.js"></script>
+    <!-- endbuild -->
 </head>
 
 <body class="" ng-app="myApp" ng-controller="TaskBaseCtrl" ng-cloak>
@@ -36,10 +42,6 @@
 <div style="top:61px;" class="mui-content" ng-controller="TaskListCtrl" id="taskListWrapper">
     <div ng-include="'/templates/task/task-list-common.html'" style="height: 100%;"></div>
 </div>
-<script src="../../../components/fastclick-master/lib/fastclick.js"></script>
-<script src="../../../js/my/notify.js"></script>
-<script src="../../../js/controller/static-devices.js"></script>
-<script src="../../../components/dropload-gh-pages/dist/dropload.min.js"></script>
 </body>
 
 </html>

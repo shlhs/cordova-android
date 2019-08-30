@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="../../css/my.css" />
     <link rel="stylesheet" href="../../css/task.css" />
     <link rel="stylesheet" href="../../components/libs/font-awesome-4.7.0/css/font-awesome.min.css">
+    <!-- build:js -->
     <script type="text/javascript" src="../../components/libs/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
     <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
@@ -25,6 +26,13 @@
     <script type="text/javascript" src="../../js/service/common-service.js"></script>
     <script type="text/javascript" src="../../js/controller/task.js"></script>
     <script type="text/javascript" src="../../js/service/cloudApi.js"></script>
+    <script src="../../components/mui/js/mui.min.js"></script>
+    <script src="../../components/fastclick-master/lib/fastclick.js"></script>
+    <script src="../../components/mui/js/mui.picker.min.js"></script>
+    <script src="../../components/mui/js/mui.poppicker.js"></script>
+    <script src="../../components/slides-playing/js/jquery.slides.js"></script>
+    <script src="../../js/my/notify.js"></script>
+    <!-- endbuild -->
     <style>
         /*.disabled label{*/
             /*color: #ccc;*/
@@ -114,12 +122,7 @@
     <operator-team-selector teams="teams" visible="teamVisible" callback="onSelectedTeam"></operator-team-selector>
     <handlers-selector users="teamUsers" multiple visible="handlerVisible" callback="onSelectedUsers"></handlers-selector>
 </div>
-<script src="../../components/mui/js/mui.min.js"></script>
-<script src="../../components/fastclick-master/lib/fastclick.js"></script>
-<script src="../../components/mui/js/mui.picker.min.js"></script>
-<script src="../../components/mui/js/mui.poppicker.js"></script>
-<script src="../../components/slides-playing/js/jquery.slides.js"></script>
-<script src="../../js/my/notify.js"></script>
+
 <script>
 
     mui.init({

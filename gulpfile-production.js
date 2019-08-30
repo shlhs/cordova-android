@@ -64,22 +64,14 @@ gulp.task('img', function () {
 
 gulp.task('css', function () {
     console.log('css');
-    const step = gulp.src([folder.src + "css/**"])
+    var step = gulp.src([folder.src + "css/**"])
         .pipe(connect.reload())
         .pipe(less())
-        .pipe(postCss([autoPrefixer()]));
+        .pipe(postCss([autoPrefixer()]))
     if (environment === 'production') {
         step.pipe(cleanCss())
     }
-    step.pipe(gulp.dest(folder.dist + "css/"));
-    gulp.src(folder.src + "components/**/*.css")
-        .pipe(less())
-        .pipe(postCss([autoPrefixer()]))
-        .pipe(cleanCss())
-        .pipe(gulp.dest(folder.dist + "components/"));
-
-    gulp.src(folder.src + "components/mui/fonts/**")
-        .pipe(gulp.dest(folder.dist + "fonts/"));
+    return step.pipe(gulp.dest(folder.dist + "css/"))
 });
 
 gulp.task('compressAllCss', function () {
@@ -148,21 +140,11 @@ gulp.task('compressAllJs', function () {
         folder.componentSrc + 'mui/js/mui.min.js',
         folder.componentSrc + 'mui/js/mui.picker.min.js',
         folder.componentSrc + 'me-lazyimg-master/me-lazyimg.js',
-        folder.componentSrc + 'slides-playing/js/jquery.slides.js',
-        folder.componentSrc + 'pinch-zoom-js/dist/underscore.js',
-        folder.componentSrc + 'pinch-zoom-js/dist/pinch-zoom.js',
-        folder.dist + 'js/lib/jwt/jsrsasign-all-min.js',
-        folder.dist + 'js/lib/datatables/jquery.dataTables.min.js',
-        folder.dist + 'js/lib/datatables/dataTables.fixedColumns.min.js',
-        folder.dist + 'js/lib/datatables/dataTables.fixedHeader.min.js',
-        folder.dist + 'js/lib/circleChart.es5.min.js',
-        folder.dist + 'js/lib/imagesloaded-master/imagesloaded.pkgd.min.js',
-
         folder.dist + 'js/app/**',
         folder.dist + 'js/service/**',
         folder.dist + 'js/router/**',
         folder.dist + 'js/controller/**',
-        folder.dist + 'js/my/**'
+        folder.dist + 'js/my/**',
     ])
         .pipe(concat('all.min.js'))
         .pipe(gulp.dest('build/js'))
@@ -174,7 +156,7 @@ gulp.task('compressAllJs', function () {
 
 gulp.task('htmlReplace', function () {
     console.log('htmlReplace');
-    return gulp.src(folder.src + 'templates/**')
+    return gulp.src(folder.src + 'templates/home.html')
         .pipe(htmlReplace({
             js: ['/js/all.min.js'],
             css: '/css/all.min.css'
@@ -186,7 +168,7 @@ gulp.task('htmlReplace', function () {
 
 // web服务
 gulp.task('webserver', function(){
-    gulp.src(['www', 'node_modules'])
+    gulp.src(['dist', 'node_modules'])
         .pipe(webserver({
             port: 8001,//端口
             host: '0.0.0.0',//域名
@@ -206,13 +188,11 @@ gulp.task('watch', function () {
 });
 
 gulp.task('runsequence', function (callback) {
-    // sequence('html', 'htmlReplace', "js", "compressAllJs", "compressAllCss", callback);      // 同步运行
-    sequence('html', 'htmlReplace', "js", "compressAllJs", callback);      // 同步运行
+    sequence('html', 'htmlReplace', "js", "compressAllJs", "compressAllCss", callback);      // 同步运行
 });
 
 // gulp.task("default", ["html", "img", "css", "componentCss", "js", "concatJs", "server", "watch"]);
-gulp.task("default", ['webserver']);
-// gulp.task("default", ['webserver']);
+// gulp.task("default", ['runsequence', 'webserver']);
+gulp.task("default", ['runsequence', 'webserver']);
 
 // default任务一定要写，不然会报警告： Task 'default' is not in your gulpfile
-// 数组中写哪一个执行哪一个任务， 从左到右执行

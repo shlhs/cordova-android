@@ -15,6 +15,9 @@
     <link rel="stylesheet" href="../../css/setting.css">
     <!--<script type="text/javascript" src="../../cordova.js"></script>-->
     <!--<script type="text/javascript" src="../../cordova_plugins.js"></script>-->
+    <!--<script type="text/javascript" src="../../js/router/site-router.js"></script>-->
+
+    <!-- build:js -->
     <script type="text/javascript" src="../../components/libs/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
     <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
@@ -24,7 +27,14 @@
     <script type="text/javascript" src="../../js/app/utils.js"></script>
     <script type="text/javascript" src="../../js/app/app.js"></script>
     <script type="text/javascript" src="../../js/service/common-service.js"></script>
-    <!--<script type="text/javascript" src="../../js/router/site-router.js"></script>-->
+    <script src="../../components/fastclick-master/lib/fastclick.js"></script>
+    <script src="../../js/my/notify.js"></script>
+    <script src="../../components/dropload-gh-pages/dist/dropload.min.js"></script>
+    <script type="text/javascript" src="../../js/controller/sites.js"></script>
+    <script type="text/javascript" src="../../js/controller/device.js"></script>
+    <script src="../../js/controller/monitor.js"></script>
+    <script src="../../js/controller/kanban.js"></script>
+    <!-- endbuild -->
 
     <style>
         html,body{
@@ -92,12 +102,5 @@
         </div>
     </div>
     <div class="page page-left" ui-view></div>
-<script src="../../components/fastclick-master/lib/fastclick.js"></script>
-<script src="../../js/my/notify.js"></script>
-<script src="../../components/dropload-gh-pages/dist/dropload.min.js"></script>
-<script type="text/javascript" src="../../js/controller/sites.js"></script>
-<script type="text/javascript" src="../../js/controller/device.js"></script>
-<script src="../../js/controller/monitor.js"></script>
-<script src="../../js/controller/kanban.js"></script>
 </body>
 </html>

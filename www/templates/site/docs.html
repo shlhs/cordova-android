@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="../../css/setting.css">
     <!--<script type="text/javascript" src="../../cordova.js"></script>-->
     <!--<script type="text/javascript" src="../../cordova_plugins.js"></script>-->
+    <!-- build:js -->
     <script type="text/javascript" src="../../components/libs/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
     <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
@@ -22,6 +23,11 @@
     <script type="text/javascript" src="../../components/angular-ui-router/release/stateEvents.min.js"></script>
     <script type="text/javascript" src="../../js/app/utils.js"></script>
     <script type="text/javascript" src="../../js/app/app.js"></script>
+    <script src="../../components/fastclick-master/lib/fastclick.js"></script>
+    <script src="../../js/my/notify.js"></script>
+    <script src="../../components/dropload-gh-pages/dist/dropload.min.js"></script>
+    <script type="text/javascript" src="../../js/controller/sites.js"></script>
+    <!-- endbuild -->
 <style>
     .mui-table-view-cell{
         padding-right: 60px;
@@ -50,6 +56,7 @@
         height: 28px;
     }
 </style>
+</head>
 <body class="box-vertical-center" ng-app="myApp" ng-controller="SiteDocsCtrl">
 <header class="mui-bar bg-header">
     <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
@@ -107,9 +114,5 @@
         </div>
     </div>
 </div>
-<script src="../../components/fastclick-master/lib/fastclick.js"></script>
-<script src="../../js/my/notify.js"></script>
-<script src="../../components/dropload-gh-pages/dist/dropload.min.js"></script>
-<script type="text/javascript" src="../../js/controller/sites.js"></script>
 </body>
 </html>

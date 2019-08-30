@@ -5,11 +5,11 @@
 var app = angular.module('myApp', ['ngAnimate', 'ui.router', 'ui.router.state.events']);
 var loginExpireCheckEnable = false;       // 是否检查鉴权过期
 var defaultPlatIpAddr = "";     // 平台默认ip，格式为：http://118.190.51.135
-var gShowEnergyPage = false;     // 是否显示能效页面，不显示能效页面时运维人员会看到抢单页面
+var gShowEnergyPage = true;     // 是否显示能效页面，不显示能效页面时运维人员会看到抢单页面
 
-app.run(function ($animate) {
+app.run(['$animate', function ($animate) {
     $animate.enabled(true);
-});
+}]);
 // app.config(['$locationProvider', function ($locationProvider) {
 //
 //
@@ -379,7 +379,7 @@ app.directive('routePage', ['$log', 'routerService', function($log, routerServic
         restrict: 'E', // E = Element, A = Attribute, C = Class, M = Comment
         // templateUrl: '/templates/site/site-detail.html',
         replace: true,
-        controller: function($scope, $element){
+        controller: ['$scope', '$element',function($scope, $element){
             var pageData = routerService.getNextPage();
             var params = pageData.params, config=pageData.config;
             if (params){
@@ -391,7 +391,7 @@ app.directive('routePage', ['$log', 'routerService', function($log, routerServic
             {
                 routerService.addHistory($scope, $element);
             }
-        },
+        }],
         templateUrl: function (ele, attr) {
             return attr.template;
         },
@@ -418,7 +418,7 @@ app.directive('rootPage', ['$log', 'routerService', function($log, routerService
             return attr.template;
         },
         scope: true,     // scope隔离
-        controller: function ($scope, $element) {
+        controller: ['$scope, $element', function ($scope, $element) {
             var search = window.location.search.substring(1), params = search.split('&');
             var index, param;
             for (var i=0; i<params.length; i++){
@@ -429,7 +429,7 @@ app.directive('rootPage', ['$log', 'routerService', function($log, routerService
                     $scope[key] = decodeURIComponent(value);
                 }
             }
-        }
+        }]
     };
 }]);
 // routerService end
@@ -740,7 +740,7 @@ var imageHandler = {
 /**
  * 图片缩放控制器
  */
-app.controller('ImageZoomCtrl', function ($scope, $timeout) {
+app.controller('ImageZoomCtrl', ['$scope', '$timeout', function ($scope, $timeout) {
     $scope.menuVisible = false;
     $scope.header = null;
     $scope.headerVisible = false;
@@ -779,7 +779,7 @@ app.controller('ImageZoomCtrl', function ($scope, $timeout) {
         $scope.headerVisible = !$scope.headerVisible;
     };
 
-});
+}]);
 
 app.controller('BaseGalleryCtrl', ['$scope', '$stateParams', '$timeout', function ($scope, $stateParams, $timeout) {
     // $scope.canDelete = false;
@@ -835,7 +835,7 @@ function onAndroid_taskImageDelete(filename) {       // Android手机上删除�
 }
 // 图片选择控制器
 // 使用的父级controller需要实现方法： $scope.registerImageInfo(imageEleId) { return $scope.images }
-app.controller('ImageUploaderCtrl', ['$document', '$scope', '$timeout', 'routerService', function ($document, $scope, $timeout, routerService) {
+app.controller('ImageUploaderCtrl', ['$scope', 'routerService', function ($scope, routerService) {
     $scope.elementId = '';
     $scope.singleImage = false;     // 是否只允许一张图片
     $scope.files = [];

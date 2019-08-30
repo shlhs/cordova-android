@@ -9,6 +9,7 @@
     <meta http-equiv="Access-Control-Allow-Origin" content="*">
     <link rel="stylesheet" href="../components/mui/css/icons-extra.css">
     <link rel="stylesheet" href="../css/setting.css">
+    <!-- build:js -->
     <script type="text/javascript" src="../components/libs/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="../components/angular/angular.min.js"></script>
     <script type="text/javascript" src="../components/angular-ui-router/release/angular-ui-router.min.js"></script>
@@ -19,6 +20,12 @@
     <!--<script type="text/javascript" src="../js/lib/jwt/jwt-token.js"></script>-->
     <script type="text/javascript" src="../js/app/app.js"></script>
     <script type="text/javascript" src="../js/service/common-service.js"></script>
+    <script src="../components/fastclick-master/lib/fastclick.js"></script>
+    <script src="../js/my/notify.js"></script>
+    <script src="../components/dropload-gh-pages/dist/dropload.min.js"></script>
+    <script src="../components/handlebars-v4.0.10.js"></script>
+    <script type="text/javascript" src="../js/controller/login.js"></script>
+    <!-- endbuild -->
 <style>
     html,body{
         font-family:SimHei,'Helvetica Neue',Arial,'Droid Sans',sans-serif;
@@ -168,6 +175,7 @@
         left: 2px;
     }
 </style>
+</head>
 <body class="box-vertical-center" ng-app="myApp" >
     <img class="main-icon" src="../img/login/login-icon.png">
     <div class="login-area" ng-controller="LoginCtrl">
@@ -192,10 +200,5 @@
             </div>
         </div>
     </div>
-    <script src="../components/fastclick-master/lib/fastclick.js"></script>
-    <script src="../js/my/notify.js"></script>
-    <script src="../components/dropload-gh-pages/dist/dropload.min.js"></script>
-    <script src="../components/handlebars-v4.0.10.js"></script>
-    <script type="text/javascript" src="../js/controller/login.js"></script>
 </body>
 </html>

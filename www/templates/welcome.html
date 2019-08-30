@@ -9,6 +9,7 @@
     <meta http-equiv="Access-Control-Allow-Origin" content="*">
     <link rel="stylesheet" href="../components/mui/css/icons-extra.css">
     <link rel="stylesheet" href="../css/setting.css">
+    <!-- build:js -->
     <!--<script type="text/javascript" src="../cordova.js"></script>-->
     <!--<script type="text/javascript" src="../cordova_plugins.js"></script>-->
     <script type="text/javascript" src="../components/libs/jquery-2.1.4.min.js"></script>
@@ -21,6 +22,12 @@
     <script type="text/javascript" src="../js/app/utils.js"></script>
     <script type="text/javascript" src="../js/app/app.js"></script>
     <script type="text/javascript" src="../js/service/common-service.js"></script>
+    <script src="../components/fastclick-master/lib/fastclick.js"></script>
+    <script src="../js/my/notify.js"></script>
+    <script src="../components/dropload-gh-pages/dist/dropload.min.js"></script>
+    <script src="../components/handlebars-v4.0.10.js"></script>
+    <script type="text/javascript" src="../js/controller/login.js"></script>
+    <!-- endbuild -->
     <style>
         html,body{
             height: 100%;
@@ -79,18 +86,13 @@
             width: 100%;
         }
     </style>
-
+</head>
 <body class="box-vertical-center" ng-app="myApp" ng-controller="LoginCtrl">
 <div class="background" style="overflow: hidden;">
     <img src="../img/welcome.png" id="welcome_img" style="height: 100%;">
 </div>
 <div ng-controller="AutoLoginCtrl"></div>
 
-<script src="../components/fastclick-master/lib/fastclick.js"></script>
-<script src="../js/my/notify.js"></script>
-<script src="../components/dropload-gh-pages/dist/dropload.min.js"></script>
-<script src="../components/handlebars-v4.0.10.js"></script>
-<script type="text/javascript" src="../js/controller/login.js"></script>
 <script>
     $(function () {
         var screenHeight = window.screen.height;

@@ -13,7 +13,8 @@
     <link rel="stylesheet" href="../../css/my.css">
     <link rel="stylesheet" href="../../css/icon.css">
     <link rel="stylesheet" href="../../css/animate.css">
-    <link rel="stylesheet" type="text/css" href="../../js/lib/datatables/jquery.dataTables.min.css">
+
+    <!-- build:js -->
     <script type="text/javascript" src="../../components/libs/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
     <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
@@ -22,6 +23,10 @@
     <script type="text/javascript" src="../../js/app/app.js"></script>
     <script type="text/javascript" src="../../js/app/utils.js"></script>
     <script type="text/javascript" src="../../js/controller/ipc.js"></script>
+    <script src="../../js/my/notify.js"></script>
+    <script src="../../components/moment.min.js"></script>
+    <script src="../../components/slides-playing/js/jquery.slides.js"></script>
+    <!-- endbuild -->
 </head>
 <body ng-app="myApp" ng-cloak ng-controller="VideoMonitorCtrl" id="videoMonitor">
 <header class="mui-bar bg-header mui-segmented-control-vertical">
@@ -81,9 +86,5 @@
         </div>
     </div>
 </div>
-<script type="text/javascript" src="../../components/libs/jquery-2.1.4.min.js"></script>
-<script src="../../js/my/notify.js"></script>
-<script src="../../components/moment.min.js"></script>
-<script src="../../components/slides-playing/js/jquery.slides.js"></script>
 </body>
 </html>

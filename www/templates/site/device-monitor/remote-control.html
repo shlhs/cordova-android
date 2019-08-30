@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="../../../css/animate.css">
     <link rel="stylesheet" href="../../../components/mui/css/icons-extra.css">
     <link rel="stylesheet" href="../../../css/setting.css">
+    <!-- build:js -->
     <script type="text/javascript" src="../../../components/libs/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="../../../components/angular/angular.min.js"></script>
     <script type="text/javascript" src="../../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
@@ -23,6 +24,10 @@
     <script type="text/javascript" src="../../../js/app/app.js"></script>
     <script type="text/javascript" src="../../../js/service/appstore.js"></script>
     <script type="text/javascript" src="../../../js/service/common-service.js"></script>
+    <script src="../../../components/fastclick-master/lib/fastclick.js"></script>
+    <script src="../../../js/my/notify.js"></script>
+    <script type="text/javascript" src="../../../js/controller/device.js"></script>
+    <!-- endbuild -->
 </head>
 <body class="box-vertical-center" ng-app="myApp" ng-controller="DeviceRemoteControlCtrl">
 <header class="mui-bar bg-header">
@@ -63,8 +68,5 @@
 </div>
 
 <div class="page page-left" ui-view></div>
-<script src="../../../components/fastclick-master/lib/fastclick.js"></script>
-<script src="../../../js/my/notify.js"></script>
-<script type="text/javascript" src="../../../js/controller/device.js"></script>
 </body>
 </html>
