@@ -5,7 +5,7 @@ function openDeviceFromQR(data) {   //根据扫码结果打开设备详情
     }
 }
 
-app.controller('StaticDevicesHomeCtrl', function ($scope, ajax, routerService) {
+app.controller('StaticDevicesHomeCtrl', ['$scope', 'ajax', 'routerService', function ($scope, ajax, routerService) {
     var stationSn = GetQueryString("sn");
     $scope.deviceDatas = [];
     $scope.isLoading = false;
@@ -40,9 +40,9 @@ app.controller('StaticDevicesHomeCtrl', function ($scope, ajax, routerService) {
     };
 
     $scope.getDataList();
-});
+}]);
 
-app.controller('StaticDeviceSubListCtrl', function ($scope, ajax) {
+app.controller('StaticDeviceSubListCtrl', ['$scope', 'ajax', function ($scope, ajax) {
     $scope.noDevice = false;
     $scope.groups = [];
     $scope.devices = [];
@@ -117,19 +117,19 @@ app.controller('StaticDeviceSubListCtrl', function ($scope, ajax) {
     };
 
     init();
-});
+}]);
 
 var OpsTaskType = [1, 2, 3, 4, 5, 6, 7, 11];
 
 
-app.controller('StaticDeviceDetailCtrl', function ($scope, ajax, routerService, platformService, userService) {
+app.controller('StaticDeviceDetailCtrl', ['$scope', 'ajax', 'routerService', 'platformService', 'userService', function ($scope, ajax, routerService, platformService, userService) {
     $scope.device = {};
     $scope.showTab = 'info';
     $scope.isPC = IsPC();
     $scope.opsTaskCount = 0;        // 运维个数
     $scope.unhandledDtsCount = 0;   // 未解决缺陷个数
     $scope.closedDtsCount = 0;      // 已关闭缺陷个数
-    $scope.canEdit = userService.getUserRole().indexOf('OPS') >= 0;
+    $scope.canEdit = userService.getUserRole().indexOf('OPS') >= 0 && !$scope.disableEdit;
     var TaskStatus = {ToAccept: 1, ToAssign: 2, Accepted: 3, ToClose: 4, Closed: 5, Competition: 6, Coming: 7, Arrived: 8};
 
     function init() {
@@ -168,10 +168,10 @@ app.controller('StaticDeviceDetailCtrl', function ($scope, ajax, routerService, 
                 }
                 if (data.device_photo_src_link) {
                     var width = window.screen.width*2, height=Math.round(width/2);
-                    data.device_photo_src_link = platformService.host + data.device_photo_src_link;
+                    data.device_photo_src_link = platformService.getCloudHost() + data.device_photo_src_link;
                 }
                 if (data.qr_photo_src_link) {
-                    data.qr_photo_src_link = platformService.host + data.qr_photo_src_link;
+                    data.qr_photo_src_link = platformService.getCloudHost() + data.qr_photo_src_link;
                 }
                 $scope.device = data;
                 $scope.$apply();
@@ -229,7 +229,7 @@ app.controller('StaticDeviceDetailCtrl', function ($scope, ajax, routerService, 
                 device_sn: $scope.device_sn,
                 onSave: function (data, photoLink) {
                     $.extend($scope.device, data, {
-                        device_photo_src_link: photoLink ? (platformService.host + photoLink) : null,
+                        device_photo_src_link: photoLink ? (platformService.getCloudHost() + photoLink) : null,
                         qr_photo_src_link: $scope.device.qr_photo_src_link
                     });
                 }
@@ -242,11 +242,11 @@ app.controller('StaticDeviceDetailCtrl', function ($scope, ajax, routerService, 
     };
 
     $scope.gotoOpsList = function () {
-        window.location.href = '/templates/task/task-list.html?device_sn=' + $scope.device.sn;
+        window.location.href = '/templates/site/static-devices/device-ops-history.html?device_sn=' + $scope.device.sn;
     };
 
     init();
-});
+}]);
 
 function onAndroid_deviceImageImport(imageData, filename) {    // 从Android读取的图片
     var scope = angular.element('#staticDeviceEditPage').scope();
@@ -256,7 +256,7 @@ function onAndroid_deviceImageImport(imageData, filename) {    // 从Android读�
     }
 }
 
-app.controller('StaticDeviceEditCtrl', function ($scope, ajax, routerService, platformService) {
+app.controller('StaticDeviceEditCtrl', ['$scope', 'ajax', 'routerService', 'platformService', function ($scope, ajax, routerService, platformService) {
     $scope.deviceImages = [];
     $scope.device = {};
     $scope.showTab = 'info';
@@ -293,11 +293,11 @@ app.controller('StaticDeviceEditCtrl', function ($scope, ajax, routerService, pl
                 }
 
                 if (data.device_photo_src_link) {
-                    data.device_photo_src_link = platformService.host + data.device_photo_src_link;
+                    data.device_photo_src_link = platformService.getCloudHost() + data.device_photo_src_link;
                     $scope.deviceImages.push(data.device_photo_src_link);
                 }
                 if (data.qr_photo_src_link) {
-                    data.qr_photo_src_link = platformService.host + data.qr_photo_src_link;
+                    data.qr_photo_src_link = platformService.getCloudHost() + data.qr_photo_src_link;
                 }
 
                 data.device_photo_src_link = null;
@@ -479,4 +479,4 @@ app.controller('StaticDeviceEditCtrl', function ($scope, ajax, routerService, pl
 
 
     $scope.getDataList();
-});
+}]);

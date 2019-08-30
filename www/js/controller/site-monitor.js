@@ -20,7 +20,7 @@ var g_pvf_label_colors = {
     'f': 'rgba(136, 169, 248, 1)',
 };
 // 历史曲线
-app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
+app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', function ($scope, ajax) {
     var stationSn = GetQueryString("sn");
     var pfvSettingsF = null;     // 用电电价
     var pfvSettingsR = null;     // 发电电价
@@ -331,8 +331,8 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
                 tempLabelColor = g_pvf_label_colors.v;
             }
 
-            var startDate = new Date(nian, yue, ri, parseInt(tempPfvSettings[i].starttime.substr(0,2)), parseInt(tempPfvSettings[i].starttime.substr(3,5)), 00);
-            var endDate = new Date(nian, yue, ri, parseInt(tempPfvSettings[i].endtime.substr(0,2)), parseInt(tempPfvSettings[i].endtime.substr(3,5)), 00);
+            var startDate = new Date(nian, yue, ri, parseInt(tempPfvSettings[i].starttime.substr(0,2)), parseInt(tempPfvSettings[i].starttime.substr(3,5)), 10);
+            var endDate = new Date(nian, yue, ri, parseInt(tempPfvSettings[i].endtime.substr(0,2)), parseInt(tempPfvSettings[i].endtime.substr(3,5)), 10);
 
             var tempAreaData = [{
                 name: tempName+'\n'+tempPfvSettings[i].charge+'元',
@@ -549,11 +549,11 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
     $scope.$on('$destroy', function (event) {
         stopScrollListen();
     })
-});
+}]);
 
 // 历史报表
 var siteHistoryTableScrollHeight = 154;
-app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
+app.controller('SiteHistoryReportCtrl', ['$scope', '$compile', 'ajax', function ($scope, $compile, ajax) {
 
     var stationSn = GetQueryString("sn");
     $scope.timeTypeList = [{
@@ -1247,7 +1247,7 @@ app.controller('SiteHistoryReportCtrl', function ($scope, $compile, ajax) {
     });
 
     $scope.getDataList();
-});
+}]);
 
 app.directive('historyTable', [function(){
     return {

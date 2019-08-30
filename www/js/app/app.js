@@ -27,20 +27,20 @@ app.filter(
     }]
 );
 
-app.controller('MainCtrl', function ($scope, $rootScope, userService) {
-});
+app.controller('MainCtrl', ['$scope', '$rootScope', 'userService', function ($scope, $rootScope, userService) {
+}]);
 
-app.controller('LoginExpireCtrl', function ($scope, userService) {
+app.controller('LoginExpireCtrl', ['$scope', 'userService', function ($scope, userService) {
     $scope.gotoLogin = function () {
         // 先清空密码
         userService.setPassword('');
         window.location.href = '/templates/login.html';
     };
-});
+}]);
 
 var UserRole = {SuperUser: 'SUPERUSER', OpsAdmin: 'OPS_ADMIN', OpsOperator: 'OPS_OPERATOR', Normal: 'USER'};
 
-app.service('userService', function ($rootScope) {
+app.service('userService', ['$rootScope', function ($rootScope) {
 
     this.setAccountToken = function (token) {
         setStorageItem('accountToken', token);
@@ -54,6 +54,13 @@ app.service('userService', function ($rootScope) {
         setStorageItem('user', JSON.stringify(user));
         setStorageItem('username', user.account);
         setStorageItem('password', password);
+        if (user.permissions) {
+            const permissions = [];
+            user.permissions.forEach(function (perm) {
+                permissions.push(perm.authrity_name);
+            });
+            setStorageItem('permissions', permissions.join(','));
+        }
         setStorageItem('company', '');
         this.username = user.account;
         this.password = password;
@@ -68,6 +75,24 @@ app.service('userService', function ($rootScope) {
         } else {
             return null;
         }
+    };
+
+    this.getCompanyId = function () {
+        if (!getStorageItem("permissions")) {
+            return null;
+        }
+        var roles = getStorageItem("permissions").split(',');
+        for (var i=0; i<roles.length; i++) {
+            var role = roles[i];
+            if (role.indexOf("COMPANY_OPS_COMPANY_VIEWCOMPANY") === 0) {
+                return role.substring("COMPANY_OPS_COMPANY_VIEWCOMPANY".length);
+            }
+            //用户公司
+            if (role.indexOf("USER_COMPANY_USERUSER_COMPANY") === 0) {
+                return 'user' + role.substring("USER_COMPANY_USERUSER_COMPANY".length);
+            }
+        }
+        return null;
     };
 
     /* 获取用户角色：
@@ -144,7 +169,7 @@ app.service('userService', function ($rootScope) {
     this.company = this.getCompany();
 
     $rootScope.permission = {canEditTask: this.getUserRole() != UserRole.Normal && this.getUserRole() != UserRole.OpsOperator};
-});
+}]);
 
 app.service('platformService', function () {
     this.addPlatform = function (username, platform) {
@@ -233,7 +258,7 @@ app.service('platformService', function () {
         if(urlLength > 4 && imageUrl.toLocaleLowerCase().lastIndexOf('.gif') === (urlLength -4)) {
             return imageUrl;
         }
-        
+
         return this.thumbHost + '/' + width + 'x' + height + '/' + imageUrl;
     };
 
@@ -251,7 +276,7 @@ app.service('platformService', function () {
 });
 
 // routerService
-app.service('routerService', function ($timeout, $compile) {
+app.service('routerService', ['$timeout', '$compile', function ($timeout, $compile) {
     var pages = [], pageLength=0, currentIndex=0;
     var nextPage = {};      // 保存下一个页面的数据
     window.addEventListener('popstate', function () {
@@ -347,7 +372,7 @@ app.service('routerService', function ($timeout, $compile) {
             return false;
         }
     };
-});
+}]);
 
 app.directive('routePage', ['$log', 'routerService', function($log, routerService){
     return {
@@ -409,7 +434,7 @@ app.directive('rootPage', ['$log', 'routerService', function($log, routerService
 }]);
 // routerService end
 
-app.service('ajax', function ($rootScope, platformService, userService, routerService) {
+app.service('ajax', ['$rootScope', 'platformService', 'userService', 'routerService', function ($rootScope, platformService, userService, routerService) {
     var host = platformService.host;
     $rootScope.host = host;
     var username = userService.getUsername(), password = userService.getPassword();
@@ -461,7 +486,7 @@ app.service('ajax', function ($rootScope, platformService, userService, routerSe
     function request(option) {
         if (option.url.indexOf("http://") !== 0){
             option.url = platformService.getCloudHost() + option.url;
-            // option.url = 'http://127.0.0.1:8099/v1' + option.url;
+            // option.url = 'http://192.168.1.129:8099/v1' + option.url;
         }
         var headers = $.extend({
             Authorization: userService.getAccountToken(),
@@ -525,7 +550,7 @@ app.service('ajax', function ($rootScope, platformService, userService, routerSe
        option.type = 'patch';
        return request(option);
    }
-});
+}]);
 
 
 Date.prototype.format = function(fmt) {
@@ -756,7 +781,7 @@ app.controller('ImageZoomCtrl', function ($scope, $timeout) {
 
 });
 
-app.controller('BaseGalleryCtrl', function ($scope, $stateParams, $timeout) {
+app.controller('BaseGalleryCtrl', ['$scope', '$stateParams', '$timeout', function ($scope, $stateParams, $timeout) {
     // $scope.canDelete = false;
     // $scope.index = $stateParams.index;
     // $scope.images = $stateParams.images;
@@ -796,7 +821,7 @@ app.controller('BaseGalleryCtrl', function ($scope, $stateParams, $timeout) {
     $scope.hide = function () {
         history.back();
     };
-});
+}]);
 
 function onAndroid_taskImageImport(imageData, filename) {    // 从Android读取的图片
     var scope = angular.element("#imageList").scope();
@@ -810,7 +835,7 @@ function onAndroid_taskImageDelete(filename) {       // Android手机上删除�
 }
 // 图片选择控制器
 // 使用的父级controller需要实现方法： $scope.registerImageInfo(imageEleId) { return $scope.images }
-app.controller('ImageUploaderCtrl', function ($document, $scope, $timeout, routerService) {
+app.controller('ImageUploaderCtrl', ['$document', '$scope', '$timeout', 'routerService', function ($document, $scope, $timeout, routerService) {
     $scope.elementId = '';
     $scope.singleImage = false;     // 是否只允许一张图片
     $scope.files = [];
@@ -823,10 +848,26 @@ app.controller('ImageUploaderCtrl', function ($document, $scope, $timeout, route
         window.android && window.android.clearSelectedPhotos && window.android.clearSelectedPhotos();      // 调用Android js接口，清除选择的所有照片
     }
 
+    function fileExist(fileName) {
+        if (!fileName) {
+            return false;
+        }
+        for (var i=0; i<$scope.files.length; i++) {
+            if (fileName === $scope.files[0].name) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     $scope.chooseImage = function (files) {     // 选择图片
         $scope.canDelete = true;
         for (var i = 0; i < files.length; i++) {
             var reader = new FileReader(), file=files[i];
+            // 如果文件已选择过，则无法再选择
+            if (fileExist(file.name)) {
+                continue;
+            }
             reader.readAsDataURL(file);
             reader.onloadstart = function () {
                 //用以在上传前加入一些事件或效果，如载入中...的动画效果
@@ -856,6 +897,9 @@ app.controller('ImageUploaderCtrl', function ($document, $scope, $timeout, route
         $scope.canDelete = true;
         if (filename === undefined) {
             filename = '';
+        }
+        if (fileExist(filename)) {
+            return;
         }
         if ($scope.singleImage && $scope.files.length) {
             $scope.files[0] = {name: filename};
@@ -931,7 +975,7 @@ app.controller('ImageUploaderCtrl', function ($document, $scope, $timeout, route
     $scope.$on('$destroy', function (event) {
         clearAllExist();
     });
-});
+}]);
 
 app.directive('dropDownMenu', function () {
     return {
