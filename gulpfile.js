@@ -12,6 +12,7 @@ var environment = process.env.NODE_ENV || 'development';
 const folder = {
     src: "www/",
     dist: 'dist/',
+    build: 'build/',
     componentSrc: 'www/components/'
 };
 
@@ -60,7 +61,7 @@ gulp.task('htmlReplace', function () {
     console.log('htmlReplace');
     return gulp.src(folder.src + 'templates/**')
         .pipe(htmlReplace({
-            js: ['/js/all.min.js'],
+            js: ['/js/config.js', '/js/all.min.js'],
             css: '/css/all.min.css'
         }))
         .pipe(htmlClean())
@@ -95,7 +96,7 @@ gulp.task('css', function () {
         .pipe(gulp.dest(folder.dist + "components/mui/fonts/"));
     gulp.src([folder.src + "components/mui/css/icons-extra.css", folder.src + "components/mui/css/mui.min.css"])
         .pipe(gulp.dest(folder.dist + "components/mui/css/"));
-    gulp.src([folder.src + "css/setting.css", folder.src + "css/my.css"])
+    gulp.src([folder.src + "css/setting.css"])
         .pipe(gulp.dest(folder.dist + "css/"));
 });
 
@@ -125,6 +126,8 @@ gulp.task('compressAllCss', function () {
 });
 
 gulp.task('js', function () {
+    gulp.src(folder.src + "js/config.js")
+        .pipe(gulp.dest(folder.dist + "js/"));
     const step = gulp.src(folder.src + "js/**/*.js")
         .pipe(connect.reload())
         .pipe(babel({
@@ -134,7 +137,7 @@ gulp.task('js', function () {
         step.pipe(removeComments())
             .pipe(uglifyJS())
     }
-    return step.pipe(gulp.dest(folder.dist + "js/"))
+    return step.pipe(gulp.dest(folder.build + "js/"));
 });
 
 gulp.task('compressAllJs', function () {
@@ -156,18 +159,18 @@ gulp.task('compressAllJs', function () {
         folder.componentSrc + 'pinch-zoom-js/dist/underscore.js',
         folder.componentSrc + 'pinch-zoom-js/dist/pinch-zoom.js',
         folder.componentSrc + 'baidu/map/MarkerManager-1.2.min.js',
-        folder.dist + 'js/lib/jwt/jsrsasign-all-min.js',
-        folder.dist + 'js/lib/datatables/jquery.dataTables.min.js',
-        folder.dist + 'js/lib/datatables/dataTables.fixedColumns.min.js',
-        folder.dist + 'js/lib/datatables/dataTables.fixedHeader.min.js',
-        folder.dist + 'js/lib/circleChart.es5.min.js',
-        folder.dist + 'js/lib/imagesloaded-master/imagesloaded.pkgd.min.js',
+        folder.build + 'js/lib/jwt/jsrsasign-all-min.js',
+        folder.build + 'js/lib/datatables/jquery.dataTables.min.js',
+        folder.build + 'js/lib/datatables/dataTables.fixedColumns.min.js',
+        folder.build + 'js/lib/datatables/dataTables.fixedHeader.min.js',
+        folder.build + 'js/lib/circleChart.es5.min.js',
+        folder.build + 'js/lib/imagesloaded-master/imagesloaded.pkgd.min.js',
 
-        folder.dist + 'js/app/**',
-        folder.dist + 'js/service/**',
-        folder.dist + 'js/router/**',
-        folder.dist + 'js/controller/**',
-        folder.dist + 'js/my/**'
+        folder.build + 'js/app/**',
+        folder.build + 'js/service/**',
+        folder.build + 'js/router/**',
+        folder.build + 'js/controller/**',
+        folder.build + 'js/my/**'
     ])
         .pipe(concat('all.min.js'))
         .pipe(gulp.dest('build/js'))
@@ -179,7 +182,7 @@ gulp.task('compressAllJs', function () {
 
 // web服务
 gulp.task('webserver', function(){
-    gulp.src(['www', 'node_modules'])
+    gulp.src(['dist', 'node_modules'])
         .pipe(webserver({
             port: 8001,//端口
             host: '0.0.0.0',//域名
@@ -200,12 +203,12 @@ gulp.task('watch', function () {
 
 gulp.task('runsequence', function (callback) {
     // sequence('html', 'htmlReplace', "js", "compressAllJs", "compressAllCss", callback);      // 同步运行
-    sequence('html', 'htmlReplace', "js", "compressAllJs", callback);      // 同步运行
+    sequence('html', 'htmlReplace', "js", "compressAllJs", function () {
+        console.log('runsequence finish');
+    });      // 同步运行
 });
 
-// gulp.task("default", ["html", "img", "css", "componentCss", "js", "server", "watch"]);
-// gulp.task("default", ['img', 'css', 'compressAllCss', 'runsequence', 'webserver']);
-// gulp.task("default", ['runsequence']);
+// gulp.task("default", ['img', 'css', 'compressAllCss', 'runsequence']);
 gulp.task("default", ['webserver']);
 
 // default任务一定要写，不然会报警告： Task 'default' is not in your gulpfile
