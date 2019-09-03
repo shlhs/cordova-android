@@ -9,18 +9,7 @@
     <meta http-equiv="Access-Control-Allow-Origin" content="*">
 
     <!-- build:css -->
-    <link rel="stylesheet" href="../components/mui/css/icons-extra.css">
-    <link rel="stylesheet" href="../components/mui/css/mui.min.css">
-    <link rel="stylesheet" href="../components/mui/css/mui.picker.min.css">
-    <link rel="stylesheet" href="../components/libs/font-awesome-4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="../css/iconfont/iconfont.css">
-    <link rel="stylesheet" href="../css/setting.css">
-    <link rel="stylesheet" href="../css/animate.css">
-    <link rel="stylesheet" href="../css/my.css">
-    <link rel="stylesheet" href="../css/notify.css">
-    <link rel="stylesheet" href="../css/icon.css">
-    <link rel="stylesheet" href="../css/task.css">
-    <link rel="stylesheet" href="../css/energy.css">
+    <ng-include src="'/templates/css-importer.html'"></ng-include>
     <!-- endbuild -->
     <!-- build:js -->
     <script type="text/javascript" src="../components/libs/jquery-2.1.4.min.js"></script>
@@ -44,30 +33,12 @@
     <script type="text/javascript" src="../js/service/varData.js"></script>
     <script type="text/javascript" src="../js/router/router.js"></script>
 
-    <script type="text/javascript" src="../js/controller/device.js"></script>
-    <script type="text/javascript" src="../js/controller/dts.js"></script>
-    <script type="text/javascript" src="../js/controller/energy.js"></script>
-    <script type="text/javascript" src="../js/controller/ipc.js"></script>
-    <script type="text/javascript" src="../js/controller/kanban.js"></script>
-    <script type="text/javascript" src="../js/controller/login.js"></script>
-    <script type="text/javascript" src="../js/controller/monitor.js"></script>
     <script type="text/javascript" src="../js/controller/setting.js"></script>
-    <script type="text/javascript" src="../js/controller/site-monitor.js"></script>
     <script type="text/javascript" src="../js/controller/sites.js"></script>
-    <script type="text/javascript" src="../js/controller/static-devices.js"></script>
     <script type="text/javascript" src="../js/controller/task.js"></script>
     <script type="text/javascript" src="../js/controller/user-energy.js"></script>
-    <script type="text/javascript" src="../js/controller/site/maintenance-checks.js"></script>
-    <script type="text/javascript" src="../js/controller/site/security_evaluate.js"></script>
 
-    <script src="../js/my/image-uploader.js"></script>
     <script src="../js/my/notify.js"></script>
-
-    <script type="text/javascript" src="../js/lib/jwt/jsrsasign-all-min.js"></script>
-    <script type="text/javascript" src="../js/lib/datatables/jquery.dataTables.min.js"></script>
-    <script type="text/javascript" src="../js/lib/datatables/dataTables.fixedColumns.min.js"></script>
-    <script type="text/javascript" src="../js/lib/datatables/dataTables.fixedHeader.min.js"></script>
-    <script type="text/javascript" src="../js/lib/circleChart.es5.min.js"></script>
     <!-- endbuild -->
     <style>
         .site-value .mui-icon {

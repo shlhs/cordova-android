@@ -1,5 +1,5 @@
 <a href="javascript:;" class="mui-navigate-right" ng-click="warpCallback(item, $event);"
-   ng-class="{'is_leaf': !item.is_group, 'selected': item.sn === selectedSn}" href="#" >
+   ng-class="{'is_leaf': !item.is_group, 'selected': item.sn === selectedSn}" >
     <i class="node-group" ng-if="item.is_group"></i>
     <i class="site-status {{item.status}}" ng-if="!item.is_group"></i>
     {{item.name}}

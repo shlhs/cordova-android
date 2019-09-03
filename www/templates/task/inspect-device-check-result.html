@@ -1,6 +1,6 @@
 <div>
     <div style="padding: 12px 0 4px 12px; font-size: 13px;"><strong>检查项：检查项{{total}}，异常项{{exception}}</strong></div>
-    <div ng-repeat="item in checkItems" class="check-item">
+    <div ng-repeat="item in checkItems" class="step-check-item">
         <div><label class="title">检查项：</label>{{item.name}}</div>
         <div><label class="title">正常结果：</label>{{item.reference_relation}} {{item.reference_value}}</div>
         <div ng-if="item.desp"><label class="title">检查方法：</label>{{item.desp}}</div>

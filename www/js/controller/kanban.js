@@ -47,7 +47,7 @@ app.controller('KanbanCtrl', ['$scope', '$stateParams', 'ajax', '$timeout', func
         if (count === 1) {
             $('<ul class="slidesjs-pagination">' +
                 '<li class="slidesjs-pagination-item">' +
-                '<a href="#" data-slidesjs-item="0" class="active">1</a>' +
+                '<a href="javascript:void(0)" data-slidesjs-item="0" class="active">1</a>' +
                 '</li>' +
                 '</ul>').appendTo($('#chartSlider'));
         } else {

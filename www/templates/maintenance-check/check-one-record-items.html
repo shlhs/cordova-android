@@ -9,7 +9,7 @@
         <div class="left-panel" style="background-color: #FFFFFF;width: 35%;box-shadow: 0 0 2px #ccc;">
             <ul class="check-list">
                 <li class="check-item" ng-repeat="item in template" ng-class="{'active': currentIndex===$index}">
-                    <a class="mui-navigate-right" href="#" ng-click="chooseItem($index)">
+                    <a class="mui-navigate-right" href="javascript:void(0)" ng-click="chooseItem($index)">
                         <i class="icon icon-16 icon-circle-grey"></i>
                         {{item.name}}
                     </a>

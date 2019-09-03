@@ -9,13 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
 
     <!-- build:css -->
-    <link rel="stylesheet" href="../../components/mui/css/mui.min.css">
-    <link rel="stylesheet" href="../../components/libs/font-awesome-4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="../../css/my.css" />
-    <link rel="stylesheet" href="../../css/icon.css" />
-    <link rel="stylesheet" href="../../css/task.css" />
-    <link rel="stylesheet" href="../../css/animate.css">
-    <link rel="stylesheet" href="../../css/iconfont/iconfont.css">
+    <ng-include src="'/templates/css-importer.html'"></ng-include>
     <!-- endbuild -->
 
     <!--<link rel="stylesheet" href="./components/slides-playing/css/example.css">-->
@@ -209,18 +203,18 @@
             <div id="map" style="height: 300px;width: 100%;"></div>
         </div>
         <nav class="mui-bar mui-bar-tab bg-transparent" ng-if="taskData.stage_id === TaskStatus.Competition">
-            <a class="mui-tab-item mui-active mui-segmented-control-vertical" href="#" ng-controller="GrabTaskCtrl">
+            <a class="mui-tab-item mui-active mui-segmented-control-vertical" href="javascript:void(0)" ng-controller="GrabTaskCtrl">
                 <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-btn-outlined mui-control-item accept"
                         style="background-color: #f0ad4e;color: #fff;border: #f0ad4e;padding: 8px;"
                         ng-click="postGrabAction($event, taskData.id)">抢单</button>
             </a>
         </nav>
         <nav class="mui-bar mui-bar-tab" ng-if="canHandle && taskData.stage_id===TaskStatus.ToAccept">
-            <a class="mui-tab-item mui-active mui-segmented-control-vertical" href="#" style="padding: 8px;">
+            <a class="mui-tab-item mui-active mui-segmented-control-vertical" href="javascript:void(0)" style="padding: 8px;">
                 <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-btn-outlined mui-control-item task-btn" style="margin-bottom: 6px;"
                         ng-click="taskHandler.acceptTaskAssign()">接受</button>
             </a>
-            <a class="mui-tab-item mui-active mui-segmented-control-vertical" href="#">
+            <a class="mui-tab-item mui-active mui-segmented-control-vertical" href="javascript:void(0)">
                 <button type="button" class="mui-btn mui-btn-danger mui-btn-block mui-btn-outlined mui-control-item  task-btn"
                         ng-click="taskHandler.refuseTaskAssign()">拒绝</button>
             </a>

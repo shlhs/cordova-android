@@ -8,13 +8,9 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta http-equiv="Access-Control-Allow-Origin" content="*">
     <!-- build:css -->
-    <link rel="stylesheet" href="../../components/mui/css/mui.min.css">
-    <link rel="stylesheet" href="../../css/my.css">
-    <link rel="stylesheet" href="../../css/icon.css">
-    <link rel="stylesheet" href="../../css/animate.css">
-    <link rel="stylesheet" href="../../components/mui/css/icons-extra.css">
-    <link rel="stylesheet" href="../../css/setting.css">
+    <ng-include src="'/templates/css-importer.html'"></ng-include>
     <!-- endbuild -->
+
     <!--<script type="text/javascript" src="../../js/router/site-router.js"></script>-->
     <!-- build:js -->
     <script type="text/javascript" src="../../components/libs/jquery-2.1.4.min.js"></script>
@@ -72,7 +68,7 @@
     <h1 class="mui-title">{{deviceName}}</h1>
     <!--<a href="/templates/task/add-task.html" class="mui-action-menu mui-icon mui-pull-right" ng-if="hasOpsAuthMenu"><i class="header-icon white icon-add"></i></a>-->
     <a href="/templates/site/device-monitor/remote-control.html?device_sn={{deviceSn}}"
-       class="mui-action-menu mui-icon mui-pull-right" style="color: #fff;font-size: 14px;line-height: 24px;" ng-if="canControl">控制中心</a>
+       class="mui-icon mui-pull-right" style="color: #fff;font-size: 14px;line-height: 24px;" ng-if="canControl">控制中心</a>
 </header>
 <div class="mui-content" ng-cloak style="background-color: #fff;">
     <div class="cascade-selector" style="top: 60px;" ng-class="{'collapse': collapse[0] || collapse[1]}">

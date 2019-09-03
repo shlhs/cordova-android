@@ -1472,7 +1472,8 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
                 $window.location.href = url;
                 break;
             default:
-                $state.go('.update')
+                // $state.go('.update')
+                routerService.openPage($scope, '/templates/task/task-handle-update.html');
         }
     };
 
@@ -1560,6 +1561,9 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
 
                 }
             });
+        },
+        reject: function () {
+            routerService.openPage($scope, '/templates/task/task-close-reject.html');
         },
         closeTask: function () {        // 关闭任务
             var btnArray = ['取消', '关闭'];
@@ -1796,6 +1800,10 @@ app.controller('TaskCloseRejectCtrl', ['$scope', function ($scope) {      //驳�
             history.back();
         });
     };
+
+    $scope.cancel = function () {
+        window.history.back();
+    }
 }]);
 
 app.controller('TaskCreateCtrl', ['$scope', '$timeout', 'userService', 'routerService', 'ajax', function ($scope, $timeout, userService, routerService, ajax) {

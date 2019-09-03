@@ -8,13 +8,9 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta http-equiv="Access-Control-Allow-Origin" content="*">
     <!-- build:css -->
-    <link rel="stylesheet" href="../../components/mui/css/mui.min.css">
-    <link rel="stylesheet" href="../../css/my.css">
-    <link rel="stylesheet" href="../../css/icon.css">
-    <link rel="stylesheet" href="../../css/animate.css">
-    <link rel="stylesheet" href="../../components/mui/css/icons-extra.css">
-    <link rel="stylesheet" href="../../css/setting.css">
+    <ng-include src="'/templates/css-importer.html'"></ng-include>
     <!-- endbuild -->
+
     <!--<script type="text/javascript" src="../../cordova.js"></script>-->
     <!--<script type="text/javascript" src="../../cordova_plugins.js"></script>-->
     <!-- build:js -->
@@ -55,7 +51,7 @@
     <header class="mui-bar bg-header">
         <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
         <h1 class="mui-title">事件列表</h1>
-        <a class="mui-action-menu mui-icon mui-pull-right" style="font-size: 14px;line-height: 28px;color: #fff;margin-right: 6px;"
+        <a class="mui-icon mui-pull-right" style="font-size: 14px;line-height: 28px;color: #fff;margin-right: 6px;"
            href="/templates/site/closed-event-list.html?status=0&sn={{sn}}">历史事件</a>
     </header>
     <div class="mui-content" ng-cloak>

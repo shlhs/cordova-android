@@ -748,17 +748,17 @@
     font-size: 14px;
 
 }
-.check-item {
+.step-check-item {
     background-color: #fff;
     /*width: 100%;*/
     margin: 0 10px 10px 10px;
     font-size: 13px;
     padding: 8px 12px;
 }
-.check-item>div {
+.step-check-item>div {
     margin: 2px 0;
 }
-.check-item .title {
+.step-check-item .title {
     font-weight: 600;
 
 }
@@ -780,7 +780,7 @@
     color: #fff;
     border-color: #dd524d;
 }
-.check-item input, .check-item textarea {
+.step-check-item input, .step-check-item textarea {
     background-color: #F4F5F6;
     border: 0;
     outline: 0;
