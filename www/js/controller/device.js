@@ -825,13 +825,18 @@ app.controller('DeviceRemoteControlCtrl', ['$scope', '$interval', 'routerService
         ajax.get({
             url: platformService.getDeviceMgmtHost() + '/management/devices/' + $scope.device_sn + '/variables',
             data: {
-                rw: 3,
                 type: 'Digital'
             },
             success: function (response) {
                 $scope.isLoading = false;
                 // 状态量在前，模拟量在后
-                $scope.varList = response.data.sort(function (v1, v2) {
+                $scope.varList = [];
+                response.data.forEach(function (v) {
+                    if (v.rw === 2 || v.rw === 3) {
+                        $scope.varList.push(v);
+                    }
+                });
+                $scope.varList = $scope.varList.sort(function (v1, v2) {
                     if (v1.type === v2.type) {
                         return 0;
                     }
@@ -875,7 +880,11 @@ app.controller('DeviceRemoteControlCtrl', ['$scope', '$interval', 'routerService
                     var exist = false;
                     for (var i=0; i<data.length; i++) {
                         if (data[i].var.sn === v.sn) {
-                            v.value = (data[i].data === null ? 1 : data[i].data) + (data[i].unit || '');
+                            if (v.type === 'Digital') {
+                                v.value = data[i].data > 0 ? '1' : '0';
+                            } else {
+                                v.value = data[i].data + (data[i].unit || '');
+                            }
                             exist = true;
                             break;
                         }
@@ -901,7 +910,9 @@ app.controller('DeviceRemoteControlCtrl', ['$scope', '$interval', 'routerService
             name: v.name,
             action: 'yaokong-act',
             type: 'Digital',
-            actionName: v.value === '1' ? v.one_meaning : v.zero_meaning
+            actionName: v.value === '1' ? v.one_meaning : v.zero_meaning,
+            one_meaning: v.one_meaning,
+            zero_meaning: v.zero_meaning
         };
         showConfirmModal(controlObj);
     };
@@ -940,6 +951,10 @@ app.controller('DeviceRemoteControlConfirmCtrl', ['$scope', 'ajax', function ($s
     $scope.inputValid = true;
     var newValue = '';
     var pwd = '';
+
+    $scope.onCheck = function (value) {
+        $scope.controlObj.value = value;
+    };
 
     $scope.onInputValidate = function (value) {
         newValue = value;

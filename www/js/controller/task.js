@@ -2187,7 +2187,6 @@ app.controller('TaskDevicesHandlerCtrl',['$scope', 'routerService', 'ajax',  fun
             $event.preventDefault();
             $event.stopPropagation();
         }
-        var index = $scope.checkedSns.indexOf(sn);
         $scope.device_record.forEach(function (d) {
             if (d.device_sn === sn) {
                 d.checked = !d.checked;
