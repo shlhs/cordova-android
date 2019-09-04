@@ -880,7 +880,11 @@ app.controller('DeviceRemoteControlCtrl', ['$scope', '$interval', 'routerService
                     var exist = false;
                     for (var i=0; i<data.length; i++) {
                         if (data[i].var.sn === v.sn) {
-                            v.value = (data[i].data > 0 ? 1 : data[i].data) + (data[i].unit || '');
+                            if (v.type === 'Digital') {
+                                v.value = data[i].data > 0 ? '1' : '0';
+                            } else {
+                                v.value = data[i].data + (data[i].unit || '');
+                            }
                             exist = true;
                             break;
                         }
