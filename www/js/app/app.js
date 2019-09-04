@@ -824,15 +824,19 @@ app.controller('BaseGalleryCtrl', ['$scope', '$stateParams', '$timeout', functio
 }]);
 
 function onAndroid_taskImageImport(imageData, filename) {    // 从Android读取的图片
-    var scope = angular.element("#imageList").scope();
+    var scope = angular.element(".imageUploadContainer").last().scope();
     if (scope) {
         scope.addImagesWithBase64(imageData, filename);
     }
 }
 
 function onAndroid_taskImageDelete(filename) {       // Android手机上删除所选图片
-    angular.element("#imageList").scope().deleteImageFromMobile(filename);
+    var scope = angular.element(".imageUploadContainer").last().scope();
+    if (scope) {
+        scope.deleteImageFromMobile(filename);
+    }
 }
+
 // 图片选择控制器
 // 使用的父级controller需要实现方法： $scope.registerImageInfo(imageEleId) { return $scope.images }
 app.controller('ImageUploaderCtrl', ['$document', '$scope', '$timeout', 'routerService', function ($document, $scope, $timeout, routerService) {
@@ -931,7 +935,7 @@ app.controller('ImageUploaderCtrl', ['$document', '$scope', '$timeout', 'routerS
     $scope.openMobileGallery = function () {
         if ($scope.singleImage) {
             clearAllExist();
-            window.android.openGallery(9, 'onAndroid_taskImageImport', 'onAndroid_taskImageDelete');
+            window.android.openGallery(1, 'onAndroid_taskImageImport', 'onAndroid_taskImageDelete');
         } else {
             window.android.openGallery(9, 'onAndroid_taskImageImport', 'onAndroid_taskImageDelete');
         }
