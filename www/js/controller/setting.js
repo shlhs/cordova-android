@@ -1,6 +1,6 @@
 "use strict";
 
-app.controller('SettingCtrl', function ($scope,ajax, userService, routerService) {
+app.controller('SettingCtrl', ['$scope', 'ajax', 'userService', 'routerService', function ($scope,ajax, userService, routerService) {
     $scope.pwd1 = '';
     $scope.pwd2 = '';
     $scope.pwdError = '';
@@ -47,9 +47,9 @@ app.controller('SettingCtrl', function ($scope,ajax, userService, routerService)
     }
 
     setTimeout(getCompany, 1000);
-});
+}]);
 
-app.controller('UiModeSwitchCtrl', function ($scope, platformService) {
+app.controller('UiModeSwitchCtrl', ['$scope', 'platformService', function ($scope, platformService) {
 
     var oldMode = $scope.mode;
 
@@ -60,9 +60,9 @@ app.controller('UiModeSwitchCtrl', function ($scope, platformService) {
         }
         history.back();
     };
-});
+}]);
 
-app.controller('PasswordCtrl', function ($scope, userService, $timeout, ajax) {
+app.controller('PasswordCtrl', ['$scope', 'userService', '$timeout', 'ajax', function ($scope, userService, $timeout, ajax) {
 
     function check() {
         if (!$scope.pwd1 && !$scope.pwd2){
@@ -101,12 +101,12 @@ app.controller('PasswordCtrl', function ($scope, userService, $timeout, ajax) {
             }
         });
     };
-});
+}]);
 
-app.controller('CompanyCtrl', function ($scope, $stateParams) {
+app.controller('CompanyCtrl', ['$scope', '$stateParams', function ($scope, $stateParams) {
     $scope.company = $stateParams.company;
-});
+}]);
 
-app.controller('AccountCtrl', function ($scope, userService) {
+app.controller('AccountCtrl', ['$scope', 'userService', function ($scope, userService) {
     $scope.user = userService.user;
-});
+}]);

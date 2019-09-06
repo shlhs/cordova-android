@@ -1380,6 +1380,7 @@ a:hover.slidesjs-stop {
     color: #fff;
     font-size: 13px;
     padding: 4px 8px;
+    line-height: 14px;
 }
 .btn-status.running {
     background: #F28150;
@@ -2756,10 +2757,11 @@ color: #a7a7a7;
     margin-right: 30px;
 }
 .static-device-list .status {
-    /*position: absolute;*/
-    /*right: 10px;*/
-    /*top: 12px;*/
+    position: absolute;
+    right: 10px;
+    top: 50%;
     font-size: 13px;
+    margin-top: -10px;
 }
 .static-device-list .status.normal {
     color: #44D36B;
@@ -3412,4 +3414,27 @@ table.dataTable tbody th, table.dataTable tbody td {
 }
 .my-picker.mui-poppicker {
     transform: translateY(380px);
+}
+.mui-checkbox.control-radio input[type=checkbox], .mui-radio.control-radio input[type=radio] {
+    top: -5px;
+}
+.mui-checkbox.control-radio input[type=checkbox]:before, .mui-radio.control-radio input[type=radio]:before {
+    font-size: 22px;
+}
+.mui-checkbox.control-radio label, .mui-radio.control-radio label {
+    padding: 8px 0 8px 48px;
+}
+.mui-bar-tab .mui-tab-item1.mui-active {
+    color: #007aff;
+}
+.mui-bar-tab .mui-tab-item1 {
+    display: table-cell;
+    overflow: hidden;
+    width: 1%;
+    height: 50px;
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: #929292;
 }

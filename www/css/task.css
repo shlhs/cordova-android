@@ -170,7 +170,7 @@
 }
 .task-type{
     color: #000;
-    font-size: 16px;
+    font-size: 15px;
 }
 .task-type.ergent{
     color: rgba(220, 3, 3, 0.71);
@@ -399,7 +399,7 @@
     padding-top: 10px;
 }
 .timeline-vertical .timeline-one:first-child .time-icon{
-    top: 14px;
+    top: 16px;
 }
 .timeline-vertical .timeline-one:first-child:before{
     display: none;
@@ -462,10 +462,10 @@
     -moz-border-radius: 4px;
     border-radius: 4px;
     position: relative;
-    font-size: 14px;
+    font-size: 13px;
 }
 .timeline-vertical .timeline-comment{
-    font-size: 14px;
+    font-size: 13px;
     color: #717171;
 }
 .task-btn.mui-btn-primary{
