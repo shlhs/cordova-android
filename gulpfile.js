@@ -43,6 +43,9 @@ const htmlMin = require('gulp-htmlmin');
 const sequence = require('run-sequence');
 const webserver = require('gulp-webserver');
 
+const timeStamp = new Date().getTime();
+const jsFileName = 'all-' + timeStamp + '.min.js';
+const cssFileName = ' all-' + timeStamp + '.min.css';
 
 //创建服务器环境插件 支持热更新
 const connect = require("gulp-connect");
@@ -61,8 +64,8 @@ gulp.task('htmlReplace', function () {
     console.log('htmlReplace');
     return gulp.src(folder.src + 'templates/**')
         .pipe(htmlReplace({
-            js: ['/js/config.js', '/js/all.min.js'],
-            css: '/css/all.min.css'
+            js: ['/js/config.js', '/js/' + jsFileName],
+            css: '/css/' + cssFileName
         }))
         .pipe(htmlClean())
         .pipe(htmlMin())
@@ -116,7 +119,7 @@ gulp.task('compressAllCss', function () {
         folder.src + 'css/task.css',
         folder.src + 'css/energy.css',
     ])
-        .pipe(concat('all.min.css'))
+        .pipe(concat(cssFileName))
         .pipe(gulp.dest('build/css'))
         // .pipe(less())
         // .pipe(postCss([autoPrefixer()]))
@@ -172,7 +175,7 @@ gulp.task('compressAllJs', function () {
         folder.build + 'js/controller/**',
         folder.build + 'js/my/**'
     ])
-        .pipe(concat('all.min.js'))
+        .pipe(concat(jsFileName))
         .pipe(gulp.dest('build/js'))
         .pipe(removeComments())
         .pipe(uglifyJS())
@@ -180,19 +183,6 @@ gulp.task('compressAllJs', function () {
         .pipe(connect.reload());
 });
 
-// web服务
-gulp.task('webserver', function(){
-    gulp.src(['dist', 'node_modules'])
-        .pipe(webserver({
-            port: 8001,//端口
-            host: '0.0.0.0',//域名
-            //liveload: true,//实时刷新代码。不用f5刷新
-            directoryListing: {
-                path: 'index.html',
-                enable: true
-            }
-        }))
-});
 
 //自动刷新页面
 gulp.task('watch', function () {
@@ -207,9 +197,27 @@ gulp.task('runsequence', function (callback) {
         console.log('runsequence finish');
     });      // 同步运行
 });
+// web服务
+gulp.task('webserver', function(){
+    const rootPath = environment === 'production' ? 'dist' : 'www';
+    gulp.src([rootPath])
+        .pipe(webserver({
+            port: 8001,//端口
+            host: '0.0.0.0',//域名
+            //liveload: true,//实时刷新代码。不用f5刷新
+            directoryListing: {
+                path: 'index.html',
+                enable: true
+            }
+        }))
+});
 
-// gulp.task("default", ['img', 'css', 'compressAllCss', 'runsequence']);
-gulp.task("default", ['webserver']);
+//
+if (environment === 'production') {
+    gulp.task("default", ['img', 'css', 'compressAllCss', 'runsequence', 'webserver']);
+} else {
+    gulp.task("default", ['webserver']);
+}
 
 // default任务一定要写，不然会报警告： Task 'default' is not in your gulpfile
 // 数组中写哪一个执行哪一个任务， 从左到右执行
