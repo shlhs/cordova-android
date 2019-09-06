@@ -1707,14 +1707,16 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
         // 重新计算已检查的设备数
         var checkedCount = 0;
         var exceptionCount = 0;
-        $scope.taskData.device_record.forEach(function (r) {
-            if (r.status) {
-                if (r.status === '2') {
-                    exceptionCount += 1;
+        if ($scope.taskData.device_record) {
+            $scope.taskData.device_record.forEach(function (r) {
+                if (r.status) {
+                    if (r.status === '2') {
+                        exceptionCount += 1;
+                    }
+                    checkedCount += 1;
                 }
-                checkedCount += 1;
-            }
-        });
+            });
+        }
         $scope.checkedDeviceCount = checkedCount;
         $scope.exceptionDeviceCount = exceptionCount;
     };
