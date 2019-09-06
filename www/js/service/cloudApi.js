@@ -1,4 +1,4 @@
-app.service('cloudApi', function (ajax) {
+app.service('cloudApi', ['ajax', function (ajax) {
 
     this.getOpsCompanyMembers = function (companyId, callback) {
         ajax.get({
@@ -33,4 +33,4 @@ app.service('cloudApi', function (ajax) {
     this.getTaskTodo = function () {
 
     }
-});
+}]);

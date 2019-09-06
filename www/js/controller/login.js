@@ -8,7 +8,7 @@ var gPublicApiHost = 'http://47.104.75.86:8090';        // 公有云接口
 // var gPublicApiHost = 'http://47.105.143.250:8090';        // 因泰来接口
 var defaultActiveEnergyMode = false; // 是否默认使用能效管理模式
 
-app.controller('LoginCtrl', function ($scope, $timeout, platformService, userService, $state, $http, ajax) {
+app.controller('LoginCtrl', ['$scope', '$timeout', 'platformService', 'userService', '$state', '$http', 'ajax', function ($scope, $timeout, platformService, userService, $state, $http, ajax) {
     $scope.error = '';
     var platform = null;
     $scope.enable = false;
@@ -171,9 +171,9 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
         });
     }
     // 平台查询end
-});
+}]);
 
-app.controller('AutoLoginCtrl', function ($scope, $timeout, userService, platformService) {
+app.controller('AutoLoginCtrl', ['$scope', '$timeout', function ($scope, $timeout) {
 
     $scope.autoLogin = function () {
         //先等1.5s
@@ -195,4 +195,4 @@ app.controller('AutoLoginCtrl', function ($scope, $timeout, userService, platfor
     //     window.android.checkWebVersion();
     // }
     $scope.autoLogin();
-});
+}]);

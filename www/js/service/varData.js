@@ -1,4 +1,4 @@
-app.service('varDataService', function (ajax, platformService) {
+app.service('varDataService', ['ajax', 'platformService', function (ajax, platformService) {
 
     // 获取变量实时值
     this.getRealtimeValue = function (sns, callback) {
@@ -202,9 +202,9 @@ app.service('varDataService', function (ajax, platformService) {
             }
         })
     };
-});
+}]);
 
-app.service('collectorService', function (ajax, platformService) {
+app.service('collectorService', ['ajax', 'platformService', function (ajax, platformService) {
 
    this.getMonitorDevice = function (sn, callback) {
        ajax.get({
@@ -221,4 +221,4 @@ app.service('collectorService', function (ajax, platformService) {
            }
        })
    }
-});
+}]);

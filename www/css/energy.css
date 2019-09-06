@@ -7,12 +7,17 @@
     background: url(../img/energy-page-bg.png) no-repeat top left;
     background-size: cover;
 }
-.energy-page>header {
-    background: none;
-    box-shadow: none;
-}
+/*.energy-page>header {*/
+    /*background: none;*/
+    /*box-shadow: none;*/
+/*}*/
 .energy-header {
     background: none;
+}
+
+.energy-page-body {
+    background: url(../img/energy-body-bg.png) no-repeat top left;
+    background-size: cover;
 }
 .site-header .mui-title {
     font-size: 18px;

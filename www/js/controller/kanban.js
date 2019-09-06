@@ -1,7 +1,7 @@
 "use strict";
 
 
-app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
+app.controller('KanbanCtrl', ['$scope', '$stateParams', 'ajax', '$timeout', function ($scope, $stateParams, ajax, $timeout) {
     $scope.sn = GetQueryString('sn');
     $scope.stationName = GetQueryString('name');
     // $scope.sn = $stateParams.sn;
@@ -905,4 +905,4 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
         getKanbanData();
     }, 500);
 
-});
+}]);
