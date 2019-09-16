@@ -320,7 +320,7 @@ app.config(['appStoreProviderProvider', function (appStoreServiceProvider) {
     ]);
 }]);
 
-app.controller('AppStoreCtrl', function ($scope, appStoreProvider) {
+app.controller('AppStoreCtrl', ['$scope', 'appStoreProvider', function ($scope, appStoreProvider) {
     $scope.allApps = appStoreProvider.getAllApps();
     $scope.selectedApps = appStoreProvider.getSelectedApps();
     $scope.isEditing = false;
@@ -379,4 +379,4 @@ app.controller('AppStoreCtrl', function ($scope, appStoreProvider) {
         $scope.$emit('onNotifyAppUpdate');
     };
     setSelectedState();
-});
+}]);

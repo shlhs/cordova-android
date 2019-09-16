@@ -8,7 +8,7 @@ function bodyScroll(ele) {
     console.log('scroll');
 }
 
-app.controller('SecurityBaseCtrl', function ($scope, $compile, $location) {
+app.controller('SecurityBaseCtrl', ['$scope', '$compile', function ($scope, $compile) {
    function load() {
        var templateUrl = GetQueryString("template");
        var html = "<root-page template=" + templateUrl + "></root-page>";
@@ -18,9 +18,9 @@ app.controller('SecurityBaseCtrl', function ($scope, $compile, $location) {
        $dom.appendTo($('body'));
    }
    load();
-});
+}]);
 
-app.service('SecurityReportService', function (userService, ajax) {
+app.service('SecurityReportService', ['userService', 'ajax', function (userService, ajax) {
     function _parseSecurityTemplate(template) {
 
         function evaluateItem(path, item) {
@@ -160,9 +160,9 @@ app.service('SecurityReportService', function (userService, ajax) {
             });
         }
     };
-});
+}]);
 
-app.controller('SecurityHistoryCtrl', function ($scope, routerService, ajax, userService) {
+app.controller('SecurityHistoryCtrl', ['$scope', 'routerService', 'ajax', function ($scope, routerService, ajax) {
     var sn = GetQueryString('sn');
     $scope.stationName = GetQueryString("name");
     $scope.history = [];
@@ -221,9 +221,9 @@ app.controller('SecurityHistoryCtrl', function ($scope, routerService, ajax, use
     };
 
     $scope.getDataList();
-});
+}]);
 
-app.controller('SecurityEvaluateHome', function ($scope, $http, ajax, routerService, SecurityReportService) {
+app.controller('SecurityEvaluateHome', ['$scope', '$http', 'ajax', 'routerService', 'SecurityReportService', function ($scope, $http, ajax, routerService, SecurityReportService) {
     var backupData = {};        // 保存原始数据
     $scope.evaluateData = {};
     $scope.total = 0;
@@ -320,9 +320,10 @@ app.controller('SecurityEvaluateHome', function ($scope, $http, ajax, routerServ
     };
 
     init();
-});
+}]);
 
-app.controller('SecurityEvaluateDetailCtrl', function ($scope, $http, ajax, userService, routerService, SecurityReportService) {
+app.controller('SecurityEvaluateDetailCtrl', ['$scope', '$http', 'ajax', 'userService', 'routerService', 'SecurityReportService',
+function ($scope, $http, ajax, userService, routerService, SecurityReportService) {
     var byWeb = GetQueryString("by") === 'web' ? true : false;      // 是否是从web请求的
     $scope.evaluateData = $scope.$parent.evaluateData;
     $scope.template = (byWeb || !$scope.evaluateData ) ? '' : $scope.evaluateData.template;
@@ -406,9 +407,9 @@ app.controller('SecurityEvaluateDetailCtrl', function ($scope, $http, ajax, user
     };
 
     init();
-});
+}]);
 
-app.controller('SecurityEvaluateChecklistCtrl', function ($scope, ajax) {
+app.controller('SecurityEvaluateChecklistCtrl', ['$scope', function ($scope) {
     $scope.items = $scope.group.items;
     $scope.currentIndex = 0;
     $scope.currentItem = null;
@@ -477,4 +478,4 @@ app.controller('SecurityEvaluateChecklistCtrl', function ($scope, ajax) {
         history.back();
     };
     init();
-});
+}]);

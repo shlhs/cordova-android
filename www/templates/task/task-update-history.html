@@ -23,7 +23,7 @@
                 <ul class="image-list" style="padding: 0;" ng-if="item.pictures">
                     <li class="image-item" ng-repeat="url in item.picture_list" ng-click="showImageGallery(item.picture_list, $index+1)">
                         <div class="content">
-                            <img src="{{host + url}}" alt="" animate-visible="true" animate-speed="0.5s" >
+                            <img src="{{url}}" alt="">
                         </div>
                     </li>
                 </ul>

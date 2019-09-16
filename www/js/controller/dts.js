@@ -14,7 +14,7 @@ function onAndroid_dtsImageDelete (filename) {       // Android手机上删除�
     angular.element("#dtsCreatePage").scope().deleteImageFromMobile(filename);
 }
 
-app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, routerService) {
+app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'routerService', function ($scope, $timeout, ajax, userService, routerService) {
     var taskId = GetQueryString("task_id") || $scope.task_id || '';
     $scope.device = {
         sn: GetQueryString('device_sn') || $scope.device_sn,
@@ -250,7 +250,8 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
     $scope.createTask = function () {
         var taskData = $scope.taskData;
         taskData.devices = [{
-            sn: $scope.device.sn
+            sn: $scope.device.sn,
+            name: $scope.device.name
         }];
         // 增加图片信息
         if ($scope.images.length) {
@@ -295,10 +296,10 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
     };
 
     init();
-});
+}]);
 
 // 设备缺陷记录
-app.controller('DeviceDtsListCtrl', function ($scope, ajax, scrollerService) {
+app.controller('DeviceDtsListCtrl', ['$scope', 'ajax', 'scrollerService', function ($scope, ajax, scrollerService) {
     var deviceSn = GetQueryString('device_sn');
     var stationSn = GetQueryString('station_sn');
     $scope.TaskStatus = TaskStatus;
@@ -392,9 +393,9 @@ app.controller('DeviceDtsListCtrl', function ($scope, ajax, scrollerService) {
     };
 
     $scope.getDataList();
-});
+}]);
 
-app.controller('StationDtsListCtrl', function ($scope, $rootScope, scrollerService, userService, ajax) {
+app.controller('StationDtsListCtrl', ['$scope', '$rootScope', 'scrollerService', 'userService', 'ajax', function ($scope, $rootScope, scrollerService, userService, ajax) {
     var stationSn = GetQueryString("sn");
     $scope.TaskStatus = TaskStatus;
     $scope.tasks = [];
@@ -497,4 +498,4 @@ app.controller('StationDtsListCtrl', function ($scope, $rootScope, scrollerServi
     };
 
     $scope.getDataList();
-});
+}]);
