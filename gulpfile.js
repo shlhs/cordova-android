@@ -6,7 +6,7 @@ var gulp = require('gulp');
 //（可能会有问题， 建议使用 :var environment=process.env.NODE_ENV || 'development';）
 // mac  linux : export NODE_ENV=development 或 production 或 build
 
-var environment = process.env.NODE_ENV || 'development';
+var environment = process.env.NODE_ENV || 'production';
 console.log(environment);
 
 //根据自己开发的实际需求自行设置， src放开发文件， dist是打包压缩后的导出目录
@@ -99,8 +99,12 @@ gulp.task('css', function () {
         .pipe(gulp.dest(folder.dist + "fonts/"))
         .pipe(gulp.dest(folder.dist + "components/mui/fonts/"));
     gulp.src([folder.src + "components/mui/css/icons-extra.css", folder.src + "components/mui/css/mui.min.css"])
+        .pipe(postCss([autoPrefixer()]))
+        .pipe(cleanCss())
         .pipe(gulp.dest(folder.dist + "components/mui/css/"));
     gulp.src([folder.src + "css/setting.css"])
+        .pipe(postCss([autoPrefixer()]))
+        .pipe(cleanCss())
         .pipe(gulp.dest(folder.dist + "css/"));
 });
 
@@ -118,15 +122,16 @@ gulp.task('compressAllCss', function () {
         folder.src + 'css/notify.css',
         folder.src + 'css/icon.css',
         folder.src + 'css/task.css',
-        folder.src + 'css/energy.css',
+        folder.src + 'css/energy.css'
     ])
+        .pipe(cleanCss())
         .pipe(concat(cssFileName))
-        .pipe(gulp.dest('build/css'))
+        // .pipe(gulp.dest('build/css'))
         // .pipe(less())
         // .pipe(postCss([autoPrefixer()]))
-        .pipe(cleanCss())
+        // .pipe(cleanCss())
         .pipe(gulp.dest(folder.dist + 'css'))
-        .pipe(connect.reload());
+        // .pipe(connect.reload());
 });
 
 gulp.task('js', function () {
