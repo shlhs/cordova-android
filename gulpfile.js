@@ -3,10 +3,11 @@ var gulp = require('gulp');
 // 在命令行设置为生产环境或者开发环境
 //开发环境不要使用压缩，会影响找错
 // windows: set NODE_ENV = development 或 production
-//（可能会有问题， 建议使用 :var environment = process.env.NODE_ENV || 'development';）
-// mac  linux : export NODE_ENV = development 或 production
+//（可能会有问题， 建议使用 :var environment=process.env.NODE_ENV || 'development';）
+// mac  linux : export NODE_ENV=development 或 production 或 build
 
 var environment = process.env.NODE_ENV || 'development';
+console.log(environment);
 
 //根据自己开发的实际需求自行设置， src放开发文件， dist是打包压缩后的导出目录
 const folder = {
@@ -54,7 +55,7 @@ gulp.task('html', function () {
     console.log('html');
     const step = gulp.src(folder.src + "templates/**")
         .pipe(connect.reload());
-    if (environment === 'production') {
+    if (environment === 'build') {
         step.pipe(htmlClean())
     }
     return step.pipe(gulp.dest(folder.dist + "templates/"))
@@ -84,7 +85,7 @@ gulp.task('css', function () {
     //     .pipe(connect.reload())
     //     .pipe(less())
     //     .pipe(postCss([autoPrefixer()]));
-    // if (environment === 'production') {
+    // if (environment === 'build') {
     //     step.pipe(cleanCss())
     // }
     // step.pipe(gulp.dest(folder.dist + "css/"));
@@ -136,7 +137,7 @@ gulp.task('js', function () {
         .pipe(babel({
             presets: ['es2015']
         }));
-    if (environment === 'production') {
+    if (environment === 'build') {
         step.pipe(removeComments())
             .pipe(uglifyJS())
     }
@@ -213,8 +214,8 @@ gulp.task('webserver', function(){
 });
 
 //
-if (environment === 'production') {
-    gulp.task("default", ['img', 'css', 'compressAllCss', 'runsequence', 'webserver']);
+if (environment === 'build') {
+    gulp.task("default", ['img', 'css', 'compressAllCss', 'runsequence']);
 } else {
     gulp.task("default", ['webserver']);
 }
