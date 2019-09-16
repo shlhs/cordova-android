@@ -15,7 +15,7 @@ var TaskTypes = {
     FatalDts: 10,   // 致命缺陷
     Xunjian: 11
 };
-var OpsTaskType = [1, 2, 3, 4, 5, 6, 7];
+var OpsTaskType = [2, 3, 4, 5, 7];
 var DtsTaskType = [8, 9, 10];
 var TaskAction = {Create: 0, Accept: 1, Refuse: 2, Assign: 3, Go: 4, Apply: 5, Reject: 6, Close: 7, Comment: 8, Grab: 9, Arrive: 10, Update: 11, Transfer: 12};
 var TaskStatus = {ToAccept: 1, ToAssign: 2, Accepted: 3, ToClose: 4, Closed: 5, Competition: 6, Coming: 7, Arrived: 8};
@@ -2103,6 +2103,7 @@ app.controller('TaskCreateCtrl', ['$scope', '$timeout', 'userService', 'routerSe
         if ($scope.imageList.length) {
             taskData.pictures = $scope.imageList;
         }
+        taskData.source = $scope.linkEventId ? TaskSource.Event : TaskSource.Repaire;
         $.notify.progressStart();
         ajax.post({
             url: '/opstasks',
