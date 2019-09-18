@@ -326,14 +326,28 @@ app.controller('StaticDeviceEditCtrl', ['$scope', 'ajax', 'routerService', 'plat
         return data;
     }
 
+    function clearProperties(properties) {
+        if (properties) {
+            var list = [];
+            properties.forEach(function (p) {
+                list.push({
+                    name: p.name,
+                    value: p.value
+                });
+            });
+            return list;
+        }
+        return [];
+    }
+
     function stringifyDeviceData(data) {
         // 将设备和子部件的属性由列表转成字符串
         var tmpData = JSON.parse(JSON.stringify(data));
-        tmpData.properties = JSON.stringify(data.properties);
+        tmpData.properties = JSON.stringify(clearProperties(data.properties));
         if (tmpData.items) {
             tmpData.items.forEach(function (item) {
                if (item.properties) {
-                   item.properties = JSON.stringify(item.properties);
+                   item.properties = JSON.stringify(clearProperties(item.properties));
                }
             });
         }
