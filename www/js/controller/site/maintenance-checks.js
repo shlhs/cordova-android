@@ -1,5 +1,5 @@
 
-app.controller('MaintenanceBaseCtrl', function ($scope, $compile) {
+app.controller('MaintenanceBaseCtrl', ['$scope', '$compile', function ($scope, $compile) {
     function load() {
         var templateUrl = GetQueryString("template");
         var html = "<root-page template=" + templateUrl + "></root-page>";
@@ -9,9 +9,9 @@ app.controller('MaintenanceBaseCtrl', function ($scope, $compile) {
         $dom.appendTo($('body'));
     }
     load();
-});
+}]);
 
-app.controller('MaintenanceCheckHistoryCtrl', function ($scope, ajax, routerService) {
+app.controller('MaintenanceCheckHistoryCtrl', ['$scope', 'ajax', 'routerService', function ($scope, ajax, routerService) {
     var sn = GetQueryString('sn');
     $scope.stationName = GetQueryString("name");
     $scope.history = [];
@@ -49,14 +49,23 @@ app.controller('MaintenanceCheckHistoryCtrl', function ($scope, ajax, routerServ
     };
 
     $scope.getDataList();
-});
+}]);
 
-
-function importImage(imageData) {    // 从Android读取的图片
-    angular.element("#powerOffHandler").scope().addImagesWithBase64(imageData);
+function onAndroid_powerOffImageImport(imageData, filename) {    // 从Android读取的图片
+    var scope = angular.element("#powerOffHandler").scope();
+    if (scope) {
+        scope.addImagesWithBase64(imageData, filename);
+    }
 }
 
-app.controller("MaintenanceCheckRecordItemCtrl", function ($scope, ajax, routerService, userService, $rootScope) {
+function onAndroid_powerOffImageDelete(filename) {       // Android手机上删除所选图片
+    var scope = angular.element("#powerOffHandler").scope();
+    if (scope) {
+        scope.deleteImageFromMobile(filename);
+    }
+}
+
+app.controller("MaintenanceCheckRecordItemCtrl", ['$scope', 'ajax', 'routerService', 'userService', '$rootScope', function ($scope, ajax, routerService, userService, $rootScope) {
     var d = new Date(), today=d.year + d.month + d.day;
     $scope.image_before_check = [];
     $scope.image_in_check = [];
@@ -242,8 +251,13 @@ app.controller("MaintenanceCheckRecordItemCtrl", function ($scope, ajax, routerS
     };
 
     var currentImageModel = '';
+    function clearAllExist() {
+        window.android && window.android.clearSelectedPhotos && window.android.clearSelectedPhotos();      // 调用Android js接口，清除选择的所有照片
+    }
     $scope.setCurrentImageModel = function (model) {
         currentImageModel = model;
+        clearAllExist();
+        window.android && window.android.openGallery(9, 'onAndroid_powerOffImageImport', 'onAndroid_powerOffImageDelete');
     };
 
     $scope.addImagesWithBase64 = function (data) {
@@ -257,12 +271,17 @@ app.controller("MaintenanceCheckRecordItemCtrl", function ($scope, ajax, routerS
         $scope.recordData[currentImageModel].push(data);
         $scope.$apply();
     };
+    clearAllExist();
+
+    $scope.$on('$destroy', function (event) {
+        clearAllExist();
+    });
 
     init();
-});
+}]);
 
 
-app.controller('MaintenanceChecklistCtrl', function ($scope, ajax) {
+app.controller('MaintenanceChecklistCtrl', ['$scope', 'ajax', function ($scope, ajax) {
     var byWeb = GetQueryString("by") === 'web' ? true : false;      // 是否是从web请求的
     $scope.template = byWeb ? '' : $scope.recordData.template;
     $scope.currentData = {};
@@ -312,9 +331,9 @@ app.controller('MaintenanceChecklistCtrl', function ($scope, ajax) {
     };
 
     init();
-});
+}]);
 
-app.controller('PowerOffGalleryCtrl', function ($scope, $stateParams, $timeout) {
+app.controller('PowerOffGalleryCtrl', ['$scope', '$stateParams', '$timeout', function ($scope, $stateParams, $timeout) {
     $scope.show = false;
 
 
@@ -339,4 +358,4 @@ app.controller('PowerOffGalleryCtrl', function ($scope, $stateParams, $timeout) 
     };
 
     $timeout(initSlider, 100);
-});
+}]);

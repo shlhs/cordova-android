@@ -12,7 +12,7 @@ function onVideoPause(ipcId) {       // 暂停视频播放
     }
 }
 
-app.controller('VideoMonitorCtrl', function ($scope, $timeout, platformService, ajax, routerService) {
+app.controller('VideoMonitorCtrl', ['$scope', '$timeout', 'platformService', 'ajax', 'routerService', function ($scope, $timeout, platformService, ajax, routerService) {
     $scope.sn = GetQueryString("sn");
     $scope.ipcs = [];
     $scope.isLoading = true;
@@ -111,9 +111,9 @@ app.controller('VideoMonitorCtrl', function ($scope, $timeout, platformService, 
     };
 
     $timeout($scope.getIpcList, 500);
-});
+}]);
 
-app.controller('VideoMonitorSnapConfirmCtrl', function ($scope, platformService, ajax) {
+app.controller('VideoMonitorSnapConfirmCtrl', ['$scope', 'platformService', 'ajax', function ($scope, platformService, ajax) {
     var newValue = '';
 
     $scope.onInputValidate = function (value) {
@@ -139,9 +139,9 @@ app.controller('VideoMonitorSnapConfirmCtrl', function ($scope, platformService,
     $scope.onCancel = function () {
         history.back();
     }
-});
+}]);
 
-app.controller('IpcRecordHistoryCtrl', function ($scope, platformService, $timeout, ajax, routerService) {
+app.controller('IpcRecordHistoryCtrl', ['$scope', 'platformService', '$timeout', 'ajax', 'routerService', function ($scope, platformService, $timeout, ajax, routerService) {
     // $scope.sn = GetQueryString("sn");
     $scope.records = [];
     $scope.isLoading = true;
@@ -239,9 +239,9 @@ app.controller('IpcRecordHistoryCtrl', function ($scope, platformService, $timeo
     });
 
     $timeout($scope.getRecords, 500);
-});
+}]);
 
-app.controller('IpcPicRecordDetailCtrl', function ($scope, platformService, ajax, $timeout, routerService) {
+app.controller('IpcPicRecordDetailCtrl', ['$scope', 'platformService', 'ajax', '$timeout', 'routerService', function ($scope, platformService, ajax, $timeout, routerService) {
     var createMoment = moment($scope.record.createTime, 'YYYY-MM-DD HH:mm:ss');
     var dayOfWeek = createMoment.format('e');
     var daysOfWeek = ['日', '一', '二', '三', '四', '五', '六'];
@@ -300,4 +300,4 @@ app.controller('IpcPicRecordDetailCtrl', function ($scope, platformService, ajax
     });
 
     $timeout(getRecordDetail, 500);
-});
+}]);
