@@ -14,6 +14,7 @@ function onAndroid_dtsImageDelete (filename) {       // Android手机上删除�
     angular.element("#dtsCreatePage").scope().deleteImageFromMobile(filename);
 }
 
+var TaskSource = {Repaire: 1, Event: 2, Inspect: 3};
 app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'routerService', function ($scope, $timeout, ajax, userService, routerService) {
     var taskId = GetQueryString("task_id") || $scope.task_id || '';
     $scope.device = {
@@ -260,6 +261,7 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
         taskData.events = [];
         taskData.station_sn = $scope.device.station_sn;
         taskData.mother_task_id = taskId;
+        taskData.source = taskId ? TaskSource.Inspect : TaskSource.Repaire;     // 如果是从其他任务创建，即mother_task_id不为空，则来源为巡检，否则为报修
         $.notify.progressStart();
         ajax.post({
             url: '/opstasks/' + companyId,
