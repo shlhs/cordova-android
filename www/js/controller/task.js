@@ -446,17 +446,17 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, ajax, platfo
         // 判断是否包含ops-management权限
         if (platHasOps && !menuInited) {
             // 有运维权限
-            if (!gShowEnergyPage) {
-                // 如果不显示能效页面，那么运维管理员默认显示抢单页和待办页
-                if (role === 'OPS_ADMIN' || role === 'OPS_OPERATOR') {
-                    $scope.navMenus.push({
-                        id: 'grab',
-                        name: '抢单',
-                        templateUrl: 'templates/task/task-competition-list.html',
-                        icon: 'nav-task-grab'
-                    });
-                }
-            }
+            // if (!gShowEnergyPage) {
+            //     // 如果不显示能效页面，那么运维管理员默认显示抢单页和待办页
+            //     if (role === 'OPS_ADMIN' || role === 'OPS_OPERATOR') {
+            //         $scope.navMenus.push({
+            //             id: 'grab',
+            //             name: '抢单',
+            //             templateUrl: 'templates/task/task-competition-list.html',
+            //             icon: 'nav-task-grab'
+            //         });
+            //     }
+            // }
             var todoMenu = _getTaskTodoMenu();
             if (todoMenu) {
                 $scope.navMenus.push(todoMenu);
@@ -1093,6 +1093,9 @@ app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, us
             url = '/opstasks?station=' + stationSns.join(',');
             // 筛选
             // params.task_type = OpsTaskType.join(',') + ',11';
+        } else if (role === 'OPS_OPERATOR') {
+            // 如果是运维工，则显示处理过的所有任务
+            url = "/opstasks/history/" + companyId;
         }
         if (requestFilterParams) {
             Object.keys(requestFilterParams).forEach(function (key) {

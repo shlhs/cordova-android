@@ -3707,6 +3707,7 @@ table.dataTable tbody th, table.dataTable tbody td {
 }
 .my-picker.mui-poppicker.mui-active {
     transform: translateY(0);
+}
 .mui-checkbox.control-radio input[type=checkbox], .mui-radio.control-radio input[type=radio] {
     top: -5px;
 }
