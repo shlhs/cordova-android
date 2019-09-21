@@ -3697,7 +3697,6 @@ table.dataTable tbody th, table.dataTable tbody td {
 .mui-bar {
     box-shadow: none;
 }
-
 .my-picker .mui-poppicker-body{
     border-top: none;
     background-color: #fff;
@@ -3708,4 +3707,12 @@ table.dataTable tbody th, table.dataTable tbody td {
 }
 .my-picker.mui-poppicker.mui-active {
     transform: translateY(0);
+.mui-checkbox.control-radio input[type=checkbox], .mui-radio.control-radio input[type=radio] {
+    top: -5px;
+}
+.mui-checkbox.control-radio input[type=checkbox]:before, .mui-radio.control-radio input[type=radio]:before {
+    font-size: 22px;
+}
+.mui-checkbox.control-radio label, .mui-radio.control-radio label {
+    padding: 8px 0 8px 48px;
 }
