@@ -1,11 +1,11 @@
 "use strict";
 
-app.controller('SettingCtrl', function ($scope, platformService, userService, ajax, $state) {
+app.controller('SettingCtrl', function ($scope, platformService, userService, $state, ajax) {
     $scope.pwd1 = '';
     $scope.pwd2 = '';
     $scope.pwdError = '';
     $scope.user = userService.user;
-    $scope.company = {};
+    $scope.company = null;
     $scope.version = GetQueryString('version') || '0.0.0';
     $scope.appName = GetQueryString('appName') || '快控电管家';
     $scope.userRole = userService.getUserRole();
@@ -21,24 +21,22 @@ app.controller('SettingCtrl', function ($scope, platformService, userService, aj
     };
 
     function getCompany() {
-        if ($scope.userRole === 'OPS_ADMIN' || $scope.userRole === 'OPS_OPER') {
-            ajax.get({
-                url: '/user/' + $scope.user.account + '/opscompany',
-                ignoreAuthExpire: true,
-                xhrFields: {
-                    withCredentials: true
-                },
-                crossDomain: true,
-                success: function (data) {
-                    if (data && data.length >= 1)
-                    {
-                        $scope.company = data[0];
-                        $scope.$apply();
-                    }
+        ajax.get({
+            url: '/user/' + $scope.user.account + '/opscompany',
+            ignoreAuthExpire: true,
+            xhrFields: {
+                withCredentials: true
+            },
+            crossDomain: true,
+            success: function (data) {
+                if (data && data.length >= 1)
+                {
+                    $scope.company = data[0];
+                    $scope.company.full_address = (data[0].province || '') + (data[0].city || '') + (data[0].detail || '');
+                    $scope.$apply();
                 }
-            });
-        }
-
+            }
+        });
     }
 
     setTimeout(getCompany, 1000);
