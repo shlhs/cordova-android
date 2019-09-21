@@ -1,86 +1,31 @@
 <div class="page page-left" ng-controller="TaskBaseCtrl" style="background-color: #f5f5f5;">
-    <div id="taskList" ng-controller="TaskListCtrl">
+    <div ng-controller="TaskListCtrl">
         <header class="mui-bar bg-header">
             <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
             <h1 class="mui-title">{{pageTitle}}</h1>
             <a ng-click="openTaskCreatePage()" class="mui-action-menu mui-icon mui-pull-right" ng-if="hasOpsAuth"><i class="header-icon white icon-add"></i></a>
         </header>
-        <div style="top:62px;" class="scroll-wrapper">
-            <div class="mui-scroll1" ng-if="!isLoading && !loadingFailed">
-                <ul class="mui-table-view task-list no-out-border" ng-if="tasks.length">
-                    <li class="mui-table-view-cell mui-media task-item" ng-repeat="task in tasks"
-                        ng-click="openTask(task)" ng-class="{'closed': task.stage_id == TaskStatus.Closed}">
-                        <div ng-if="task.task_type_id !== 11 || !isDeviceOps">
-                            <div class="main-body">
-                                <div class="mui-media-body task-main">
-                                    <h4 class="mui-ellipsis task-title" style="margin-top: 0">
-                                        <img class="mui-pull-left task-icon" src="img/task_type_{{task.task_type_id}}@2x.png">
-                                        <strong class="task-type" ng-class="{'ergent': task.task_type_id===3}">{{task.task_type_name}}</strong>
-                                    </h4>
-                                </div>
-                            </div>
-                            <div class="sub-body">
-                                <p class="task-name">
-                                    {{task.name}}
-                                </p>
-                                <div ng-if="task.station_name">
-                                    <span class="task-info-label">站点名称</span><span class="task-info-value">{{task.station_name}}</span>
-                                </div>
-                                <div style="padding-bottom: 10px">
-                                    <span class="task-info-label" style="padding-right: 0;">期望完成时间：</span>
-                                    <span class="task-info-value" ng-class="{'timeout': task.isTimeout}">{{task.expect_complete_time.substring(0,16)}}</span>
-                                </div>
-                            </div>
-                            <div class="task-status">
-                                <span style="color: #6f6f6f;margin: 0 2px;">{{task.current_handler_name}}</span>{{task.stage_name}}
+        <div style="top:61px;" class="mui-content" ng-controller="TaskListCtrl" id="taskList">
+            <div class="filter-btn" ng-click="toggleFilter()">
+                筛选<label class="iconfont anticon-filter" style="font-size: 13px;"></label>
+            </div>
+            <div ng-include="'templates/task/task-list-common.html'" style="margin-top: 38px;"></div>
+            <div class="dropdown-filter-wrapper" ng-if="showFilter">
+                <div class="filter-mask" ng-click="toggleFilter(false)"></div>
+                <div class="filter-inner">
+                    <div class="filter-body">
+                        <div class="group" ng-repeat="group in filterItems">
+                            <div class="title">{{group.title}}</div>
+                            <div class="items">
+                                <label class="item" ng-repeat="item in group.items" ng-class="{'checked': tmpSelectedFilter[item.id]}"
+                                       ng-click="toggleFilterItem(item.id)">{{item.name}}</label>
                             </div>
                         </div>
-                        <div ng-if="isDeviceOps && task.task_type_id === 11">
-                            <div class="main-body">
-                                <div class="mui-media-body task-main">
-                                    <h4 class="mui-ellipsis task-title" style="margin-top: 0">
-                                        <img class="mui-pull-left task-icon" src="img/task_type_{{task.task_type_id}}@2x.png">
-                                        <strong class="task-type" ng-class="{'ergent': task.task_type_id===3}">{{task.task_type_name}}</strong>
-                                    </h4>
-                                </div>
-                            </div>
-                            <div class="sub-body">
-                                <p class="task-name">
-                                    {{task.name}}
-                                </p>
-                                <div style="padding-bottom: 10px;">
-                                    <span class="task-info-label" style="padding-right: 0;">巡检人：</span>
-                                    <span class="task-info-value">{{task.operator_name}}</span>
-                                </div>
-                                <div style="padding-bottom: 10px;margin-top: -10px;" ng-if="task.device_record.desp">
-                                    <span class="task-info-label" style="padding-right: 0;">结论：</span>
-                                    <span class="task-info-value">{{task.device_record.desp}}</span>
-                                </div>
-                            </div>
-                            <div class="task-status">
-                                <span style="margin: 0 2px;" class="text-{{task.device_record.status_name}}">{{task.device_record.status}}</span>
-                            </div>
-                        </div>
-                    </li>
-                </ul>
-                <div class="page-alert-wrapper" ng-if="tasks.length==0 && !isLoading && !loadingFailed">
-                    <div class="page-alert">
-                        <i class="alert-icon nodata-info"></i>
-                        <div class="alert-text info">无任务信息</div>
                     </div>
-                </div>
-            </div>
-            <div class="page-alert-wrapper" ng-if="isLoading">
-                <div class="page-alert">
-                    <i class="alert-icon loading-spinner"></i>
-                    <div class="alert-text info">正在加载...</div>
-                </div>
-            </div>
-            <div class="page-alert-wrapper" ng-if="loadingFailed">
-                <div class="page-alert">
-                    <i class="alert-icon warning"></i>
-                    <div class="alert-text info">加载失败，请检查网络</div>
-                    <div class="alert-reload" ng-click="getDataList()">重新加载</div>
+                    <div class="filter-footer">
+                        <div class="btn default" ng-click="clearFilter()">重置</div>
+                        <div class="btn primary" ng-click="confirmFilter()">查询</div>
+                    </div>
                 </div>
             </div>
         </div>

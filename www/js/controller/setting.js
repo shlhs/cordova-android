@@ -8,6 +8,7 @@ app.controller('SettingCtrl', function ($scope, platformService, userService, $s
     $scope.company = null;
     $scope.version = GetQueryString('version') || '0.0.0';
     $scope.appName = GetQueryString('appName') || 'INT-OMS';
+    $scope.userRole = userService.getUserRole();
 
     $scope.logout = function () {
         userService.setPassword('');
