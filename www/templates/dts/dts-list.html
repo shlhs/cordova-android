@@ -101,15 +101,32 @@
                             {{task.name}}
                         </p>
                         <div ng-if="task.device_record.length">
-                            <span class="task-info-label" style="padding-right: 0;">设备名称：</span><span class="task-info-value">{{task.device_record[0].device.name}}</span>
+                            <span class="task-info-label">设备名称：</span><span class="task-info-value">{{task.device_record[0].device.name}}</span>
                         </div>
-                        <div style="padding-bottom: 10px">
-                            <span class="task-info-label" style="padding-right: 0;">期望完成时间：</span>
-                            <span class="task-info-value" ng-class="{'timeout': task.isTimeout}">{{task.expect_complete_time.substring(0,16)}}</span>
+                        <div ng-if="task.stage_id !== TaskStatus.ToClose && task.stage_id !== TaskStatus.Closed">
+                            <div>
+                                <span class="task-info-label">创建时间：</span>
+                                <span class="task-info-value">{{task.create_time.substring(0,16)}}</span>
+                            </div>
+                            <div>
+                                <span class="task-info-label">当前处理人：</span>
+                                <span class="task-info-value">{{task.current_handler_name}}</span>
+                            </div>
                         </div>
+                        <div ng-if="task.stage_id === TaskStatus.ToClose || task.stage_id === TaskStatus.Closed">
+                            <div>
+                                <span class="task-info-label">完成时间：</span>
+                                <span class="task-info-value">{{task.finish_time.substring(0,16)}}</span>
+                            </div>
+                            <div>
+                                <span class="task-info-label">维修人员：</span>
+                                <span class="task-info-value">{{task.operator_name}}</span>
+                            </div>
+                        </div>
+
                     </div>
                     <div class="task-status">
-                        <span style="color: #6f6f6f;margin: 0 2px;">{{task.current_handler_name}}</span>{{task.stage_name}}
+                        {{task.stage_name}}
                     </div>
                 </li>
             </ul>

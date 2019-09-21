@@ -1,0 +1,64 @@
+<div>
+    <div style="padding: 12px 0 4px 12px; font-size: 13px;"><strong>检查项：检查项{{total}}，异常项{{exception}}</strong></div>
+    <div ng-repeat="item in checkItems" class="check-item">
+        <div><label class="title">检查项：</label>{{item.name}}</div>
+        <div><label class="title">正常结果：</label>{{item.reference_relation}} {{item.reference_value}}</div>
+        <div ng-if="item.desp"><label class="title">检查方法：</label>{{item.desp}}</div>
+        <div>
+            <label class="title">检查结果：</label>
+            <label ng-if="!canEdit && item.pass === 1">正常</label>
+            <label ng-if="!canEdit && item.pass === 2" style="color: #ff0000;">异常</label>
+            <label style="float: right" ng-if="canEdit">
+                <button class="item-pass" ng-class="{normal: item.pass !== 2}" ng-click="setItemPass(item, 1)">正常</button>
+                <button class="item-pass" ng-class="{normal: item.pass === 2}" ng-click="setItemPass(item, 2)">异常</button>
+            </label>
+        </div>
+        <div ng-if="item.pass !== 2">
+            <label class="title">结果描述：</label><input placeholder="请输入结果数值" ng-model="item.result_desp" ng-if="canEdit"><label ng-if="!canEdit">{{item.result_desp}}</label>
+        </div>
+        <div ng-if="item.pass === 2">
+            <label class="title">异常描述：</label><input placeholder="请输入异常描述" ng-model="item.result_desp" ng-if="canEdit"><label ng-if="!canEdit">{{item.result_desp}}</label>
+        </div>
+    </div>
+</div>
+<div style="padding: 0 0 4px 12px; font-size: 13px;"><strong>设备巡检结果</strong></div>
+<div class="card" style="padding-top: 0;">
+    <div class="card-content">
+        <div style="color: #333;font-size: 13px;font-weight: 600;margin: 0 6px 4px 0;">
+            <button class="item-pass normal" ng-class="{'normal': result.status === '1', exception: result.status === '2'}" ng-if="!canEdit && result.status">{{result.status === '1' ? '正常' : '异常'}}</button>
+        </div>
+        <div class="device-check-pass-result" ng-if="canEdit">
+            <div ng-class="{'checked': result.status !== '2'}" ng-click="setDevicePass('1')">
+                <i class="radio"></i><label>正常</label>
+            </div>
+            <div ng-class="{'checked': result.status === '2'}" ng-click="setDevicePass('2')">
+                <i class="radio"></i><label>异常</label>
+            </div>
+        </div>
+        <div ng-if="result.status === '2'">
+            <div style="color: #333;font-size: 13px;font-weight: 600;margin: 6px 0 4px 0;">异常情况描述
+                <span style="color: red;margin-left: 2px;" ng-if="canEdit">*</span>
+            </div>
+            <textarea rows="4" placeholder="{{canEdit ? '请输入设备异常情况描述' : ''}}" name="name" ng-model="result.desp" ng-disabled="!canEdit" required
+                      style="background-color: #F4F5F6; border: none;border-radius: 4px;font-size: 12px;padding: 8px;margin: 0;"></textarea>
+            <label class="error" style="font-size: 12px;color: #ff0000;" ng-if="!result.desp">
+                请输入异常描述
+            </label>
+            <div style="color: #333;font-size: 13px;font-weight: 600;margin: 6px 0 4px 0;">设备异常图片</div>
+            <ul class="image-list" style="padding: 0;" ng-if="result.images">
+                <li class="image-item" ng-repeat="url in result.images" ng-click="showImageGallery(result.images, $index+1)">
+                    <div class="content">
+                        <img ng-src="{{url}}" alt="">
+                    </div>
+                </li>
+            </ul>
+            <div ng-include="'/templates/image-uploader.html'" ng-init="elementId='imageList'" style="margin-left: -16px;" ng-if="canEdit"></div>
+            <div style="margin: 6px 0 4px 0;font-size: 13px;" ng-click="setEnableDtsSubmit()" ng-if="canEdit">
+                <label class="mui-checkbox mui-left checkbox-square">
+                    <a class="checkbox" ng-class="{checked: enableSubmitDts}" style="font-size: 13px;"></a>
+                </label>
+                <label>自动为设备异常提交缺陷单</label>
+            </div>
+        </div>
+    </div>
+</div>

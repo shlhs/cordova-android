@@ -8,6 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta http-equiv="Access-Control-Allow-Origin" content="*">
     <link rel="stylesheet" href="../components/mui/css/icons-extra.css">
+    <link rel="stylesheet" href="../css/iconfont/iconfont.css">
     <link rel="stylesheet" href="../css/setting.css">
     <link rel="stylesheet" href="../css/animate.css">
     <script type="text/javascript" src="../components/libs/jquery-2.1.4.min.js"></script>
@@ -21,9 +22,11 @@
     <script type="text/javascript" src="../js/service/common-service.js"></script>
     <script type="text/javascript" src="../js/router/router.js"></script>
     <link rel="stylesheet" href="../components/mui/css/mui.min.css">
+    <link rel="stylesheet" href="../components/mui/css/mui.picker.min.css">
     <link rel="stylesheet" href="../css/my.css">
     <link rel="stylesheet" href="../css/icon.css">
     <link rel="stylesheet" href="../css/task.css">
+    <link rel="stylesheet" href="../css/energy.css">
     <style>
         .site-value .mui-icon {
             font-size: 14px;
@@ -50,14 +53,14 @@
         }
     </style>
 
-<body class="box-vertical-center" ng-app="myApp" ng-controller="HomeCtrl">
+<body class="box-vertical-center timeType-MONTH" ng-app="myApp" ng-controller="HomeCtrl">
 <div ng-include="'/templates/top-menu.html'"></div>
     <div class="mui-content no-padding" style="height: auto;top: 0;">
         <div style="height: 100%;overflow-y: hidden;" ng-controller="TaskBaseCtrl">
 
-            <div id='sites' class="no-padding mui-control-content content-wrapper"
-                 ng-class="{'mui-active': tabName === 'sites'}" ng-include="'/templates/site/site-home.html'" style="bottom:54px;">
-            </div>
+            <!--<div id='sites' class="no-padding mui-control-content content-wrapper"-->
+                 <!--ng-class="{'mui-active': tabName === 'sites'}" ng-include="homeTemplate" style="bottom:54px;">-->
+            <!--</div>-->
             <div ng-repeat="menu in navMenus" id={{menu.id}} class="no-padding mui-control-content content-wrapper"
                  ng-class="{'mui-active': tabName === menu.id}" ng-include="menu.templateUrl" style="bottom:54px;">
             </div>
@@ -67,21 +70,21 @@
             </div>
         </div>
     </div>
-<nav id="menu" class="mui-bar mui-bar-tab bg-footer nav-horizontal" style="box-shadow: none !important;z-index:0;">
-    <a class="mui-tab-item" href="javascript:void(0)" ng-click="chooseNav('sites', '站点监控')"
-       ng-class="{'mui-active': tabName==='sites'}">
-        <span class="mui-icon nav-icon nav-sites"></span>
-        <span class="mui-tab-label">站点监控</span>
-    </a>
-    <a class="mui-tab-item" href="javascript:void(0)" ng-repeat="menu in navMenus"
-       ng-click="chooseNav(menu.id, menu.name)" ng-class="{'mui-active': tabName===menu.id}">
+<nav id="menu" class="mui-bar mui-bar-tab1 bg-footer nav-horizontal" ng-class="{energy: uiMode === 'energy'}" style="box-shadow: none !important;z-index:0;">
+    <!--<a class="mui-tab-item" href="javascript:void(0)" ng-click="chooseNav('sites', '站点监控')"-->
+       <!--ng-class="{'mui-active': tabName==='sites'}">-->
+        <!--<span class="mui-icon nav-icon nav-sites"></span>-->
+        <!--<span class="mui-tab-label">站点监控</span>-->
+    <!--</a>-->
+    <label class="tab-item" ng-repeat="menu in navMenus"
+       ng-click="chooseNav($event, menu.id)" ng-class="{'mui-active': tabName===menu.id}">
         <span class="mui-icon nav-icon {{menu.icon}}"></span>
         <span class="mui-tab-label">{{menu.name}}</span>
-    </a>
-    <a class="mui-tab-item" href="javascript:void(0)" ng-click="chooseNav('setting', '我')" ng-class="{'mui-active': tabName==='setting'}">
+    </label>
+    <label class="tab-item" ng-click="chooseNav($event, 'setting')" ng-class="{'mui-active': tabName==='setting'}">
         <span class="mui-icon nav-icon nav-setting"></span>
         <span class="mui-tab-label">我的</span>
-    </a>
+    </label>
 </nav>
 <div ui-view></div>
 <div ng-include="'/templates/top-menu.html'"></div>
@@ -92,11 +95,17 @@
     <script type="text/javascript" src="../js/controller/login.js"></script>
     <script type="text/javascript" src="../js/controller/task.js"></script>
     <script type="text/javascript" src="../js/controller/sites.js"></script>
+    <script src="../js/controller/user-energy.js"></script>
     <script type="text/javascript" src="../js/controller/device.js"></script>
+    <script type="text/javascript" src="../js/service/varData.js"></script>
     <script src="../js/controller/setting.js"></script>
     <script src="../js/controller/monitor.js"></script>
     <script src="../js/controller/kanban.js"></script>
-    <script src="../../components/moment.min.js"></script>
+    <script src="../components/moment.min.js"></script>
+    <script src="../components/echart/echarts.min-3.x.js"></script>
+    <!--<script src="../components/echart/echarts.common.js"></script>-->
+    <script src="../components/mui/js/mui.min.js"></script>
+    <script src="../components/mui/js/mui.picker.min.js"></script>
     <script id="grab-task-template" type="text/x-handlebars-template">
         <div class="mui-popup mui-popup-in android-dialog" style="display: block;">
             <div class="mui-popup-inner">

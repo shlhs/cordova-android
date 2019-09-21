@@ -1,7 +1,7 @@
 "use strict";
 
 
-app.controller('MonitorListCtrl', function ($scope, $stateParams, platformService, scrollerService, ajax, routerService) {
+app.controller('MonitorListCtrl', ['$scope', '$stateParams', 'platformService', 'scrollerService', 'ajax', 'routerService', function ($scope, $stateParams, platformService, scrollerService, ajax, routerService) {
     $scope.monitorScreens = [];
     $scope.monitorLoading = true;
     $scope.loadingFailed = false;
@@ -50,10 +50,10 @@ app.controller('MonitorListCtrl', function ($scope, $stateParams, platformServic
     };
 
     $scope.getDataList();
-});
+}]);
 
 
-app.controller('MonitorDetailCtrl', function ($scope) {
+app.controller('MonitorDetailCtrl', ['$scope', function ($scope) {
 
     var url = $scope.url;
     var iframe = document.getElementById('iframe');
@@ -82,4 +82,4 @@ app.controller('MonitorDetailCtrl', function ($scope) {
     }
 
     window.addEventListener('popstate', pageBackCallback);
-});
+}]);
