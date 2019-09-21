@@ -4,134 +4,27 @@
  * Created by liucaiyun on 2017/7/28.
  */
 
+function findFirstLeafOfTree(data) {
+    if (!data || !data.length) {
+        return null;
+    }
+    for (var i=0; i<data.length; i++) {
+        if (!data[i].is_group) {
+            return data[i];
+        }
+        if (data[i].children) {
+            var found = findFirstLeafOfTree(data[i].children);
+            if (found) {
+                return found;
+            }
+        }
+    }
+    return null;
+}
 
-app.controller('SiteListCtrl', function ($scope, $http, $state, scrollerService, ajax, platformService, routerService, appStoreProvider) {
-    $scope.sites = [];
-    $scope.sitesTree = [];
-    $scope.currentSite = {};
-    $scope.isLoading = true;
-    $scope.popup_visible = false;
-    $scope.scope = $scope;
-    $scope.searchSiteResult = [];
+app.controller('SiteListCtrl', function ($scope, $http, $state, userService, ajax, platformService, routerService, appStoreProvider) {
+    $scope.role = userService.getUserRole();
     $scope.selectedApps = [];
-
-    $scope.getDataList = function () {
-        scrollerService.initScroll('#sites', $scope.getDataList);
-        $scope.isLoading = true;
-        ajax.get({
-            url: "/stations",
-            success: function(result) {
-                $scope.isLoading = false;
-                var sites = [];
-                result.forEach(function (s) {
-                    var width = window.screen.width*3, height=Math.round(width/2);
-                    if (s.photo_src_link) {
-                        s.site_image = platformService.getImageUrl(width, height, platformService.host + s.photo_src_link);
-                    } else {
-                        s.site_image = 'img/site-default.png';
-                    }
-                    if (!s.is_group)
-                    {
-                        s.search_key = s.name+s.sn.toLowerCase();
-                    }
-                    sites.push(s);
-                });
-                $scope.sites = sites;
-                if (sites.length) {
-                    // 更新站点状态
-                    $scope.sitesTree = formatToTreeData(sites)[0].children;
-                    $scope.searchSiteResult = sites;
-                    getCurrentSite();
-                    getSiteDetail();        // 获取站点详情
-                }
-                $scope.isLoading = false;
-                $scope.$apply();
-            },
-            error: function (a,b,c) {
-                $scope.isLoading = false;
-                $.notify.error('获取站点列表失败');
-                console.log('get fail');
-                $scope.$apply();
-            }
-        });
-    };
-
-    function getSiteDetail() {      // 获取站点详情
-        ajax.get({
-            url: "/stations/details",
-            success: function(result) {
-                $scope.isLoading = false;
-                var sites = $scope.sites;
-                result.forEach(function (s) {
-                    if (s.communication_status == null || s.communication_status == '') {
-                        s.status = 'unknown';
-                        s.status_name = '未知';
-                    } else if (s.communication_status == 1) {
-                        if (s.running_status == 1) {
-                            s.status = 'abnormal';
-                            s.status_name = '故障';
-                        } else {
-                            s.status = 'normal';
-                            s.status_name = '正常';
-                        }
-                    } else {
-                        s.status = 'offline';
-                        s.status_name = '离线';
-                    }
-                    s.events_amount = s.unclosed_envet_amount > 99 ? '99+' : s.unclosed_envet_amount;
-                    for (var i=0; i<sites.length; i++) {
-                        if (sites[i].sn === s.station.sn) {
-                            delete s['station'];
-                            $.extend(sites[i], s);
-                            break;
-                        }
-                    }
-                });
-                // 更新站点状态
-                $scope.sitesTree = formatToTreeData(sites)[0].children;
-                $scope.isLoading = false;
-                $scope.$apply();
-            },
-            error: function (a,b,c) {
-                $scope.isLoading = false;
-                console.log('get fail');
-                $scope.$apply();
-            }
-        });
-
-    }
-
-    function getMenuDataOfStation() {
-        ajax.get({
-            url: '/station/' + $scope.currentSite.sn + '/menudata',
-            success: function (response) {
-                if (response) {
-                    var menuData = response.extend_js ? JSON.parse(response.extend_js) : {};
-                    var menuSns = {};
-                    if (menuData.data) {
-                        menuData.data.forEach(function (menuGroup) {
-                            var enabled = menuGroup.enabled;
-                            if (menuGroup.children) {
-                                menuGroup.children.forEach(function (menu) {
-                                    menuSns[menu.sn] = enabled && menu.enabled;
-                                });
-                            }
-                        });
-                    }
-                    var platFuncs = response.plat_function_switch ? JSON.parse(response.plat_function_switch) : null;
-                    appStoreProvider.setMenuSns(menuSns, platFuncs);
-                    $scope.$emit('$onMenuUpdate', menuSns);
-                    $scope.selectedApps = appStoreProvider.getSelectedApps();
-                    $scope.$apply();
-                }
-            }
-        });
-    }
-
-    $scope.updateAppList = function() {
-        $scope.selectedApps = appStoreProvider.getSelectedApps();
-        $scope.$apply();
-    };
 
     $scope.openAppPage = function (app) {
         routerService.openPage($scope, app.templateUrl, {
@@ -144,76 +37,11 @@ app.controller('SiteListCtrl', function ($scope, $http, $state, scrollerService,
         routerService.openPage($scope, '/templates/app-store/app-store.html');
     };
 
-    $scope.showPopover = function () {
-        $scope.popup_visible=true;
-    };
-    $scope.closePopover = function () {
-        $scope.popup_visible=false;
-    };
-    $scope.chooseSite = function (site) {
-        $scope.currentSite = site;
-        $scope.searchSiteResult = $scope.sites;
-        localStorage.setItem("currentSite", JSON.stringify(site));
-        $scope.closePopover();
-        getMenuDataOfStation();
-    };
-
-    $scope.searchInputChange = function (input) {
-        var value = input.value.toLowerCase().trim();
-        if (!value) {
-            $scope.searchSiteResult = $scope.sites;
-        } else {
-            $scope.searchSiteResult = [];
-            $scope.sites.forEach(function (site) {
-                if (site.search_key.indexOf(value) >= 0) {
-                    $scope.searchSiteResult.push(site);
-                }
-            });
-        }
-        $scope.$apply();
-    };
-
-    function getCurrentSite() {
-        var sites = $scope.sites;
-        var siteStr = localStorage.getItem("currentSite");
-        if (siteStr){
-            // 检查站点是否在当前站点中
-            var site = JSON.parse(siteStr);
-            for (var i=0; i<sites.length; i++) {
-                if (sites[i].sn === site.sn) {
-                    $scope.currentSite = sites[i];
-                    getMenuDataOfStation();
-                    return;
-                }
-            }
-        }
-        for (var i=0; i<sites.length; i++) {
-            if (!sites[i].is_group) {
-                $scope.currentSite = sites[i];
-                localStorage.setItem("currentSite", JSON.stringify($scope.currentSite));
-                getMenuDataOfStation();
-                break;
-            }
-        }
-    }
-
-    $scope.openSiteSelectPage = function () {
-        routerService.openPage($scope, 'templates/site/site-select-page.html',
-            {sitesTree: $scope.sitesTree, onSelect: $scope.chooseSite, selectedSn: $scope.currentSite.sn});
-        // $state.go('.search', {sitesTree: $scope.sitesTree, onSelect: $scope.chooseSite, selectedSn: $scope.currentSite.sn});
-    };
-
     $scope.openMap = function () {
         // location.href='/templates/map.html?name=' + $scope.currentSite.name + '&stationSn=' + $scope.currentSite.sn;
         routerService.openPage($scope, '/templates/map.html', {
             stationName: $scope.currentSite.name,
             stationSn: $scope.currentSite.sn
-        });
-    };
-
-    $scope.openDtsList = function () {
-        routerService.openPage($scope, '/templates/dts/dts-list.html', {
-            station_sn: $scope.currentSite.sn
         });
     };
 
@@ -238,12 +66,51 @@ app.controller('SiteListCtrl', function ($scope, $http, $state, scrollerService,
         }
     });
 
+    function getMenuDataOfStation() {
+        ajax.get({
+            url: '/station/' + $scope.currentSite.sn + '/menudata',
+            success: function (response) {
+                if (response) {
+                    var menuData = response.extend_js ? JSON.parse(response.extend_js) : {};
+                    var menuSns = {};
+                    if (menuData.data) {
+                        menuData.data.forEach(function (menuGroup) {
+                            var enabled = menuGroup.enabled;
+                            if (menuGroup.children) {
+                                menuGroup.children.forEach(function (menu) {
+                                    menuSns[menu.sn] = enabled && menu.enabled;
+                                });
+                            }
+                        });
+                    }
+                    var platFuncs = response.plat_function_switch ? JSON.parse(response.plat_function_switch) : null;
+                    appStoreProvider.setMenuSns(menuSns, platFuncs);
+                    $scope.$emit('$onMenuUpdate', !platFuncs || platFuncs.opsManagement, menuSns);
+                    $scope.selectedApps = appStoreProvider.getSelectedApps();
+                    $scope.$apply();
+                }
+            }
+        });
+    }
+
+    $scope.$on('onSiteChange', function (event, station) {
+        getMenuDataOfStation();
+    });
+
     $scope.$on('$destroy', function (event) {
         appUpdateListener();
         appUpdateListener = null;
         eventCountRefreshListener();
         eventCountRefreshListener = null;
-    })
+    });
+
+    $scope.$on('onChooseNav', function (event, tabName) {       // 点击菜单事件
+        if (tabName === 'sites') {      // 点击"站点监控"菜单，刷新当前站点状态
+            if ($scope.currentSite.sn) {
+                $scope.refreshStationStatus($scope.currentSite.sn);
+            }
+        }
+    });
 });
 
 
@@ -330,7 +197,7 @@ app.controller('SiteBaseInfoCtrl', function ($scope, $timeout, $stateParams, aja
                 // 站点图片
                 var width = window.screen.width*3, height=Math.round(width/2);
                 if (data.photo_src_link) {
-                    data.site_image = platformService.getImageUrl(width, height, platformService.host + data.photo_src_link);
+                    data.site_image = platformService.getImageUrl(width, height, platformService.getCloudHost() + data.photo_src_link);
                 }
                 else {
                     data.site_image = 'img/background/site-default.png';
@@ -514,7 +381,7 @@ app.controller('EventListCtrl', function ($scope, scrollerService, userService, 
 
 
 app.controller('SiteDocsCtrl', function ($scope, routerService, platformService, ajax, cordovaService) {
-    var sn = $scope.sn, host = platformService.getHost();
+    var sn = $scope.sn, host = platformService.getCloudHost();
     $scope.docList = [];
     $scope.docLoading = false;
     $scope.loadingFailed = false;
@@ -603,7 +470,6 @@ app.controller('SiteDocsCtrl', function ($scope, routerService, platformService,
             $("#slides").hide();
             window.removeEventListener("popstate", hide);
         }
-        var host = platformService.host;
         if (doc.isImage){
             $scope.currentImage = host + doc.src_link;
             // $("#slides").show().on('click', function () {
@@ -646,7 +512,7 @@ app.controller('SiteReportsCtrl', function ($scope, $state,ajax, scrollerService
                 var outputs = [];
                 data.forEach(function (d) {
                     if (d.output_src_link) {
-                        d.output_src_link = platformService.host + d.output_src_link;
+                        d.output_src_link = platformService.getCloudHost() + d.output_src_link;
                         outputs.push(d);
                     }
                 });

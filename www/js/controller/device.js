@@ -566,7 +566,7 @@ app.controller('DeviceTreeCommonCtrl', function ($scope, ajax) {
     };
 });
 
-app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile, routerService) {       // 检测设备列表页
+app.controller('DeviceMonitorListCtrl', function ($scope, $timeout, ajax, $compile, routerService) {       // 检测设备列表页
     // var stationSn = GetQueryString('sn');
     var stationSn = $scope.sn;
     $scope.deviceDatas = [];
@@ -678,7 +678,7 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile, router
             {sn: deviceData.station_sn, deviceSn: deviceData.sn, deviceName: deviceData.name})
     };
 
-    $scope.getDataList();
+    $timeout($scope.getDataList, 500);
 });
 
 app.controller('DeviceMonitorCtrl', function ($scope, ajax, routerService, userService) {

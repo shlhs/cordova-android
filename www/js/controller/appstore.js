@@ -1,3 +1,39 @@
+var defaultEnergyMenus = [
+    {
+        name: '用电概况',
+        icon: 'icon-dashboard-energy-overview',
+        templateUrl: '/templates/energy/overview.html'
+    }, {
+        name: '电费分析',
+        icon: 'icon-dashboard-energy-cost-analysis',
+        templateUrl: '/templates/energy/cost-analysis.html'
+    }, {
+        name: '用电负荷',
+        icon: 'icon-dashboard-energy-charge',
+        templateUrl: '/templates/energy/load-analysis.html'
+    }, {
+        name: '最大需量',
+        icon: 'icon-dashboard-energy-max-demand',
+        templateUrl: '/templates/energy/max-demand.html'
+    }, {
+        name: '电能质量',
+        icon: 'icon-dashboard-energy-monitor',
+        templateUrl: '/templates/energy/quality-monitor.html'
+    }, {
+        name: '质量报告',
+        icon: 'icon-dashboard-energy-quality-report',
+        templateUrl: '/templates/energy/quality-report.html'
+    }, {
+        name: '设备监控',
+        icon: 'icon-device-monitor-new',
+        templateUrl: '/templates/site/device-monitor-list.html'
+    }, {
+        name: '设备档案',
+        icon: 'icon-archives-new',
+        templateUrl: '/templates/site/static-devices/device-home.html'
+    }
+];
+
 app.provider('appStoreProvider', function () {
     var defaultApps = [];
     this.setDefaultApps = function (apps) {
@@ -246,7 +282,7 @@ app.config(['appStoreProviderProvider', function (appStoreServiceProvider) {
                 {
                     name: '用能统计',
                     icon: 'icon-energy-statistics',
-                    templateUrl: '/templates/energy/overview.html',
+                    templateUrl: '/templates/energy/statistics.html',
                     url: 'energy-overview',
                     sn: 'energy/overview',
                     defaultChecked: true

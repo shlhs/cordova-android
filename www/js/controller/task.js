@@ -128,66 +128,335 @@ app.service('Permission', function (userService, UserRole) {      // 权限服�
     };
 });
 
-app.controller('HomeCtrl', function ($scope, $timeout, userService, ajax, $state, $rootScope, Permission, appStoreProvider) {
+function formatSiteTree(sites) {
 
-    var company = userService.company;
-    var map = null;
+    function _deleteEmptyFolderOfTree(parent) {
+        if (parent.children) {
+            var newChildren = [];
+            parent.children.forEach(function (child) {
+                if (child.is_group && child.children.length) {
+                    _deleteEmptyFolderOfTree(child);
+                    if (child.children.length) {
+                        newChildren.push(child);
+                    }
+                } else if (!child.is_group) {
+                    newChildren.push(child);
+                }
+            });
+            parent.children = newChildren;
+        }
+    }
+
+    var sitesTree = formatToTreeData(sites);
+    // 去除没有站点的文件夹
+    _deleteEmptyFolderOfTree(sitesTree[0]);
+    return sitesTree;
+}
+
+app.controller('HomeCtrl', function ($scope, $timeout, userService, ajax, platformService, appStoreProvider, routerService) {
     var role = userService.getUserRole();
     $scope.viewName = '';
-    $scope.tabName = 'sites';
+    $scope.tabName = '';
     $scope.title = '';
-    $scope.navMenus = [];
 
-    function homeInitialize() {
-        window.android && window.android.homeInitialize();      // 进入主界面后进行初始化
+    $scope.sitesTree = [];
+    $scope.sites = [];
+    $scope.currentSite = {};
+    $scope.isLoading = true;
+    $scope.popup_visible = false;
+    $scope.searchSiteResult = [];
+    $scope.role = userService.getUserRole();
+    if (gShowEnergyPage) {
+        $scope.navMenus = [_getDefaultHomeMenu(), _getEnergyMenu()];
+    } else {
+        $scope.navMenus = [_getDefaultHomeMenu()];
     }
+    var menuInited = false;     // 导航栏菜单是否初始化
 
-    $scope.chooseNav = function (tabName, title) {
-        $scope.tabName = tabName;
-        $scope.title = title;
-        var element=angular.element('#' + tabName).children().first(), scope = element.scope();
-        if (scope.getDataList && !element.data('inited')){
-            scope.getDataList();
-            element.data('inited', true);
-        }
-        angular.element('#' + tabName).addClass('mui-active').siblings().removeClass('mui-active');
+    $scope.getDataList = function () {
+        $scope.isLoading = true;
+        ajax.get({
+            url: "/stations",
+            success: function(result) {
+                $scope.isLoading = false;
+                var sites = [];
+                result.forEach(function (s) {
+                    var width = window.screen.width*3, height=Math.round(width/2);
+                    if (s.photo_src_link) {
+                        s.site_image = platformService.getImageUrl(width, height, platformService.getCloudHost() + s.photo_src_link);
+                    } else {
+                        s.site_image = '/img/site-default.png';
+                    }
+                    if (!s.is_group)
+                    {
+                        s.search_key = s.name.toLowerCase() + ' ' + s.sn.toLowerCase();
+                    }
+                    s.full_address = (s.address_province || '') + (s.address_city || '') + (s.address_district || '') + (s.address || '');
+                    sites.push(s);
+                });
+                $scope.sites = sites;
+                if (sites.length) {
+                    // 更新站点状态
+                    $scope.sitesTree = formatSiteTree(sites)[0].children;
+                    $scope.searchSiteResult = sites;
+                    getCurrentSite();
+                    $scope.refreshAllSiteStatus();        // 获取站点详情
+                }
+                $scope.$apply();
+            },
+            error: function (a,b,c) {
+                $scope.isLoading = false;
+                $.notify.error('获取站点列表失败');
+                console.log('get fail');
+                $scope.$apply();
+            }
+        });
     };
 
-
-    function initMenu() {
-        $timeout(function () {
-            homeInitialize();
-            $scope.chooseNav('sites', '站点监控');
-        }, 500);
+    function _formatSiteStatus(data) {
+        if (data.communication_status == null || data.communication_status == '') {
+            data.status = 'unknown';
+            data.status_name = '未知';
+        } else if (data.communication_status == 1) {
+            if (data.running_status == 1) {
+                data.status = 'abnormal';
+                data.status_name = '故障';
+            } else {
+                data.status = 'normal';
+                data.status_name = '正常';
+            }
+        } else {
+            data.status = 'offline';
+            data.status_name = '离线';
+        }
     }
 
-    function addMenuOfOps() {
-        $scope.navMenus.push(
-            {
-                id: 'competition_tasks',
-                name: '抢单',
-                templateUrl: 'templates/task/task-competition-list.html',
-                icon: 'nav-task-grab'
+    $scope.refreshAllSiteStatus = function() {      // 获取站点详情
+        ajax.get({
+            url: "/stations/details",
+            success: function(result) {
+                $scope.isLoading = false;
+                var sites = $scope.sites;
+                result.forEach(function (s) {
+                    if (s.communication_status == null || s.communication_status == '') {
+                        s.status = 'unknown';
+                        s.status_name = '未知';
+                    } else if (s.communication_status == 1) {
+                        if (s.running_status == 1) {
+                            s.status = 'abnormal';
+                            s.status_name = '故障';
+                        } else {
+                            s.status = 'normal';
+                            s.status_name = '正常';
+                        }
+                    } else {
+                        s.status = 'offline';
+                        s.status_name = '离线';
+                    }
+                    s.events_amount = s.unclosed_envet_amount > 99 ? '99+' : s.unclosed_envet_amount;
+                    for (var i=0; i<sites.length; i++) {
+                        if (sites[i].sn === s.station.sn) {
+                            delete s['station'];
+                            $.extend(sites[i], s);
+                            break;
+                        }
+                    }
+                });
+                // 更新站点状态
+                $scope.sitesTree = formatToTreeData(sites)[0].children;
+                $scope.isLoading = false;
+                $scope.$apply();
             },
-            {
+            error: function (a,b,c) {
+                $scope.isLoading = false;
+                console.log('get fail');
+                $scope.$apply();
+            }
+        });
+    };
+
+    $scope.refreshStationStatus = function(sn) {
+        ajax.get({
+            url: "/stations/details/" + sn,
+            success: function(result) {
+                _formatSiteStatus(result);
+                for (var i=0; i<$scope.sites.length; i++) {
+                    if ($scope.sites[i].sn === sn) {
+                        $.extend($scope.sites[i], {
+                            events_amount: result.unclosed_envet_amount > 99 ? '99+' : result.unclosed_envet_amount,
+                            status: result.status,
+                            status_name: result.status_name,
+                            communication_status: result.communication_status,
+                            running_status: result.running_status
+                        });
+                        break;
+                    }
+                }
+                // 更新站点状态
+                $scope.$apply();
+            }
+        });
+    };
+
+    $scope.updateAppList = function() {
+        $scope.selectedApps = appStoreProvider.getSelectedApps();
+        $scope.$apply();
+    };
+
+    $scope.searchInputChange = function (input) {
+        var value = input.value.toLowerCase().trim();
+        if (!value) {
+            $scope.searchSiteResult = $scope.sites;
+        } else {
+            $scope.searchSiteResult = [];
+            $scope.sites.forEach(function (site) {
+                if (site.search_key.indexOf(value) >= 0) {
+                    $scope.searchSiteResult.push(site);
+                }
+            });
+        }
+        $scope.$apply();
+    };
+
+    $scope.updateSiteData = function () {
+        var url = "/stations/" + $scope.currentSite.sn + "/events";
+        ajax.get({
+            url: url,
+            success: function (data) {
+            },
+            error: function () {
+
+            }
+        })
+    };
+
+    $scope.showPopover = function () {
+        $scope.popup_visible=true;
+    };
+    $scope.closePopover = function () {
+        $scope.popup_visible=false;
+    };
+
+    $scope.chooseSite = function (site) {
+        if (!$scope.currentSite || $scope.currentSite.sn !== site.sn) {
+            $scope.currentSite = site;
+            $scope.searchSiteResult = $scope.sites;
+            localStorage.setItem("currentSite", JSON.stringify(site));
+            $scope.closePopover();
+            $scope.$broadcast('onSiteChange', site);
+        }
+    };
+
+    function getCurrentSite() {
+        var sites = $scope.sites;
+        var siteStr = localStorage.getItem("currentSite");
+        if (siteStr){
+            // 检查站点是否在当前站点中
+            var site = JSON.parse(siteStr);
+            for (var i=0; i<sites.length; i++) {
+                if (sites[i].sn === site.sn) {
+                    $scope.currentSite = sites[i];
+                    $scope.$broadcast('onSiteChange', sites[i]);
+                    return;
+                }
+            }
+        }
+        $scope.currentSite = findFirstLeafOfTree(sites);
+        if ($scope.currentSite) {
+            localStorage.setItem("currentSite", JSON.stringify($scope.currentSite));
+            $scope.$broadcast('onSiteChange', $scope.currentSite);
+        }
+    }
+
+    $scope.openSiteSelectPage = function () {
+        $scope.refreshAllSiteStatus();
+        routerService.openPage($scope, '/templates/site/site-select-page.html',
+            {treeData: $scope.sitesTree, onSelect: $scope.chooseSite, selectedSn: $scope.currentSite.sn})
+    };
+
+    function _getDefaultHomeMenu() {
+        return {
+            id: 'sites',
+            name: '首页',
+            templateUrl: 'templates/site/site-home.html',
+            icon: 'nav-sites'
+        };
+    }
+    function _getEnergyMenu() {
+        return {
+            id: 'energy_mgmt',
+            name: '能效管理',
+            templateUrl: 'templates/energy/energy-home.html',
+            icon: 'nav-energy'
+        };
+    }
+
+    function _getTaskTodoMenu() {
+        if (role === 'OPS_ADMIN' || role === 'OPS_OPERATOR') {
+            return {
                 id: 'my_tasks',
                 name: '我的待办',
                 templateUrl: 'templates/task/task-todo-list.html',
                 icon: 'nav-all-tasks'
-            }
-        );
+            };
+        } else if (role === 'USER') {
+            return {
+                id: 'my_tasks',
+                name: '我的服务',
+                templateUrl: 'templates/task/user-task-list.html',
+                icon: 'nav-service'
+            };
+        }
+        return null;
+    }
+    $scope.chooseNav = function ($event, tabId) {
+        $event && $event.preventDefault();
+        if (tabId === $scope.tabName) {
+            return;
+        }
+        $scope.tabName = tabId;
+        var element=angular.element('#' + tabId).children().first(), scope = element.scope();
+        if (scope && scope.getDataList && !element.data('inited')){
+            scope.getDataList();
+            element.data('inited', true);
+        } else {
+            $scope.$broadcast('onChooseNav', tabId);
+        }
+        angular.element('#' + tabId).addClass('mui-active').siblings().removeClass('mui-active');
+    };
+
+    function initMenu() {
+        // 所有用户都可看到这两个页面
+        $timeout(function () {
+            $scope.chooseNav(null, $scope.navMenus[0].id);
+        }, 500);
     }
 
-    var menuUpdateListener = $scope.$on('$onMenuUpdate', function (event, menuSns) {
-        // 菜单权限刷新
+    function updateMenus(platHasOps) {
         // 判断是否包含ops-management权限
-        if (appStoreProvider.hasOpsAuth()) {
-            if (!$scope.navMenus.length) {
-                addMenuOfOps();
+        if (platHasOps && !menuInited) {
+            // 有运维权限
+            if (!gShowEnergyPage) {
+                // 如果不显示能效页面，那么运维管理员默认显示抢单页和待办页
+                if (role === 'OPS_ADMIN' || role === 'OPS_OPERATOR') {
+                    $scope.navMenus.push({
+                        id: 'grab',
+                        name: '抢单',
+                        templateUrl: 'templates/task/task-competition-list.html',
+                        icon: 'nav-task-grab'
+                    });
+                }
             }
-        } else {
-            $scope.navMenus = [];
+            var todoMenu = _getTaskTodoMenu();
+            if (todoMenu) {
+                $scope.navMenus.push(todoMenu);
+            }
+            menuInited = true;
         }
+    }
+
+    var menuUpdateListener = $scope.$on('$onMenuUpdate', function (event, opsEnabled, menuSns) {
+        updateMenus(opsEnabled);
     });
 
     $scope.$on('$destroy', function (event) {
@@ -217,7 +486,7 @@ app.controller('TaskBaseCtrl', function ($scope, ajax, userService, routerServic
         //data.expect_complete_time
     };
 
-    var companyId = userService.getTaskCompanyId();
+    var companyId = userService.getCompanyId();
     $scope.commonPostAction = function(taskId, actionType, description, images, cb) {
         var data = {};
         if (description){
@@ -414,7 +683,7 @@ app.controller('CompetitionTaskListCtrl', function ($scope, $rootScope, scroller
         });
     }
 
-    var companyId = userService.getTaskCompanyId();
+    var companyId = userService.getCompanyId();
     $scope.getDataList = function() {
         scrollerService.initScroll('#competition_tasks_scroll', $scope.getDataList);
         if (!companyId) {
@@ -484,7 +753,7 @@ app.controller('CompetitionTaskListCtrl', function ($scope, $rootScope, scroller
 app.controller('GrabTaskCtrl', function ($scope, userService, ajax) {
     $scope.postGrabAction = function($event, taskId) {
         $event.stopPropagation();
-        var companyId = userService.getTaskCompanyId();
+        var companyId = userService.getCompanyId();
         var data = {};
         $.notify.progressStart();
         ajax.post({
@@ -697,7 +966,7 @@ app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, us
         scrollerService.initScroll("#taskList", $scope.getDataList);
         $scope.isLoading = true;
         $scope.loadingFailed = false;
-        var companyId = userService.getTaskCompanyId();
+        var companyId = userService.getCompanyId();
         var url = "/opstasks/history/" + companyId;
         if (deviceSn) {
             url = "/staticdevices/opstasks/" + deviceSn + '?types=' + OpsTaskType.join(',');
@@ -785,6 +1054,10 @@ app.controller('TaskListCtrl', function ($scope, $rootScope, scrollerService, us
         $scope.$apply();
     };
 
+    $scope.openTaskCreatePage = function () {
+        routerService.openPage($scope, '/templates/task/add-task.html');
+    };
+
     setTimeout($scope.getDataList, 500);
 });
 
@@ -818,7 +1091,7 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
     var userPicker = null;
 
 
-    var companyId = userService.getTaskCompanyId();
+    var companyId = userService.getCompanyId();
     function updateUserActions() {      // 更新用户的操作权限
         if (taskData.current_handler !== username){
             $scope.canHandle = false;
@@ -831,13 +1104,9 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
     function getTaskDetail() {
 
         var option = {
-            url: '/opstasks',
-            data: {
-                task_ids: id
-            },
+            url: '/opstasks/' + companyId + '/' + id,
             success: function (data) {
-                var task = data[0];
-                updateTaskInfo(task);
+                updateTaskInfo(data);
             },
             error: function (a, b, c) {
                 console.log('get task detail fail');
@@ -850,7 +1119,7 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
 
     function updateTaskInfo(data) {
         $scope.taskData = formatTaskStatusName(data);
-        $scope.taskData.expect_complete_time = data.expect_complete_time.substring(0, 16);
+        $scope.taskData.expect_complete_time = data.expect_complete_time ? data.expect_complete_time.substring(0, 16) : '';
         $scope.$apply();
         stationLongitude = data.station_longitude;
         stationLatitude = data.station_latitude;
@@ -1041,7 +1310,7 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
         var imageList = [];
         for (var i in $scope.imageScope){
             if (images['picture' + i]){
-                imageList.push(platformService.host + images['picture' + i]);
+                imageList.push(platformService.getCloudHost() + images['picture' + i]);
             }
         }
         // $state.go('task.gallery', {index: index, images: imageList});
@@ -1352,7 +1621,7 @@ app.controller('TaskCloseRejectCtrl', function ($scope) {      //驳回关闭请
 
 
 app.controller('TaskCreateCtrl', function ($scope, $stateParams, $timeout, routerService, userService, ajax) {
-    var companyId = userService.getTaskCompanyId();
+    var companyId = userService.getCompanyId();
     $scope.stationName = null;
     $scope.taskTypeName = null;
     $scope.handlerName = null;
@@ -1867,7 +2136,7 @@ app.controller('DeviceXunjianTaskDetailCtrl', function ($scope, ajax, platformSe
                             var images = [];
                             r.photo_links.split(',').forEach(function (src) {
                                 // images.push(platformService.getImageUrl(width, height, platformService.host + src));
-                                images.push(platformService.host + '/images/' + src);
+                                images.push(platformService.getCloudHost() + src);
                             });
                             r.images = images;
                         }

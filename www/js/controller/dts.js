@@ -42,7 +42,7 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
     window.android && window.android.clearSelectedPhotos();
 
     var insertPosition = angular.element("#imageList>.upload-item");
-    var companyId = userService.getTaskCompanyId();
+    var companyId = userService.getCompanyId();
 
     function init() {
         if (!$scope.device.sn && $scope.device.station_sn) {

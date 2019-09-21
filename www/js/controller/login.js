@@ -17,6 +17,7 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
     $scope.error = '';
     var platform = null;
     $scope.enable = false;
+    $scope.platformCodeVisible = !defaultPlatIpAddr;
     $scope.platformCode = platformService.getLatestPlatform() ? platformService.getLatestPlatform().code : null;
     $scope.username = userService.getUsername();
     $scope.password = userService.getPassword();
@@ -29,7 +30,7 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
     };
 
     $scope.inputChange = function () {
-        if ($scope.platformCode && $scope.username && $scope.password) {
+        if ((!$scope.platformCodeVisible || $scope.platformCode) && $scope.username && $scope.password) {
             $scope.enable = true;
         } else {
             $scope.enable = false;
@@ -46,7 +47,11 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
             return false;
         }
         $scope.enable = false;
-        queryPlatform(login);
+        if (defaultPlatIpAddr) {
+            login();
+        } else {
+            queryPlatform(login);
+        }
     };
 
     $scope.setAutoLogin = function(isAutoLogin){
@@ -88,6 +93,9 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
             success: function (data) {
                 var result = KJUR.jws.JWS.verify(data.token, 'zjlhstest');
                 if (result) {
+                    if (!getStorageItem('latestPlatform')) {
+                        platformService.setLatestPlatform({url: defaultPlatIpAddr + ":8099/v1"})
+                    }
                     userService.setAccountToken(data.token);
                     getUserInfo();
                 } else {
@@ -115,9 +123,11 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
     function getUserInfo() {
         ajax.get({
             url: '/user/' + $scope.username,
+            ignoreAuthExpire: true,
             success: function (data) {
                 userService.saveLoginUser(data, $scope.password);
-                getCompany();
+                // getCompany();
+                $scope.gotoHome();
             },
             error: function () {
                 $scope.enable = true;
@@ -128,29 +138,29 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
         })
     }
 
-    function getCompany() {
-        ajax.get({
-            url: platform.url + '/user/' + $scope.username + '/opscompany',
-            xhrFields: {
-                withCredentials: true
-            },
-            crossDomain: true,
-            success: function (data) {
-                if (data && data.length >= 1)
-                {
-                    userService.saveCompany(data[0]);
-                } else{
-                    userService.saveCompany([]);
-                }
-                $scope.gotoHome();
-            },
-            error: function (xhr, status, error) {
-                $scope.isLogin = false;
-                userService.saveCompany([]);
-                console.log('get company info fail:' + xhr.status);
-            }
-        });
-    }
+    // function getCompany() {
+    //     ajax.get({
+    //         url: platform.url + '/user/' + $scope.username + '/opscompany',
+    //         xhrFields: {
+    //             withCredentials: true
+    //         },
+    //         crossDomain: true,
+    //         success: function (data) {
+    //             if (data && data.length >= 1)
+    //             {
+    //                 userService.saveCompany(data[0]);
+    //             } else{
+    //                 userService.saveCompany([]);
+    //             }
+    //             $scope.gotoHome();
+    //         },
+    //         error: function (xhr, status, error) {
+    //             $scope.isLogin = false;
+    //             userService.saveCompany([]);
+    //             console.log('get company info fail:' + xhr.status);
+    //         }
+    //     });
+    // }
 
     $scope.gotoHome = function() {
         $state.go('index');
@@ -206,7 +216,7 @@ app.controller('AutoLoginCtrl', function ($scope, $timeout, $state, userService,
     $scope.autoLogin = function () {
         //先等1.5s
         // 先判断是否可以自动登录
-        if ($scope.username && $scope.password && $scope.platformCode){
+        if ($scope.username && $scope.password && (defaultPlatIpAddr || $scope.platformCode)){
             $scope.setAutoLogin(true);
             $timeout(function () {
                 $scope.login();

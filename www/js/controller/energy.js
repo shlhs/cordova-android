@@ -262,10 +262,10 @@ app.controller('EnergyMeterReadingCtrl', function ($scope, ajax, $compile, platf
                     $scope.categories.push({id: name, name: name})
                 });
                 response.labelNames.forEach(function (name) {
-                   $scope.labelNames.push({id: name, name: name});
-                   if (name === response.labelName) {
-                       $scope.currentLabel = {id: name, name: name};
-                   }
+                    $scope.labelNames.push({id: name, name: name});
+                    if (name === response.labelName) {
+                        $scope.currentLabel = {id: name, name: name};
+                    }
                 });
                 allEnergyItems = response.energyItems;
                 $scope.energyItems = formatEnergyTree(response.category, response.labelName, allEnergyItems);
@@ -912,7 +912,7 @@ app.directive('energyReportTableRepeatFinish',function(){
     }
 });
 
-app.controller('EnergyOverviewCtrl', function ($scope, ajax, platformService, $compile) {
+app.controller('EnergyStatisticsCtrl', function ($scope, ajax, platformService, $compile) {
     var stationSn = $scope.sn;
     $scope.categories = [];
     $scope.labelNames = [];
@@ -967,7 +967,7 @@ app.controller('EnergyOverviewCtrl', function ($scope, ajax, platformService, $c
                     var html = "<ul class='selector-group' style='border-bottom: #ececec 1px solid;'>" +
                         "<drop-down-menu options=\"categories\" on-select=\"onSelect\" model-name=\"'currentCategory'\" selected=\"currentCategory\" style=\"width: 25%\"></drop-down-menu>" +
                         "<drop-down-menu options=\"labelNames\" on-select=\"onSelect\" model-name=\"'currentLabel'\" selected=\"currentLabel\" style=\"width: 25%\"></drop-down-menu>" +
-                        "<drop-down-menu options=\"energyItems\" on-select=\"onSelect\" model-name=\"'labelItem'\" selected=\"currentItem\" style=\"width: 50%\" disabled=\"currentLabel.name !== '支路'\"></drop-down-menu>" +
+                        "<drop-down-menu options=\"energyItems\" on-select=\"onSelect\" model-name=\"'labelItem'\" selected=\"currentItem\" style=\"width: 50%\" disabled=\"currentLabel.name !== '支路'\" ></drop-down-menu>" +
                         "</ul>";
                     var compileFn = $compile(html);
                     var $dom = compileFn($scope);
@@ -983,7 +983,7 @@ app.controller('EnergyOverviewCtrl', function ($scope, ajax, platformService, $c
             }
         });
     }
-    
+
     function getItemsForLabel() {
         var items = [];
         var category = $scope.currentCategory.name, labelName = $scope.currentLabel.name;
@@ -1152,11 +1152,11 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
         // 获取一级支路今日总用能
         var sns = [];
         $scope.$parent.energyItems.forEach(function (item) {
-           if (item.level === 1) {
-               item.deviceVarSns.forEach(function (sn) {
-                   sns.push(sn);
-               });
-           }
+            if (item.level === 1) {
+                item.deviceVarSns.forEach(function (sn) {
+                    sns.push(sn);
+                });
+            }
         });
         fetchElectricDegree(sns, moment().format('YYYY-MM-DD 00:00:00.000'), moment().format('YYYY-MM-DD 23:59:59.000'), function (data) {
             $scope.todayTotalDegree = data;
@@ -1192,6 +1192,7 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
                 endTime: endTime,
                 calcmethod: 'MAX,MIN'
             },
+            timeout: 45000,
             success: function (data) {
                 var total = null;
                 // 将最大-最小=总电量
@@ -1207,6 +1208,9 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
                 if (total !== null) {
                     callback(parseFloat(total.toFixed(2)));
                 }
+            },
+            error: function () {
+
             }
         });
     }
@@ -1289,7 +1293,7 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
             $scope.$apply();
         }
     }
-    
+
     function createElectricTrendLine() {
         var item = currentItem;
         var today = [moment().format('YYYY-MM-DD 00:00:00.000'), moment().format('YYYY-MM-DD 23:59:59.000')];
@@ -1445,17 +1449,17 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
                 // if (t > currentMoment) {
                 //     return false;
                 // }
-               switch ($scope.timeType) {
-                   case '日':
-                       times.push(parseInt(t.substring(11, 13)) + '时');
-                       break;
-                   case '月':
-                       times.push(parseInt(t.substring(8, 10)) + '日');
-                       break;
-                   case '年':
-                       times.push(parseInt(t.substring(5, 7)) + '月');
-                       break;
-               }
+                switch ($scope.timeType) {
+                    case '日':
+                        times.push(parseInt(t.substring(11, 13)) + '时');
+                        break;
+                    case '月':
+                        times.push(parseInt(t.substring(8, 10)) + '日');
+                        break;
+                    case '年':
+                        times.push(parseInt(t.substring(5, 7)) + '月');
+                        break;
+                }
             });
             var nowData = [], historyData = [];
             for (var i=0; i<times.length; i++) {
@@ -1597,7 +1601,7 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
         return [startMoment.subtract(1, timeType.toLowerCase()).format(timeFormat), endMoment.subtract(1, timeType.toLowerCase()).format(timeFormat)];
     }
 
-    function fetchElectricDegree(sns, startTime, endTime, callback) {
+    function fetchElectricDegree(sns, startTime, endTime, callback, errorCallback) {
         ajax.get({
             url: platformService.getDeviceMgmtHost() + '/variables/data/summarized',
             data: {
@@ -1606,6 +1610,7 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
                 endTime: endTime,
                 calcmethod: 'MAX, MIN'
             },
+            timeout: 45000,
             success: function (data) {
                 data.forEach(function (item) {
                     if (item.max_value_data !== null && item.min_value_data !== null) {
@@ -1615,6 +1620,9 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
                     }
                 });
                 callback(data);
+            },
+            error: function () {
+                errorCallback();
             }
         });
     }
@@ -1639,7 +1647,7 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
             }
         });
     }
-    
+
     function createElectricDegreesPie() {
         // 只取level=1的项进行请求
         var sns = [], showItems = [];
@@ -1676,6 +1684,9 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
                 seriesList.push({name: item.aliasName, value: total.toFixed(2)});
             });
             _paint(total.toFixed(2), seriesList);
+        }, function () {
+            $scope.loadingStatus[1] = false;
+            $scope.$apply();
         });
         function _paint(total, series) {
             var config = {
@@ -1763,9 +1774,9 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
         });
         return itemDegreeMap;
     }
-    
+
     function createFiveAmplif() {       // 增幅前五名
-        // 请求所有项的数据，然后分析出前5名
+                                        // 请求所有项的数据，然后分析出前5名
         var sns = getAllSnsOfItems();
         var currentDegreeMap = null, historyDegreeMap = null;
         var times = getStartAndEndTime(), lastTimes=getLinkRelativeStartAndEndTime();
@@ -1779,6 +1790,9 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
             $scope.$apply();
             historyDegreeMap = _groupDegrees(data);
             _paint();
+        }, function () {
+            $scope.loadingStatus[2] = false;
+            $scope.$apply();
         });
 
         function _paint() {
@@ -1860,7 +1874,7 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
             echarts.init(document.getElementById('chart_bar1')).setOption(config);
         }
     }
-    
+
     function createFiveDegree() {       // 用能前五名
 
         var sns = getAllSnsOfItems();
@@ -1872,6 +1886,9 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
             $scope.$apply();
             currentDegreeMap = _groupDegrees(data);
             _paint();
+        }, function () {
+            $scope.loadingStatus[3] = false;
+            $scope.$apply();
         });
         function _paint() {
             var values = [];
@@ -1954,6 +1971,9 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
             $scope.$apply();
             historyDegreeMap = _groupDegrees(data);
             _paint();
+        }, function () {
+            $scope.loadingStatus[4] = false;
+            $scope.$apply();
         });
 
         function _paint() {

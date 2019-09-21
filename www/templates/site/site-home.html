@@ -15,7 +15,7 @@
             </header>
             <div class="site-img-wrapper">
                 <div class="img-border">
-                    <img ng-src="{{currentSite.site_image}}" style="width: 100%;height: 100%;border-radius: 8px;" ng-if="currentSite.sn">
+                    <img ng-src="{{currentSite.site_image}}" style="width: 100%;height: 100%;border-radius: 8px;" ng-if="currentSite.sn" ng-click="refreshStationStatus(currentSite.sn)">
                     <img src="img/site-default.png" style="width: 100%;height: 100%;border-radius: 8px;" ng-if="!currentSite.sn">
                 </div>
                 <div class="status-line" ng-if="currentSite.sn">
@@ -24,7 +24,7 @@
             </div>
         </div>
         <div class="card round-card" style="padding: 4px 0 8px 0;" ng-if="currentSite.sn">
-            <ul class="mui-table-view mui-grid-view mui-grid-9 no-border entrance-list">
+            <ul class="mui-table-view mui-grid-view mui-grid-9 no-border entrance-list small">
                 <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border" ng-repeat="app in selectedApps">
                     <a href="javascript:;" ng-click="openAppPage(app)" style="padding: 6px 0 0 0;">
                         <span class="mui-icon icon icon-32 {{app.icon}}"></span>
@@ -49,7 +49,7 @@
                     <li class="mui-table-view-cell">
                         <label class="title">站点地址</label>
                         <span class="value" ng-click="openMap()" ng-if="currentSite.longitude">
-                        {{currentSite.address}}
+                        {{currentSite.full_address}}
                         <i class="icon icon-location" style="width: 18px; height: 18px; float: right"></i>
                     </span>
                         <span class="value" ng-if="!currentSite.longitude">
