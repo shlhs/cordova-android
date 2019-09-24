@@ -16,7 +16,7 @@ var TaskTypes = {
     FatalDts: 10,   // 致命缺陷
     Xunjian: 11
 };
-var OpsTaskType = [1, 2, 3, 4, 5, 6, 7, 11];
+var OpsTaskType = [2, 3, 4, 5, 7];
 var DtsTaskType = [8, 9, 10];
 
 var TaskAction = {Create: 0, Accept: 1, Refuse: 2, Assign: 3, Go: 4, Apply: 5, Reject: 6, Close: 7, Comment: 8, Grab: 9, Arrive: 10, Update: 11, Transfer: 12};
@@ -2043,12 +2043,18 @@ app.controller('TaskCreateCtrl', function ($scope, $stateParams, $timeout, route
         ajax.get({
             url: '/opstasks/task_types',
             success: function (data) {
-                $scope.taskTypes = data;
+                var taskTypes = [];
+                data.forEach(function (t) {
+                    if (OpsTaskType.indexOf(t.id) >= 0) {
+                        taskTypes.push(t);
+                    }
+                });
+                $scope.taskTypes = taskTypes;
                 _format(data);
 
                 //普通示例
                 taskTypePicker = new mui.PopPicker();
-                taskTypePicker.setData(data);
+                taskTypePicker.setData(taskTypes);
                 var taskTypeButton = document.getElementById('taskTypePicker');
                 taskTypeButton.addEventListener('click', function(event) {
                     taskTypePicker.show(function(items) {
