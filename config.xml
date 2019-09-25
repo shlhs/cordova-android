@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.topband-auto.PowerDistributionManager" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.topband-auto.PowerDistributionManager" version="1.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Topband</name>
     <description>
         拓邦自动化.
@@ -68,5 +68,5 @@
     <preference name="SplashScreenDelay" value="1" />
     <preference name="FadeSplashScreenDuration" value="0" />
     <engine name="android" spec="^5.2.2" />
-    <engine name="ios" spec="^4.5.5" />
+    <engine name="ios" spec="~4.5.5" />
 </widget>
