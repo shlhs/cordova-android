@@ -4,7 +4,7 @@
  */
 var app = angular.module('myApp', ['ngAnimate', 'ui.router', 'ui.router.state.events']);
 var loginExpireCheckEnable = false;       // 是否检查鉴权过期
-var defaultPlatIpAddr = "";     // 平台默认ip，格式为：http://118.190.51.135
+var defaultPlatIpAddr = "http://47.107.101.225";     // 深圳广鑫创
 var gShowEnergyPage = false;     // 是否显示能效页面，不显示能效页面时运维人员会看到抢单页面
 
 app.run(function ($animate) {
