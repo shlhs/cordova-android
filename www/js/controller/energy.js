@@ -46,7 +46,19 @@ function formatEnergyTree(category, labelName, allEnergyItems) {
         });
     }
 
-    return treeObj;
+    return JSON.parse(JSON.stringify(treeObj));
+}
+
+function expandAll(datas) {
+    if (!datas) {
+        return;
+    }
+    datas.forEach(function (item) {
+        if (!item.isLeaf) {
+            item.$$isExpend = true;
+            expandAll(item.children);
+        }
+    })
 }
 
 app.directive('energyConfigTree',[function(){
@@ -65,29 +77,25 @@ app.directive('energyConfigTree',[function(){
             var tmpChecked = {};        // 本次操作中被选中或被取消的选项
             $scope.toggle = function () {
                 $scope.active = !$scope.active;
-                if ($scope.active) {
-                    // 每次显示时默认展开所有
-                    expandAll($scope.datas);
-                }
-                else {
+                if (!$scope.active) {
                     // 当收起时，将当前已选通过回调回传
                     $scope.onOk();
                 }
                 tmpChecked = {};
             };
 
-            function expandAll(datas) {
-                if (!datas) {
-                    return;
-                }
-                datas.forEach(function (item) {
-                    if (!item.isLeaf) {
-                        item.$$isExpend = true;
-                        expandAll(item.children);
-                    }
-                })
-            }
-            expandAll($scope.datas);
+            // function expandAll(datas) {
+            //     if (!datas) {
+            //         return;
+            //     }
+            //     datas.forEach(function (item) {
+            //         if (!item.isLeaf) {
+            //             item.$$isExpend = true;
+            //             expandAll(item.children);
+            //         }
+            //     })
+            // }
+            // expandAll($scope.datas);
 
             $scope.itemExpended = function(item, $event){
                 item.$$isExpend = ! item.$$isExpend;
@@ -107,12 +115,42 @@ app.directive('energyConfigTree',[function(){
             $scope.isLeaf = function(item){
                 return item.isLeaf;
             };
-            $scope.warpCallback = function(item, $event){
+            $scope.onToggleExpand = function($event, item){
                 item.$$isExpend = !item.$$isExpend;
+            };
+            $scope.onCheckAllChildren = function ($event, item) {
+                function _checkChildren(children, checked) {
+                    if (children) {
+                        children.forEach(function (child) {
+                            if (!child.isVirtual) {
+                                child.checked = checked;
+                            }
+                            _checkChildren(child.children, checked);
+                        });
+                    }
+                }
+                // 选择自身及所有子节点
+                if (item.checkAll) {
+                    if (!item.isVirtual) {
+                        item.checked = false;
+                    }
+                    item.checkAll = false;
+                    _checkChildren(item.children, false);
+                } else {
+                    if (!item.isVirtual) {
+                        item.checked = true;
+                    }
+                    item.checkAll = true;
+                    _checkChildren(item.children, true);
+                }
             };
 
             $scope.onCheckItem = function ($event, item) {
                 $event.stopPropagation();
+                if (item.isVirtual) {
+                    $.notify.toast('未配置变量，无法选择');
+                    return false;
+                }
                 item.checked = !item.checked;
                 if (tmpChecked[item.path] !== undefined) {
                     // 如果上一次记录过，则本次删除
@@ -189,7 +227,7 @@ function distinctVarSns(sns) {      // 变量sn去重
     return tmpSns;
 }
 
-app.controller('EnergyMeterReadingCtrl', function ($scope, ajax, $compile, platformService) {
+app.controller('EnergyMeterReadingCtrl', ['$scope', 'ajax', '$compile', 'platformService', function ($scope, ajax, $compile, platformService) {
     var stationSn = GetQueryString("sn");
     $scope.categories = [];
     $scope.labelNames = [];
@@ -202,10 +240,10 @@ app.controller('EnergyMeterReadingCtrl', function ($scope, ajax, $compile, platf
     $scope.tableHeader = [];
     $scope.tableBodyData = [];
     $scope.isLoading = false;
+    $scope.isDataLoading = false;       // 数据加载
     var variableUnits = {};     // 变量sn与单位的对应关系
     var allEnergyItems = [];
     $scope.selectedItems = [];
-
 
     function getConfig(stationSn) {
         $scope.isLoading = true;
@@ -335,13 +373,35 @@ app.controller('EnergyMeterReadingCtrl', function ($scope, ajax, $compile, platf
     };
 
     function checkAll(datas) {
+        // 选第一个层的非虚拟节点
+        if (!datas || !datas.length) {
+            return 0;
+        }
+        var count = 0;
+        // 先查找第一级
         datas.forEach(function (item) {
-            item.checked = true;
-            $scope.selectedItems.push(item);
-            if (item.children) {
-                checkAll(item.children);
+            if (!item.isVirtual) {
+                count += 1;
+                item.checked = true;
+                $scope.selectedItems.push(item);
             }
         });
+        // 再查找第二级
+        if (count === 0) {
+            datas.forEach(function (item) {
+               if (item.children) {
+                   item.children.forEach(function (child) {
+                       if (!child.isVirtual) {
+                           child.checked = true;
+                           $scope.selectedItems.push(child);
+                       }
+                   })
+               }
+            });
+        }
+
+        // 展开所有节点
+        expandAll(datas);
     }
 
     $scope.onSelectItems = function (items) {
@@ -369,6 +429,7 @@ app.controller('EnergyMeterReadingCtrl', function ($scope, ajax, $compile, platf
             refreshTable();
             return;
         }
+        $scope.isDataLoading = true;
         ajax.get({
             url: platformService.getDeviceMgmtHost() + '/variables/data/sometime',
             data: {
@@ -376,6 +437,7 @@ app.controller('EnergyMeterReadingCtrl', function ($scope, ajax, $compile, platf
                 querytimes: [$scope.startDate, $scope.endDate].join(',')
             },
             success: function (response) {
+                $scope.isDataLoading = false;
                 response.forEach(function (item) {
                     item.values = JSON.parse(item.values);
                 });
@@ -408,10 +470,12 @@ app.controller('EnergyMeterReadingCtrl', function ($scope, ajax, $compile, platf
                     }
                     $scope.tableBodyData.push(rowData);
                 });
-                $scope.$apply();
                 refreshTable();
+                $scope.$apply();
             },
             error: function () {
+                $scope.isDataLoading = false;
+                $scope.$apply();
                 $.notify.error('获取数据失败');
             }
         });
@@ -432,7 +496,7 @@ app.controller('EnergyMeterReadingCtrl', function ($scope, ajax, $compile, platf
 
     // initDatePicker();
     getConfig(stationSn);
-});
+}]);
 
 app.directive('energyMeterReadingTable', [function(){
     return {
@@ -477,7 +541,7 @@ app.directive('energyMeterReadingTableRepeatFinish',function(){
     }
 });
 
-app.controller('EnergyReportCtrl', function ($scope, ajax, $compile, platformService) {
+app.controller('EnergyReportCtrl', ['$scope', 'ajax', '$compile', 'platformService', function ($scope, ajax, $compile, platformService) {
     var stationSn = GetQueryString("sn");
     $scope.categories = [];
     $scope.labelNames = [];
@@ -500,6 +564,7 @@ app.controller('EnergyReportCtrl', function ($scope, ajax, $compile, platformSer
     $scope.tableHeader = [];
     $scope.tableBodyData = [];
     $scope.isLoading = false;
+    $scope.isDataLoading = false;       // 数据加载状态
     var allEnergyItems = [];
     $scope.selectedItems = [];
 
@@ -616,13 +681,35 @@ app.controller('EnergyReportCtrl', function ($scope, ajax, $compile, platformSer
     };
 
     function checkAll(datas) {
+        // 选第一个层的非虚拟节点
+        if (!datas || !datas.length) {
+            return 0;
+        }
+        var count = 0;
+        // 先查找第一级
         datas.forEach(function (item) {
-            item.checked = true;
-            $scope.selectedItems.push(item);
-            if (item.children) {
-                checkAll(item.children);
+            if (!item.isVirtual) {
+                count += 1;
+                item.checked = true;
+                $scope.selectedItems.push(item);
             }
         });
+        // 再查找第二级
+        if (count === 0) {
+            datas.forEach(function (item) {
+                if (item.children) {
+                    item.children.forEach(function (child) {
+                        if (!child.isVirtual) {
+                            child.checked = true;
+                            $scope.selectedItems.push(child);
+                        }
+                    })
+                }
+            });
+        }
+
+        // 展开所有节点
+        expandAll(datas);
     }
 
     function refreshData() {
@@ -677,6 +764,7 @@ app.controller('EnergyReportCtrl', function ($scope, ajax, $compile, platformSer
             refreshTable();
             return;
         }
+        $scope.isDataLoading = true;
         ajax.get({
             url: platformService.getDeviceMgmtHost() + '/variables/data/historytrend',
             data: {
@@ -687,6 +775,7 @@ app.controller('EnergyReportCtrl', function ($scope, ajax, $compile, platformSer
                 queryPeriod: queryPeriod
             },
             success: function (data) {
+                $scope.isDataLoading = false;
                 // 先对数据进行补空
                 data.forEach(function (item) {
                     var result = fillTrendDataVacancy(startTime, endTime, queryPeriod, item.time_keys, item.datas, 'YYYY-MM-DD HH:mm:ss.000');
@@ -733,10 +822,11 @@ app.controller('EnergyReportCtrl', function ($scope, ajax, $compile, platformSer
                     }
                     $scope.tableBodyData.push(rowData);
                 });
-                $scope.$apply();
                 refreshTable();
+                $scope.$apply();
             },
             error: function () {
+                $scope.isDataLoading = false;
                 $.notify.error('获取数据失败');
                 $scope.$apply();
             }
@@ -757,7 +847,7 @@ app.controller('EnergyReportCtrl', function ($scope, ajax, $compile, platformSer
     }
 
     init();
-});
+}]);
 
 app.directive('energyReportTable', [function(){
     return {
@@ -800,7 +890,7 @@ app.directive('energyReportTableRepeatFinish',function(){
     }
 });
 
-app.controller('EnergyOverviewCtrl', function ($scope, ajax, platformService, $compile) {
+app.controller('EnergyStatisticsCtrl', ['$scope', 'ajax', 'platformService', '$compile', function ($scope, ajax, platformService, $compile) {
     var stationSn = GetQueryString("sn");
     $scope.categories = [];
     $scope.labelNames = [];
@@ -973,11 +1063,11 @@ app.controller('EnergyOverviewCtrl', function ($scope, ajax, platformService, $c
 
 
     init();
-});
+}]);
 
 const ENERGY_LINE_COLORS = ['#41bed8','#fde664','#9283ea','#3cd3cb','#fe7979','#f9b344','#46be8a','#579fe4','#f37c54','#3995ea'];
 
-app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformService) {
+app.controller('EnergyStatisticsZhiluCtrl', ['$scope', 'ajax', 'platformService', function ($scope, ajax, platformService) {
     $scope.timeTypes = ['日', '月', '年'];
     $scope.timeType = '日';
     var currentItem = null;
@@ -1389,9 +1479,9 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
     }
     
     
-});
+}]);
 
-app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformService) {
+app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService', function ($scope, ajax, platformService) {
     var timeType = null;
     var energyItems = null;
     var currentDate = null;
@@ -2041,4 +2131,4 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
             chart5.setOption(config);
         }
     }
-});
+}]);

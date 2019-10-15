@@ -1,7 +1,6 @@
 "use strict";
 
-app.service('scrollerService', function ($timeout) {
-
+app.service('scrollerService', function () {
 
     this.initScroll = function(elementQuery, upFn) {
         var element = angular.element(elementQuery);
@@ -14,7 +13,6 @@ app.service('scrollerService', function ($timeout) {
                     domLoad    : '<div class="dropload-load"><span class="loading"></span>加载中...</div>'
                 },
                 loadUpFn : function(me){
-                    // angular.element(elementQuery).scope().getDataList();
                     upFn.call();
                     dropload.resetload();
                 }
@@ -25,236 +23,6 @@ app.service('scrollerService', function ($timeout) {
 
 });
 
-
-// app.directive('deviceTreeView',[function(){
-//     return {
-//         restrict: 'E',
-//         templateUrl: '/templates/site/common-device-tree.html',
-//         scope: {
-//             deviceList: '=',
-//             gotoDevice: '='
-//         },
-//         controller:['$scope', '$attrs', function($scope, $attrs){
-//             var deviceDataList = $scope.deviceList;
-//             $scope.treeData = [];
-//             $scope.selectOptions = [null, null, null, null, null];       // select内容按5级显示
-//             $scope.deviceSelected = [null, null, null, null, null];
-//             $scope.collapse = [false, false, 0];        // 表示选择器是否展开，一级、二级用true/false表示是否展开，三级用数据id表示
-//             $scope.maxDepth = -1;
-//
-//             function formatToTreeData(data) {
-//
-//                 function addToGroup(newItem, items, depth) {
-//                     if (!items || !items.length) {
-//                         return false;
-//                     }
-//                     if (depth > maxDepth) {
-//                         maxDepth = depth;
-//                     }
-//                     for (var i=0; i<items.length; i++) {
-//
-//                         var item = items[i];
-//                         if (!item.is_group){
-//                             continue;
-//                         }
-//                         if (item.id === newItem.parent_id) {
-//                             if (newItem.is_group) {
-//                                 newItem.children = [];
-//                             }
-//                             newItem.text = newItem.name;
-//                             item.children.push(newItem);
-//                             if (maxDepth < depth + 1) {
-//                                 maxDepth = depth + 1;
-//                             }
-//                             return true;
-//                         }
-//                         if (item.children) {
-//                             if (addToGroup(newItem, item.children, depth+1)) {
-//                                 return true;
-//                             }
-//                         }
-//                     }
-//                     return false;
-//                 }
-//
-//                 function _indexs_sort(item) {
-//
-//                     if (!item.is_group) {
-//                         return;
-//                     }
-//                     if (item.indexs) {
-//                         var newChildren = [];
-//                         var childrenMap = {};
-//                         item.children.forEach(function (n, i) {
-//                             childrenMap[n.id] = n;
-//                         });
-//                         item.indexs.split(',').forEach(function (i) {
-//                             if (childrenMap[i]) {
-//                                 newChildren.push(childrenMap[i]);
-//                                 delete childrenMap[i];
-//                             }
-//                         });
-//                         // 如果children的id不在indexs里，那么顺序加到后面
-//                         for (var id in childrenMap) {
-//                             if (!id) {
-//                                 continue;
-//                             }
-//                             newChildren.push(childrenMap[id]);
-//                         }
-//                         item.children = newChildren;
-//                     }
-//                     item.children.forEach(function (child, i) {
-//                         _indexs_sort(child);
-//                     });
-//                 }
-//
-//
-//                 var formatted = [];
-//                 var maxDepth = -1;
-//
-//                 // 先按照depth进行排序
-//                 data = data.sort(function (a, b) {
-//
-//                     if (a.is_group !== b.is_group) {  // 分组排在前
-//                         return b.is_group - a.is_group;
-//                     }
-//                     if (!a.name) {
-//                         return 0;
-//                     }
-//                     return a.name.localeCompare(b.name, 'zh-CN');
-//                 });
-//
-//                 var notInsertedNodes = []; // 上一次遍历没有找到对应位置的节点
-//                 var insertNodeCount = 1; // 本次循环加入的节点数
-//                 while (insertNodeCount > 0) {
-//                     notInsertedNodes = [];
-//                     insertNodeCount = 0;
-//                     data.forEach(function (item) {
-//                         var found = true;
-//                         if (item.parent_id) {
-//                             if (!addToGroup(item, formatted, 1)) {
-//                                 notInsertedNodes.push(item);
-//                                 found = false;
-//                             }
-//                         } else if (item.depth < 0) {
-//                             // 根节点
-//                             item.text = item.name;
-//                             item.is_group = true;
-//                             item.children = [];
-//                             formatted.push(item);
-//                         } else if (item.depth === 0 && item.parent_id === 0) {
-//                             if (item.is_group) {
-//                                 item.children = [];
-//                             }
-//                             item.text = item.name;
-//                             formatted[0].children.push(item);
-//                             if (maxDepth < 2) {
-//                                 maxDepth = 2;
-//                             }
-//                         } else {
-//                             item.text = item.name;
-//                             item.children = [];
-//                             formatted.push(item);
-//                         }
-//                         if (found) {
-//                             insertNodeCount += 1;
-//                         }
-//                     });
-//                     data = notInsertedNodes;
-//                 }
-//
-//                 // 根据父节点的indexs对树再次进行排序
-//                 _indexs_sort(formatted[0]);
-//                 $scope.maxDepth = maxDepth - 1;
-//                 return formatted;
-//             }
-//
-//             function setDefaultData(startDepth) {       //
-//                 if (!startDepth) {
-//                     var range = $scope.treeData[0].children, start=5-$scope.maxDepth;
-//                 } else {
-//                     var range = $scope.deviceSelected[startDepth-1].children, start=startDepth;
-//                 }
-//                 for (var i=0; i<$scope.maxDepth; i++) {
-//                     if (range && range.length) {
-//                         $scope.selectOptions[start+i] = range;
-//                         if (range[0].group) {
-//                             $scope.deviceSelected[start+i] = range[0];
-//                         }
-//                         if (start+i===2 && range[0].group) {
-//                             // 默认展开被选中的group
-//                             $scope.collapse[2] = range[0].id;
-//                         }
-//                         range = range[0].children;
-//                     } else {
-//                         $scope.selectOptions[start+i] = null;
-//                         $scope.deviceSelected[start+i] = null;
-//                     }
-//                 }
-//             }
-//
-//             $scope.toggleCollapse = function (index) {
-//                 // 点击下拉选择，显示或隐藏下拉选择框
-//                 if (index < 0) {
-//                     for (var i=0; i<2; i++) {
-//                         $scope.collapse[i] = false;
-//                     }
-//                 } else {
-//                     if (index === 1) {
-//                         // 如果第二个选择框没有数据，则无法弹出
-//                         if (!$scope.deviceSelected[1]) {
-//                             return;
-//                         }
-//                     }
-//                     if ($scope.collapse[index]) {
-//                         $scope.collapse[index] = false;
-//                     } else {
-//                         $scope.collapse[index] = true;
-//                         $scope.collapse[1-index] = false;
-//                     }
-//                 }
-//             };
-//
-//             var thirdSelectorCurrentCollapse = null;
-//             // 点击选中某一个设备或分组
-//             $scope.chooseDeviceOrGraph = function (selectorIndex, itemData) {   // selectorIndex: 是第几个选择器
-//
-//                 if (!itemData.group) {
-//                     // 跳转到设备监测详情
-//                     $scope.gotoDevice(itemData);
-//                     return;
-//                 }
-//                 if (selectorIndex === 0 || selectorIndex === 1)
-//                 {
-//                     $scope.deviceSelected[selectorIndex] = itemData;
-//                     setDefaultData(selectorIndex+1);
-//                     $scope.toggleCollapse(selectorIndex);
-//                 }
-//                 else if (selectorIndex === 2) {
-//                     if (itemData.group) {
-//                         if ($scope.collapse[2] === itemData.id) {
-//                             $scope.collapse[2] = -1;
-//                         } else {
-//                             $scope.collapse[2] = itemData.id;
-//                         }
-//                         thirdSelectorCurrentCollapse = itemData;
-//                     }
-//                 } else if (selectorIndex === 3) {
-//                     $scope.deviceSelected[selectorIndex] = itemData;
-//                     // 设置上一级为父节点
-//                     $scope.deviceSelected[selectorIndex-1] = thirdSelectorCurrentCollapse;
-//                     setDefaultData(selectorIndex+1);
-//                 }
-//                 return false;
-//             };
-//
-//             $scope.treeData = formatToTreeData(deviceDataList);
-//             setDefaultData();
-//         }]
-//     };
-// }]);
-
-
 app.directive('deviceTreeView',[function(){
     return {
         restrict: 'E',
@@ -262,15 +30,16 @@ app.directive('deviceTreeView',[function(){
         scope: {
             deviceList: '=',
             clickCallback: '=',
-            showStatus: '=',
-            canChecked: '=',
-            textField: '@',
+            showStatus: '=',        // 是否显示 运维/缺陷 状态
+            checkbox: '=',        // 是否能多选
+            // textField: '@',
             itemClicked: '&',
             itemCheckedChanged: '&',
             itemTemplateUrl: '@'
         },
         controller:['$scope', '$attrs', function($scope, $attrs){
-            $scope.treeData = formatToTreeData($scope.deviceList)[0].children;
+            var formatted = formatToTreeData($scope.deviceList);
+            $scope.treeData = formatted.length ? formatToTreeData($scope.deviceList)[0].children : [];
             var lastSelected = null;
 
             function calcDeviceStatus() {
@@ -357,6 +126,194 @@ app.directive('deviceTreeView',[function(){
                 data.unvisible = !found;
                 return found;
             }
+        }]
+    };
+}]);
+
+
+/* 运维班组选择 */
+app.directive('operatorTeamSelector',[function(){
+    return {
+        restrict: 'E',
+        templateUrl: '/templates/task/selector/team-selector.html',
+        scope: {
+            teams: '=',
+            callback: '=',
+            visible: '=',
+            multiple: '=',
+            onHide: '='
+        },
+        controller:['$scope', '$attrs', function($scope, $attrs){
+
+            var selected = null;           // 当点击了"确定"后，所选项就是最终选择的
+
+            $scope.hide = function () {
+                if ($scope.onHide) {
+                    $scope.onHide();
+                } else {
+                    $scope.visible = false;
+                }
+            };
+
+            $scope.confirm = function () {
+                $scope.callback(selected);
+                $scope.hide();
+            };
+
+            $scope.onToggleCheck = function(team) {
+                if (!selected || selected.id !== team.id ) {
+                    selected = team;
+                    $scope.callback(team);
+                }
+                $scope.hide();
+            };
+
+            $scope.isSelected = function (id) {
+                return selected && selected.id === id;
+            };
+        }]
+    };
+}]);
+
+/* 用户选择，多选 */
+app.directive('handlersSelector',[function(){
+    return {
+        restrict: 'E',
+        templateUrl: '/templates/task/selector/handler-selector.html',
+        scope: {
+            title: '=',     // 选择框的标题，默认为：请选择运维工
+            defaultUsers: '=',       // 默认选中的账号
+            users: '=',
+            callback: '=',
+            visible: '=',
+            multiple: '=',
+            onHide: '='
+        },
+        controller:['$scope', '$attrs', function($scope, $attrs){
+
+            var selected = [];           // 当点击了"确定"后，所选项就是最终选择的
+            $scope.tmpSelected = [];        // 保存未点击"确定"前的选项
+
+            if ($scope.defaultUsers && $scope.defaultUsers.length) {
+                var defaultAccounts = [];
+                $scope.defaultUsers.forEach(function (user) {
+                    defaultAccounts.push(user.account);
+                });
+                $scope.users.forEach(function (user) {
+                    if (defaultAccounts.indexOf(user.account) >= 0) {
+                        selected.push(user.account);
+                        $scope.tmpSelected.push(user.account);
+                    }
+                });
+            }
+
+            $scope.getNameAndPhone = function (user) {
+                return user.name + (user.phone ? '/' + user.phone : '');
+            };
+
+            $scope.hide = function () {
+                $scope.tmpSelected = selected;
+                if ($scope.onHide) {
+                    $scope.onHide();
+                } else {
+                    $scope.visible = false;
+                }
+            };
+
+            $scope.confirm = function () {
+                selected = $scope.tmpSelected;
+                var users = [];
+                $scope.users.forEach(function (user) {
+                    if (selected.indexOf(user.account) >= 0) {
+                        users.push(user);
+                    }
+                });
+                $scope.callback(users);
+            };
+
+            $scope.onToggleCheck = function(account) {
+                if ($scope.tmpSelected.indexOf(account) >= 0) {
+                    $scope.tmpSelected.splice($scope.tmpSelected.indexOf(account), 1);
+                } else {
+                    $scope.tmpSelected.push(account);
+                }
+            };
+
+            $scope.isSelected = function (account) {
+                return $scope.tmpSelected.indexOf(account) >= 0;
+            };
+        }]
+    };
+}]);
+
+/* 班组、用户选择 */
+app.directive('teamAndHandlerSelector',[function(){
+    return {
+        restrict: 'E',
+        templateUrl: '/templates/task/selector/team-and-user-selector.html',
+        scope: {
+            teams: '=',
+            callback: '=',
+            visible: '=',
+            onHide: '='
+        },
+        controller:['$scope', '$attrs', function($scope, $attrs){
+            $scope.selectedTeam = null;
+            $scope.isTeamSelector = true;   // true：选择班组，false：选择维修工
+            var selected = [];           // 当点击了"确定"后，所选项就是最终选择的
+            $scope.selectedAccounts = [];        // 保存未点击"确定"前的选项
+
+            $scope.getNameAndPhone = function (user) {
+                return user.name + (user.phone ? '/' + user.phone : '');
+            };
+
+            $scope.hide = function () {
+                $scope.selectedAccounts = selected;
+                if ($scope.onHide) {
+                    $scope.onHide();
+                } else {
+                    $scope.visible = false;
+                }
+            };
+
+            $scope.confirm = function () {
+                const users = [];
+                $scope.selectedTeam.users.forEach(function (user) {
+                    if ($scope.isUserSelected(user.account)) {
+                        users.push(user);
+                    }
+                });
+                $scope.callback($scope.selectedTeam, users);
+            };
+
+            $scope.onToggleCheckTeam = function(team) {
+                $scope.isTeamSelector = false;
+                if (!$scope.selectedTeam || team.id !== $scope.selectedTeam.id) {
+                    $scope.selectedTeam = team;
+                    // 跳转到维修工选择页
+                    $scope.selectedAccounts = [];
+                }
+            };
+
+            $scope.isTeamSelected = function (teamId) {
+                return $scope.selectedTeam && $scope.selectedTeam.id === teamId;
+            };
+
+            $scope.onToggleCheckUser = function(account) {
+                if ($scope.selectedAccounts.indexOf(account) >= 0) {
+                    $scope.selectedAccounts.splice($scope.selectedAccounts.indexOf(account), 1);
+                } else {
+                    $scope.selectedAccounts.push(account);
+                }
+            };
+
+            $scope.isUserSelected = function (account) {
+                return $scope.selectedAccounts.indexOf(account) >= 0;
+            };
+
+            $scope.reSelectTeam = function () {
+                $scope.isTeamSelector = true;
+            };
         }]
     };
 }]);

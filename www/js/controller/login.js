@@ -4,13 +4,13 @@
  * Created by liucaiyun on 2017/7/23.
  */
 
-// var gPublicApiHost = 'http://47.104.75.86:8090';        // 公有云接口
-var gPublicApiHost = 'http://47.106.79.119:8090';        // 公有云
+var gPublicApiHost = 'http://47.104.75.86:8090';        // 公有云接口
 
-app.controller('LoginCtrl', function ($scope, $timeout, platformService, userService, $state, $http, ajax) {
+app.controller('LoginCtrl', ['$scope', '$timeout', 'platformService', 'userService', '$state', '$http', 'ajax', function ($scope, $timeout, platformService, userService, $state, $http, ajax) {
     $scope.error = '';
     var platform = null;
     $scope.enable = false;
+    $scope.platformCodeVisible = !defaultPlatIpAddr;
     $scope.platformCode = platformService.getLatestPlatform() ? platformService.getLatestPlatform().code : null;
     $scope.username = userService.getUsername();
     $scope.password = userService.getPassword();
@@ -23,7 +23,7 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
     };
 
     $scope.inputChange = function () {
-        if ($scope.platformCode && $scope.username && $scope.password) {
+        if ((!$scope.platformCodeVisible || $scope.platformCode) && $scope.username && $scope.password) {
             $scope.enable = true;
         } else {
             $scope.enable = false;
@@ -33,7 +33,11 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
 
     $scope.login = function () {
         $scope.enable = false;
-        queryPlatform(login);
+        if (defaultPlatIpAddr) {
+            login();
+        } else {
+            queryPlatform(login);
+        }
     };
 
     $scope.setAutoLogin = function(isAutoLogin){
@@ -49,13 +53,11 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
 
     function login() {
         $scope.error = '';
-        var loginUrl = platform.url.substring(0, platform.url.indexOf(':', 6)) + ':8900/v1';
         var data = {
             username: $scope.username,
             password: $scope.password
         };
-        // loginUrl = 'http://118.190.51.135:8096/v1';
-        loginUrl = platformService.getAuthHost();
+        var loginUrl = platformService.getAuthHost();
         $scope.isLogin = true;
         $.ajax({
             url: loginUrl + '/auth',
@@ -76,10 +78,17 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
             success: function (data) {
                 var result = KJUR.jws.JWS.verify(data.token, 'zjlhstest');
                 if (result) {
+                    if (!getStorageItem('latestPlatform')) {
+                        platformService.setLatestPlatform({url: defaultPlatIpAddr + ":8099/v1"})
+                    }
                     userService.setAccountToken(data.token);
                     getUserInfo();
                 } else {
                     toast('用户名或密码错误');
+                    if ($scope.isAutoLogin) {
+                        userService.setPassword('');
+                        location.href = 'login.html';
+                    }
                 }
             },
             error :function () {
@@ -99,12 +108,13 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
     function getUserInfo() {
         ajax.get({
             url: '/user/' + $scope.username,
+            ignoreAuthExpire: true,
             success: function (data) {
                 userService.saveLoginUser(data, $scope.password);
                 // getCompany();
                 if (window.android){
                     window.android.loginSuccess();
-                }else{
+                } else{
                     location.href = '/templates/home.html?finishPage=1';
                 }
             },
@@ -115,34 +125,6 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
                 $scope.$apply();
             }
         })
-    }
-
-    function getCompany() {
-        ajax.get({
-            url: platform.url + '/user/' + $scope.username + '/opscompany',
-            xhrFields: {
-                withCredentials: true
-            },
-            crossDomain: true,
-            success: function (data) {
-                if (data && data.length >= 1)
-                {
-                    userService.saveCompany(data[0]);
-                } else{
-                    userService.saveCompany([]);
-                }
-                if (window.android){
-                    window.android.loginSuccess();
-                }else{
-                    location.href = '/templates/home.html?finishPage=1';
-                }
-            },
-            error: function (xhr, status, error) {
-                $scope.isLogin = false;
-                userService.saveCompany([]);
-                console.log('get company info fail:' + xhr.status);
-            }
-        });
     }
 
     // 平台查询start
@@ -163,7 +145,7 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
                 if ($scope.isAutoLogin){
                     userService.setPassword('');
                     location.href = 'login.html';
-                }else{
+                } else{
                     $scope.enable = true;
                     toast('平台编号错误');
                     $scope.$apply();
@@ -185,17 +167,16 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
                 $scope.$apply();
             }
         });
-    };
+    }
     // 平台查询end
+}]);
 
-});
-
-app.controller('AutoLoginCtrl', function ($scope, $timeout, userService, platformService) {
+app.controller('AutoLoginCtrl', ['$scope', '$timeout', function ($scope, $timeout) {
 
     $scope.autoLogin = function () {
         //先等1.5s
         // 先判断是否可以自动登录
-        if ($scope.username && $scope.password && $scope.platformCode){
+        if ($scope.username && $scope.password && (defaultPlatIpAddr || $scope.platformCode)){
             $scope.setAutoLogin(true);
             $timeout(function () {
                 $scope.login();
@@ -212,4 +193,4 @@ app.controller('AutoLoginCtrl', function ($scope, $timeout, userService, platfor
     //     window.android.checkWebVersion();
     // }
     $scope.autoLogin();
-});
+}]);
