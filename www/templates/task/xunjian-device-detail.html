@@ -83,67 +83,53 @@
 
 <body class="mui-android mui-android-5 mui-android-5-1 mui-android-5-1-1 mui-segmented-control-vertical" ng-app="myApp" ng-controller="TaskBaseCtrl" ng-cloak>
 <div ng-controller="DeviceXunjianTaskDetailCtrl" ng-cloak id="taskDetail">
-    <header class="mui-bar bg-header" style="height: 70px;">
+    <header class="mui-bar bg-header">
         <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
         <h1 class="mui-title" id="head_title">巡检结果</h1>
     </header>
-    <div style="margin-top: 62px;">
+    <div>
         <!-- 正在处理的任务单 -->
-        <div class="mui-content" style="top: 56px; background-color: transparent;">
-            <div class="xunjian-devices-area vertical">
-                <div style="padding: 20px;">
-                    <i class="icon icon-xunjianstatus-{{checkResult.status_name}}" style="margin-bottom: 4px;"></i>
-                    <div class="status-{{checkResult.status_name}}">设备{{checkResult.status}}</div>
-                </div>
-            </div>
-            <div class="mui-card card" style="box-shadow: none;margin-top: 6px;" ng-if="checkResult.desp || checkResult.images">
+        <div class="mui-content" style="background-color: transparent;">
+            <div class="mui-card card" style="margin-top: 8px;" ng-if="!isLoading">
                 <div class="mui-card-content">
-                    <div class="mui-card-content-inner" style="padding: 2px 6px;">
-                        <div class="task-desp mui-ellipsis">
-                            <span class="task-type">检查记录</span>
-                        </div>
-                        <div style="padding: 8px;line-height: 22px;background-color: #f4f4f4;margin: 4px -8px;">{{checkResult.desp}}</div>
-                        <ul class="image-list" style="margin: 0 -28px;">
-                            <li class="image-item" ng-repeat="file in checkResult.images" ng-click="openGallery($index)">
-                                <div class="content">
-                                    <a class="img-file" style="background-image: url({{file}})"></a>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <div class="mui-card card" style="box-shadow: none;margin-top: 6px;">
-                <div class="mui-card-content">
-                    <div class="mui-card-content-inner" style="padding: 2px 6px;">
+                    <div class="mui-card-content-inner" style="padding: 0;">
                         <div class="task-desp mui-ellipsis">
                             <span class="task-type" ng-class="{'ergent': taskData.task_type_id===3}">{{taskData.task_type_name}}：</span> {{taskData.name}}
                         </div>
-                        <ul class=" info-group" style="padding-bottom: 8px;">
+                        <ul class="task-detail-info-group">
                             <li>
-                                <label class="title">{{taskName}}单号：</label><span class="value">{{taskData.id}}</span>
-                            </li>
-                            <li>
-                                <label class="title">创建时间：</label><span class="value">{{taskData.create_time}}</span>
+                                <label class="title">工单单号</label><span class="value">{{taskData.no}}</span>
                             </li>
                             <li>
-                                <label class="title">截止时间：</label><span class="value">{{taskData.expect_complete_time}}</span>
+                                <label class="title">创建时间</label><span class="value">{{taskData.create_time}}</span>
                             </li>
-                            <li ng-if="taskData.desp">
-                                <label class="title">{{taskName}}描述：</label><span class="value">{{taskData.desp}}</span>
+                            <li>
+                                <label class="title">截止时间</label><span class="value">{{taskData.expect_complete_time}}</span>
                             </li>
-                            <li ng-if="taskData.desp">
-                                <label class="title">巡检人：</label><span class="value">{{taskData.operator_name || taskData.current_handler_name}}</span>
+                            <li>
+                                <label class="title">负责人</label>
+                                <span class="value">{{getUserNameAndPhone(taskData.creater_user)}}</span>
+                            </li>
+                            <li>
+                                <label class="title">巡检班组</label><span class="value">{{taskData.operator_team_name}}</span>
+                            </li>
+                            <li ng-if="taskData.operator">
+                                <label class="title">巡检人员</label>
+                                <span class="value" style="text-align: right">
+                                    <div ng-repeat="user in taskData.operator_users">{{getUserNameAndPhone(user)}}</div>
+                                </span>
                             </li>
                         </ul>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div ui-view class="page page-left"></div>
-        <div>
-            <div id="updater"></div>
+            <div ng-include="'/templates/task/inspect-device-check-result.html'" ng-controller="TaskDeviceCheckCtrl" ng-if="!isLoading"></div>
+            <div class="page-alert-wrapper" ng-if="isLoading">
+                <div class="page-alert">
+                    <img src="../../img/page-loading.gif" class="loading-img">
+                    <div class="alert-text info">正在加载...</div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

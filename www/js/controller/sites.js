@@ -137,7 +137,7 @@ function findFirstLeafOfTree(data) {
     return null;
 }
 
-app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, routerService, platformService, userService, appStoreProvider) {
+app.controller('SiteListCtrl', ['$scope', 'ajax', 'userService', 'appStoreProvider', function ($scope, ajax, userService, appStoreProvider) {
     $scope.role = userService.getUserRole();
     $scope.selectedApps = [];
 
@@ -150,10 +150,8 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
     });
 
     $scope.$on('onChooseNav', function (event, tabName) {       // 点击菜单事件
-        if (tabName === 'sites') {      // 点击"站点监控"菜单，刷新当前站点状态
-            if ($scope.currentSite.sn) {
-                $scope.refreshStationStatus($scope.currentSite.sn);
-            }
+        if (tabName === 'sites' && $scope.currentSite && $scope.currentSite.sn) {      // 点击"站点监控"菜单，刷新当前站点状态
+            $scope.refreshStationStatus($scope.currentSite.sn);
         }
     });
 
@@ -162,6 +160,7 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
             url: '/station/' + $scope.currentSite.sn + '/menudata',
             success: function (response) {
                 if (response) {
+                    var opsManagementEnabled = true;
                     var menuData = response.extend_js ? JSON.parse(response.extend_js) : {};
                     var menuSns = {};
                     if (menuData.data) {
@@ -172,20 +171,23 @@ app.controller('SiteListCtrl', function ($scope, $http, scrollerService, ajax, r
                                     menuSns[menu.sn] = enabled && menu.enabled;
                                 });
                             }
+                            if (menuGroup.sn === 'ops-management') {
+                                opsManagementEnabled = enabled;
+                            }
                         });
                     }
                     var platFuncs = response.plat_function_switch ? JSON.parse(response.plat_function_switch) : null;
                     appStoreProvider.setMenuSns($scope.role, menuSns, platFuncs);
-                    $scope.$emit('$onMenuUpdate', platFuncs, menuSns);
+                    $scope.$emit('$onMenuUpdate', !platFuncs || platFuncs.opsManagement, menuSns);
                     $scope.selectedApps = appStoreProvider.getSelectedApps();
                     $scope.$apply();
                 }
             }
         });
     }
-});
+}]);
 
-app.controller('SiteTreeCtrl', function ($scope) {
+app.controller('SiteTreeCtrl', ['$scope', function ($scope) {
     $scope.showedTreeData = JSON.parse(JSON.stringify($scope.treeData));
 
     function setSearchKey(data) {
@@ -259,9 +261,9 @@ app.controller('SiteTreeCtrl', function ($scope) {
     $scope.cancel = function () {
         history.back();
     }
-});
+}]);
 
-app.controller('SiteDetailCtrl', function ($scope, ajax, platformService) {
+app.controller('SiteDetailCtrl', ['$scope', 'ajax', 'platformService', function ($scope, ajax, platformService) {
     $scope.sn = GetQueryString("sn");
     $scope.currentSite = {};
     $scope.isSiteDetail = true;
@@ -290,7 +292,7 @@ app.controller('SiteDetailCtrl', function ($scope, ajax, platformService) {
                             s.status_name = '离线';
                         }
                         if (s.station.photo_src_link) {
-                            s.site_image = platformService.getImageUrl(180, 180, platformService.host + s.station.photo_src_link);
+                            s.site_image = platformService.getImageUrl(180, 180, platformService.getCloudHost() + s.station.photo_src_link);
                         }
                         else {
                             s.site_image = '/img/site-default.png';
@@ -311,9 +313,9 @@ app.controller('SiteDetailCtrl', function ($scope, ajax, platformService) {
     };
 
     $scope.getDataList();
-});
+}]);
 
-app.controller('SiteBaseInfoCtrl', function ($scope, $timeout, $stateParams, ajax, platformService) {      //  站点基本信息
+app.controller('SiteBaseInfoCtrl', ['$scope', 'ajax', 'platformService', function ($scope, ajax, platformService) {      //  站点基本信息
     var sn = $scope.sn;
     $scope.baseLoading = true;
     $scope.unhandledEventCount = 0;
@@ -327,7 +329,7 @@ app.controller('SiteBaseInfoCtrl', function ($scope, $timeout, $stateParams, aja
                 // 站点图片
                 var width = window.screen.width*3, height=Math.round(width/2);
                 if (data.photo_src_link) {
-                    data.site_image = platformService.getImageUrl(width, height, platformService.host + data.photo_src_link);
+                    data.site_image = platformService.getImageUrl(width, height, platformService.getCloudHost() + data.photo_src_link);
                 }
                 else {
                     data.site_image = '/img/background/site-default.jpeg';
@@ -374,10 +376,10 @@ app.controller('SiteBaseInfoCtrl', function ($scope, $timeout, $stateParams, aja
     }
 
     $scope.getDataList();
-});
+}]);
 
 
-app.controller('EventListCtrl', function ($scope, $stateParams, scrollerService, userService, ajax, appStoreProvider, platformService) {
+app.controller('EventListCtrl', ['$scope', 'scrollerService', 'userService', 'ajax', 'appStoreProvider', function ($scope, scrollerService, userService, ajax, appStoreProvider) {
     $scope.sn = GetQueryString('sn');
     var checked = GetQueryString('status') === '0' ? 0 : 1;
     $scope.isDevice = false;   // 是设备还是站点
@@ -490,14 +492,14 @@ app.controller('EventListCtrl', function ($scope, $stateParams, scrollerService,
         });
     };
 
-    $scope.goToCreateTaskHtml = function($event, eventId, eventInfo) {
-        window.location.href = '/templates/task/add-task.html?eventId=' + eventId + '&eventInfo=' + eventInfo;
+    $scope.goToCreateTaskHtml = function($event, eventObj) {
+        window.location.href = '/templates/task/add-task.html?eventId=' + eventObj.id + '&station_sn=' + eventObj.station_sn;
     };
-});
+}]);
 
 
-app.controller('SiteDocsCtrl', function ($scope, $stateParams, platformService, ajax) {
-    var sn = GetQueryString('sn'), host = platformService.getHost();
+app.controller('SiteDocsCtrl', ['$scope', 'ajax', 'platformService', function ($scope, ajax, platformService) {
+    var sn = GetQueryString('sn'), host = platformService.getCloudHost();
     $scope.docList = [];
     $scope.docLoading = false;
     $scope.loadingFailed = false;
@@ -605,10 +607,10 @@ app.controller('SiteDocsCtrl', function ($scope, $stateParams, platformService, 
     };
 
     $scope.getDataList();
-});
+}]);
 
 
-app.controller('SiteReportsCtrl', function ($scope, ajax, scrollerService, routerService, platformService) {
+app.controller('SiteReportsCtrl', ['$scope', 'ajax', 'routerService', 'platformService', function ($scope, ajax, routerService, platformService) {
     var stationSn = GetQueryString('sn');
     $scope.reports = [];
     $scope.isLoading = false;
@@ -624,7 +626,7 @@ app.controller('SiteReportsCtrl', function ($scope, ajax, scrollerService, route
                 var outputs = [];
                 data.forEach(function (d) {
                     if (d.output_src_link) {
-                        d.output_src_link = platformService.host + d.output_src_link;
+                        d.output_src_link = platformService.getCloudHost() + d.output_src_link;
                         outputs.push(d);
                     }
                 });
@@ -651,4 +653,4 @@ app.controller('SiteReportsCtrl', function ($scope, ajax, scrollerService, route
     };
 
     $scope.getDataList();
-});
+}]);

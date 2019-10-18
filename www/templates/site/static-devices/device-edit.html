@@ -12,8 +12,8 @@
                     <i class="icon icon-camera-blue icon-36" ng-if="!deviceImages.length"></i>
                     <div style="color: #0091E0; font-size: 13px;margin-top: -4px;" ng-if="!deviceImages.length">设备图片</div>
                     <div ng-if="deviceImages.length" style="background-color: #0091E0;color: #fff;border-radius: 14px;font-size: 12px;padding: 4px 10px;font-weight: 400;">更新图片</div>
-                    <div class="image-uploader" style="position: absolute; top: 0; width: 100%; height: 100%;"
-                         ng-controller="ImageUploaderCtrl" id="imageList" ng-init="elementId='imageList';singleImage=true">
+                    <div class="image-uploader imageUploadContainer" style="position: absolute; top: 0; width: 100%; height: 100%;"
+                         ng-controller="ImageUploaderCtrl" ng-init="elementId='imageList';singleImage=true">
                         <input class="add-btn" type="file" accept="image/*" name="upload" ng-model="chosenFile" onchange="angular.element(this).scope().chooseImage(this.files)" ng-if="!useMobileGallery">
                         <input class="add-btn" name="upload" ng-model="chosenFile" ng-click="openMobileGallery()" ng-if="useMobileGallery">
                     </div>
@@ -36,9 +36,41 @@
                     <label class="title">设备名称</label>
                     <span class="value">{{device.name}}</span>
                 </li>
-                <li ng-click="onClickEditDevice('设备类型', 'device_type')">
+                <li ng-click="onClickEditDevice('设备类型', 'product_type')">
                     <label class="title">设备类型</label>
-                    <span class="value">{{device.device_type}}</span>
+                    <span class="value">{{device.product_type}}</span>
+                </li>
+                <li ng-click="onClickEditDevice('设备型号', 'product_model_number')">
+                    <label class="title">设备型号</label>
+                    <span class="value">{{device.product_model_number}}</span>
+                </li>
+                <li ng-click="onClickEditDevice('设备编号', 'device_number')">
+                    <label class="title">设备编号</label>
+                    <span class="value">{{device.device_number}}</span>
+                </li>
+                <li ng-click="onClickEditDevice('安装位置', 'position_desp')">
+                    <label class="title">安装位置</label>
+                    <span class="value">{{device.position_desp}}</span>
+                </li>
+                <li ng-click="onClickEditDevice('安装日期', 'initial_time')">
+                    <label class="title">安装日期</label>
+                    <span class="value">{{device.initial_time ? device.initial_time.substring(0, 10) : ''}}</span>
+                </li>
+                <li ng-click="onClickEditDevice('投运日期', 'operation_time')">
+                    <label class="title">投运日期</label>
+                    <span class="value">{{device.operation_time ? device.operation_time.substring(0, 10) : ''}}</span>
+                </li>
+                <li ng-click="onClickEditDevice('生产厂家', 'provider_name')">
+                    <label class="title">生产厂家</label>
+                    <span class="value">{{device.provider_name}}</span>
+                </li>
+                <li ng-click="onClickEditDevice('巡检周期', 'inspection_cycle')">
+                    <label class="title">巡检周期</label>
+                    <span class="value">{{device.inspection_cycle}}天</span>
+                </li>
+                <li ng-click="onClickEditDevice('保养周期', 'maintenance_cycle')">
+                    <label class="title">保养周期</label>
+                    <span class="value">{{device.maintenance_cycle}}天</span>
                 </li>
                 <li ng-repeat="p in device.properties" ng-click="onClickEditProperty(device.properties, $index)">
                     <label class="title">{{p.name}}</label>

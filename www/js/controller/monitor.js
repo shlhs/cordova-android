@@ -1,7 +1,7 @@
 "use strict";
 
 
-app.controller('MonitorListCtrl', function ($scope, $stateParams, platformService, scrollerService, ajax, routerService) {
+app.controller('MonitorListCtrl', ['$scope', '$stateParams', 'platformService', 'scrollerService', 'ajax', 'routerService', function ($scope, $stateParams, platformService, scrollerService, ajax, routerService) {
     $scope.monitorScreens = [];
     $scope.monitorLoading = true;
     $scope.loadingFailed = false;
@@ -50,13 +50,15 @@ app.controller('MonitorListCtrl', function ($scope, $stateParams, platformServic
     };
 
     $scope.getDataList();
-});
+}]);
 
 
-app.controller('MonitorDetailCtrl', function ($scope) {
+app.controller('MonitorDetailCtrl', ['$scope', function ($scope) {
 
     var url = $scope.url;
     var iframe = document.getElementById('iframe');
+    $scope.clickedBack = false;     // 是否点击过返回按钮，防止重复点击
+
     setTimeout(function () {
         iframe.src = url;
         $.notify.progressStart();
@@ -75,11 +77,17 @@ app.controller('MonitorDetailCtrl', function ($scope) {
         }
     }, 500);
 
+    $scope.back = function () {
+        $scope.clickedBack = true;
+        window.history.go(-(history.length-1));     // 站点列表页认为是history的第一个记录
+    };
+
     function pageBackCallback() {
         window.android && window.android.setScreenOrient("PORTRAIT");
         $("#iframe").remove();
         window.removeEventListener('popstate', pageBackCallback);
     }
 
+
     window.addEventListener('popstate', pageBackCallback);
-});
+}]);

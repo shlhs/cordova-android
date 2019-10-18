@@ -6,7 +6,7 @@
                 <a class=" mui-pull-left site-popover" ng-click="openSiteSelectPage()" ng-show="sites.length > 1" ng-if="!isSiteDetail">站点切换</a>
                 <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()" ng-if="isSiteDetail"></a>
                 <h1 class="mui-title" ng-click="openDeviceSelector()"><label>{{currentDevice ? currentDevice.name : ''}}</label> </h1>
-                <a class="mui-pull-right" href="/templates/site/event-list.html?sn={{currentSite.sn}}" style="position: relative;margin-right: 8px;" ng-if="currentSite.sn">
+                <a class="mui-pull-right" href="/templates/site/event-list.html?sn={{currentSite.sn}}&name={{currentSite.name}}" style="position: relative;margin-right: 8px;" ng-if="currentSite.sn">
                     <i class="icon white icon-events" style="width: 18px;height: 18px;">
                     </i>
                     <span class="mui-badge mui-badge-danger" ng-if="currentSite.unclosed_envet_amount"
@@ -38,9 +38,9 @@
                 <div class="item"> <span class="name">当月电费</span> <span class="value">{{currentMonthData.allCharge}}</span> <span class="unit">元</span></div>
             </div>
             <div style="background-color: #fff;height:{{contentHeight - 220}}px;" ng-show="degreeVarSn" ng-if="!isLoading && currentDevice">
-                <div style="height: calc(100% - 170px);max-height: 230px;">
+                <div style="height: calc(100% - 170px);max-height: 300px;">
                     <div style="text-align: center;padding-top: 8px;">日平均电度电价/元</div>
-                    <div id="main_chart" style="width: {{screenWidth}}px;height: {{contentHeight-420}}px"></div>
+                    <div id="main_chart" style="width: {{screenWidth}}px;height: {{contentHeight-420 > 270 ? 270 : contentHeight - 420}}px;max-height: 270px;"></div>
                 </div>
                 <!-- app入口 -->
                 <div class="card round-card apps" style="padding: 0;margin-top: 0;" ng-if="stationSn">
