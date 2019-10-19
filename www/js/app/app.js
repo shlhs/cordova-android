@@ -4,7 +4,7 @@
  */
 var app = angular.module('myApp', ['ngAnimate', 'ui.router', 'ui.router.state.events']);
 var loginExpireCheckEnable = false;       // 是否检查鉴权过期
-var defaultPlatIpAddr = "http://10.10.90.133";     // 珠海康晋，局域网
+var defaultPlatIpAddr = "http://61.178.153.112";     // 珠海康晋
 var gShowEnergyPage = false;     // 是否显示能效页面，不显示能效页面时运维人员会看到抢单页面
 
 app.run(function ($animate) {
