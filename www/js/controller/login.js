@@ -4,7 +4,7 @@
  * Created by liucaiyun on 2017/7/23.
  */
 
-var gPublicApiHost = 'http://47.104.75.86:8090';     // 公有云
+var gPublicApiHost = 'http://47.105.145.8:8090';     // 公有云
 // var gPublicApiHost = 'http://47.97.167.195:8090';
 
 function onFinishVersionCheck() {
