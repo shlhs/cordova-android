@@ -990,38 +990,6 @@ app.controller('TaskListCtrl', ['$scope', '$rootScope', 'scrollerService', 'user
     };
 
     function sortFunc(d1, d2) {
-
-        // // 排序规则：未完成、待审批、已关闭，同样状态的按截止日期排序
-        // var stage1 = d1.stage_id;
-        // var stage2 = d2.stage_id;
-        // var status1 = 0;        // 0:未完成，1：待审批，2：已关闭
-        // var status2 = 0;        // 0:未完成，1：待审批，2：已关闭
-        // switch (stage1) {
-        //     case TaskStatus.Closed:
-        //         status1 = 2;
-        //         break;
-        //     // case TaskStatus.ToClose:
-        //     //     status1 = 1;
-        //     //     break;
-        // }
-        // switch (stage2) {
-        //     case TaskStatus.Closed:
-        //         status2 = 2;
-        //         break;
-        //     // case TaskStatus.ToClose:
-        //     //     status2 = 1;
-        //     //     break;
-        // }
-        // if (status1 !== status2) {
-        //     return status1 - status2;
-        // }
-        // if (d1.create_time < d2.create_time){
-        //     return 1;
-        // }
-        // if (d1.create_time === d2.create_time){
-        //     return 0;
-        // }
-        // return -1;
         // 按更新时间倒叙排列
         if (d1.last_modified_time < d2.last_modified_time) {
             return 1;
@@ -1049,6 +1017,9 @@ app.controller('TaskListCtrl', ['$scope', '$rootScope', 'scrollerService', 'user
              });
              url = '/opstasks?station=' + stationSns.join(',');
              // 筛选
+         } else if (role === 'OPS_OPERATOR') {
+            // 如果是运维工，则显示处理过的所有任务
+            url = "/opstasks/history/" + companyId;
          }
          var params = {
              page_size: 100,
