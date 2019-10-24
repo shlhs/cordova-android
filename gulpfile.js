@@ -203,10 +203,26 @@ gulp.task('runsequence', function (callback) {
         console.log('runsequence finish');
     });      // 同步运行
 });
-// web服务
+
+// 发布时，先运行： gulp release，  将资源文件进行打包
+// 再运行： gulp run-release     启动webserver，根目录为 dist
+gulp.task("release", ['img', 'css', 'compressAllCss', 'runsequence']);      // 发布: gulp release
+gulp.task("run-release", function () {
+    gulp.src(['dist'])
+    .pipe(webserver({
+        port: 8001,//端口
+        host: '0.0.0.0',//域名
+        //liveload: true,//实时刷新代码。不用f5刷新
+        directoryListing: {
+            path: 'index.html',
+            enable: true
+        }
+    }));
+});
+
+// 开发时运行： gulp   启动webserver，根目录为 www
 gulp.task('webserver', function(){
-    const rootPath = environment === 'production' ? 'dist' : 'www';
-    gulp.src([rootPath])
+    gulp.src(['www'])
         .pipe(webserver({
             port: 8001,//端口
             host: '0.0.0.0',//域名
@@ -217,13 +233,7 @@ gulp.task('webserver', function(){
             }
         }))
 });
-
-//
-if (environment === 'build') {
-    gulp.task("default", ['img', 'css', 'compressAllCss', 'runsequence']);
-} else {
-    gulp.task("default", ['webserver']);
-}
+gulp.task("default", ['webserver']);
 
 // default任务一定要写，不然会报警告： Task 'default' is not in your gulpfile
 // 数组中写哪一个执行哪一个任务， 从左到右执行
