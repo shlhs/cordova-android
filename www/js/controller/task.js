@@ -177,9 +177,9 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, ajax, platfo
     $scope.searchSiteResult = [];
     $scope.role = userService.getUserRole();
     if (gShowEnergyPage) {
-        $scope.navMenus = [_getDefaultHomeMenu(), _getEnergyMenu()];
+        $scope.navMenus = [_getDefaultHomeMenu(), _getEnergyMenu(), _getTaskTodoMenu()];
     } else {
-        $scope.navMenus = [_getDefaultHomeMenu()];
+        $scope.navMenus = [_getDefaultHomeMenu(), _getTaskTodoMenu()];
     }
     var menuInited = false;     // 导航栏菜单是否初始化
 
@@ -444,23 +444,12 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, ajax, platfo
 
     function updateMenus(platHasOps) {
         // 判断是否包含ops-management权限
-        if (platHasOps && !menuInited) {
-            // 有运维权限
-            // if (!gShowEnergyPage) {
-            //     // 如果不显示能效页面，那么运维管理员默认显示抢单页和待办页
-            //     if (role === 'OPS_ADMIN' || role === 'OPS_OPERATOR') {
-            //         $scope.navMenus.push({
-            //             id: 'grab',
-            //             name: '抢单',
-            //             templateUrl: 'templates/task/task-competition-list.html',
-            //             icon: 'nav-task-grab'
-            //         });
-            //     }
-            // }
-            var todoMenu = _getTaskTodoMenu();
-            if (todoMenu) {
-                $scope.navMenus.push(todoMenu);
-            }
+        if (!platHasOps && !menuInited) {
+            // 没有运维权限的话将待办菜单删除
+            const opsIndex = $scope.navMenus.findIndex(function (item) {
+                return item.id === 'my_tasks';
+            });
+            $scope.navMenus.splice(opsIndex, 1);
             menuInited = true;
         }
     }
