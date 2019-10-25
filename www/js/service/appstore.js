@@ -290,7 +290,10 @@ app.config(['appStoreProviderProvider', function (appStoreServiceProvider) {
                     role: ['OPS_OPERATOR', 'OPS_ADMIN']
                 }
             ]
-        }, {
+        },
+
+        /* 上海南月不提供能源管理功能
+        {
             name: '能源管理',
             children: [
                 {
@@ -316,7 +319,7 @@ app.config(['appStoreProviderProvider', function (appStoreServiceProvider) {
                     defaultChecked: true
                 }
             ]
-        }
+        }*/
     ]);
 }]);
 
