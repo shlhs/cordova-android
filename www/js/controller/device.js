@@ -824,9 +824,6 @@ app.controller('DeviceRemoteControlCtrl', ['$scope', '$interval', 'routerService
         $scope.isLoading = true;
         ajax.get({
             url: platformService.getDeviceMgmtHost() + '/management/devices/' + $scope.device_sn + '/variables',
-            data: {
-                type: 'Digital'
-            },
             success: function (response) {
                 $scope.isLoading = false;
                 // 状态量在前，模拟量在后
@@ -883,7 +880,7 @@ app.controller('DeviceRemoteControlCtrl', ['$scope', '$interval', 'routerService
                             if (v.type === 'Digital') {
                                 v.value = data[i].data > 0 ? '1' : '0';
                             } else {
-                                v.value = data[i].data + (data[i].unit || '');
+                                v.value = (data[i].data === null ? '' : data[i].data) + (data[i].unit || '');
                             }
                             exist = true;
                             break;
@@ -946,6 +943,7 @@ app.controller('DeviceRemoteControlCtrl', ['$scope', '$interval', 'routerService
 
 app.controller('DeviceRemoteControlConfirmCtrl', ['$scope', 'ajax', function ($scope, ajax) {
     $scope.okEnable = $scope.controlObj.type === 'Digital' ? true : false;
+    $scope.inputError = '';
     $scope.error = '';
     $scope.isSubmitting = false;
     $scope.inputValid = true;
@@ -958,7 +956,7 @@ app.controller('DeviceRemoteControlConfirmCtrl', ['$scope', 'ajax', function ($s
 
     $scope.onInputValidate = function (value) {
         newValue = value;
-        $scope.error = '';
+        $scope.inputError = '';
     };
 
     $scope.onPwdChange = function (value) {
@@ -987,10 +985,10 @@ app.controller('DeviceRemoteControlConfirmCtrl', ['$scope', 'ajax', function ($s
         }
         if ($scope.controlObj.type === 'Analog') {
             if (!newValue) {
-                $scope.error = '请输入需要设置的值';
+                $scope.inputError = '请输入需要设置的值';
                 return;
             } else if (!isNumber(newValue)) {
-                $scope.error = '请输入数字';
+                $scope.inputError = '请输入数字';
                 return;
             }
         }

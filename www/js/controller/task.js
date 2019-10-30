@@ -15,7 +15,7 @@ var TaskTypes = {
     FatalDts: 10,   // 致命缺陷
     Xunjian: 11
 };
-var OpsTaskType = [1, 2, 3, 4, 5, 6, 7];
+var OpsTaskType = [2, 3, 4, 5, 7];
 var DtsTaskType = [8, 9, 10];
 var TaskAction = {Create: 0, Accept: 1, Refuse: 2, Assign: 3, Go: 4, Apply: 5, Reject: 6, Close: 7, Comment: 8, Grab: 9, Arrive: 10, Update: 11, Transfer: 12};
 var TaskStatus = {ToAccept: 1, ToAssign: 2, Accepted: 3, ToClose: 4, Closed: 5, Competition: 6, Coming: 7, Arrived: 8};
@@ -990,38 +990,6 @@ app.controller('TaskListCtrl', ['$scope', '$rootScope', 'scrollerService', 'user
     };
 
     function sortFunc(d1, d2) {
-
-        // // 排序规则：未完成、待审批、已关闭，同样状态的按截止日期排序
-        // var stage1 = d1.stage_id;
-        // var stage2 = d2.stage_id;
-        // var status1 = 0;        // 0:未完成，1：待审批，2：已关闭
-        // var status2 = 0;        // 0:未完成，1：待审批，2：已关闭
-        // switch (stage1) {
-        //     case TaskStatus.Closed:
-        //         status1 = 2;
-        //         break;
-        //     // case TaskStatus.ToClose:
-        //     //     status1 = 1;
-        //     //     break;
-        // }
-        // switch (stage2) {
-        //     case TaskStatus.Closed:
-        //         status2 = 2;
-        //         break;
-        //     // case TaskStatus.ToClose:
-        //     //     status2 = 1;
-        //     //     break;
-        // }
-        // if (status1 !== status2) {
-        //     return status1 - status2;
-        // }
-        // if (d1.create_time < d2.create_time){
-        //     return 1;
-        // }
-        // if (d1.create_time === d2.create_time){
-        //     return 0;
-        // }
-        // return -1;
         // 按更新时间倒叙排列
         if (d1.last_modified_time < d2.last_modified_time) {
             return 1;
@@ -1049,6 +1017,9 @@ app.controller('TaskListCtrl', ['$scope', '$rootScope', 'scrollerService', 'user
              });
              url = '/opstasks?station=' + stationSns.join(',');
              // 筛选
+         } else if (role === 'OPS_OPERATOR') {
+            // 如果是运维工，则显示处理过的所有任务
+            url = "/opstasks/history/" + companyId;
          }
          var params = {
              page_size: 100,
@@ -1703,14 +1674,16 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
         // 重新计算已检查的设备数
         var checkedCount = 0;
         var exceptionCount = 0;
-        $scope.taskData.device_record.forEach(function (r) {
-            if (r.status) {
-                if (r.status === '2') {
-                    exceptionCount += 1;
+        if ($scope.taskData.device_record) {
+            $scope.taskData.device_record.forEach(function (r) {
+                if (r.status) {
+                    if (r.status === '2') {
+                        exceptionCount += 1;
+                    }
+                    checkedCount += 1;
                 }
-                checkedCount += 1;
-            }
-        });
+            });
+        }
         $scope.checkedDeviceCount = checkedCount;
         $scope.exceptionDeviceCount = exceptionCount;
     };
@@ -2093,6 +2066,7 @@ app.controller('TaskCreateCtrl', ['$scope', '$timeout', 'userService', 'routerSe
         if ($scope.imageList.length) {
             taskData.pictures = $scope.imageList;
         }
+        taskData.source = $scope.linkEventId ? TaskSource.Event : TaskSource.Repaire;
         $.notify.progressStart();
         ajax.post({
             url: '/opstasks',
