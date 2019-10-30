@@ -40,8 +40,11 @@ app.controller('MonitorListCtrl', function ($scope, $state, routerService, scrol
         });
     };
 
-    $scope.openMonitor = function (url) {
-        routerService.openPage($scope, 'templates/site/monitor-detail.html', {url: url});
+    $scope.openMonitor = function (screen) {
+        routerService.openPage($scope, 'templates/site/monitor-detail.html', {
+            url: screen.mobile_screen_link,
+            background: screen.background
+        });
         // $state.go('.detail', {url: url});
     };
 
