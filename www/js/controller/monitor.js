@@ -39,13 +39,19 @@ app.controller('MonitorListCtrl', ['$scope', '$stateParams', 'platformService', 
         });
     };
 
-    $scope.openMonitorDetail = function (url) {
+    $scope.openMonitorDetail = function (item) {
+        var url = item.mobile_screen_link;
+        var backgroundColor = item.background;
         if (window.android && window.android.setScreenOrient) {
             routerService.openPage($scope, "/templates/site/monitor-detail-template.html", {
-                url: url
+                url: url,
+                background: backgroundColor
             });
         } else {
-            location.href = "/templates/site/monitor-detail.html?url=" + url + "&screen=h";
+            if (backgroundColor && backgroundColor.indexOf('#') === 0) {
+                backgroundColor = backgroundColor.substring(1);     // #号在url里会导致参数被截断
+            }
+            location.href = "/templates/site/monitor-detail.html?url=" + url + "&background=" + backgroundColor + "&screen=h";
         }
     };
 
