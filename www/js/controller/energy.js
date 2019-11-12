@@ -227,7 +227,7 @@ function distinctVarSns(sns) {      // 变量sn去重
     return tmpSns;
 }
 
-app.controller('EnergyMeterReadingCtrl', function ($scope, ajax, $compile, platformService) {
+app.controller('EnergyMeterReadingCtrl', ['$scope', 'ajax', '$compile', 'platformService', function ($scope, ajax, $compile, platformService) {
     var stationSn = GetQueryString("sn");
     $scope.categories = [];
     $scope.labelNames = [];
@@ -496,7 +496,7 @@ app.controller('EnergyMeterReadingCtrl', function ($scope, ajax, $compile, platf
 
     // initDatePicker();
     getConfig(stationSn);
-});
+}]);
 
 app.directive('energyMeterReadingTable', [function(){
     return {
@@ -541,7 +541,7 @@ app.directive('energyMeterReadingTableRepeatFinish',function(){
     }
 });
 
-app.controller('EnergyReportCtrl', function ($scope, ajax, $compile, platformService) {
+app.controller('EnergyReportCtrl', ['$scope', 'ajax', '$compile', 'platformService', function ($scope, ajax, $compile, platformService) {
     var stationSn = GetQueryString("sn");
     $scope.categories = [];
     $scope.labelNames = [];
@@ -847,7 +847,7 @@ app.controller('EnergyReportCtrl', function ($scope, ajax, $compile, platformSer
     }
 
     init();
-});
+}]);
 
 app.directive('energyReportTable', [function(){
     return {
@@ -890,7 +890,7 @@ app.directive('energyReportTableRepeatFinish',function(){
     }
 });
 
-app.controller('EnergyOverviewCtrl', function ($scope, ajax, platformService, $compile) {
+app.controller('EnergyStatisticsCtrl', ['$scope', 'ajax', 'platformService', '$compile', function ($scope, ajax, platformService, $compile) {
     var stationSn = GetQueryString("sn");
     $scope.categories = [];
     $scope.labelNames = [];
@@ -1063,11 +1063,11 @@ app.controller('EnergyOverviewCtrl', function ($scope, ajax, platformService, $c
 
 
     init();
-});
+}]);
 
 const ENERGY_LINE_COLORS = ['#41bed8','#fde664','#9283ea','#3cd3cb','#fe7979','#f9b344','#46be8a','#579fe4','#f37c54','#3995ea'];
 
-app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformService) {
+app.controller('EnergyStatisticsZhiluCtrl', ['$scope', 'ajax', 'platformService', function ($scope, ajax, platformService) {
     $scope.timeTypes = ['日', '月', '年'];
     $scope.timeType = '日';
     var currentItem = null;
@@ -1479,9 +1479,9 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
     }
     
     
-});
+}]);
 
-app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformService) {
+app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService', function ($scope, ajax, platformService) {
     var timeType = null;
     var energyItems = null;
     var currentDate = null;
@@ -2131,4 +2131,4 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
             chart5.setOption(config);
         }
     }
-});
+}]);

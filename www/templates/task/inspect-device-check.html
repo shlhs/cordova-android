@@ -1,0 +1,17 @@
+<div class="page page-left" ng-controller="TaskDeviceCheckCtrl">
+    <header class="mui-bar bg-header">
+        <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="history.back()"></a>
+        <h1 class="mui-title">设备巡检详情</h1>
+    </header>
+    <div class="mui-content" ng-style="{'padding-bottom': canEdit ? '50px' : '10px'}">
+        <div style="background-color: #fff; padding: 12px;font-size: 15px;">
+            <label style="font-weight: bold;">巡检设备：</label>
+            <label>{{deviceName}}</label>
+        </div>
+        <div ng-include="'/templates/task/inspect-device-check-result.html'"></div>
+
+        <nav class="mui-bar mui-bar-tab" ng-if="canEdit" style="background-color: #fff;padding: 0 12px;">
+            <button type="button" class="mui-btn mui-btn-primary mui-btn-block task-btn" style="background-color: #79C679;" ng-click="saveDeviceResult()">保存结果</button>
+        </nav>
+    </div>
+</div>

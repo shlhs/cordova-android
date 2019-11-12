@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="../../css/animate.css">
     <link rel="stylesheet" href="../../components/mui/css/icons-extra.css">
     <link rel="stylesheet" href="../../css/setting.css">
-    <script type="text/javascript" src="../../components/libs/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="../../components/libs/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
     <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
     <!--<script type="text/javascript" src="components/ui-router-extras/release/ct-ui-router-extras.js"></script>-->
@@ -99,8 +99,8 @@
             </li>
         </ul>
         <div class="mui-scroll" style="background-color: #ffffff;">
-            <div class="card" style="margin-top: 16px;">
-                <div id="chartContainer"></div>
+            <div class="card">
+                <div id="chartContainer" style="height: 320px;"></div>
                 <div class="page-alert-wrapper" ng-if="!currentGroup">
                     <div class="page-alert">
                         <div class="page-alert">
@@ -188,6 +188,6 @@
 <script src="../../components/fastclick-master/lib/fastclick.js"></script>
 <script src="../../js/my/notify.js"></script>
 <script type="text/javascript" src="../../js/controller/device.js"></script>
-<script src="../../components/highcharts/highcharts.js"></script>
+<script src="../../components/echart/echarts.min-3.x.js"></script>
 </body>
 </html>
