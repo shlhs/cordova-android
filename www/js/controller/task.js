@@ -61,6 +61,9 @@ function formatTaskStatusName(task) {   // 根据任务状态转换任务描述
         case TaskStatus.ToAssign:
             stage = '待指派';
             break;
+        case TaskStatus.Competition:
+            stage = '待抢单';
+            break;
         default:
             if (task.task_type_id === TaskTypes.Xunjian) {
                 stage = '待巡检';
@@ -145,9 +148,12 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
     $scope.searchSiteResult = [];
     $scope.role = userService.getUserRole();
     if (gShowEnergyPage) {
-        $scope.navMenus = [_getDefaultHomeMenu(), _getEnergyMenu()];
+        $scope.navMenus = [_getDefaultHomeMenu(), _getEnergyMenu(), _getTaskTodoMenu()];
+    } else if ($scope.role === 'OPS_ADMIN' || $scope.role === 'OPS_OPERATOR') {
+        $scope.navMenus = [_getDefaultHomeMenu(), _getGrabTasksMenu(), _getTaskTodoMenu()];
     } else {
-        $scope.navMenus = [_getDefaultHomeMenu()];
+        // 普通用户或平台管理员，不能看到抢单页
+        $scope.navMenus = [_getDefaultHomeMenu(), _getTaskTodoMenu()];
     }
     var menuInited = false;     // 导航栏菜单是否初始化
 
@@ -192,7 +198,7 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
     };
 
     function _formatSiteStatus(data) {
-        if (data.communication_status == null || data.communication_status == '') {
+        if (data.communication_status === null || data.communication_status === '') {
             data.status = 'unknown';
             data.status_name = '未知';
         } else if (data.communication_status == 1) {
@@ -358,6 +364,14 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
             icon: 'nav-energy'
         };
     }
+    function _getGrabTasksMenu() {
+        return {
+            id: 'grab_tasks',
+            name: '抢单',
+            templateUrl: '/templates/task/task-competition-list.html',
+            icon: 'nav-task-grab'
+        };
+    }
 
     function _getTaskTodoMenu() {
         if (role === 'OPS_ADMIN' || role === 'OPS_OPERATOR') {
@@ -405,14 +419,9 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
         if (platHasOps && !menuInited) {
             // 有运维权限
             if (!gShowEnergyPage) {
-                // 如果不显示能效页面，那么运维管理员默认显示抢单页和待办页
-                // if (role === 'OPS_ADMIN' || role === 'OPS_OPERATOR') {
-                //     $scope.navMenus.push({
-                //         id: 'grab',
-                //         name: '抢单',
-                //         templateUrl: '/templates/task/task-competition-list.html',
-                //         icon: 'nav-task-grab'
-                //     });
+                // // 如果是
+                // if (role !== 'OPS_ADMIN' && role !== 'OPS_OPERATOR') {
+                //     $scope.navMenus.push(_g);
                 // }
             }
             var todoMenu = _getTaskTodoMenu();
@@ -522,7 +531,7 @@ app.controller('TaskBaseCtrl', ['$scope', 'ajax', 'userService', 'appStoreProvid
         });
     };
 
-    $scope.getDistance = function(task, start, cb) {
+    $scope.getDriveDistance = function(start, stationPosition, cb) {        // 获取实际开车的距离
         if (null === map){
             map = new BMap.Map("map");          // 创建地图实例
         }
@@ -534,15 +543,23 @@ app.controller('TaskBaseCtrl', ['$scope', 'ajax', 'userService', 'appStoreProvid
             },
             onSearchComplete: function (result) {
                 if (result && result.getPlan(0)){
-                    task.distance = parseFloat(result.getPlan(0).getDistance());
-                    cb && cb(task, task.distance);
+                    var distance = parseFloat(result.getPlan(0).getDistance());
+                    cb && cb(distance);
                 }else{
-                    cb && cb(task, -1); // 不存在路径
+                    cb && cb(null); // 不存在路径
                 }
             }
         });
-        var end = new BMap.Point(task.station_longitude, task.station_latitude);
+        var end = new BMap.Point(stationPosition.longitude, stationPosition.latitude);
         driving.search(start, end);
+    };
+
+    $scope.getStraightDistance = function (startPosint, endLocation) {
+        if (null === map){
+            map = new BMap.Map("map");          // 创建地图实例
+        }
+        var end = new BMap.Point(endLocation.longitude, endLocation.latitude);
+        return map.getDistance(startPosint, end);
     };
 
     $scope.checkActuallyArrived = function (taskId, siteLongitude, siteLatitude, cb) {
@@ -602,9 +619,12 @@ app.controller('TaskBaseCtrl', ['$scope', 'ajax', 'userService', 'appStoreProvid
 
 app.controller('CompetitionTaskListCtrl', ['$scope', '$rootScope', 'scrollerService', 'userService', 'ajax', function ($scope, $rootScope, scrollerService, userService, ajax) {
     $scope.tasks = [];
+    var opsTeams = [];
+    $scope.toAcceptUsers = [];      // 抢单时能选的其他运维工
     $scope.isLoading = true;
-    var selectedTaskIndex = -1, company=userService.getCompany();
-    var stationDistances = {};
+    $scope.userPickerVisible = false;
+    var userAccount = userService.getUser().account;
+    var companyId = userService.getCompanyId();
 
     moment.locale('en', {
         relativeTime : {
@@ -627,41 +647,44 @@ app.controller('CompetitionTaskListCtrl', ['$scope', '$rootScope', 'scrollerServ
     function formatTime(task) {
         task.create_time_desp = moment(task.create_time).fromNow();
         task.create_time = formatUpdateTime(task.create_time);
-        task.expect_complete_time = task.expect_complete_time.substring(0, 16);
         return task;
+    }
+
+    function getTeamAndUsers() {
+        ajax.get({
+            url: '/OpsTeams?company_id=' + companyId + '&with_user=true',
+            success: function (teams) {
+                opsTeams = teams;
+            }
+        });
     }
 
     // 计算距离
     function getAllDistance(taskList) {
-        function getDistance(index, point) {
-            if (index >= taskList.length){
-                return;
-            }
-            var task = taskList[index];
-            if (!task.station_longitude || !task.station_latitude){
-                getDistance(index+1, point);
-            }
-            if (stationDistances[task.station_sn] == null) {
-                $scope.getDistance(task, point, function (task, distance) {
-                    if (distance >=0 )
-                    {
-                        stationDistances[task.station_sn] = distance;
-                    }
-                    $scope.$apply();
-                    getDistance(index+1, point);
-                });
-            }
-            else {
-                task.distance = stationDistances[task.station_sn];
-            }
+        if (!taskList || !taskList.length){
+            return;
+        }
+        // 先找到配置了位置的站点
+        var needCalcStations = {};
+        taskList.forEach(function (t) {
+           if (needCalcStations[t]) {
+               return;
+           }
+           if (t.station_latitude) {
+               needCalcStations[t.station_sn] = {
+                   latitude: t.station_latitude,
+                   longitude: t.station_longitude
+               };
+           }
+        });
+
+        if (Object.keys(needCalcStations).length === 0) {       // 不需要计算距离
+            return;
         }
         // 先获取自己的位置
-        stationDistances = {};
         apiLocation.start(function (longitude, latitude) {
+            // 列表页计算直线距离即可
              if (!longitude || !latitude){
-                 return;
-             }
-             if (!taskList || !taskList.length){
                  return;
              }
             var start = new BMap.Point(longitude, latitude);
@@ -669,14 +692,26 @@ app.controller('CompetitionTaskListCtrl', ['$scope', '$rootScope', 'scrollerServ
             var convertor = new BMap.Convertor();
             var pointArr = [start];
             convertor.translate(pointArr, 3, 5, function (data) {
-                var task = null;
-                var i = 0;
-                getDistance(i, data.points[0]);
+                var startPoint = data.points[0];
+                Object.keys(needCalcStations).forEach(function (stationSn) {
+                    // 计算直线距离
+                    var location = needCalcStations[stationSn];
+                    var distance = $scope.getStraightDistance(startPoint, needCalcStations[stationSn]);
+                    if (distance)
+                    {
+                        var strDis = distance > 1000 ? ((distance/1000).toFixed(2) + 'km') : (Number.parseInt(distance) + 'm');
+                        // 设置所有同一个站点的任务的距离
+                        taskList.forEach(function (t) {
+                            if (t.station_sn === stationSn) {
+                                t.distance = strDis;
+                            }
+                        });
+                        $scope.$apply();
+                    }
+                });
             });
         });
     }
-
-    var companyId = userService.getTaskCompanyId();
     $scope.getDataList = function() {
         scrollerService.initScroll('#competition_tasks_scroller', $scope.getDataList);
         if (!companyId) {
@@ -711,9 +746,8 @@ app.controller('CompetitionTaskListCtrl', ['$scope', '$rootScope', 'scrollerServ
     };
 
     $scope.afterGrabTask = function (taskData) {
-        var task = null;
         for (var i in $scope.tasks){
-            task = $scope.tasks[i];
+            var task = $scope.tasks[i];
             if (parseInt(task.id) === parseInt(taskData.id)){
                 // 从任务列表中删除
                 $scope.tasks.splice(i, 1);
@@ -726,36 +760,48 @@ app.controller('CompetitionTaskListCtrl', ['$scope', '$rootScope', 'scrollerServ
         $scope.$apply();
     };
 
-    // $scope.getDataList();
-}]);
-
-app.controller('GrabTaskCtrl', ['$scope', 'userService', 'ajax', function ($scope, userService, ajax) {
-    $scope.postGrabAction = function($event, taskId) {
+    var currentGrabTask = null;
+    $scope.onClickGrab = function ($event, task) {
         $event.stopPropagation();
-        var companyId = userService.getTaskCompanyId();
-        var data = {};
-        $.notify.progressStart();
-        ajax.post({
-            url: '/opstasks/' + companyId + '/' + taskId + '/actions?action_type=' + TaskAction.Grab,
-            data: JSON.stringify(data),
-            contentType:"application/json",
-            headers: {
-                Accept: "application/json"
-            },
-            success: function (data) {
-                $.notify.progressStop();
-                $.notify.info("抢单成功");
-                $scope.afterGrabTask(data);
-                $scope.$apply();
-            },
-            error: function (data) {
-                $.notify.progressStop();
-                console.log('post action fail');
-                $.notify.error('抢单时发生异常');
+        var users = [];
+        for (var i=0; i<opsTeams.length; i++) {
+            if (opsTeams[i].id === task.operator_team) {
+                opsTeams[i].users.forEach(function (user) {
+                    if (user.account !== userAccount) {
+                        users.push(user);
+                    }
+                });
+                break;
             }
-        });
-        return false;
+        }
+        $scope.toAcceptUsers = users;
+        $scope.userPickerVisible = true;
+        currentGrabTask = task;
     };
+
+    $scope.onHideGrab = function () {
+        $scope.userPickerVisible = false;
+    };
+
+    $scope.postGrabTask = function(users) {
+        const accounts = [];
+        users.forEach(function (user) {
+            accounts.push(user.account);
+        });
+        var params = {
+            transfer_user: accounts.join(','),
+        };
+        $scope.commonPostActionWithParams(currentGrabTask.id, TaskAction.Grab, params, function (data) {
+            $.notify.info("抢单成功");
+            $scope.afterGrabTask(data);
+            $scope.onHideGrab();
+            $scope.$apply();
+        });
+    };
+
+    setTimeout(function () {
+        getTeamAndUsers();
+    }, 1000);
 }]);
 
 app.controller('TaskTodoListCtrl', ['$scope', '$rootScope', 'scrollerService', 'userService', 'ajax', 'TaskStatus', function ($scope, $rootScope, scrollerService, userService, ajax, TaskStatus) {
@@ -806,6 +852,7 @@ app.controller('TaskTodoListCtrl', ['$scope', '$rootScope', 'scrollerService', '
 
     $scope.updateTask = function (taskData) {
         // 查找任务是否存在
+        formatTaskStatusName(taskData);
         var exist = false;
         for (var i in allTasks){
             if (allTasks[i].id === taskData.id){
@@ -1136,6 +1183,14 @@ function updateTask(strArgs) {  // json格式的参数， {data: taskData}
     if (scope) {
         scope.updateTask && scope.updateTask(taskData);
     }
+    // 更新"抢单"
+    var competitionTaskWrapper = angular.element('#competitionTaskListWrapper');
+    if (competitionTaskWrapper) {
+        var scope2 = competitionTaskWrapper.scope();
+        if (scope2) {
+            scope2.afterGrabTask && scope2.afterGrabTask(taskData);
+        }
+    }
 }
 
 function setTaskReportId(reportId) {        // 安全检测和停电维护新建后返回到任务详情页时，设置任务的report_id
@@ -1204,6 +1259,18 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
                 opsCompanyId = data.company_id;
                 updateTaskInfo(data);
 
+                // 如果是抢单任务，需要读取同组内其他人的信息，以便接单时选择其他人协助
+                ajax.get({
+                    url: '/OpsTeams/' + data.operator_team + '?with_user=true',
+                    success: function (res) {
+                        $scope.toAcceptUsers = [];
+                        res.users.forEach(function (user) {
+                            if (user.account != userAccount) {
+                                $scope.toAcceptUsers.push(user);
+                            }
+                        })
+                    }
+                })
                 // mother_task_id不为空，说明该任务是由巡检任务创建的缺陷，需要通知巡检任务更新设备状态
                 // if (GetQueryString('mother_task_id')) {
                 //     window.android && window.android.onJsCallbackForPrevPage('onAndroidCb_updateDeviceRecord', JSON.stringify(task.device_record[0]));
@@ -1467,6 +1534,9 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
     };
 
     $scope.taskHandler = {
+        grabTask: function () {         // 抢单，抢单时可以选择其他人协助
+            $scope.acceptPickerVisible = !$scope.acceptPickerVisible;
+        },
         assignHandlers: function () {       // 指定责任人
             $scope.assignPickerVisible = !$scope.assignPickerVisible;
         },
@@ -1486,7 +1556,6 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
                     }
                 });
             }
-
         },
         refuseTaskAssign: function () {     // 拒绝任务分配
             var btnArray = ['取消', '确定'];
@@ -1608,6 +1677,22 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
             }
         });
     }
+
+    $scope.onGrabTask = function (users) {
+        // 确认抢单
+        var accounts = [];
+        users.forEach(function (user) {
+            accounts.push(user.account);
+        });
+        var param = {
+            transfer_user: accounts.join(',')
+        };
+        $scope.commonPostActionWithParams($scope.taskData.id, TaskAction.Transfer, param, function (data) {
+            refreshAfterPostAction(data);
+            $scope.acceptPickerVisible = false;
+            $scope.$apply();
+        });
+    };
 
     $scope.onAssignHandlers = function (team, users) {
         // 指派维修工

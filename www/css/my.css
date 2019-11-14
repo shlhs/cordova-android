@@ -1376,6 +1376,12 @@ a:hover.slidesjs-stop {
 .info-group .icon{
     margin-right: 4px;
 }
+.site-info-group.info-group .title{
+    width: 80px;
+}
+.site-info-group.info-group .value{
+    margin-left: 80px;
+}
 .btn-status {
     color: #fff;
     font-size: 13px;
@@ -3414,6 +3420,9 @@ table.dataTable tbody th, table.dataTable tbody td {
 }
 .my-picker.mui-poppicker {
     transform: translateY(380px);
+}
+.my-picker.mui-poppicker.mui-active {
+    transform: translateY(0px);
 }
 .mui-checkbox.control-radio input[type=checkbox], .mui-radio.control-radio input[type=radio] {
     top: -5px;

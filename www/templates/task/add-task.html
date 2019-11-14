@@ -91,12 +91,13 @@
             </label>
         </div>
         <div class="mui-input-row" ng-if="needResign">
-            <label class="label">维修工<span style="color:red">*</span></label>
-            <textarea name="handlerName" ng-model="handlerName" placeholder="请选择维修工" required rows="{{handlerRowSpan}}"></textarea>
+            <label class="label">维修工</label>
+            <textarea name="handlerName" ng-model="handlerName" placeholder="请选择维修工" rows="{{handlerRowSpan}}"></textarea>
             <button type="button" data-options='{}' class="btn mui-btn mui-btn-block" ng-click="showHandlerSelector()" style="position: absolute;top: 0;left: 130px;bottom: 0;">&nbsp;</button>
-            <label class="error" ng-show="myForm.handlerName.$invalid && (myForm.handlerName.$dirty || myForm.$submitted)">
-                <span ng-show="myForm.handlerName.$error.required">请选择维修工</span>
-            </label>
+            <!--<label class="error" ng-show="myForm.handlerName.$invalid && (myForm.handlerName.$dirty || myForm.$submitted)">-->
+                <!--<span ng-show="myForm.handlerName.$error.required">请选择维修工</span>-->
+            <!--</label>-->
+            <div class="error" style="color: #9c9c9c;font-size: 11px;" ng-if="!handlerName">不指定维修工则为抢单任务</div>
         </div>
         <div class="mui-input-row" ng-if="linkEventInfo" style="display: none;">
             <label class="label">关联事件</label>

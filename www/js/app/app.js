@@ -485,8 +485,8 @@ app.service('ajax', ['$rootScope', 'platformService', 'userService', 'routerServ
 
     function request(option) {
         if (option.url.indexOf("http://") !== 0){
-            option.url = platformService.getCloudHost() + option.url;
-            // option.url = 'http://192.168.1.129:8099/v1' + option.url;
+            // option.url = platformService.getCloudHost() + option.url;
+            option.url = 'http://127.0.0.1:8099/v1' + option.url;
         }
         var headers = $.extend({
             Authorization: userService.getAccountToken(),
