@@ -895,7 +895,7 @@ app.controller('DeviceRemoteControlCtrl', function ($scope, $interval, routerSer
                             if (v.type === 'Digital') {
                                 v.value = data[i].data > 0 ? '1' : '0';
                             } else {
-                                v.value = data[i].data + (data[i].unit || '');
+                                v.value = (data[i].data === null ? '' : data[i].data) + (data[i].unit || '');
                             }
                             exist = true;
                             break;
