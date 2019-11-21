@@ -312,65 +312,10 @@
         <div class="card" ng-show="taskData.stage_id === TaskStatus.Competition && taskData.station_longitude">
             <div id="map" style="height: 300px;width: 100%;"></div>
         </div>
-        <nav class="mui-bar mui-bar-tab bg-transparent" ng-if="canHandle && taskData.stage_id === TaskStatus.ToAssign">
-            <a class="mui-tab-item mui-active mui-segmented-control-vertical" href="#">
+        <nav class="mui-bar mui-bar-tab bg-transparent">
+            <a class="mui-tab-item mui-active mui-segmented-control-vertical" href="#" ng-repeat="action in actions">
                 <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-btn-outlined mui-control-item task-btn"
-                        ng-click="taskHandler.assignHandlers()">指定责任人</button>
-            </a>
-        </nav>
-        <nav class="mui-bar mui-bar-tab bg-transparent" ng-if="taskData.stage_id === TaskStatus.Competition">
-            <a class="mui-tab-item mui-active mui-segmented-control-vertical" href="#">
-                <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-btn-outlined mui-control-item accept task-btn"
-                        style="background-color: #f0ad4e;color: #fff;border: #f0ad4e;"
-                        ng-click="taskHandler.grabTask()">抢单</button>
-            </a>
-        </nav>
-        <nav class="mui-bar mui-bar-tab" ng-if="canHandle && taskData.stage_id===TaskStatus.ToAccept">
-            <a class="mui-tab-item mui-active mui-segmented-control-vertical" href="#">
-                <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-btn-outlined mui-control-item task-btn" style="margin-bottom: 6px;"
-                        ng-click="taskHandler.acceptTaskAssign()">接受</button>
-            </a>
-            <a class="mui-tab-item mui-active mui-segmented-control-vertical" href="#">
-                <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-btn-outlined mui-control-item task-btn" style="margin-bottom: 6px;"
-                        ng-click="taskHandler.transferHandler()">转给他人</button>
-            </a>
-            <a class="mui-tab-item mui-active mui-segmented-control-vertical" href="#">
-                <button type="button" class="mui-btn mui-btn-danger mui-btn-block mui-btn-outlined mui-control-item task-btn"
-                        ng-click="taskHandler.refuseTaskAssign()">拒绝</button>
-            </a>
-        </nav>
-        <nav class="mui-bar mui-bar-tab" ng-if='canHandle && taskData.stage_id===TaskStatus.Accepted && !taskData.isToStart'>
-            <a class="mui-tab-item mui-segmented-control-vertical">
-                <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-btn-outlined mui-control-item task-btn"
-                        ng-click="taskHandler.gotoSpot()">现在出发</button>
-            </a>
-        </nav>
-        <nav class="mui-bar mui-bar-tab" ng-if='canHandle && taskData.stage_id===TaskStatus.Coming'>
-            <a class="mui-tab-item mui-segmented-control-vertical">
-                <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-btn-outlined mui-control-item task-btn"
-                        ng-click="taskHandler.setArrived()">已到达，开始处理</button>
-            </a>
-        </nav>
-        <nav class="mui-bar mui-bar-tab" ng-if='canHandle && taskData.stage_id===TaskStatus.Arrived'>
-            <a class="mui-tab-item mui-segmented-control-vertical" ng-click="gotoDeviceHandlerPage()" ng-if="taskData.task_type_id === 11">
-                <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-control-item task-btn">去检查</button>
-            </a>
-            <a class="mui-tab-item mui-segmented-control-vertical" ng-click="gotoHandleTask()" ng-if="taskData.task_type_id !== TaskTypes.Xunjian">
-                <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-control-item task-btn">上传维修结果</button>
-            </a>
-            <a class="mui-tab-item mui-segmented-control-vertical">
-                <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-control-item task-btn"
-                        ng-click="taskHandler.requestTaskComplete()" style="background-color: #00BFA5;">提交审核</button>
-            </a>
-        </nav>
-        <nav class="mui-bar mui-bar-tab" ng-if='canHandle && taskData.stage_id===TaskStatus.ToClose'>
-            <a class="mui-tab-item mui-segmented-control-vertical">
-                <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-btn-outlined mui-control-item task-btn"
-                        ng-click="taskHandler.closeTask()">关闭任务</button>
-            </a>
-            <a class="mui-tab-item mui-segmented-control-vertical">
-                <button type="button" class="mui-btn mui-btn-danger mui-btn-block mui-btn-outlined mui-control-item task-btn"
-                        ui-sref="task.reject()">驳回关闭请求</button>
+                        ng-click="taskHandler.execute(action.id)" style="background-color: {{action.color}}">{{action.name}}</button>
             </a>
         </nav>
         <team-and-handler-selector ng-if="taskData.stage_id === TaskStatus.ToAssign" on-hide="taskHandler.assignHandlers"

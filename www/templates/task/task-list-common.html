@@ -12,7 +12,7 @@
                             </h4>
                         </div>
                     </div>
-                    <div class="sub-body">
+                    <div class="sub-body task-infos">
                         <p class="task-name">
                             {{task.name}}
                         </p>
@@ -28,7 +28,7 @@
                             <span class="task-info-label">当前处理人：</span>
                             <span class="task-info-value">{{task.current_handler_name}}</span>
                         </div>
-                        <div ng-if="task.stage_id === TaskStatus.Closed">
+                        <div ng-if="task.finish_time">
                             <span class="task-info-label">完成时间：</span>
                             <span class="task-info-value" ng-class="{'timeout': task.isTimeout}">{{task.finish_time}}</span>
                         </div>

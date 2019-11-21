@@ -17,9 +17,39 @@ var TaskTypes = {
 };
 var OpsTaskType = [2, 3, 4, 5, 7];
 var DtsTaskType = [8, 9, 10];
-var TaskAction = {Create: 0, Accept: 1, Refuse: 2, Assign: 3, Go: 4, Apply: 5, Reject: 6, Close: 7, Comment: 8, Grab: 9, Arrive: 10, Update: 11, Transfer: 12};
+var TaskAction = {Create: 0, Accept: 1, Refuse: 2, Assign: 3, Go: 4, Apply: 5, Reject: 6, Close: 7, Comment: 8, Grab: 9, Arrive: 10, Update: 11, Transfer: 12, Cancel: 13};
 var TaskStatus = {ToAccept: 1, ToAssign: 2, Accepted: 3, ToClose: 4, Closed: 5, Competition: 6, Coming: 7, Arrived: 8};
 var TaskSource = {Repaire: 1, Event: 2, Inspect: 3};
+var TaskActionName = {
+    1: '接单',
+    2: {
+        name: '拒绝',
+        color: '#ff9800'
+    },
+    3: '指定责任人',
+    4: '现在出发',
+    5: {
+        name: '提交审核',
+        color: '#00BFA5'
+    },
+    6: {
+        name: '驳回',
+        color: '#ff9800'
+    },
+    7: '关闭任务',
+    8: '评论',
+    9: {
+        name: '抢单',
+        color: '#f0ad4e'
+    },
+    10: '已到达，开始处理',
+    11: '提交处理结果',
+    12: '转给他人',
+    13: {
+        name: '撤单',
+        color: '#f0ad4e'
+    },
+};
 function formatTaskHistoryDesp(taskHistory) {     // 根据任务的action_id处理任务描述
     switch (taskHistory.action_id){
         case TaskAction.Apply:
@@ -50,7 +80,11 @@ function formatTaskStatusName(task) {   // 根据任务状态转换任务描述
     var stage = task.stage, status = '';
     switch (task.stage_id){
         case TaskStatus.Closed:
-            stage = '已关闭';
+            if (task.finish_time) {
+                stage = '已关闭';
+            } else {
+                stage = '已撤单';
+            }
             break;
         case TaskStatus.ToClose:
             stage = '待审批';
@@ -416,17 +450,14 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
 
     function updateMenus(platHasOps) {
         // 判断是否包含ops-management权限
-        if (platHasOps && !menuInited) {
-            // 有运维权限
-            if (!gShowEnergyPage) {
-                // // 如果是
-                // if (role !== 'OPS_ADMIN' && role !== 'OPS_OPERATOR') {
-                //     $scope.navMenus.push(_g);
-                // }
-            }
-            var todoMenu = _getTaskTodoMenu();
-            if (todoMenu) {
-                $scope.navMenus.push(todoMenu);
+        if (!platHasOps && !menuInited) {
+            // 没有运维权限，需要将待办或我的服务删除
+            if (gShowEnergyPage) {
+                // 保留两个菜单
+                $scope.navMenus = $scope.navMenus.slice(0, 2);
+            } else {
+                // 保留一个菜单
+                $scope.navMenus = [$scope.navMenus[0]];
             }
             menuInited = true;
         }
@@ -919,7 +950,7 @@ app.controller('TaskTodoListCtrl', ['$scope', '$rootScope', 'scrollerService', '
     };
 }]);
 
-app.controller('TaskListCtrl', ['$scope', '$rootScope', 'scrollerService', 'userService', 'ajax', function ($scope, $rootScope, scrollerService, userService, ajax) {
+app.controller('TaskListCtrl', ['$scope', '$rootScope', 'scrollerService', 'userService', 'ajax', 'UserRole', function ($scope, $rootScope, scrollerService, userService, ajax, UserRole) {
     $scope.TaskStatus = TaskStatus;
     $scope.TaskTypes = TaskTypes;
     $scope.tasks = [];
@@ -934,7 +965,16 @@ app.controller('TaskListCtrl', ['$scope', '$rootScope', 'scrollerService', 'user
     var userAccount = userService.getUser().account;
     var requestFilterParams = null;
     $scope.showFilter = false;
-    $scope.filterItems = [
+    var defaultFilterItems = [
+        {
+          key: 'creater',
+          items: [{
+              id: 'creater_my',
+              name: '我报修的',
+              value: userAccount
+          }],
+          userRole: [UserRole.Normal]
+        },
         {
             title: '状态',
             key: 'stage',
@@ -949,15 +989,23 @@ app.controller('TaskListCtrl', ['$scope', '$rootScope', 'scrollerService', 'user
             }]
         }, {
             title: '来源',
-            key: 'creater',
+            key: 'source',
             items: [{
-                id: 'creator_my',
-                name: '我提交的',
-                value: userAccount
+                id: 'source_repair',
+                name: '报修',
+                value: TaskSource.Repaire
+            }, {
+                id: 'source_inspect',
+                name: '巡检',
+                value: TaskSource.Inspect
+            }, {
+                id: 'source_event',
+                name: '告警',
+                value: TaskSource.Event
             }]
         }, {
             title: '类型',
-            key: 'task_type',
+            key: 'task_types',
             items: [{
                 id: 'type_xunjian',
                 name: '巡检',
@@ -993,6 +1041,16 @@ app.controller('TaskListCtrl', ['$scope', '$rootScope', 'scrollerService', 'user
             }]
         }
     ];
+    $scope.filterItems = [];
+    defaultFilterItems.forEach(function (item) {
+       if (item.userRole) {
+           if (item.userRole.indexOf(role) >= 0) {
+               $scope.filterItems.push(item);
+           }
+       } else {
+           $scope.filterItems.push(item);
+       }
+    });
     $scope.selectedFilter = {};     // 确定选中的
     $scope.tmpSelectedFilter = {};      // 在确定选中前，记录选中状态的
 
@@ -1067,15 +1125,15 @@ app.controller('TaskListCtrl', ['$scope', '$rootScope', 'scrollerService', 'user
              });
              url = '/opstasks?station=' + stationSns.join(',');
              // 筛选
-         } else if (role === 'OPS_OPERATOR') {
+        } else if (role === 'OPS_OPERATOR') {
             // 如果是运维工，则显示处理过的所有任务
             url = "/opstasks/history/" + companyId;
-         }
-         var params = {
-             page_size: 100,
-             page_index: 0,
-             s_echo: 0
-         };
+        }
+        var params = {
+            page_size: 100,
+            page_index: 0,
+            s_echo: 0
+        };
         if (requestFilterParams) {
             Object.keys(requestFilterParams).forEach(function (key) {
                 params[key] = requestFilterParams[key].join(',');
@@ -1245,6 +1303,7 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
     $scope.assignPickerVisible = false;     // 是否显示指派的对话框
     $scope.acceptPickerVisible = false;     // 是否显示接单时的对话框，可用于选择一起接单的维修工
     $scope.transferPickerVisible = false;     // 是否显示转单时的对话框，可用于选择一起接单的维修工
+    $scope.actions = [];
     var map = null, stationLongitude, stationLatitude;
     var innerPageQuery=null,historyState = [];    // 浏览器历史状态
     $scope.actions = [];
@@ -1270,11 +1329,12 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
                             }
                         })
                     }
-                })
+                });
                 // mother_task_id不为空，说明该任务是由巡检任务创建的缺陷，需要通知巡检任务更新设备状态
                 // if (GetQueryString('mother_task_id')) {
                 //     window.android && window.android.onJsCallbackForPrevPage('onAndroidCb_updateDeviceRecord', JSON.stringify(task.device_record[0]));
                 // }
+                getAvailableActions(data);
             },
             error: function (a, b, c) {
                 console.log('get task detail fail');
@@ -1282,6 +1342,39 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
             }};
         ajax.get(option);
     }
+    
+    function getAvailableActions(task) {
+        // 获取用户当前可执行的操作
+        ajax.get({
+            url: '/opstasks/' + companyId + '/' + task.id + '/action_candidates',
+            success: function (res) {
+                $scope.actions = [];
+                var actionIdSort = [TaskAction.Grab, TaskAction.Assign, TaskAction.Accept, TaskAction.Transfer, TaskAction.Refuse,
+                    TaskAction.Go, TaskAction.Arrive, TaskAction.Update, TaskAction.Apply, TaskAction.Close, TaskAction.Cancel];
+                res.forEach(function (action, i) {
+                    var obj = TaskActionName[action.id];
+                    var name = obj.name || obj;
+                    var color = obj.color || '#03a9f4';
+                    if (action.id === TaskAction.Update && task.task_type_id === TaskTypes.Xunjian) {
+                        name = '去检查';
+                    }
+                    $scope.actions.push({
+                        id: action.id,
+                        name: name,
+                        color: color
+                    });
+                });
+                // 按actionIdSort的顺序对action进行排序
+                $scope.actions.sort(function (a1, a2) {
+                    var index1 = actionIdSort.indexOf(a1.id);
+                    var index2 = actionIdSort.indexOf(a2.id);
+                    return index1 - index2;
+                });
+                $scope.$apply();
+            }
+        });
+    }
+
     getTaskDetail();
 
     $scope.onToggleUpdateRecord = function () {
@@ -1534,8 +1627,62 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
     };
 
     $scope.taskHandler = {
+        execute : function (actionId) {
+            switch (actionId) {
+                case TaskAction.Grab:
+                    this.grabTask();
+                    break;
+                case TaskAction.Cancel:
+                    this.cancelTask();
+                    break;
+                case TaskAction.Assign:
+                    this.assignHandlers();
+                    break;
+                case TaskAction.Transfer:
+                    this.transferHandler();
+                    break;
+                case TaskAction.Accept:
+                    this.acceptTaskAssign();
+                    break;
+                case TaskAction.Refuse:
+                    this.refuseTaskAssign();
+                    break;
+                case TaskAction.Go:
+                    this.gotoSpot();
+                    break;
+                case TaskAction.Arrive:
+                    this.setArrived();
+                    break;
+                case TaskAction.Update:
+                    if ($scope.taskData.task_type_id === TaskTypes.Xunjian) {
+                        $scope.gotoDeviceHandlerPage();
+                    } else {
+                        $scope.gotoHandleTask();
+                    }
+                    break;
+                case TaskAction.Apply:
+                    this.requestTaskComplete();
+                    break;
+                case TaskAction.Reject:
+                    this.rejectApply();
+                    break;
+                case TaskAction.Close:
+                    this.closeTask();
+                    break;
+                default:
+                    break;
+            }
+        },
         grabTask: function () {         // 抢单，抢单时可以选择其他人协助
             $scope.acceptPickerVisible = !$scope.acceptPickerVisible;
+        },
+        cancelTask: function () {       // 撤单
+            var btnArray = ['取消', '确定'];
+            mui.prompt('请输入撤单原因：', '', '撤销该工单', btnArray, function(e) {
+                if (e.index === 1) {     // 是
+                    $scope.postAction(TaskAction.Cancel, e.value);
+                }
+            });
         },
         assignHandlers: function () {       // 指定责任人
             $scope.assignPickerVisible = !$scope.assignPickerVisible;
@@ -1574,7 +1721,6 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
             }
         },
         setArrived: function () {   // 已到达
-            // $scope.postAction(TaskAction.Arrive);
             $scope.checkActuallyArrived($scope.taskData.id, stationLongitude, stationLatitude, function (taskId, action) {
                 $scope.postAction(action);
             });
@@ -1593,8 +1739,6 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
             if ($scope.taskData.task_type_id === TaskTypes.Xunjian && $scope.checkedDeviceCount < $scope.taskData.device_record.length) {
                 description = '设备检查未完成，确认提交吗？';
             }
-
-
             mui.confirm(description, title, btnArray, function(e) {
                 if (e.index === 1) {     // 是
                     // 如果用户提交了签到照片，则需要先提交一次更新记录，再提交审核
@@ -1606,6 +1750,14 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
                         $scope.postAction(TaskAction.Apply, "提交任务审核");
                     }
 
+                }
+            });
+        },
+        rejectApply: function () {
+            var btnArray = ['取消', '驳回'];
+            mui.prompt('请输入驳回原因：', '', '驳回关闭请求', btnArray, function(e) {
+                if (e.index === 1) {     // 是
+                    $scope.postAction(TaskAction.Reject, e.value);
                 }
             });
         },
@@ -1751,6 +1903,7 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
         // 调用Android接口
         notifyPrevPageToUpdateTask(data);
         formatTaskStatus();
+        getAvailableActions(data);
         getTaskHistory();
         // 如果是待接单状态，则需要设置接单时需要选择的其他运维工的账号
         if ($scope.taskData.stage_id === TaskStatus.ToAccept) {
