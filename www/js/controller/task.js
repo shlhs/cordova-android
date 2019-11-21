@@ -1319,17 +1319,19 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
                 updateTaskInfo(data);
 
                 // 如果是抢单任务，需要读取同组内其他人的信息，以便接单时选择其他人协助
-                ajax.get({
-                    url: '/OpsTeams/' + data.operator_team + '?with_user=true',
-                    success: function (res) {
-                        $scope.toAcceptUsers = [];
-                        res.users.forEach(function (user) {
-                            if (user.account != userAccount) {
-                                $scope.toAcceptUsers.push(user);
-                            }
-                        })
-                    }
-                });
+                if (data.operator_team) {
+                    ajax.get({
+                        url: '/OpsTeams/' + data.operator_team + '?with_user=true',
+                        success: function (res) {
+                            $scope.toAcceptUsers = [];
+                            res.forEach(function (user) {
+                                if (user.account != userAccount) {
+                                    $scope.toAcceptUsers.push(user);
+                                }
+                            });
+                        }
+                    });
+                }
                 // mother_task_id不为空，说明该任务是由巡检任务创建的缺陷，需要通知巡检任务更新设备状态
                 // if (GetQueryString('mother_task_id')) {
                 //     window.android && window.android.onJsCallbackForPrevPage('onAndroidCb_updateDeviceRecord', JSON.stringify(task.device_record[0]));
