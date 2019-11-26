@@ -70,6 +70,7 @@ function formatTaskStatusName(task) {   // 根据任务状态转换任务描述
     }
     task.stage_name = stage;
     task.status = status;
+    task.isToStart = task.start_time && task.start_time.substring(0, 16) > new Date().Format('yyyy-MM-dd HH:mm');      // 任务待开始
     return task;
 }
 
@@ -785,10 +786,12 @@ app.controller('TaskTodoListCtrl', ['$scope', '$rootScope', 'scrollerService', '
                 allTasks = result;
                 allTasks.sort(sortByUpdateTime);
                 var task = null;
+                var current = new Date().Format('yyyy-MM-dd HH:mm');
                 for (var i in allTasks){
                     task = allTasks[i];
                     formatTaskStatusName(task);
                     task.isTimeout = $scope.taskTimeout(task);
+                    task.isToStart = task.start_time && task.start_time.substring(0,16) > current;      // 任务待开始
                 }
                 $scope.changeTaskType(null, $scope.showType);
                 $scope.$apply();
@@ -1226,7 +1229,7 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
     function updateTaskInfo(data) {
         $scope.taskData = formatTaskStatusName(data);
         $scope.taskData.expect_complete_time = data.expect_complete_time ? data.expect_complete_time.substring(0, 16) : '';
-
+        $scope.taskData.isToStart = $scope.taskData.start_time && $scope.taskData.start_time.substring(0, 16) > new Date().Format('yyyy-MM-dd HH:mm');      // 任务待开始
 
         // 如果是待接单状态，则需要设置接单时需要选择的其他运维工的账号
         if ($scope.taskData.stage_id === TaskStatus.ToAccept) {
@@ -1494,7 +1497,12 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
             });
         },
         gotoSpot: function () {     // 去现场
-            $scope.postAction(TaskAction.Go);
+            if ($scope.taskData.isToStart) {
+                // 任务待开始，无法操作
+                $.notify.toast('任务还未开始，无法操作');
+            } else {
+                $scope.postAction(TaskAction.Go);
+            }
         },
         setArrived: function () {   // 已到达
             // $scope.postAction(TaskAction.Arrive);

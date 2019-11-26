@@ -102,6 +102,16 @@ app.controller('KanbanCtrl', ['$scope', '$stateParams', 'ajax', '$timeout', func
                                         } else {
                                             tempVarData.value = value;
                                         }
+                                        // 处理自定义键值对
+                                        if(contentItem.customMeaningChecked && contentItem.customMeaningdatas) {
+                                            for (let index = 0; index < contentItem.customMeaningdatas.length; index +=1 ) {
+                                                var element = contentItem.customMeaningdatas[index];
+                                                if(element.key === tempVarData.value) {
+                                                    tempVarData.value = element.meaning;
+                                                    break;
+                                                }
+                                            }
+                                        }
                                         tempVarData.unit = processedValue.unit;
                                     }
                                 }

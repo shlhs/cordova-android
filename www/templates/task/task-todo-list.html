@@ -22,9 +22,12 @@
                             {{task.name}}
                         </p>
                         <div ng-if="task.station_name">
-                            <span class="task-info-label">站点名称</span><span class="task-info-value">{{task.station_name}}</span>
+                            <span class="task-info-label">站点名称：</span><span class="task-info-value">{{task.station_name}}</span>
                         </div>
-                        <div>
+                        <div ng-if="task.isToStart">
+                            <span class="task-info-label" style="padding-right: 0;color: rgb(70, 190, 138);font-weight: 500;">任务将在 {{task.start_time.substring(0,16)}} 启动</span>
+                        </div>
+                        <div ng-if="!task.isToStart">
                             <span class="task-info-label" style="padding-right: 0;">期望完成时间：</span>
                             <span class="task-info-value" ng-class="{'timeout': task.isTimeout}">{{task.expect_complete_time.substring(0,16)}}</span>
                         </div>

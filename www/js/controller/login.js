@@ -7,7 +7,6 @@
 // var gPublicApiHost = 'http://47.104.75.86:8090';        // 公有云接口
 var gPublicApiHost = 'http://47.97.167.195:8090';        // 因泰来接口
 
-
 app.controller('LoginCtrl', ['$scope', '$timeout', 'platformService', 'userService', '$state', '$http', 'ajax', function ($scope, $timeout, platformService, userService, $state, $http, ajax) {
     $scope.error = '';
     var platform = null;
