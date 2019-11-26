@@ -67,6 +67,23 @@
                 history.back();
             }
         }
+        function GetQueryString(name, url)
+        {
+            var search = window.location.search;
+            if (url) {
+                search = url.substring(url.indexOf('?'));
+            }
+            var search = search.substring(1), params = search.split('&');
+            var index, param;
+            for (var i=0; i<params.length; i++){
+                param = params[i];
+                index = param.indexOf('=');
+                if (index > 0 && param.substring(0, index) == name){
+                    return decodeURIComponent(param.substring(index+1));
+                }
+            }
+            return null;
+        }
 
         window.addEventListener('message', function(e) {
             var frames = window.frames;
@@ -74,7 +91,7 @@
                 frames[i].postMessage('Bearer' + (getStorageItem('accountToken') || ''), '*');
             }
         }, false);
-        var url = location.search.substring(location.search.lastIndexOf('http://'));
+        var url = GetQueryString("url");
         url += "&mobile=1";
         window.onload = function () {
             var iframe = document.getElementById('iframe');
