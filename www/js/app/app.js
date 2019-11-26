@@ -196,7 +196,7 @@ app.service('platformService', function () {
 
     this.setLatestPlatform = function (platform) {
         setStorageItem('latestPlatform', JSON.stringify(platform));
-        this.host = platform.url.substring(0, platform.url.indexOf(':', 5));
+        this.host = platform.url.substring(0, platform.url.indexOf(':', platform.url.indexOf(':')+1));
         this.thumbHost = this.getImageThumbHost();
     };
 
@@ -215,7 +215,7 @@ app.service('platformService', function () {
             return defaultPlatIpAddr;
         }
         var platform = this.getLatestPlatform();
-        return platform ? platform.url.substring(0, platform.url.indexOf(':', 5)) : null;
+        return platform ? platform.url.substring(0, platform.url.indexOf(':', platform.url.indexOf(':')+1)) : null;
     };
 
     this.getCloudHost = function () {
