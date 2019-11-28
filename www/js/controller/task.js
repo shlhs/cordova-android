@@ -158,6 +158,7 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
             success: function(result) {
                 $scope.isLoading = false;
                 var sites = [];
+                var stationSns = [];
                 result.forEach(function (s) {
                     var width = window.screen.width, height=Math.round(width/2);
                     if (s.photo_src_link) {
@@ -168,10 +169,12 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
                     if (!s.is_group)
                     {
                         s.search_key = s.name.toLowerCase() + ' ' + s.sn.toLowerCase();
+                        stationSns.push(s.sn);
                     }
                     s.full_address = (s.address_province || '') + (s.address_city || '') + (s.address_district || '') + (s.address || '');
                     sites.push(s);
                 });
+                setStorageItem('stationSns', stationSns.join(','));     // 记录用户有权限查看的站点sn
                 $scope.sites = sites;
                 if (sites.length) {
                     // 更新站点状态
