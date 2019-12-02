@@ -1346,17 +1346,15 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
                     }
                 },
                 legend: {
-                    data: ['今日', '昨日'],
-                    bottom: 5,
+                    left: 'right',
+                    itemWidth: 15,
+                    itemHeight: 8,
                     textStyle: {
-                        fontSize: 9,
-                        rich: {
-                            fonSize: 9
-                        }
+                        fontSize: 9
                     }
                 },
                 grid: {
-                    top: 20,
+                    top: 25,
                     left: 10,
                     right: 20,
                     bottom: 35,
@@ -1474,17 +1472,15 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
                     },
                 },
                 legend: {
-                    data: labels,
-                    bottom: 5,
+                    left: 'right',
+                    itemWidth: 15,
+                    itemHeight: 8,
                     textStyle: {
-                        fontSize: 9,
-                        rich: {
-                            fonSize: 9
-                        }
+                        fontSize: 9
                     }
                 },
                 grid: {
-                    top: 20,
+                    top: 25,
                     left: 10,
                     right: 20,
                     bottom: 35,
@@ -1995,10 +1991,13 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
                     },
                 },
                 legend: {
-                    data: ['本期', '上期'],
                     top: 2,
-                    right: 20,
-                    x: 'right'
+                    left: 'right',
+                    itemWidth: 15,
+                    itemHeight: 8,
+                    textStyle: {
+                        fontSize: 9,
+                    },
                 },
                 grid: {
                     top: 30,
@@ -2153,12 +2152,11 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
                 },
                 legend: {
                     data: labels,
-                    bottom: 0,
+                    left: 'right',
+                    itemWidth: 15,
+                    itemHeight: 8,
                     textStyle: {
                         fontSize: 9,
-                        rich: {
-                            fonSize: 9
-                        }
                     }
                 },
                 grid: {
