@@ -1373,7 +1373,7 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
                 yAxis: {
                     type: 'value',
                     name: 'kWh',
-                    nameGap: '5'
+                    nameGap: 0
                 },
                 color: ENERGY_LINE_COLORS,
                 series: [
@@ -1496,11 +1496,7 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
                 yAxis: {
                     name: 'kWh',
                     type: 'value',
-                    nameGap: 20,
-                    nameLocation: 'start',
-                    nameTextStyle: {
-                        verticalAlign: 'top'
-                    }
+                    nameGap: 0,
                 },
                 color: ENERGY_LINE_COLORS,
                 series: [{
@@ -1851,6 +1847,7 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
                     type: 'category',
                     data: labels,
                     inverse: true,
+                    nameGap: 0,
                 },
                 color: ENERGY_LINE_COLORS,
                 series: [{
@@ -1928,7 +1925,7 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
                     type: 'value',
                     boundaryGap: [0, 0.01],
                     name: 'kWh',
-                    nameGap: '5',
+                    nameGap: 0,
                 },
                 color: ENERGY_LINE_COLORS,
                 series: {
@@ -2011,7 +2008,7 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
                     boundaryGap: [0, 0.01],
                     name: 'kWh',
                     nameLocation: 'start',
-                    nameGap: '5',
+                    nameGap: 5,
                 },
                 yAxis: {
                     type: 'category',
@@ -2178,7 +2175,7 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
                 yAxis: {
                     type: 'value',
                     name: 'kWh',
-                    nameGap: '5'
+                    nameGap: 0
                 },
                 color: ENERGY_LINE_COLORS,
                 series: seriesData,
