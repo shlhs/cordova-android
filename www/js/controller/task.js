@@ -191,7 +191,7 @@ app.controller('HomeCtrl', function ($scope, $timeout, userService, ajax, platfo
                 $scope.isLoading = false;
                 var sites = [];
                 result.forEach(function (s) {
-                    var width = window.screen.width*3, height=Math.round(width/2);
+                    var width = window.screen.width, height=Math.round(width/2);
                     if (s.photo_src_link) {
                         s.site_image = platformService.getImageUrl(width, height, platformService.getCloudHost() + s.photo_src_link);
                     } else {

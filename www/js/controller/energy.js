@@ -1346,17 +1346,15 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
                     }
                 },
                 legend: {
-                    data: ['今日', '昨日'],
-                    bottom: 5,
+                    left: 'right',
+                    itemWidth: 15,
+                    itemHeight: 8,
                     textStyle: {
-                        fontSize: 9,
-                        rich: {
-                            fonSize: 9
-                        }
+                        fontSize: 9
                     }
                 },
                 grid: {
-                    top: 20,
+                    top: 25,
                     left: 10,
                     right: 20,
                     bottom: 35,
@@ -1375,7 +1373,7 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
                 yAxis: {
                     type: 'value',
                     name: 'kWh',
-                    nameGap: '5'
+                    nameGap: 0
                 },
                 color: ENERGY_LINE_COLORS,
                 series: [
@@ -1474,17 +1472,15 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
                     },
                 },
                 legend: {
-                    data: labels,
-                    bottom: 5,
+                    left: 'right',
+                    itemWidth: 15,
+                    itemHeight: 8,
                     textStyle: {
-                        fontSize: 9,
-                        rich: {
-                            fonSize: 9
-                        }
+                        fontSize: 9
                     }
                 },
                 grid: {
-                    top: 20,
+                    top: 25,
                     left: 10,
                     right: 20,
                     bottom: 35,
@@ -1500,11 +1496,7 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
                 yAxis: {
                     name: 'kWh',
                     type: 'value',
-                    nameGap: 20,
-                    nameLocation: 'start',
-                    nameTextStyle: {
-                        verticalAlign: 'top'
-                    }
+                    nameGap: 0
                 },
                 color: ENERGY_LINE_COLORS,
                 series: [{
@@ -1855,6 +1847,7 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
                     type: 'category',
                     data: labels,
                     inverse: true,
+                    nameGap: 0
                 },
                 color: ENERGY_LINE_COLORS,
                 series: [{
@@ -1932,7 +1925,7 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
                     type: 'value',
                     boundaryGap: [0, 0.01],
                     name: 'kWh',
-                    nameGap: '5',
+                    nameGap: 0
                 },
                 color: ENERGY_LINE_COLORS,
                 series: {
@@ -1995,10 +1988,12 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
                     },
                 },
                 legend: {
-                    data: ['本期', '上期'],
-                    top: 2,
-                    right: 20,
-                    x: 'right'
+                    left: 'right',
+                    itemWidth: 15,
+                    itemHeight: 8,
+                    textStyle: {
+                        fontSize: 9
+                    }
                 },
                 grid: {
                     top: 30,
@@ -2017,6 +2012,7 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
                 yAxis: {
                     type: 'category',
                     data: labels,
+                    nameGap: 0
                 },
                 color: ENERGY_LINE_COLORS,
                 series: [{
@@ -2152,13 +2148,11 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
                     },
                 },
                 legend: {
-                    data: labels,
-                    bottom: 0,
+                    left: 'right',
+                    itemWidth: 15,
+                    itemHeight: 8,
                     textStyle: {
-                        fontSize: 9,
-                        rich: {
-                            fonSize: 9
-                        }
+                        fontSize: 9
                     }
                 },
                 grid: {
@@ -2180,7 +2174,7 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
                 yAxis: {
                     type: 'value',
                     name: 'kWh',
-                    nameGap: '5'
+                    nameGap: 0
                 },
                 color: ENERGY_LINE_COLORS,
                 series: seriesData,
