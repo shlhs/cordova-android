@@ -177,11 +177,11 @@
                         <li>
                             <label class="title">巡检描述</label><span class="value">{{taskData.name}}</span>
                         </li>
-                        <li ng-if="!taskData.start_time">
+                        <li ng-if="!taskData.riplan_create_time">
                             <label class="title">创建时间</label><span class="value">{{taskData.create_time}}</span>
                         </li>
-                        <li ng-if="taskData.start_time">
-                            <label class="title">启动时间</label><span class="value">{{taskData.start_time.substring(0,16)}}</span>
+                        <li ng-if="taskData.riplan_create_time">
+                            <label class="title">启动时间</label><span class="value">{{taskData.create_time.substring(0,16)}}</span>
                         </li>
                         <li ng-if="taskData.expect_complete_time">
                             <label class="title">截止时间</label><span class="value">{{taskData.expect_complete_time}}</span>
