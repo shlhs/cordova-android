@@ -4,8 +4,8 @@
  * Created by liucaiyun on 2017/7/23.
  */
 
-var gPublicApiHost = 'http://47.104.75.86:8090';     // 公有云
-// var gPublicApiHost = 'http://47.97.167.195:8090';
+// var gPublicApiHost = 'http://47.104.75.86:8090';     // 公有云
+var gPublicApiHost = 'http://47.99.183.219:8090';       // 电无忧
 
 function onFinishVersionCheck() {
     var scope = angular.element('div[ng-controller="AutoLoginCtrl"]').scope();

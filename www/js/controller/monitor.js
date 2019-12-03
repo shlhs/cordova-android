@@ -52,9 +52,12 @@ app.controller('MonitorListCtrl', function ($scope, $state, routerService, scrol
 app.controller('MonitorDetailCtrl', function ($scope, cordovaService) {
     var url = $scope.url;
     var iframe = document.getElementById('iframe');
+
+    var originHistoryLen = history.length;      // 记录location history初始的个数
     setTimeout(function () {
         setLandscape();
-        iframe.src = url;
+        // iframe.src = url;
+        iframe.contentWindow.location.replace(url);
         $.notify.progressStart();
         if (!/*@cc_on!@*/0) { //if not IE
             iframe.onload = function(){
@@ -73,6 +76,11 @@ app.controller('MonitorDetailCtrl', function ($scope, cordovaService) {
             };
         }
     }, 500);
+
+    $scope.back = function () {
+        var currentHistoryLen = history.length;
+        window.history.go(-(currentHistoryLen - originHistoryLen));
+    };
 
     function setLandscape() {
         // 设置横屏
@@ -95,6 +103,16 @@ app.controller('MonitorDetailCtrl', function ($scope, cordovaService) {
         // 页面离开时，恢复竖屏
         if (cordovaService.deviceReady) {
             screen.orientation.lock('portrait');
+        } else if (window.android && window.android.setPortrait) {
+            window.android.setPortrait();
         }
     });
+
+    // 先删掉iframe，再后退，防止出现页面卡顿
+    function deleteIframe() {
+        $("#iframe").remove();
+        window.removeEventListener('popstate', deleteIframe);
+    }
+
+    window.addEventListener('popstate', deleteIframe);
 });
