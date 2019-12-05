@@ -4,6 +4,7 @@
  */
 var app = angular.module('myApp', ['ngAnimate', 'ui.router', 'ui.router.state.events']);
 var defaultPlatIpAddr = "http://118.190.51.135";     // 平台默认ip，格式为：http://118.190.51.135
+var defaultThumborHost = "";        // 缩放图的host，空则使用defaultPlatIpAddr
 var gShowEnergyPage = false;     // 是否显示能效页面，不显示能效页面时运维人员会看到抢单页面
 
 app.run(function ($animate) {
@@ -197,7 +198,7 @@ app.service('platformService', function () {
 
     this.setLatestPlatform = function (platform) {
         setStorageItem('latestPlatform', JSON.stringify(platform));
-        this.host = platform.url.substring(0, platform.url.indexOf(':', 5));
+        this.host = platform.url.substring(0, platform.url.indexOf(':', platform.url.indexOf(':')+1));
         this.thumbHost = this.getImageThumbHost();
     };
 
@@ -216,7 +217,7 @@ app.service('platformService', function () {
             return defaultPlatIpAddr;
         }
         var platform = this.getLatestPlatform();
-        return platform ? platform.url.substring(0, platform.url.indexOf(':', 5)) : null;
+        return platform ? platform.url.substring(0, platform.url.indexOf(':', platform.url.indexOf(':')+1)) : null;
     };
 
     this.getCloudHost = function () {
@@ -233,6 +234,9 @@ app.service('platformService', function () {
 
     this.getImageThumbHost = function () {      // 获取图片压缩服务的地址
         // 格式为： http://ip:8888/unsafe
+        if (defaultThumborHost) {
+            return defaultThumborHost + ":8888/unsafe";
+        }
         if (this.host)
         {
             return this.host + ":8888/unsafe"
@@ -322,7 +326,7 @@ app.service('ajax', function ($rootScope, platformService, userService, $http, c
     };
 
     function request(option) {
-        if (option.url.indexOf("http://") !== 0){
+        if (option.url.indexOf("http://") !== 0 || option.url.indexOf("https://") !== 0){
             option.url = platformService.getCloudHost() + option.url;
             // option.url = 'http://127.0.0.1:8099/v1' + option.url;
         }
