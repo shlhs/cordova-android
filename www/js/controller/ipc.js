@@ -45,7 +45,7 @@ app.controller('VideoMonitorCtrl', function ($scope, $timeout, platformService, 
                         ipc.online = true;
                     }
                     if (ipc.type === 'YS7') {
-                        ipc.streamUrl = '/templates/video-monitor/iframe/ys7-player.html?url=' + ipc.liveAddressApp + '&autoplay&ipcId=' + ipc.id;
+                        ipc.streamUrl = 'templates/video-monitor/iframe/ys7-player.html?url=' + ipc.liveAddressApp + '&autoplay&ipcId=' + ipc.id;
                     } else {
                         // 从liveAddress中解析出flv视频地址
                         var liveAddress = ipc.liveAddressApp;
@@ -53,7 +53,7 @@ app.controller('VideoMonitorCtrl', function ($scope, $timeout, platformService, 
                             deviceId=GetQueryString("device", liveAddress),
                             channelId=GetQueryString("channel", liveAddress);
                         var streamUrl = serviceHost + ':10812/nvc/' + deviceId + '/flv/hls/stream_' + channelId + '.flv';
-                        ipc.streamUrl = '/templates/video-monitor/iframe/kk-player.html?url=' + streamUrl + '&ipcId=' + ipc.id;
+                        ipc.streamUrl = 'templates/video-monitor/iframe/kk-player.html?url=' + streamUrl + '&ipcId=' + ipc.id;
                     }
                 });
                 $scope.ipcs = data;

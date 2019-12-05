@@ -623,7 +623,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
 
         var showType = 'line';
         var boundaryGap = true;
-        if(inputShowType !== null && inputShowType !== '') {
+        if(inputShowType) {
             showType = inputShowType;
         }
         if(showType === 'line') {
