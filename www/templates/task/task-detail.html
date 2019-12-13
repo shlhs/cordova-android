@@ -138,7 +138,10 @@
                     <div class="task-desp mui-ellipsis">
                         <span class="task-type" ng-class="{'ergent': taskData.task_type_id===3}">{{taskData.task_type_name}}:</span>
                         <span style="font-size: 14px;">{{taskData.no}}</span>
-                        <label class="btn-status" ng-class="{running: taskData.stage_id!==TaskStatus.Closed, closed: taskData.stage_id===TaskStatus.Closed}" style="float: right;">{{taskData.stage_name}}</label>
+
+                        <label class="btn-status" style="float: right;" ng-class="{running: taskData.stage_id!==TaskStatus.Closed, closed: taskData.stage_id===TaskStatus.Closed}">
+                            {{taskData.isToStart ? '任务未开始' : taskData.stage_name}}
+                        </label>
                     </div>
                     <ul class="task-detail-info-group" ng-if="taskData.task_type_id !== TaskTypes.Xunjian">
                         <li>
@@ -174,8 +177,11 @@
                         <li>
                             <label class="title">巡检描述</label><span class="value">{{taskData.name}}</span>
                         </li>
-                        <li>
+                        <li ng-if="!taskData.riplan_create_time">
                             <label class="title">创建时间</label><span class="value">{{taskData.create_time}}</span>
+                        </li>
+                        <li ng-if="taskData.riplan_create_time">
+                            <label class="title">启动时间</label><span class="value">{{taskData.create_time.substring(0,16)}}</span>
                         </li>
                         <li ng-if="taskData.expect_complete_time">
                             <label class="title">截止时间</label><span class="value">{{taskData.expect_complete_time}}</span>
@@ -333,7 +339,7 @@
                         ng-click="taskHandler.refuseTaskAssign()">拒绝</button>
             </a>
         </nav>
-        <nav class="mui-bar mui-bar-tab" ng-if='canHandle && taskData.stage_id===TaskStatus.Accepted'>
+        <nav class="mui-bar mui-bar-tab" ng-if='canHandle && taskData.stage_id===TaskStatus.Accepted && !taskData.isToStart'>
             <a class="mui-tab-item mui-segmented-control-vertical">
                 <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-btn-outlined mui-control-item task-btn"
                         ng-click="taskHandler.gotoSpot()">现在出发</button>

@@ -21,8 +21,9 @@
                             <span class="task-info-value">{{task.station_name}}</span>
                         </div>
                         <div ng-if="!task.finish_time">
-                            <span class="task-info-label">创建时间：</span>
-                            <span class="task-info-value">{{task.create_time}}</span>
+                            <span class="task-info-label">{{task.riplan_create_time ? '启动时间：' : '创建时间：'}}</span>
+                            <span class="task-info-value" ng-if="!task.isToStart">{{task.create_time}}</span>
+                            <span class="task-info-value" ng-if="task.isToStart" style="color: rgb(70, 190, 138);">{{task.create_time}}</span>
                         </div>
                         <div ng-if="task.stage_id !== TaskStatus.Closed">
                             <span class="task-info-label">当前处理人：</span>

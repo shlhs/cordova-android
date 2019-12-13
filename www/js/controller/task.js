@@ -70,6 +70,7 @@ function formatTaskStatusName(task) {   // 根据任务状态转换任务描述
     }
     task.stage_name = stage;
     task.status = status;
+    task.isToStart = task.create_time.substring(0, 16) > new Date().Format('yyyy-MM-dd HH:mm');      // 任务待开始
     return task;
 }
 
@@ -157,8 +158,9 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
             success: function(result) {
                 $scope.isLoading = false;
                 var sites = [];
+                var stationSns = [];
                 result.forEach(function (s) {
-                    var width = window.screen.width*3, height=Math.round(width/2);
+                    var width = window.screen.width, height=Math.round(width/2);
                     if (s.photo_src_link) {
                         s.site_image = platformService.getImageUrl(width, height, platformService.getCloudHost() + s.photo_src_link);
                     } else {
@@ -167,10 +169,12 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
                     if (!s.is_group)
                     {
                         s.search_key = s.name.toLowerCase() + ' ' + s.sn.toLowerCase();
+                        stationSns.push(s.sn);
                     }
                     s.full_address = (s.address_province || '') + (s.address_city || '') + (s.address_district || '') + (s.address || '');
                     sites.push(s);
                 });
+                setStorageItem('stationSns', stationSns.join(','));     // 记录用户有权限查看的站点sn
                 $scope.sites = sites;
                 if (sites.length) {
                     // 更新站点状态
@@ -785,10 +789,12 @@ app.controller('TaskTodoListCtrl', ['$scope', '$rootScope', 'scrollerService', '
                 allTasks = result;
                 allTasks.sort(sortByUpdateTime);
                 var task = null;
+                var current = new Date().Format('yyyy-MM-dd HH:mm');
                 for (var i in allTasks){
                     task = allTasks[i];
                     formatTaskStatusName(task);
                     task.isTimeout = $scope.taskTimeout(task);
+                    task.isToStart = task.create_time.substring(0,16) > current;      // 任务待开始
                 }
                 $scope.changeTaskType(null, $scope.showType);
                 $scope.$apply();
@@ -1037,6 +1043,7 @@ app.controller('TaskListCtrl', ['$scope', '$rootScope', 'scrollerService', 'user
             success: function(result) {
                 $scope.isLoading = false;
                 var tasks = result.aaData ? result.aaData : result, task = null;
+                var currentTime = new Date().Format('yyyy-MM-dd HH:mm');
                 for (var i in tasks){
                     task = tasks[i];
                     formatTaskStatusName(task);
@@ -1055,6 +1062,10 @@ app.controller('TaskListCtrl', ['$scope', '$rootScope', 'scrollerService', 'user
                         task.finish_time = task.finish_time.substring(0,16);
                     }
                     task.last_modified_time = task.last_modified_time.substring(0, 16);
+                    task.isToStart = false; // 任务待启动
+                    if (task.riplan_create_time) {
+                        task.isToStart = task.create_time.substring(0, 16) > currentTime;
+                    }
                     // 统计巡检信息
                     var dtsCount = 0;
                     var resolvedDtsCount = 0;
@@ -1226,7 +1237,7 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
     function updateTaskInfo(data) {
         $scope.taskData = formatTaskStatusName(data);
         $scope.taskData.expect_complete_time = data.expect_complete_time ? data.expect_complete_time.substring(0, 16) : '';
-
+        $scope.taskData.isToStart = $scope.taskData.create_time.substring(0, 16) > new Date().Format('yyyy-MM-dd HH:mm');      // 任务待开始
 
         // 如果是待接单状态，则需要设置接单时需要选择的其他运维工的账号
         if ($scope.taskData.stage_id === TaskStatus.ToAccept) {
@@ -1494,7 +1505,12 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
             });
         },
         gotoSpot: function () {     // 去现场
-            $scope.postAction(TaskAction.Go);
+            if ($scope.taskData.isToStart) {
+                // 任务待开始，无法操作
+                $.notify.toast('任务还未开始，无法操作');
+            } else {
+                $scope.postAction(TaskAction.Go);
+            }
         },
         setArrived: function () {   // 已到达
             // $scope.postAction(TaskAction.Arrive);
