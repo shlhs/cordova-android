@@ -23,7 +23,8 @@ app.controller('VideoMonitorCtrl', ['$scope', '$timeout', 'platformService', 'aj
         $scope.isLoading = true;
         $scope.loadingFailed = false;
         ajax.get({
-            url: platformService.getIpcServiceHost() + '/ipc/findByStationSn',
+            // url: platformService.getIpcServiceHost() + '/ipc/findByStationSn',
+            url: 'http://114.215.90.83:8095/v1/ipc/findByStationSn',
             data: {
                 sn: $scope.sn,
                 sync: true
