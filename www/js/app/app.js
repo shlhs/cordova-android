@@ -4,7 +4,7 @@
  */
 var app = angular.module('myApp', ['ngAnimate', 'ui.router', 'ui.router.state.events']);
 var loginExpireCheckEnable = false;       // 是否检查鉴权过期
-var defaultPlatIpAddr = "";     // 平台默认ip，格式为：http://118.190.51.135
+var defaultPlatIpAddr = "http://139.9.225.140";     // 贵阳富通高速
 var gShowEnergyPage = false;     // 是否显示能效页面，不显示能效页面时运维人员会看到抢单页面
 
 app.run(function ($animate) {
@@ -485,8 +485,8 @@ app.service('ajax', ['$rootScope', 'platformService', 'userService', 'routerServ
 
     function request(option) {
         if (option.url.indexOf("http://") !== 0){
-            // option.url = platformService.getCloudHost() + option.url;
-            option.url = 'http://127.0.0.1:8099/v1' + option.url;
+            option.url = platformService.getCloudHost() + option.url;
+            // option.url = 'http://127.0.0.1:8099/v1' + option.url;
         }
         var headers = $.extend({
             Authorization: userService.getAccountToken(),
