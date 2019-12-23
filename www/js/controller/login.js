@@ -182,7 +182,7 @@ app.controller('AutoLoginCtrl', ['$scope', '$timeout', function ($scope, $timeou
             $scope.setAutoLogin(true);
             $timeout(function () {
                 $scope.login();
-            }, 500);
+            }, 1100);
         }else{
             $timeout(function () {
                 // $state.go('login');
