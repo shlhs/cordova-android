@@ -674,8 +674,8 @@ app.controller('KanbanCtrl', ['$scope', '$stateParams', 'ajax', '$timeout', func
                 var chartDatas = [];
                 for(var j in data) {
                     var alias = deviceVarAliasMap[data[j].var.sn];
-                    var name = (alias ? alias : data[j].name)+' '+data[j].unit;
-                    chartDatas.push({name: name, type:showType, data: data[j].datas, yAxisIndex: 0, color: lineColors[data[j].var.sn] || ''});
+                    var name1 = (alias ? alias : data[j].name)+' '+data[j].unit;
+                    chartDatas.push({name: name1, type:showType, data: data[j].datas, yAxisIndex: 0, color: lineColors[data[j].var.sn] || ''});
                 }
 
                 var showPfvSetting = (period === 'current_day' || period === 'normal')&& (pfvSettings === 'pfv-settings-f' || pfvSettings === 'pfv-settings-r');
