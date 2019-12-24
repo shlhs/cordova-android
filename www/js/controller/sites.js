@@ -643,13 +643,20 @@ app.controller('SiteReportsCtrl', ['$scope', 'ajax', 'routerService', 'platformS
 
     $scope.download = function ($event, link) {
         $event.stopPropagation();
-        if (window.android && window.android.saveImageToGallery) {
-            window.android.saveImageToGallery(link);
+        // if (window.android && window.android.saveImageToGallery) {
+        //     window.android.saveImageToGallery(link);
+        // }
+        if (window.android){
+            window.android.openFile(link);
+        }else
+        {
+            window.location.href =link;
         }
     };
 
     $scope.openReport = function (name, link) {
-        routerService.openPage($scope, '/templates/base-image-zoom.html', {link: link, name: name});
+        // routerService.openPage($scope, '/templates/base-image-zoom.html', {link: link, name: name});
+        window.open('/components/pdfjs/web/viewer.html?file=' + link, '_self', 'width:100%;height:100%;top:0;left:0;');
     };
 
     $scope.getDataList();
