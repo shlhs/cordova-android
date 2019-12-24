@@ -81,7 +81,11 @@ function formatTaskStatusName(task) {   // 根据任务状态转换任务描述
     switch (task.stage_id){
         case TaskStatus.Closed:
             if (task.finish_time) {
-                stage = '已完成';
+                if (task.has_comment) {
+                    stage = '已完成';
+                } else {
+                    stage = '待评价';
+                }
             } else {
                 stage = '已撤单';
             }
@@ -472,11 +476,14 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
     initMenu();
 }]);
 
-function isTodoTask(task, username) {
+function isTodoTask(task, username, userRole) {
     if (task.stage_id !== TaskStatus.Closed && task.current_handler){
         if (task.current_handler.split(',').indexOf(username) >= 0) {
             return true;
         }
+    } else if (task.stage_id === TaskStatus.Closed && task.finish_time && !task.has_comment && userRole === 'USER') {
+        // 未评价过的工单业主可评价
+        return true;
     }
     return false;
 }
@@ -1156,7 +1163,7 @@ app.controller('TaskListCtrl', ['$scope', '$rootScope', 'scrollerService', 'user
                     if ($scope.isDeviceOps && task.device_record && task.device_record.length) {
                         task.device_record = task.device_record[0];
                     }
-                    if (isTodoTask(task, userAccount)) {
+                    if (isTodoTask(task, userAccount, role)) {
                         task.isMyself = true;
                     }
                     task.isTimeout = $scope.taskTimeout(task);
@@ -2831,13 +2838,8 @@ app.controller('TaskCommentCtrl', ['$scope', 'ajax', 'platformService', function
 
     var comment = $scope.comment;
     $scope.score = comment.score || 5;
-    $scope.imageList = [];
+    $scope.imageList = comment.picture_list;
     $scope.description = comment.comment;
-    if (comment.pictures) {
-        comment.pictures.split(',').forEach(function (url) {
-           $scope.imageList.push(platformService.getCloudHost() + url);
-        });
-    }
 
     $scope.registerImageInfo = function (imageEleId) {
         return $scope.imageList;
@@ -2864,10 +2866,19 @@ app.controller('TaskCommentCtrl', ['$scope', 'ajax', 'platformService', function
     };
 
     $scope.submitAndBack = function () {
+        var pictures = [];
+        var cloudHost = platformService.getCloudHost();
+        $scope.imageList.forEach(function (url) {
+              if (url.indexOf(cloudHost) >= 0) {
+                  pictures.push(url.substring(cloudHost.length));
+              } else {
+                  pictures.push(url);
+              }
+          });
           var param = {
               score: $scope.score,
               comment: $scope.description,
-              picture_datas: $scope.imageList
+              picture_datas: pictures
           };
           $.notify.progressStart();
           ajax.post({

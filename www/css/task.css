@@ -936,6 +936,8 @@
     width: 26px;
     height: 20px;
     display: inline-block;
+    float: left;
+    margin-top: -2px;
 }
 .star.empty {
     background: url("../img/star/star0.png") 50% no-repeat;
@@ -955,7 +957,6 @@
     width: 20px;
     height: 16px;
     display: inline-block;
-    float: left;
     margin-top: 1px;
 }
 .task-comment {
@@ -967,7 +968,6 @@
 }
 .task-comment .anticon-edit {
     float: right;
-    margin-top: 2px;
     font-size: 14px;
 }
 .task-comment-user {

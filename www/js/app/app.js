@@ -976,6 +976,7 @@ app.controller('ImageUploaderCtrl', ['$document', '$scope', '$timeout', 'routerS
                }) ;
             });
         }
+        $scope.$apply();
     }, 100);
     clearAllExist();
 
