@@ -1,13 +1,13 @@
 "use strict";
 
-app.controller('SettingCtrl', function ($scope, platformService, userService, $state) {
+app.controller('SettingCtrl', ['$scope', 'ajax', 'userService', 'routerService', function ($scope,ajax, userService, routerService) {
     $scope.pwd1 = '';
     $scope.pwd2 = '';
     $scope.pwdError = '';
     $scope.user = userService.user;
-    $scope.company = userService.company;
     $scope.version = GetQueryString('version') || '0.0.0';
     $scope.appName = GetQueryString('appName') || '快控电管家';
+    $scope.company = null;
 
     $scope.logout = function () {
         userService.setPassword('');
@@ -17,9 +17,52 @@ app.controller('SettingCtrl', function ($scope, platformService, userService, $s
         }
         location.href = '/templates/login.html?finishPage=1';
     };
-});
 
-app.controller('PasswordCtrl', function ($scope, userService, $timeout, ajax) {
+    $scope.openUiSwitchModal = function () {
+        routerService.openPage($scope, '/templates/setting/uiModeSwitchModal.html', {
+            mode: $scope.uiMode
+        }, {
+            hidePrev: false
+        });
+    };
+
+
+
+    function getCompany() {
+        ajax.get({
+            url: '/user/' + $scope.user.account + '/opscompany',
+            ignoreAuthExpire: true,
+            xhrFields: {
+                withCredentials: true
+            },
+            crossDomain: true,
+            success: function (data) {
+                if (data && data.length >= 1)
+                {
+                    $scope.company = data[0];
+                    $scope.$apply();
+                }
+            }
+        });
+    }
+
+    setTimeout(getCompany, 1000);
+}]);
+
+app.controller('UiModeSwitchCtrl', ['$scope', 'platformService', function ($scope, platformService) {
+
+    var oldMode = $scope.mode;
+
+    $scope.confirmModel = function () {
+        if ($scope.mode !== oldMode) {
+            platformService.setUiMode($scope.mode);
+            $scope.$emit('onUiModeChange');
+        }
+        history.back();
+    };
+}]);
+
+app.controller('PasswordCtrl', ['$scope', 'userService', '$timeout', 'ajax', function ($scope, userService, $timeout, ajax) {
 
     function check() {
         if (!$scope.pwd1 && !$scope.pwd2){
@@ -58,12 +101,12 @@ app.controller('PasswordCtrl', function ($scope, userService, $timeout, ajax) {
             }
         });
     };
-});
+}]);
 
-app.controller('CompanyCtrl', function ($scope, userService) {
-    $scope.company = userService.company;
-});
+app.controller('CompanyCtrl', ['$scope', '$stateParams', function ($scope, $stateParams) {
+    $scope.company = $stateParams.company;
+}]);
 
-app.controller('AccountCtrl', function ($scope, userService) {
+app.controller('AccountCtrl', ['$scope', 'userService', function ($scope, userService) {
     $scope.user = userService.user;
-});
+}]);
