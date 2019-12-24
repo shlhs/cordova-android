@@ -929,3 +929,71 @@
     top: 8px;
     left: 12px;
 }
+.stars {
+    display: inline-block;
+}
+.star {
+    width: 26px;
+    height: 20px;
+    display: inline-block;
+}
+.star.empty {
+    background: url("../img/star/star0.png") 50% no-repeat;
+    background-size: contain;
+}
+.star.full {
+    background: url("../img/star/star2.png") 50% no-repeat;
+    background-size: contain;
+}
+.stars .desp {
+    color: #747474;
+    font-size: 12px;
+    margin-left: 6px;
+    display: inline-block;
+}
+.stars.small .star {
+    width: 20px;
+    height: 16px;
+    display: inline-block;
+    float: left;
+    margin-top: 1px;
+}
+.task-comment {
+}
+.task-comment .comment-title {
+    font-size: 13px;
+    border-bottom: 1px solid #e8e8e8;
+    padding-bottom: 4px;
+}
+.task-comment .anticon-edit {
+    float: right;
+    margin-top: 2px;
+    font-size: 14px;
+}
+.task-comment-user {
+    margin-top: 10px;
+}
+.task-comment-user .head {
+    width: 22px;
+    float: left;
+    height: 22px;
+    margin: -2px 8px 0 0;
+    border-radius: 11px;
+    border: 1px solid #bfbfbf;
+    background-color: #fff;
+}
+.task-comment-user .time {
+    font-size: 12px;
+    color: #666;
+    margin-left: 8px;
+    display: inline-block;
+}
+.task-comment .comment {
+    color: #666;
+    margin: 6px 0px 0 0px;
+    background: rgba(244, 244, 244, 0.5);
+    padding: 5px 10px;
+}
+.task-comment .image-list {
+    margin-left: 4px;
+}

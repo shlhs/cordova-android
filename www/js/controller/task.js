@@ -81,7 +81,7 @@ function formatTaskStatusName(task) {   // 根据任务状态转换任务描述
     switch (task.stage_id){
         case TaskStatus.Closed:
             if (task.finish_time) {
-                stage = '已关闭';
+                stage = '已完成';
             } else {
                 stage = '已撤单';
             }
@@ -1299,6 +1299,7 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
 
     var id = GetQueryString('id'), username=userService.username;
     $scope.taskData = {};
+    $scope.taskComment = null;
     var commentActionIndex = -1;     //
     $scope.description = null;
     $scope.canHandle = false;   // 是否有编辑权限
@@ -1345,6 +1346,24 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
                 //     window.android && window.android.onJsCallbackForPrevPage('onAndroidCb_updateDeviceRecord', JSON.stringify(task.device_record[0]));
                 // }
                 getAvailableActions(data);
+                if (data.stage_id === TaskStatus.Closed) {
+                    ajax.get({
+                        url: '/opstasks/' + id + '/comments',       // 获取工单评价
+                        success: function (res) {
+                            if (res && res.length) {
+                                $scope.taskComment = res[0];
+                                if ($scope.taskComment.pictures) {
+                                    var pictureList = [];
+                                    $scope.taskComment.pictures.split(',').forEach(function (url) {
+                                        pictureList.push(platformService.getCloudHost() + url);
+                                    });
+                                    $scope.taskComment.picture_list = pictureList;
+                                }
+                                $scope.$apply();
+                            }
+                        }
+                    })
+                }
             },
             error: function (a, b, c) {
                 console.log('get task detail fail');
@@ -1636,6 +1655,13 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
         });
     };
 
+    $scope.getUserHeadImage = function (user) {
+        if (!user || !user.photo_data) {
+            return '/img/default_head.jpg';
+        }
+        return platformService.getAuthHost() + "/tmp" + user.photo_name;
+    };
+
     $scope.taskHandler = {
         execute : function (actionId) {
             switch (actionId) {
@@ -1678,6 +1704,9 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
                     break;
                 case TaskAction.Close:
                     this.closeTask();
+                    break;
+                case TaskAction.Comment:        // 评价
+                    this.commentTask();
                     break;
                 default:
                     break;
@@ -1778,6 +1807,39 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
                     $scope.postAction(TaskAction.Close, "关闭任务");
                 }
             });
+        },
+        commentTask: function () {      // 评价任务
+            routerService.openPage($scope, '/templates/task/task-comment-modal.html', {
+                taskId: id,
+                comment: $scope.taskComment || {},
+                onSuccess: function (comment) {
+                    $scope.taskComment = comment;
+                    if (comment.pictures) {
+                        var pictureList = [];
+                        comment.pictures.split(',').forEach(function (url) {
+                            pictureList.push(platformService.getCloudHost() + url);
+                        });
+                        $scope.taskComment.picture_list = pictureList;
+                    }
+                    $scope.$apply();
+                }
+            });
+        }
+    };
+
+    $scope.getScoreDesp = function () {
+        switch ($scope.taskComment.score) {
+            case 1:
+                return '很差';
+            case 2:
+                return '差';
+            case 3:
+                return '一般';
+            case 4:
+                return '很好';
+            case 5:
+                return '非常好';
+                return '';
         }
     };
 
@@ -2762,4 +2824,76 @@ app.controller('DeviceXunjianTaskDetailCtrl', ['$scope', 'ajax', 'platformServic
     };
 
     getTaskDetail(taskId);
+}]);
+
+// 任务评价
+app.controller('TaskCommentCtrl', ['$scope', 'ajax', 'platformService', function ($scope, ajax, platformService) {
+
+    var comment = $scope.comment;
+    $scope.score = comment.score || 5;
+    $scope.imageList = [];
+    $scope.description = comment.comment;
+    if (comment.pictures) {
+        comment.pictures.split(',').forEach(function (url) {
+           $scope.imageList.push(platformService.getCloudHost() + url);
+        });
+    }
+
+    $scope.registerImageInfo = function (imageEleId) {
+        return $scope.imageList;
+    };
+
+    $scope.setScore = function (i) {
+        $scope.score = i;
+    };
+
+    $scope.getScoreDesp = function () {
+      switch ($scope.score) {
+          case 1:
+              return '很差';
+          case 2:
+              return '差';
+          case 3:
+              return '一般';
+          case 4:
+              return '很好';
+          case 5:
+              return '非常好';
+          return '';
+      }
+    };
+
+    $scope.submitAndBack = function () {
+          var param = {
+              score: $scope.score,
+              comment: $scope.description,
+              picture_datas: $scope.imageList
+          };
+          $.notify.progressStart();
+          ajax.post({
+              url: '/opstasks/' + $scope.taskId + '/comments',
+              headers: {
+                  'Content-Type': 'application/json;charset=UTF-8'
+              },
+              data: JSON.stringify(param),
+              success: function (res) {
+                  $.notify.progressStop();
+                  if (res) {
+                      $.notify.info('评价成功');
+                      $scope.onSuccess(res);
+                      $scope.cancel();
+                  } else {
+                      $.notify.error('评价失败');
+                  }
+              },
+              error: function () {
+                  $.notify.progressStop();
+                  $.notify.error('评价失败');
+              }
+          })
+    };
+
+    $scope.cancel = function () {
+        history.back();
+    };
 }]);

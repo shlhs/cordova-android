@@ -285,6 +285,38 @@
                 </div>
             </div>
         </div>
+        <div class="mui-card card" ng-if="taskComment != null">
+            <div class="mui-card-content">
+                <div class="mui-card-content-inner task-comment" style="padding: 0;">
+                    <div class="comment-title">用户评价：
+                        <div class="stars small">
+                           <span ng-repeat="i in [1,2,3,4,5]" class="star" ng-class="{'empty': !taskComment.score || score < i, 'full': taskComment.score >= i}">
+                            </span>
+                            <span class="desp">{{getScoreDesp()}}</span>
+                        </div>
+                        <a ng-click="taskHandler.commentTask()" class="iconfont anticon-edit"></a>
+                    </div>
+                    <div ng-if="taskComment.update_by" class="task-comment-user">
+                        <img ng-src="{{getUserHeadImage(taskComment.update_user)}}" class="head" />
+                        <span class="name">{{taskComment.update_user.name}}</span>
+                        <span class="time">{{taskComment.update_time}}</span>
+                    </div>
+                    <div ng-if="!taskComment.update_by" class="task-comment-user">
+                        <img ng-src="{{getUserHeadImage(taskComment.post_user)}}" class="head" />
+                        <span class="name">{{taskComment.post_user.name}}</span>
+                        <span class="time">{{taskComment.post_time}}</span>
+                    </div>
+                    <div class="comment">{{taskComment.comment}}</div>
+                    <ul class="image-list" style="padding: 0;" ng-if="taskComment.picture_list">
+                        <li class="image-item" ng-repeat="url in taskComment.picture_list" ng-click="showImageGallery(taskComment.picture_list, $index+1)">
+                            <div class="content">
+                                <img src="{{url}}" alt="">
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
         <div ng-if="taskData.stage_id===4 || taskData.stage_id === 5 || taskData.stage_id === 8"> <!-- 只有用户接单并到现场后才能看到报告 -->
         <div class="mui-card card" ng-if="taskData.task_type_id===1" ng-click="gotoHandleTask()">
             <div class="mui-card-content mui-navigate-right">
