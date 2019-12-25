@@ -22,9 +22,9 @@
                             {{task.name}}
                         </p>
                         <div ng-if="task.station_name">
-                            <span class="task-info-label">站点名称</span><span class="task-info-value">{{task.station_name}}</span>
+                            <span class="task-info-label">站点名称：</span><span class="task-info-value">{{task.station_name}}</span>
                         </div>
-                        <div style="padding-bottom: 10px">
+                        <div>
                             <span class="task-info-label" style="padding-right: 0;">期望完成时间：</span>
                             <span class="task-info-value" ng-class="{'timeout': task.isTimeout}">{{task.expect_complete_time.substring(0,16)}}</span>
                         </div>

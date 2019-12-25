@@ -53,65 +53,77 @@
 <div class="mui-content bg-white" ng-controller="TaskCreateCtrl" ng-cloak="" ng-submit="submitForm()" style="background-color: #fff;">
     <form class="mui-input-group task-create-rows info-group" name="myForm" novalidate >
         <div class="mui-input-row">
-            <label class="label">任务名称<span style="color:red">*</span></label>
-            <input type="text" name="name" ng-model="taskData.name" placeholder="请输入任务名称" required>
+            <label class="label">报修内容<span style="color:red">*</span></label>
+            <textarea type="text" name="name" ng-model="taskData.name" placeholder="请输入报修内容" required></textarea>
             <label class="error" ng-show="myForm.name.$invalid && (myForm.name.$dirty || myForm.$submitted)">
-                <span ng-show="myForm.name.$error.required">任务名称不能为空</span>
+                <span ng-show="myForm.name.$error.required">报修内容不能为空</span>
             </label>
         </div>
         <div class="mui-input-row">
-            <label class="label">任务类型<span style="color:red">*</span></label>
-            <input type="text" name="taskTypeName" ng-model="taskTypeName" placeholder="选择任务类型" required>
+            <label class="label">报修类型<span style="color:red">*</span></label>
+            <input type="text" name="taskTypeName" ng-model="taskTypeName" placeholder="选择报修类型" required>
             <button id="taskTypePicker" class="mui-btn mui-btn-block" type="button">&nbsp; </button>
             <label class="error" ng-show="myForm.taskTypeName.$invalid && (myForm.taskTypeName.$dirty || myForm.$submitted)">
-                <span ng-show="myForm.taskTypeName.$error.required">任务类型不能为空</span>
+                <span ng-show="myForm.taskTypeName.$error.required">请选择报修类型</span>
             </label>
         </div>
         <div class="mui-input-row">
-            <label class="label">期望完成时间<span style="color:red">*</span></label>
-            <input type="text" name="expect_complete_time" ng-model="taskData.expect_complete_time" placeholder="选择任务处理截止时间" required>
+            <label class="label">期望完成时间</label>
+            <input type="text" name="expect_complete_time" ng-model="taskData.expect_complete_time" placeholder="选择任务处理截止时间">
             <button type="button" id='expectedTime' data-options='{}' class="btn mui-btn mui-btn-block">&nbsp;</button>
-            <label class="error" ng-show="myForm.expect_complete_time.$invalid && (myForm.expect_complete_time.$dirty || myForm.$submitted)">
-                <span ng-show="myForm.expect_complete_time.$error.required">任务截止时间不能为空</span>
+        </div>
+        <div class="mui-input-row">
+            <label class="label">站点<span style="color:red">*</span></label>
+            <input type="text" style="position: absolute;" name="stationName" ng-model="stationName" placeholder="选择报修站点" required>
+            <button type="button" id='stationPicker' data-options='{}' class="btn mui-btn mui-btn-block">&nbsp;</button>
+            <label class="error" ng-show="myForm.stationName.$invalid && (myForm.stationName.$dirty || myForm.$submitted)">
+                <span ng-show="myForm.stationName.$error.required">请选择报修的站点</span>
             </label>
         </div>
         <div class="mui-input-row">
-            <label class="label">站点</label>
-            <input type="text" style="position: absolute;" ng-model="stationName" placeholder="可不填">
-            <button type="button" id='stationPicker' data-options='{}' class="btn mui-btn mui-btn-block">&nbsp;</button>
-        </div>
-        <div class="mui-input-row">
-            <label class="label">设备</label>
+            <label class="label">报修设备</label>
             <input type="text" style="position: absolute;" ng-model="deviceName" placeholder="可不填">
-            <button type="button" ng-click="openDeviceSelector()" class="btn mui-btn mui-btn-block">&nbsp;</button>
+            <button type="button" ng-click="openDeviceSelector()" data-options='{}' class="btn mui-btn mui-btn-block">&nbsp;</button>
         </div>
-        <div class="mui-input-row">
+        <div class="mui-input-row" style="display: none;">
             <label class="label">是否抢单任务</label>
-            <div class="mui-switch mui-switch-blue mui-switch-mini" style="float: none;left:160px;margin-top: 10px;"
-                 ng-click="toggleTaskType()" ng-class="{'mui-active': isGrabTask}">
-                <div class="mui-switch-handle" ng-class="{'switch-open': isGrabTask, 'switch-close': !isGrabTask}"></div>
+            <div class="mui-switch mui-switch-blue mui-switch-mini" style="float: none;left:160px;margin-top: 10px;">
+                <div class="mui-switch-handle"></div>
             </div>
         </div>
-        <div class="mui-input-row" ng-class="{'disabled': isGrabTask}">
-            <label style="line-height: 28px;font-size: 18px;">责任人</label>
-            <input type="text" style="position: absolute;" ng-model="handlerName" placeholder="选择任务责任人" ng-disabled="isGrabTask">
-            <button type="button" id='handlerPicker' data-options='{}' class="btn mui-btn mui-btn-block" ng-show="!isGrabTask">&nbsp</button>
-            <label class="error" ng-show="myForm.$submitted && !isGrabTask && !taskData.current_handler">
-                <span>责任人不能为空</span>
+        <div class="mui-input-row" ng-if="needResign">
+            <label class="label">维修班组<span style="color:red">*</span></label>
+            <input type="text" name="operatorTeam" ng-model="operatorTeam" placeholder="请选择维修班组" required>
+            <button type="button" class="btn mui-btn mui-btn-block" ng-click="showTeamSelector()">&nbsp;</button>
+            <!--<div id='teamPicker' class="value"></div>-->
+            <label class="error" ng-show="myForm.operatorTeam.$invalid && (myForm.operatorTeam.$dirty || myForm.$submitted)">
+                <span ng-show="myForm.operatorTeam.$error.required">请选择维修班组</span>
             </label>
         </div>
-        <div class="mui-input-row" ng-if="linkEventInfo">
+        <div class="mui-input-row" ng-if="needResign">
+            <label class="label">维修工</label>
+            <textarea name="handlerName" ng-model="handlerName" placeholder="请选择维修工" rows="{{handlerRowSpan}}"></textarea>
+            <button type="button" data-options='{}' class="btn mui-btn mui-btn-block" ng-click="showHandlerSelector()" style="position: absolute;top: 0;left: 130px;bottom: 0;">&nbsp;</button>
+            <!--<label class="error" ng-show="myForm.handlerName.$invalid && (myForm.handlerName.$dirty || myForm.$submitted)">-->
+            <!--<span ng-show="myForm.handlerName.$error.required">请选择维修工</span>-->
+            <!--</label>-->
+            <div class="error" style="color: #9c9c9c;font-size: 11px;" ng-if="!handlerName">不指定维修工则为抢单任务</div>
+        </div>
+        <div class="mui-input-row" ng-if="linkEventInfo" style="display: none;">
             <label class="label">关联事件</label>
-            <span class="value" style="margin-left: 160px;padding: 14px 6px 14px 0;">{{linkEventInfo}}</span>
+            <span style="position: absolute;">{{linkEventInfo}}</span>
         </div>
-        <div class="mui-input-row" style="margin: 10px 5px;height: auto;">
-            <textarea rows="3" placeholder="请输入详细描述" name="desp" ng-model="taskData.desp"></textarea>
+        <div class="mui-input-row" style="margin-bottom: 5px;height: auto;">
+            <textarea rows="2" placeholder="详细描述" name="desp" ng-model="taskData.desp"></textarea>
         </div>
+        <div ng-include="'templates/image-uploader.html'" ng-init="elementId='imageList'"></div>
         <div class="mui-button-row" style="padding: 8px 16px;">
             <button type="submit" class="mui-btn mui-btn-primary mui-btn-block"
-                    style="background-color: rgba(88,107,243,0.88);border-color: rgba(88,107,243,0.88);height: 40px;">确认发布</button>
+                    style="background-color: rgba(88,107,243,0.88);border-color: rgba(88,107,243,0.88);height: 42px;">提交</button>
         </div>
     </form>
+    <operator-team-selector teams="teams" visible="teamVisible" callback="onSelectedTeam"></operator-team-selector>
+    <handlers-selector users="teamUsers" multiple visible="handlerVisible" callback="onSelectedUsers"></handlers-selector>
 </div>
 <script>
     document.getElementsByClassName('mui-switch')[0].addEventListener('toggle', function(event) {

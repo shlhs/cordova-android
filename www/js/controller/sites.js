@@ -200,7 +200,7 @@ app.controller('SiteBaseInfoCtrl', function ($scope, $timeout, $stateParams, aja
                     data.site_image = platformService.getImageUrl(width, height, platformService.getCloudHost() + data.photo_src_link);
                 }
                 else {
-                    data.site_image = 'img/background/site-default.png';
+                    data.site_image = 'img/site-default.png';
                 }
                 $scope.siteData = data;
                 getUnhandledEventCount(data);
@@ -535,8 +535,10 @@ app.controller('SiteReportsCtrl', function ($scope, $state,ajax, scrollerService
     };
 
     $scope.openReport = function (name, link) {
-        routerService.openPage($scope, '/templates/base-image-zoom.html', {link: link, name: name});
-        // $state.go('.detail', {link: link, name: name});
+        // routerService.openPage($scope, '/pdf-viewer/viewer.html?file=' + link, '_self', 'width:100%;height:100%;top:0;left:0;');
+        routerService.openPage($scope, '/pdf-viewer/pdf-container.html', {
+            url: link,
+        });
     };
 
     $scope.getDataList();

@@ -326,7 +326,7 @@ app.service('ajax', function ($rootScope, platformService, userService, $http, c
     };
 
     function request(option) {
-        if (option.url.indexOf("http://") !== 0 || option.url.indexOf("https://") !== 0){
+        if (option.url.indexOf("http://") !== 0 && option.url.indexOf("https://") !== 0){
             option.url = platformService.getCloudHost() + option.url;
             // option.url = 'http://127.0.0.1:8099/v1' + option.url;
         }
@@ -671,7 +671,7 @@ app.controller('mapCtrl', function ($scope, $timeout, cordovaService) {
     }
 
     function drawMap(siteData) {
-        var map = new BMap.Map("map");          // 创建地图实例
+        var map = new BMap.Map("stationMap");          // 创建地图实例
         if (!map){ return; }
         // 导航
         var driving = new BMap.DrivingRoute(map, {
@@ -752,4 +752,221 @@ app.controller('mapCtrl', function ($scope, $timeout, cordovaService) {
     };
 
     $timeout(getSite, 500);
+});
+
+// 图片选择控制器
+// 使用的父级controller需要实现方法： $scope.registerImageInfo(imageEleId) { return $scope.images }
+app.controller('ImageUploaderCtrl', ['$document', '$scope', '$timeout', 'routerService', function ($document, $scope, $timeout, routerService) {
+    $scope.elementId = '';
+    $scope.singleImage = false;     // 是否只允许一张图片
+    $scope.files = [];
+    $scope.images = [];
+    $scope.isPC = IsPC();
+    $scope.useMobileGallery = window.android && window.android.openGallery;
+
+
+    function clearAllExist() {
+        window.android && window.android.clearSelectedPhotos && window.android.clearSelectedPhotos();      // 调用Android js接口，清除选择的所有照片
+    }
+
+    function fileExist(fileName) {
+        if (!fileName) {
+            return false;
+        }
+        for (var i=0; i<$scope.files.length; i++) {
+            if (fileName === $scope.files[0].name) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    $scope.chooseImage = function (files) {     // 选择图片
+        $scope.canDelete = true;
+        for (var i = 0; i < files.length; i++) {
+            var reader = new FileReader(), file=files[i];
+            // 如果文件已选择过，则无法再选择
+            if (fileExist(file.name)) {
+                continue;
+            }
+            reader.readAsDataURL(file);
+            reader.onloadstart = function () {
+                //用以在上传前加入一些事件或效果，如载入中...的动画效果
+            };
+            reader.onload = function (event) {
+                var img = new Image();
+                img.src = event.target.result;
+                img.onload = function(){
+                    var dataUrl = imageHandler.compress(this, 75, file.orientation).src;
+                    if ($scope.singleImage && $scope.files.length) {
+                        $scope.files[0] = {name: file.name};
+                        $scope.images[0] = dataUrl;
+                    } else {
+                        $scope.files.push({name: file.name});
+                        $scope.images.push(dataUrl);
+                    }
+                    if ($scope.onAddImage) {
+                        $scope.onAddImage($scope.elementId, dataUrl);
+                    }
+                    $scope.$apply();
+                };
+            };
+        }
+    };
+
+    $scope.addImagesWithBase64 = function (data, filename) {
+        $scope.canDelete = true;
+        if (filename === undefined) {
+            filename = '';
+        }
+        if (fileExist(filename)) {
+            return;
+        }
+        if ($scope.singleImage && $scope.files.length) {
+            $scope.files[0] = {name: filename};
+            $scope.images[0] = data;
+        } else {
+            $scope.files.push({name: filename});
+            $scope.images.push(data);
+        }
+        if ($scope.onAddImage) {
+            $scope.onAddImage($scope.elementId, data);
+        }
+        $scope.$apply();
+    };
+
+    $scope.deleteImageFromMobile = function (filename) {
+        for (var i=0; i<$scope.files.length; i++) {
+            if ($scope.files[i].name === filename) {
+                $scope.files.splice(i, 1);
+                $scope.images.splice(i, 1);
+                if ($scope.onDeleteImage) {
+                    $scope.onDeleteImage($scope.elementId, i);
+                }
+                break;
+            }
+        }
+        $scope.$apply();
+    };
+
+    $scope.openMobileGallery = function () {
+        if ($scope.singleImage) {
+            clearAllExist();
+            window.android.openGallery(1, 'onAndroid_taskImageImport', 'onAndroid_taskImageDelete');
+        } else {
+            window.android.openGallery(9, 'onAndroid_taskImageImport', 'onAndroid_taskImageDelete');
+        }
+    };
+
+    $scope.deleteImage = function (index) {
+        // 删除某一张图片
+        var filename = $scope.files[index].name;
+        window.android && window.android.deleteSelectedPhoto && window.android.deleteSelectedPhoto(filename);
+        $scope.files.splice(index, 1);
+        $scope.images.splice(index, 1);
+        if ($scope.onDeleteImage) {
+            $scope.onDeleteImage($scope.elementId, index);
+        }
+    };
+
+    $scope.openGallery = function (index, images) {
+        routerService.openPage($scope, '/templates/base-gallery.html', {
+            index: index+1,
+            images: $scope.images,
+            canDelete: true,
+            onDelete: $scope.deleteImage
+        }, {
+            hidePrev: false
+        });
+    };
+
+    // 向上级注册图片列表信息，
+    setTimeout(function () {
+        $scope.images = $scope.registerImageInfo($scope.elementId);
+        if ($scope.images.length) {
+            $scope.images.forEach(function (n) {
+                $scope.files.push({
+                    name: ''
+                }) ;
+            });
+        }
+    }, 100);
+    clearAllExist();
+
+    $scope.$on('$destroy', function (event) {
+        clearAllExist();
+    });
+}]);
+
+app.directive('dropDownMenu', function () {
+    return {
+        restrict: 'E',
+        templateUrl: 'templates/site-monitor/dropdown-menu.html',
+        scope: {
+            options: '=',
+            onSelect: '=',
+            modelName: '=',
+            defaultValue: '=',
+            selected: '=',
+            disabled: '='
+        },
+        replace: true,
+        controller:['$scope', '$attrs', function($scope, $attrs){
+            $scope.active = false;
+            $scope.selected = $scope.selected || {};
+
+            $scope.toggle = function () {
+                if ($scope.disabled) {
+                    return;
+                }
+                $scope.active = !$scope.active;
+                if ($scope.active) {
+                    var mark = $('<div style="position: fixed;background-color: transparent;width: 100%;height: 100%;top:60px;z-index: 1;left: 0;" ng-click="toggle()"></div>')
+                        .appendTo($scope.domEle);
+                } else {
+                    $scope.domEle.find('div:last').remove();
+                }
+            };
+
+            $scope.onClick = function ($event, id) {
+                if ($event) {
+                    $event.preventDefault();
+                    $event.stopPropagation();
+                }
+                for (var i=0; i<$scope.options.length; i++) {
+                    if ($scope.options[i].id === id) {
+                        $scope.selected = $scope.options[i];
+                        $scope.toggle();
+                        $scope.onSelect($scope.modelName, $scope.selected.id, $scope.selected.name);
+                        return false;
+                    }
+                }
+            };
+
+            if ($scope.defaultValue !== undefined) {
+                for (var i=0; i<$scope.options.length; i++) {
+                    if ($scope.options[i].id === $scope.defaultValue) {
+                        $scope.selected = $scope.options[i];
+                        break;
+                    }
+                }
+            } else if ($scope.options.length) {
+                $scope.selected = $scope.options[0];
+            }
+        }],
+        link: function (scope, element, attrs) {
+            console.log(element);
+            scope.domEle = element;
+        }
+    }
+});
+
+app.controller('PDFViewerCtrl', function ($scope) {
+   $scope.url = 'pdf-viewer/viewer.html?file=' + $scope.url;
+   $scope.show = false;
+
+   setTimeout(function () {
+       $scope.show = true;
+       $scope.$apply();
+   }, 300);
 });

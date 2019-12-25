@@ -245,7 +245,7 @@ nav.bg-footer .mui-tab-item{
     padding: 4px 12px;
 }
 .bg-white{
-    background-color: #fff;
+    background-color: #fff !important;
 }
 .head-img{
     width: 40px;
@@ -416,7 +416,7 @@ header.mui-bar{
     background-color: #fff;
 }
 .task-result textarea{
-    font-size: 16px;
+    font-size: 14px;
     border: #fff;
     margin-bottom: 0;
 }
@@ -2851,6 +2851,7 @@ div.pinch-zoom, div.pinch-zoom-container{
 }
 .tree-group {
     list-style: none;
+    background-color: #fff;
 }
 .tree-cell .tree-group {
     display: none;
@@ -2958,18 +2959,6 @@ div.pinch-zoom, div.pinch-zoom-container{
     font-size: 20px;
     display: inline-block;
     color: #D0D4D8;
-}
-.static-device-list .status {
-    position: absolute;
-    right: 10px;
-    top: 12px;
-    font-size: 14px;
-}
-.static-device-list .status.normal {
-    color: #44D36B;
-}
-.static-device-list .status.danger {
-    color: #FB6868;
 }
 .status-danger {
     color: #FB6868;
@@ -3252,14 +3241,38 @@ header .mui-title .dropdown-arrow:after {
 .page-bottom {
    padding-bottom: 54px !important;
 }
+.static-device-list {
+    list-style: none;
+}
 .static-device-list li {
     padding-left: 10px;
+    position: relative;
 }
 .static-device-list .device-body {
     border-bottom: #E6E6E6 1px solid;
     width: calc(100% - 24px);
-    padding: 12px 12px 12px 8px;
+    padding: 12px 12px 8px 8px;
     position: relative;
+    font-size: 14px;
+}
+.static-device-list .device-name {
+    margin-right: 30px;
+}
+.static-device-list .status {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    font-size: 13px;
+    margin-top: -10px;
+}
+.static-device-list .status.normal {
+    color: #44D36B;
+}
+.static-device-list .status.danger {
+    color: #FB6868;
+}
+.static-device-list .status.undo {
+    color: #969696;
 }
 .checkbox-square {
     width: 26px;
@@ -3699,6 +3712,9 @@ table.dataTable tbody th, table.dataTable tbody td {
 .my-picker.mui-poppicker {
     transform: translateY(380px);
 }
+.my-picker.mui-poppicker.mui-active {
+    transform: translateY(0px);
+}
 .mui-checkbox.control-radio input[type=checkbox], .mui-radio.control-radio input[type=radio] {
     top: -5px;
 }
@@ -3707,4 +3723,34 @@ table.dataTable tbody th, table.dataTable tbody td {
 }
 .mui-checkbox.control-radio label, .mui-radio.control-radio label {
     padding: 8px 0 8px 48px;
+}
+.mui-bar-tab .mui-tab-item1.mui-active {
+    color: #007aff;
+}
+.mui-bar-tab .mui-tab-item1 {
+    display: table-cell;
+    overflow: hidden;
+    width: 1%;
+    height: 50px;
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: #929292;
+}
+
+.btn-status {
+    color: #fff;
+    font-size: 13px;
+    padding: 4px 8px;
+    line-height: 14px;
+}
+.btn-status.running {
+    background: #F28150;
+}
+.btn-status.closed {
+    background-color: #8B8B8B;
+}
+.mui-bar-tab {
+    box-shadow: none;
 }
