@@ -244,8 +244,9 @@ app.controller('StaticDeviceDetailCtrl', ['$scope', 'ajax', 'routerService', 'pl
         );
     };
 
-    $scope.gotoDtsList = function () {
-        window.location.href = '/templates/site/static-devices/device-dts-history.html?device_sn=' + $scope.device.sn + '&station_sn=' + $scope.device.station_sn;
+    $scope.gotoDtsList = function (status) {
+        // status=doing: 未完成，status=finish：已完成
+        window.location.href = '/templates/site/static-devices/device-dts-history.html?device_sn=' + $scope.device.sn + '&station_sn=' + $scope.device.station_sn + '&status=' + status;
     };
 
     $scope.gotoOpsList = function () {
