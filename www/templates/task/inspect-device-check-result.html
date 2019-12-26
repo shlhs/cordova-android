@@ -9,15 +9,17 @@
             <label ng-if="!canEdit && item.pass === 1">正常</label>
             <label ng-if="!canEdit && item.pass === 2" style="color: #ff0000;">异常</label>
             <label style="float: right" ng-if="canEdit">
-                <button class="item-pass" ng-class="{normal: item.pass !== 2}" ng-click="setItemPass(item, 1)">正常</button>
-                <button class="item-pass" ng-class="{normal: item.pass === 2}" ng-click="setItemPass(item, 2)">异常</button>
+                <div class="item-pass" ng-class="{normal: item.pass !== 2}" ng-click="setItemPass(item, 1)">正常</div>
+                <div class="item-pass" ng-class="{normal: item.pass === 2}" ng-click="setItemPass(item, 2)">异常</div>
             </label>
         </div>
         <div ng-if="item.pass !== 2">
-            <label class="title">结果描述：</label><input placeholder="请输入结果数值" ng-model="item.result_desp" ng-if="canEdit"><label ng-if="!canEdit">{{item.result_desp}}</label>
+            <label class="title">结果描述：</label>
+            <textarea rows="1" placeholder="请输入结果数值" ng-model="item.result_desp" ng-disabled="!canEdit"></textarea>
         </div>
         <div ng-if="item.pass === 2">
-            <label class="title">异常描述：</label><input placeholder="请输入异常描述" ng-model="item.result_desp" ng-if="canEdit"><label ng-if="!canEdit">{{item.result_desp}}</label>
+            <label class="title">异常描述：</label>
+            <textarea rows="1" placeholder="请输入异常描述" ng-model="item.result_desp" ng-disabled="!canEdit"></textarea>
         </div>
     </div>
 </div>
@@ -55,7 +57,7 @@
             <div ng-include="'templates/image-uploader.html'" ng-init="elementId='imageList'" style="margin-left: -16px;" ng-if="canEdit"></div>
             <div style="margin: 6px 0 4px 0;font-size: 13px;" ng-click="setEnableDtsSubmit()" ng-if="canEdit">
                 <label class="mui-checkbox mui-left checkbox-square">
-                    <a class="checkbox" ng-class="{checked: enableSubmitDts}" style="font-size: 13px;float: right;"></a>
+                    <a class="checkbox" ng-class="{checked: enableSubmitDts}" style="font-size: 13px;float: left;margin-right: 6px;"></a>
                 </label>
                 <label>自动为设备异常提交缺陷单</label>
             </div>

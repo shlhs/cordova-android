@@ -1720,7 +1720,15 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
             }
             mui.confirm(description, title, btnArray, function(e) {
                 if (e.index === 1) {     // 是
-                    $scope.postAction(TaskAction.Apply, "提交任务审核");
+                    // 如果用户提交了签到照片，则需要先提交一次更新记录，再提交审核
+                    if ($scope.inspectUploadImages && $scope.inspectUploadImages.length) {
+                        $scope.postAction(TaskAction.Update, null, $scope.inspectUploadImages, function () {
+                            $scope.postAction(TaskAction.Apply, "提交任务审核");
+                        });
+                    } else {
+                        $scope.postAction(TaskAction.Apply, "提交任务审核");
+                    }
+
                 }
             });
         },
@@ -2467,18 +2475,17 @@ app.controller('TaskDevicesHandlerCtrl', function ($scope, routerService, ajax) 
             },
             success: function (response) {
                 $scope.isSubmitting = false;
-                if (response.code === 200) {
-                    $.notify.toast('设置成功', 1000);
-                    $scope.device_record.forEach(function (r) {
-                        if (r.checked) {
-                            r.status = '运行良好';
-                            r.status_name = 'normal';
-                            $scope.checkDevice(null, r.device_sn);
-                        }
-                    });
-                    $scope.toggleCheckAll(false);
-                    $scope.recountFunc();
-                }
+                $.notify.toast('设置成功', 1000);
+                $scope.device_record.forEach(function (r) {
+                    if (r.checked) {
+                        r.status = '1';
+                        r.status_name = '正常';
+                        r.className = "normal";
+                        $scope.checkDevice(null, r.device_sn);
+                    }
+                });
+                $scope.toggleCheckAll(false);
+                $scope.recountFunc();
                 $scope.$apply();
             },
             error: function (xhr, error, status) {

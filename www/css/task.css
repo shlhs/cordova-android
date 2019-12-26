@@ -788,11 +788,14 @@
 }
 .item-pass {
     font-size: 12px;
-    padding: 1px 8px;
+    padding: 0px 8px;
     border: 1px solid #8e8e8e;
     color: #5f5f5f;
     margin-right: 10px;
     border-radius: 2px;
+    height: 21px;
+    display: inline-block;
+    line-height: 21px;
 }
 .item-pass.normal {
     background-color: #4E83FD;
