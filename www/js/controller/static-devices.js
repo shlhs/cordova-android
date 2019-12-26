@@ -1,7 +1,14 @@
 function openDeviceFromQR(data) {   //根据扫码结果打开设备详情
     var scope = $('[ng-controller="StaticDevicesHomeCtrl"]').scope();
     if (scope) {
-        scope.gotoDevice({sn: JSON.parse(data).sn});
+        var deviceSn = JSON.parse(data).sn;
+        var stationSn = deviceSn.substring(0, deviceSn.indexOf('__'));
+        var userStationSns = getStorageItem('stationSns').split(',');
+        if (userStationSns.indexOf(stationSn) >= 0) {       // 只能查看有权限的站点下的设备
+            scope.gotoDevice({sn: JSON.parse(data).sn});
+        } else {
+            $.notify.toast('无权限查看该设备', 1500);
+        }
     }
 }
 
@@ -237,8 +244,9 @@ app.controller('StaticDeviceDetailCtrl', ['$scope', 'ajax', 'routerService', 'pl
         );
     };
 
-    $scope.gotoDtsList = function () {
-        window.location.href = '/templates/site/static-devices/device-dts-history.html?device_sn=' + $scope.device.sn + '&station_sn=' + $scope.device.station_sn;
+    $scope.gotoDtsList = function (status) {
+        // status=doing: 未完成，status=finish：已完成
+        window.location.href = '/templates/site/static-devices/device-dts-history.html?device_sn=' + $scope.device.sn + '&station_sn=' + $scope.device.station_sn + '&status=' + status;
     };
 
     $scope.gotoOpsList = function () {
