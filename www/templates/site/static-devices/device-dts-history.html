@@ -93,24 +93,27 @@
                         </h4>
                     </div>
                 </div>
-                <div class="sub-body">
+                <div class="sub-body task-infos">
                     <p class="task-name">
                         {{task.name}}
                     </p>
-                    <div>
-                        <span class="task-info-label" style="padding-right: 0;">创建时间：</span>
-                        <span class="task-info-value" ng-class="{'timeout': task.isTimeout}">{{task.create_time}}</span>
+                    <div ng-if="!task.finish_time">
+                        <span class="task-info-label">{{task.riplan_create_time ? '启动时间：' : '创建时间：'}}</span>
+                        <span class="task-info-value" ng-if="!task.isToStart">{{task.create_time}}</span>
+                        <span class="task-info-value" ng-if="task.isToStart" style="color: rgb(70, 190, 138);">{{task.create_time}}</span>
                     </div>
-                    <div ng-if="task.current_handler">
-                        <span class="task-info-label">当前处理人：</span><span class="task-info-value">{{task.current_handler_name}}</span>
+                    <div ng-if="task.stage_id !== TaskStatus.Closed">
+                        <span class="task-info-label">当前处理人：</span>
+                        <span class="task-info-value">{{task.current_handler_name}}</span>
                     </div>
                     <div ng-if="task.finish_time">
-                        <span class="task-info-label" style="padding-right: 0;">解决时间：</span>
+                        <span class="task-info-label">完成时间：</span>
                         <span class="task-info-value" ng-class="{'timeout': task.isTimeout}">{{task.finish_time}}</span>
                     </div>
                 </div>
                 <div class="task-status">
-                    <span style="color: #6f6f6f;margin: 0 2px;">{{task.current_handler_name}}</span>{{task.stage_name}}
+                    <span ng-if="!task.isMyself" style="color: #6f6f6f;">{{task.stage_name}}</span>
+                    <span ng-if="task.isMyself">{{task.stage_name}}</span>
                 </div>
             </li>
         </ul>

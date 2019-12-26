@@ -301,13 +301,15 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
 }]);
 
 // 设备缺陷记录
-app.controller('DeviceDtsListCtrl', ['$scope', 'ajax', 'scrollerService', function ($scope, ajax, scrollerService) {
+app.controller('DeviceDtsListCtrl', ['$scope', 'ajax', 'scrollerService', 'userService', function ($scope, ajax, scrollerService, userService) {
     var deviceSn = GetQueryString('device_sn');
     var stationSn = GetQueryString('station_sn');
+    var status = GetQueryString("status");
     $scope.TaskStatus = TaskStatus;
     $scope.tasks = [];
     $scope.isLoading = true;
     $scope.loadingFailed = false;
+    var userAccount = userService.getUser().account;
 
     function sortDts(d1, d2) {
         // 排序规则：未完成、待审批、已关闭，同样状态的按截止日期排序
@@ -347,12 +349,20 @@ app.controller('DeviceDtsListCtrl', ['$scope', 'ajax', 'scrollerService', functi
         scrollerService.initScroll("#taskList", $scope.getDataList);
         $scope.isLoading = true;
         $scope.loadingFailed = false;
+        var params = {
+            device_sn: deviceSn
+        };
+        if (status === 'doing') {
+            var allStages = Object.values(TaskStatus);
+            allStages.splice(allStages.indexOf(TaskStatus.Closed), 1).splice(allStages.indexOf(TaskSource.ToClose), 1);
+            params.stage = allStages.join(',');
+        } else if (status === 'finish') {
+            params.stage = [TaskStatus.ToClose, TaskStatus.Closed].join(',');
+        }
 
         ajax.get({
             url: "/dts",
-            data:{
-                device_sn: deviceSn
-            },
+            data: params,
             success: function(result) {
                 $scope.isLoading = false;
                 result.sort(sortDts);
@@ -360,6 +370,12 @@ app.controller('DeviceDtsListCtrl', ['$scope', 'ajax', 'scrollerService', functi
                 for (var i in tasks){
                     task = tasks[i];
                     formatTaskStatusName(task);
+                    if (isTodoTask(task, userAccount)) {
+                        task.isMyself = true;
+                    }
+                    if (task.finish_time) {
+                        task.finish_time = task.finish_time.substring(0, 16);
+                    }
                     task.isTimeout = $scope.taskTimeout(task);
                 }
                 $scope.tasks = tasks;
