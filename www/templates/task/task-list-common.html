@@ -1,0 +1,71 @@
+<div id="taskList" class="scroll-wrapper" style="position: relative;height: 100%;">
+    <div class="mui-scroll1" ng-if="!isLoading && !loadingFailed">
+        <ul class="mui-table-view-striped mui-table-view-condensed task-list no-out-border" ng-if="tasks.length">
+            <li class="mui-table-view-cell mui-media task-item" ng-repeat="task in tasks"
+                ng-click="openTask(task)" ng-class="{'closed': task.stage_id == TaskStatus.Closed}">
+                <div>
+                    <div class="main-body">
+                        <div class="mui-media-body task-main">
+                            <h4 class="mui-ellipsis task-title" style="margin-top: 0">
+                                <img class="mui-pull-left task-icon" src="img/task_type_{{task.task_type_id}}@2x.png">
+                                <strong class="task-type" ng-class="{'ergent': task.task_type_id===TaskTypes.Qiangxiu}">{{task.task_type_name}}</strong>
+                            </h4>
+                        </div>
+                    </div>
+                    <div class="sub-body task-infos">
+                        <p class="task-name">
+                            {{task.name}}
+                        </p>
+                        <div ng-if="task.station_name && !isDeviceOps">
+                            <span class="task-info-label">站点名称：</span>
+                            <span class="task-info-value">{{task.station_name}}</span>
+                        </div>
+                        <div ng-if="!task.finish_time">
+                            <span class="task-info-label">创建时间：</span>
+                            <span class="task-info-value">{{task.create_time}}</span>
+                        </div>
+                        <div ng-if="task.stage_id !== TaskStatus.Closed">
+                            <span class="task-info-label">当前处理人：</span>
+                            <span class="task-info-value">{{task.current_handler_name}}</span>
+                        </div>
+                        <div ng-if="task.stage_id === TaskStatus.Closed">
+                            <span class="task-info-label">完成时间：</span>
+                            <span class="task-info-value" ng-class="{'timeout': task.isTimeout}">{{task.finish_time}}</span>
+                        </div>
+                        <div ng-if="task.task_type_id === TaskTypes.Xunjian && (task.stage_id === TaskStatus.Closed || task.stage_id === TaskStatus.ToClose)">
+                            <span class="task-info-label">巡检结果：</span>
+                            <span class="task-info-value" ng-switch="task.device_record.status">
+                                <span ng-switch-when="1" style="color: #44D36B;">正常</span>
+                                <span ng-switch-when="2" style="color: #ff0000;">有异常</span>
+                                <span ng-switch-default>未巡检</span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="task-status">
+                        <span ng-if="!task.isMyself" style="color: #6f6f6f;">{{task.stage_name}}</span>
+                        <span ng-if="task.isMyself">{{task.stage_name}}</span>
+                    </div>
+                </div>
+            </li>
+        </ul>
+        <div class="page-alert-wrapper" ng-if="tasks.length==0 && !isLoading && !loadingFailed">
+            <div class="page-alert">
+                <i class="alert-icon no-task"></i>
+                <div class="alert-text info">无记录</div>
+            </div>
+        </div>
+    </div>
+    <div class="page-alert-wrapper" ng-if="isLoading">
+        <div class="page-alert">
+            <img src="img/page-loading.gif" class="loading-img">
+            <div class="alert-text info">正在加载...</div>
+        </div>
+    </div>
+    <div class="page-alert-wrapper" ng-if="loadingFailed">
+        <div class="page-alert">
+            <i class="alert-icon warning"></i>
+            <div class="alert-text info">加载失败，请检查网络</div>
+            <div class="alert-reload" ng-click="getDataList()">重新加载</div>
+        </div>
+    </div>
+</div>

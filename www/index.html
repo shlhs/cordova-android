@@ -17,9 +17,10 @@
     <link rel="stylesheet" href="css/setting.css">
     <link rel="stylesheet" href="css/my.css">
     <link rel="stylesheet" href="css/task.css">
+    <link rel="stylesheet" href="css/energy.css">
     <link rel="stylesheet" href="components/libs/font-awesome-4.7.0/css/font-awesome.min.css">
-    <script type="text/javascript" src="cordova.js"></script>
-    <script type="text/javascript" src="cordova_plugins.js"></script>
+    <!--<script type="text/javascript" src="cordova.js"></script>-->
+    <!--<script type="text/javascript" src="cordova_plugins.js"></script>-->
     <script type="text/javascript" src="components/libs/jquery-2.1.4.js"></script>
     <script type="text/javascript" src="components/angular/angular.min.js"></script>
     <script type="text/javascript" src="components/angular-ui-router/release/angular-ui-router.min.js"></script>
@@ -58,7 +59,7 @@
 <script type="text/javascript" src="js/controller/dts.js"></script>
 <script src="components/moment.min.js"></script>
 <script src="components/highcharts/highcharts.js"></script>
-<script src="components/echart/echarts.common.min.js"></script>
+<script src="components/echart/echarts.min-3.x.js"></script>
 <script src="components/mui/js/mui.min.js"></script>
 <script type="text/javascript" src="components/mui/js/mui.picker.min.js"></script>
 <script type="text/javascript" src="components/mui/js/mui.poppicker.js"></script>
@@ -73,7 +74,9 @@
 <script type="text/javascript" src="js/lib/datatables/dataTables.fixedHeader.min.js"></script>
 <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=ITbaaCqA7nMWRjEIycEpddoUW1AvZvRq"></script>
 <script type="text/javascript" src="components/baidu/map/MarkerManager-1.2.min.js"></script>
+<script type="text/javascript" src="js/service/varData.js"></script>
 <script type="text/javascript" src="js/controller/energy.js"></script>
+<script type="text/javascript" src="js/controller/user-energy.js"></script>
 <script type="text/javascript" src="js/controller/ipc.js"></script>
 <script type="text/javascript" src="components/easy-player/easy-player-element.min.js"></script>
 
@@ -118,7 +121,8 @@
     FastClick.prototype.focus = function (targetElement) {
         'use strict';
         targetElement.focus();
-    }
+    };
 </script>
+
 </body>
 </html>

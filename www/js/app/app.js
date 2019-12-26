@@ -3,6 +3,9 @@
  * Created by liucaiyun on 2017/5/4.
  */
 var app = angular.module('myApp', ['ngAnimate', 'ui.router', 'ui.router.state.events']);
+var defaultPlatIpAddr = "http://118.190.51.135";     // 平台默认ip，格式为：http://118.190.51.135
+var defaultThumborHost = "";        // 缩放图的host，空则使用defaultPlatIpAddr
+var gShowEnergyPage = false;     // 是否显示能效页面，不显示能效页面时运维人员会看到抢单页面
 
 app.run(function ($animate) {
     $animate.enabled(true);
@@ -58,6 +61,13 @@ app.service('userService', function ($rootScope) {
         setStorageItem('user', JSON.stringify(user));
         setStorageItem('username', user.account);
         setStorageItem('password', password);
+        if (user.permissions) {
+            const permissions = [];
+            user.permissions.forEach(function (perm) {
+                permissions.push(perm.authrity_name);
+            });
+            setStorageItem('permissions', permissions.join(','));
+        }
         setStorageItem('company', '');
         this.username = user.account;
         this.password = password;
@@ -95,6 +105,24 @@ app.service('userService', function ($rootScope) {
             this.username = username;
         }
         return username;
+    };
+
+    this.getCompanyId = function () {
+        if (!getStorageItem("permissions")) {
+            return null;
+        }
+        var roles = getStorageItem("permissions").split(',');
+        for (var i=0; i<roles.length; i++) {
+            var role = roles[i];
+            if (role.indexOf("COMPANY_OPS_COMPANY_VIEWCOMPANY") === 0) {
+                return role.substring("COMPANY_OPS_COMPANY_VIEWCOMPANY".length);
+            }
+            //用户公司
+            if (role.indexOf("USER_COMPANY_USERUSER_COMPANY") === 0) {
+                return 'user' + role.substring("USER_COMPANY_USERUSER_COMPANY".length);
+            }
+        }
+        return null;
     };
 
     this.hasPermission = function (permName) {
@@ -138,23 +166,6 @@ app.service('userService', function ($rootScope) {
 
     };
 
-    this.getTaskCompanyId = function () {
-        // 获取任务时需要用到的用户id
-        var perms = JSON.parse(getStorageItem("user")).permissions;
-        for (var i=0; i<perms.length; i++) {
-            var auth = perms[i].authrity_name;
-            //运维公司
-            if (auth.indexOf("COMPANY_OPS_COMPANY_VIEWCOMPANY") === 0) {
-                return auth.substring("COMPANY_OPS_COMPANY_VIEWCOMPANY".length);
-            }
-            //用户公司
-            if (auth.indexOf("USER_COMPANY_USERUSER_COMPANY") === 0) {
-                return 'user' + auth.substring("USER_COMPANY_USERUSER_COMPANY".length);
-            }
-        }
-        return null;
-    };
-
     this.user = this.getUser();
     this.username = this.getUsername();
     this.password = this.getPassword();
@@ -187,8 +198,7 @@ app.service('platformService', function () {
 
     this.setLatestPlatform = function (platform) {
         setStorageItem('latestPlatform', JSON.stringify(platform));
-        this.host = platform.url;
-        this.ipAddress = this.host.substring(0, this.host.indexOf(':', 5));
+        this.host = platform.url.substring(0, platform.url.indexOf(':', platform.url.indexOf(':')+1));
         this.thumbHost = this.getImageThumbHost();
     };
 
@@ -203,51 +213,67 @@ app.service('platformService', function () {
 
     this.getHost = function () {
         // 格式为： http://ip:port/v1
+        if (defaultPlatIpAddr) {
+            return defaultPlatIpAddr;
+        }
         var platform = this.getLatestPlatform();
-        return platform ? platform.url : null;
+        return platform ? platform.url.substring(0, platform.url.indexOf(':', platform.url.indexOf(':')+1)) : null;
+    };
+
+    this.getCloudHost = function () {
+        return this.host + ':8099/v1';
     };
 
     this.getAuthHost = function () {
-        return this.ipAddress + ":8096/v1"
+        return this.host + ":8096/v1"
     };
 
     this.getDeviceMgmtHost = function () {
-        return this.ipAddress + ':8097';
+        return this.host + ':8097';
     };
 
     this.getImageThumbHost = function () {      // 获取图片压缩服务的地址
         // 格式为： http://ip:8888/unsafe
-        if (this.ipAddress)
+        if (defaultThumborHost) {
+            return defaultThumborHost + ":8888/unsafe";
+        }
+        if (this.host)
         {
-            return this.ipAddress + ":8888/unsafe"
+            return this.host + ":8888/unsafe"
         }
         return null;
     };
 
     this.getGraphHost = function () {
-        return this.ipAddress + ':8920/v1';
+        return this.host + ':8920/v1';
     };
 
     this.getGraphScreenUrl = function (graphSn) {
         // 新的监控画面服务
-        return this.ipAddress + ':8921/monitor.html?sn=' + graphSn;
+        return this.host + ':8921/monitor.html?sn=' + graphSn;
+        // return 'http://192.168.1.129:8080/monitor2.html?sn=' + graphSn;
     };
 
     this.getOldMonitorScreenUrl = function (screenSn) {
         // 老的监控画面服务
-        return this.ipAddress + ':8098/monitor_screen?sn=' + screenSn;
+        return this.host + ':8098/monitor_screen?sn=' + screenSn;
     };
 
     this.getImageUrl = function (width, height, imageUrl) {
+        // When using gifsicle engine, filters will be skipped. Thumbor will not do smart cropping as well
+        var urlLength = imageUrl.length;
+        if(urlLength > 4 && imageUrl.toLocaleLowerCase().lastIndexOf('.gif') === (urlLength -4)) {
+            return imageUrl;
+        }
+
         return this.thumbHost + '/' + width + 'x' + height + '/' + imageUrl;
     };
 
     this.getIpcServiceHost = function () {
-        return this.ipAddress + ':8095/v1';
+        return this.host + ':8095/v1';
     };
 
     this.host = this.getHost();
-    this.ipAddress = this.host ? this.host.substring(0, this.host.indexOf(':', 5)) : '';
     this.thumbHost = this.getImageThumbHost();
 });
 
@@ -259,9 +285,9 @@ app.service('ajax', function ($rootScope, platformService, userService, $http, c
     $rootScope.user = null;
 
     $rootScope.getCompany = function(callback) {
-        console.log(platformService.host + '/user/' + username + '/opscompany');
+        console.log(platformService.getCloudHost() + '/user/' + username + '/opscompany');
         $.ajax({
-            url: platformService.host + '/user/' + username + '/opscompany',
+            url: platformService.getCloudHost() + '/user/' + username + '/opscompany',
             xhrFields: {
                 withCredentials: true
             },
@@ -284,7 +310,7 @@ app.service('ajax', function ($rootScope, platformService, userService, $http, c
     };
 
     this.getCompanyMembers = function (callback) {
-        var companyId = userService.getTaskCompanyId();
+        var companyId = userService.getCompanyId();
         var url = '/opscompanies/' + companyId + '/members';
         if (companyId.indexOf('user') === 0) {
             url = '/usercompanies/'+ companyId.substring(4) + '/members';
@@ -300,8 +326,8 @@ app.service('ajax', function ($rootScope, platformService, userService, $http, c
     };
 
     function request(option) {
-        if (option.url.indexOf("http://") !== 0){
-            option.url = platformService.host + option.url;
+        if (option.url.indexOf("http://") !== 0 && option.url.indexOf("https://") !== 0){
+            option.url = platformService.getCloudHost() + option.url;
             // option.url = 'http://127.0.0.1:8099/v1' + option.url;
         }
         var headers = $.extend({
@@ -645,7 +671,7 @@ app.controller('mapCtrl', function ($scope, $timeout, cordovaService) {
     }
 
     function drawMap(siteData) {
-        var map = new BMap.Map("map");          // 创建地图实例
+        var map = new BMap.Map("stationMap");          // 创建地图实例
         if (!map){ return; }
         // 导航
         var driving = new BMap.DrivingRoute(map, {
@@ -726,4 +752,221 @@ app.controller('mapCtrl', function ($scope, $timeout, cordovaService) {
     };
 
     $timeout(getSite, 500);
+});
+
+// 图片选择控制器
+// 使用的父级controller需要实现方法： $scope.registerImageInfo(imageEleId) { return $scope.images }
+app.controller('ImageUploaderCtrl', ['$document', '$scope', '$timeout', 'routerService', function ($document, $scope, $timeout, routerService) {
+    $scope.elementId = '';
+    $scope.singleImage = false;     // 是否只允许一张图片
+    $scope.files = [];
+    $scope.images = [];
+    $scope.isPC = IsPC();
+    $scope.useMobileGallery = window.android && window.android.openGallery;
+
+
+    function clearAllExist() {
+        window.android && window.android.clearSelectedPhotos && window.android.clearSelectedPhotos();      // 调用Android js接口，清除选择的所有照片
+    }
+
+    function fileExist(fileName) {
+        if (!fileName) {
+            return false;
+        }
+        for (var i=0; i<$scope.files.length; i++) {
+            if (fileName === $scope.files[0].name) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    $scope.chooseImage = function (files) {     // 选择图片
+        $scope.canDelete = true;
+        for (var i = 0; i < files.length; i++) {
+            var reader = new FileReader(), file=files[i];
+            // 如果文件已选择过，则无法再选择
+            if (fileExist(file.name)) {
+                continue;
+            }
+            reader.readAsDataURL(file);
+            reader.onloadstart = function () {
+                //用以在上传前加入一些事件或效果，如载入中...的动画效果
+            };
+            reader.onload = function (event) {
+                var img = new Image();
+                img.src = event.target.result;
+                img.onload = function(){
+                    var dataUrl = imageHandler.compress(this, 75, file.orientation).src;
+                    if ($scope.singleImage && $scope.files.length) {
+                        $scope.files[0] = {name: file.name};
+                        $scope.images[0] = dataUrl;
+                    } else {
+                        $scope.files.push({name: file.name});
+                        $scope.images.push(dataUrl);
+                    }
+                    if ($scope.onAddImage) {
+                        $scope.onAddImage($scope.elementId, dataUrl);
+                    }
+                    $scope.$apply();
+                };
+            };
+        }
+    };
+
+    $scope.addImagesWithBase64 = function (data, filename) {
+        $scope.canDelete = true;
+        if (filename === undefined) {
+            filename = '';
+        }
+        if (fileExist(filename)) {
+            return;
+        }
+        if ($scope.singleImage && $scope.files.length) {
+            $scope.files[0] = {name: filename};
+            $scope.images[0] = data;
+        } else {
+            $scope.files.push({name: filename});
+            $scope.images.push(data);
+        }
+        if ($scope.onAddImage) {
+            $scope.onAddImage($scope.elementId, data);
+        }
+        $scope.$apply();
+    };
+
+    $scope.deleteImageFromMobile = function (filename) {
+        for (var i=0; i<$scope.files.length; i++) {
+            if ($scope.files[i].name === filename) {
+                $scope.files.splice(i, 1);
+                $scope.images.splice(i, 1);
+                if ($scope.onDeleteImage) {
+                    $scope.onDeleteImage($scope.elementId, i);
+                }
+                break;
+            }
+        }
+        $scope.$apply();
+    };
+
+    $scope.openMobileGallery = function () {
+        if ($scope.singleImage) {
+            clearAllExist();
+            window.android.openGallery(1, 'onAndroid_taskImageImport', 'onAndroid_taskImageDelete');
+        } else {
+            window.android.openGallery(9, 'onAndroid_taskImageImport', 'onAndroid_taskImageDelete');
+        }
+    };
+
+    $scope.deleteImage = function (index) {
+        // 删除某一张图片
+        var filename = $scope.files[index].name;
+        window.android && window.android.deleteSelectedPhoto && window.android.deleteSelectedPhoto(filename);
+        $scope.files.splice(index, 1);
+        $scope.images.splice(index, 1);
+        if ($scope.onDeleteImage) {
+            $scope.onDeleteImage($scope.elementId, index);
+        }
+    };
+
+    $scope.openGallery = function (index, images) {
+        routerService.openPage($scope, '/templates/base-gallery.html', {
+            index: index+1,
+            images: $scope.images,
+            canDelete: true,
+            onDelete: $scope.deleteImage
+        }, {
+            hidePrev: false
+        });
+    };
+
+    // 向上级注册图片列表信息，
+    setTimeout(function () {
+        $scope.images = $scope.registerImageInfo($scope.elementId);
+        if ($scope.images.length) {
+            $scope.images.forEach(function (n) {
+                $scope.files.push({
+                    name: ''
+                }) ;
+            });
+        }
+    }, 100);
+    clearAllExist();
+
+    $scope.$on('$destroy', function (event) {
+        clearAllExist();
+    });
+}]);
+
+app.directive('dropDownMenu', function () {
+    return {
+        restrict: 'E',
+        templateUrl: 'templates/site-monitor/dropdown-menu.html',
+        scope: {
+            options: '=',
+            onSelect: '=',
+            modelName: '=',
+            defaultValue: '=',
+            selected: '=',
+            disabled: '='
+        },
+        replace: true,
+        controller:['$scope', '$attrs', function($scope, $attrs){
+            $scope.active = false;
+            $scope.selected = $scope.selected || {};
+
+            $scope.toggle = function () {
+                if ($scope.disabled) {
+                    return;
+                }
+                $scope.active = !$scope.active;
+                if ($scope.active) {
+                    var mark = $('<div style="position: fixed;background-color: transparent;width: 100%;height: 100%;top:60px;z-index: 1;left: 0;" ng-click="toggle()"></div>')
+                        .appendTo($scope.domEle);
+                } else {
+                    $scope.domEle.find('div:last').remove();
+                }
+            };
+
+            $scope.onClick = function ($event, id) {
+                if ($event) {
+                    $event.preventDefault();
+                    $event.stopPropagation();
+                }
+                for (var i=0; i<$scope.options.length; i++) {
+                    if ($scope.options[i].id === id) {
+                        $scope.selected = $scope.options[i];
+                        $scope.toggle();
+                        $scope.onSelect($scope.modelName, $scope.selected.id, $scope.selected.name);
+                        return false;
+                    }
+                }
+            };
+
+            if ($scope.defaultValue !== undefined) {
+                for (var i=0; i<$scope.options.length; i++) {
+                    if ($scope.options[i].id === $scope.defaultValue) {
+                        $scope.selected = $scope.options[i];
+                        break;
+                    }
+                }
+            } else if ($scope.options.length) {
+                $scope.selected = $scope.options[0];
+            }
+        }],
+        link: function (scope, element, attrs) {
+            console.log(element);
+            scope.domEle = element;
+        }
+    }
+});
+
+app.controller('PDFViewerCtrl', function ($scope) {
+   $scope.url = 'pdf-viewer/viewer.html?file=' + $scope.url;
+   $scope.show = false;
+
+   setTimeout(function () {
+       $scope.show = true;
+       $scope.$apply();
+   }, 300);
 });

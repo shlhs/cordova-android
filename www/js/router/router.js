@@ -124,7 +124,10 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
         })
         .state('index.company', {
             url: 'company',
-            templateUrl: 'templates/setting/company.html'
+            templateUrl: 'templates/setting/company.html',
+            params: {
+                company: null
+            }
         })
         .state('index.share', {
             url: 'share',

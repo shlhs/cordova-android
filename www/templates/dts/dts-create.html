@@ -1,4 +1,4 @@
-<div class="page page-left" ng-controller="DtsCreateCtrl" style="background-color: #f5f5f5;" ng-submit="submitForm()" >
+<div class="page page-left" style="background-color: #f5f5f5;" ng-submit="submitForm()" >
     <style>
         .mui-input-row label{
             width: 160px;
@@ -27,85 +27,6 @@
         <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back btn-back" onclick="pageBack()"></a>
         <h1 class="mui-title">缺陷提交</h1>
     </header>
-    <div class="mui-content bg-white" id="dtsCreatePage" style="background-color: #fff;">
-        <style>
-            .create-form.mui-input-group .mui-input-row{
-                min-height: 40px;
-                height: auto;
-            }
-            .mui-input-row label.error{
-                width: 100%;
-            }
-            .error{
-                color: red;
-                margin-left: 146px;
-                font-size: 12px;
-                margin-top: -16px;
-            }
-        </style>
-        <form class="mui-input-group task-create-rows create-form no-border" name="myForm" novalidate >
-            <div class="mui-input-row">
-                <label class="label">设备</label>
-                <label style="line-height: 28px;padding-left: 0;width: calc(100% - 160px)" ng-if="isForDevice">{{device.name}}</label>
-                <input type="text" ng-if="!isForDevice" placeholder="请选择设备" ng-model="device.name">
-                <button class="mui-btn mui-btn-block" type="button" ng-click="openDeviceSelector()" ng-if="!isForDevice">&nbsp;</button>
-            </div>
-            <div class="mui-input-row">
-                <label class="label">所在位置</label>
-                <label style="line-height: 28px;padding-left: 0;width: calc(100% - 160px)">{{device.path}}</label>
-            </div>
-            <div class="mui-input-row">
-                <label class="label">缺陷等级<span style="color:red">*</span></label>
-                <input type="text" name="taskTypeName" ng-model="taskTypeName" placeholder="选择缺陷等级" required>
-                <button id="taskTypePicker" class="mui-btn mui-btn-block" type="button">&nbsp; </button>
-                <label class="error" ng-show="myForm.taskTypeName.$invalid && (myForm.taskTypeName.$dirty || myForm.$submitted)">
-                    <span ng-show="myForm.taskTypeName.$error.required">缺陷等级不能为空</span>
-                </label>
-            </div>
-            <div class="mui-input-row">
-                <label class="label">期望完成时间<span style="color:red">*</span></label>
-                <input type="text" name="expect_complete_time" ng-model="taskData.expect_complete_time" placeholder="选择缺陷处理截止时间" required>
-                <button type="button" id='expectedTime' data-options='{}' class="btn mui-btn mui-btn-block">&nbsp;</button>
-                <label class="error" ng-show="myForm.expect_complete_time.$invalid && (myForm.expect_complete_time.$dirty || myForm.$submitted)">
-                    <span ng-show="myForm.expect_complete_time.$error.required">期望完成时间不能为空</span>
-                </label>
-            </div>
-            <div class="mui-input-row">
-                <label style="line-height: 28px;">责任人<span style="color:red">*</span></label>
-                <input type="text" name="handlerName" style="position: absolute;" ng-model="handlerName" placeholder="选择缺陷解决责任人" required>
-                <button type="button" id='handlerPicker' class="btn mui-btn mui-btn-block">&nbsp;</button>
-                <label class="error" ng-show="myForm.handlerName.$invalid && (myForm.handlerName.$dirty || myForm.$submitted)">
-                    <span ng-show="myForm.handlerName.$error.required">责任人不能为空</span>
-                </label>
-            </div>
-            <div class="task-result">
-                <div style="padding: 10px 5px;">
-                    <textarea rows="3" placeholder="请添加缺陷描述..." name="name" ng-model="taskData.name" required></textarea>
-                    <label class="error" ng-show="myForm.name.$invalid && (myForm.name.$dirty || myForm.$submitted)" style="margin-left: 16px;">
-                        <span ng-show="myForm.name.$error.required">缺陷描述不能为空</span>
-                    </label>
-                </div>
-                <ul class="image-list" id="imageList">
-                    <li class="image-item" ng-repeat="file in images">
-                        <div class="content">
-                            <a class="img-file" style="background-image: url({{file}})" ng-click="openGallery($index)"></a>
-                        </div>
-                    </li>
-                    <li class="upload-item">
-                        <div class="content">
-                            <div class="image-uploader">
-                                <input class="add-btn" type="file" accept="image/*" unselectable name="upload" multiple onchange="angular.element(this).scope().chooseImage(this.files)" ng-if="!useMobileGallery">
-                                <input class="add-btn" name="upload" ng-model="chosenFile" unselectable ng-click="openMobileGallery()" ng-if="useMobileGallery">
-                            </div>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-            <div class="mui-button-row" style="padding: 8px 16px;">
-                <button type="submit" class="mui-btn mui-btn-primary mui-btn-block"
-                        style="background-color: rgba(88,107,243,0.88);border-color: rgba(88,107,243,0.88);height: 42px;">确认提交</button>
-            </div>
-        </form>
-    </div>
-</div>
+    <div ng-include="'templates/dts/dts-create-content.html'"></div>
+
 </div>

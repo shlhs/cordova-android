@@ -245,7 +245,7 @@ nav.bg-footer .mui-tab-item{
     padding: 4px 12px;
 }
 .bg-white{
-    background-color: #fff;
+    background-color: #fff !important;
 }
 .head-img{
     width: 40px;
@@ -339,6 +339,12 @@ header.bg-header{
     margin: 0px;
     padding: 0px;
 }
+.chart>div:first-child {
+    z-index: 0 !important;
+}
+.chart>div:nth-child(2) {
+    z-index: 99999;
+}
 header.mui-bar{
     height: 60px;
     padding-top: 8px;
@@ -410,7 +416,7 @@ header.mui-bar{
     background-color: #fff;
 }
 .task-result textarea{
-    font-size: 16px;
+    font-size: 14px;
     border: #fff;
     margin-bottom: 0;
 }
@@ -699,8 +705,20 @@ background-image: url("../img/light/64X64/profile.png");
 .nav-icon.profile{
     background-image: url("../img/dark/64X64/profile.png");
 }
+.nav-energy {
+    background-image: url('../img/dashboard/icon-nav-energy.png');
+}
+.mui-active>.nav-energy {
+    background-image: url('../img/dashboard/icon-nav-energy-active.png');
+}
 .mui-active>.nav-icon.profile{
     background-image: url("../img/dark/64X64/profile_active.png");
+}
+.nav-service {
+    background-image: url("../img/dashboard/icon-nav-service.png");
+}
+.mui-active>.nav-service {
+    background-image: url("../img/dashboard/icon-nav-service-active.png");
 }
 .task-history{
     background-image: url("../img/dark/64X64/history.png");
@@ -739,8 +757,43 @@ background-image: url("../img/light/64X64/profile.png");
     margin-top: 2px;
     display: block;
 }
+.nav-horizontal .tab-item{
+    overflow: hidden;
+    width: 1%;
+    height: 50px;
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-flex: 1;
+    -webkit-box-orient: vertical;
+    -webkit-box-pack: center;
+    -webkit-box-align: center;
+}
+.nav-horizontal .tab-item .mui-icon~.mui-tab-label{
+    display: inline-block;
+    padding-top: 6px;
+    color: rgb(141,140,143);
+    font-size: 12px;
+}
+.mui-active>.mui-tab-label {
+    color: rgb(88,107,243) !important;
+}
+.energy>.mui-active>.mui-tab-label {
+    color: #4889fe !important;
+}
+.nav-horizontal .tab-item .mui-icon{
+    height: 22px;
+    width: 22px;
+    margin-top: 2px;
+    display: block;
+}
 .sites{
     background-image: url("../img/dark/64X64/sites.png");
+}
+.no-station {
+    padding-top: 80px;
 }
 .no-station .alert-icon {
     display: block;
@@ -748,7 +801,6 @@ background-image: url("../img/light/64X64/profile.png");
     height: 120px;
     background: url(../img/no-station.png) 50% no-repeat;
     background-size: contain;
-    margin-top: 80px;
 }
 .no-station .alert-info {
     color: #888686;
@@ -2558,6 +2610,8 @@ color: #a7a7a7;
 }
 .entrance-list>li {
     margin: 9px 0 !important;
+}
+.entrance-list.small>li {
     width: 20% !important;
 }
 .entrance-list .mui-media-body {
@@ -2710,6 +2764,7 @@ table.monitor-table {
 .monitor-table tbody tr:nth-child(even) {background: #FFF}
 .monitor-table td, th{
     padding-left: 16px;
+    border: none;
 }
 @media screen and (max-width: 360px) {
     .monitor-table th, td {
@@ -2797,6 +2852,7 @@ div.pinch-zoom, div.pinch-zoom-container{
 }
 .tree-group {
     list-style: none;
+    background-color: #fff;
 }
 .tree-cell .tree-group {
     display: none;
@@ -2904,18 +2960,6 @@ div.pinch-zoom, div.pinch-zoom-container{
     font-size: 20px;
     display: inline-block;
     color: #D0D4D8;
-}
-.static-device-list .status {
-    position: absolute;
-    right: 10px;
-    top: 12px;
-    font-size: 14px;
-}
-.static-device-list .status.normal {
-    color: #44D36B;
-}
-.static-device-list .status.danger {
-    color: #FB6868;
 }
 .status-danger {
     color: #FB6868;
@@ -3198,14 +3242,38 @@ header .mui-title .dropdown-arrow:after {
 .page-bottom {
    padding-bottom: 54px !important;
 }
+.static-device-list {
+    list-style: none;
+}
 .static-device-list li {
     padding-left: 10px;
+    position: relative;
 }
 .static-device-list .device-body {
     border-bottom: #E6E6E6 1px solid;
     width: calc(100% - 24px);
-    padding: 12px 12px 12px 8px;
+    padding: 12px 12px 8px 8px;
     position: relative;
+    font-size: 14px;
+}
+.static-device-list .device-name {
+    margin-right: 30px;
+}
+.static-device-list .status {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    font-size: 13px;
+    margin-top: -10px;
+}
+.static-device-list .status.normal {
+    color: #44D36B;
+}
+.static-device-list .status.danger {
+    color: #FB6868;
+}
+.static-device-list .status.undo {
+    color: #969696;
 }
 .checkbox-square {
     width: 26px;
@@ -3620,4 +3688,70 @@ table.dataTable tbody th, table.dataTable tbody td {
     margin-left: calc(50% - 14px);
     position: absolute;
     z-index: 1;
+}
+.device-tree-selector .node-group {
+    background-image: url("../img/device-node.png");
+}
+.device-tree-selector .tree-cell>a.selected {
+    background-color: transparent;
+}
+.device-tree-selector .tree-cell>a.selected {
+    position: relative;
+}
+.device-tree-selector .tree-cell>a.selected:after {
+    display: inline-block;
+    content: '\e605';
+    font-family: "iconfont" !important;
+    font-size: 24px;
+    color: #007aff;
+}
+.my-picker .mui-poppicker-body{
+    border-top: none;
+    background-color: #fff;
+    height: 280px;
+}
+.my-picker.mui-poppicker {
+    transform: translateY(380px);
+}
+.my-picker.mui-poppicker.mui-active {
+    transform: translateY(0px);
+}
+.mui-checkbox.control-radio input[type=checkbox], .mui-radio.control-radio input[type=radio] {
+    top: -5px;
+}
+.mui-checkbox.control-radio input[type=checkbox]:before, .mui-radio.control-radio input[type=radio]:before {
+    font-size: 22px;
+}
+.mui-checkbox.control-radio label, .mui-radio.control-radio label {
+    padding: 8px 0 8px 48px;
+}
+.mui-bar-tab .mui-tab-item1.mui-active {
+    color: #007aff;
+}
+.mui-bar-tab .mui-tab-item1 {
+    display: table-cell;
+    overflow: hidden;
+    width: 1%;
+    height: 50px;
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: #929292;
+}
+
+.btn-status {
+    color: #fff;
+    font-size: 13px;
+    padding: 4px 8px;
+    line-height: 14px;
+}
+.btn-status.running {
+    background: #F28150;
+}
+.btn-status.closed {
+    background-color: #8B8B8B;
+}
+.mui-bar-tab {
+    box-shadow: none;
 }

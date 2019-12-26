@@ -7,23 +7,53 @@
                 <div style="color: #999; font-size: 13px;margin-top: -4px;" ng-if="!device.device_photo_src_link">暂无图片</div>
             </li>
             <li class="img qr"
-                style="background-image: url({{device.qr_photo_src_link}});background-position: center;background-repeat: no-repeat; background-size: contain;">
+                style="background-image: url({{device.qr_photo_src_link}});background-position: center;background-repeat: no-repeat; background-size: cover;">
                 <i class="icon icon-no-qr icon-36" ng-if="!device.qr_photo_src_link"></i>
                 <div style="color: #999; font-size: 13px;margin-top: -4px;" ng-if="!device.qr_photo_src_link">暂无二维码</div>
             </li>
         </ul>
     </div>
-    <div ng-if="device.properties">
-        <div class="info-group properties-group">
-            <li>
-                <label class="title">设备类型</label>
-                <span class="value">{{device.device_type}}</span>
-            </li>
-            <li ng-repeat="p in device.properties">
-                <label class="title">{{p.name}}</label>
-                <span class="value">{{p.value}}{{p.unit}}</span>
-            </li>
-        </div>
+    <div class="info-group properties-group">
+        <li>
+            <label class="title">设备类型</label>
+            <span class="value">{{device.product_type}}</span>
+        </li>
+        <li>
+            <label class="title">设备型号</label>
+            <span class="value">{{device.product_model_number}}</span>
+        </li>
+        <li>
+            <label class="title">设备编号</label>
+            <span class="value">{{device.device_number}}</span>
+        </li>
+        <li>
+            <label class="title">安装位置</label>
+            <span class="value">{{device.position_desp}}</span>
+        </li>
+        <li>
+            <label class="title">安装日期</label>
+            <span class="value">{{device.initial_time ? device.initial_time.substring(0, 10) : ''}}</span>
+        </li>
+        <li>
+            <label class="title">投运日期</label>
+            <span class="value">{{device.operation_time ? device.operation_time.substring(0, 10) : ''}}</span>
+        </li>
+        <li>
+            <label class="title">生产厂家</label>
+            <span class="value">{{device.provider_name}}</span>
+        </li>
+        <li>
+            <label class="title">巡检周期</label>
+            <span class="value">{{device.inspection_cycle}}天</span>
+        </li>
+        <li>
+            <label class="title">保养周期</label>
+            <span class="value">{{device.maintenance_cycle}}天</span>
+        </li>
+        <li ng-repeat="p in device.properties" ng-if="device.properties">
+            <label class="title">{{p.name}}</label>
+            <span class="value">{{p.value}}{{p.unit}}</span>
+        </li>
     </div>
     <div class="card no-padding sub-device-card" ng-repeat="item in device.items">
         <div class="card-header device-detail-title">{{item.name}}</div>
@@ -43,8 +73,5 @@
                 </div>
             </div>
         </div>
-    </div>
-    <div class="device-edit-btn" ng-click="startDeviceEditor()">
-        <i class="icon icon-24 icon-edit"></i>
     </div>
 </div>
