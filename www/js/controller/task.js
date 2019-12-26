@@ -81,7 +81,7 @@ function formatTaskStatusName(task) {   // 根据任务状态转换任务描述
     switch (task.stage_id){
         case TaskStatus.Closed:
             if (task.finish_time) {
-                stage = '已关闭';
+                stage = '已完成';
             } else {
                 stage = '已撤单';
             }
@@ -1008,7 +1008,7 @@ app.controller('TaskListCtrl', ['$scope', '$rootScope', 'scrollerService', 'user
             }]
         }, {
             title: '类型',
-            key: 'task_types',
+            key: 'task_type',
             items: [{
                 id: 'type_xunjian',
                 name: '巡检',
@@ -1311,7 +1311,6 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
     $scope.assignPickerVisible = false;     // 是否显示指派的对话框
     $scope.acceptPickerVisible = false;     // 是否显示接单时的对话框，可用于选择一起接单的维修工
     $scope.transferPickerVisible = false;     // 是否显示转单时的对话框，可用于选择一起接单的维修工
-    $scope.actions = [];
     var map = null, stationLongitude, stationLatitude;
     var innerPageQuery=null,historyState = [];    // 浏览器历史状态
     $scope.actions = [];
@@ -1332,7 +1331,7 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
                         url: '/OpsTeams/' + data.operator_team + '?with_user=true',
                         success: function (res) {
                             $scope.toAcceptUsers = [];
-                            res.forEach(function (user) {
+                            res.users.forEach(function (user) {
                                 if (user.account != userAccount) {
                                     $scope.toAcceptUsers.push(user);
                                 }
@@ -1447,7 +1446,7 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
             }
         });
         var end = new BMap.Point(stationLongitude, stationLatitude);
-        map.centerAndZoom(end, 15);
+        map.centerAndZoom(end, 12);
         map.enableScrollWheelZoom();
         var marker = new BMap.Marker(end);
         var mgr = new BMapLib.MarkerManager(map,{
@@ -1494,7 +1493,7 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
         // 设置巡检的阶段
         $scope.xunjianStage = '';
         var stageId= taskData.stage_id;
-        if (taskData.task_type_id === 11) {
+        if (taskData.task_type_id === TaskTypes.Xunjian) {
             switch (stageId) {
                 case TaskStatus.Arrived:
                     $scope.xunjianStage = 'toHandle';
@@ -1551,14 +1550,6 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
         }
     }
 
-    function cloneTaskList(){
-        var historyList = [];
-        for (var i in $scope.history){
-            historyList.push($scope.history[i]);
-        }
-        return historyList;
-    }
-
     $scope.postAction = function(actionType, description, images, cb) {
         $scope.commonPostAction(id, actionType, description, images, function (data) {
             refreshAfterPostAction(data);
@@ -1571,8 +1562,7 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
             url: '/opstasks/' + id + '/update_records',
             success: function (data) {
                 console.log('get task history success');
-                var history = cloneTaskList();
-                history = data;
+                var history = data;
                 if (data.length){
                     $scope.lastHistory = history[0];
                 }
@@ -2451,14 +2441,6 @@ app.controller('TaskDevicesHandlerCtrl',['$scope', 'routerService', 'ajax',  fun
             $.notify.toast('请至少选择一个设备', 1000);
             return;
         }
-        var params = [];
-        $scope.checkedSns.forEach(function (t) { 
-            params.push({
-                task_id: $scope.task.id,
-                device_sn: t,
-                status: '1'
-            })
-        });
         $scope.isSubmitting = true;
         ajax.post({
             url: '/opstasks/' + taskId + '/setDevicesPass?device_sns=' + $scope.checkedSns,

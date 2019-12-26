@@ -180,6 +180,9 @@
     color: #000;
     font-size: 15px;
 }
+.task-type.normal-dts{
+    color: rgb(239, 212, 61);
+}
 .task-type.ergent{
     color: rgba(220, 3, 3, 0.71);
 }
