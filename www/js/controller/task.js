@@ -1390,9 +1390,13 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
         $scope.updateRecordsVisible = !$scope.updateRecordsVisible;
     };
 
-    $scope.registerImageInfo = function (imageEleId) {
-        // 注册图片上传的信息
-        return $scope.inspectUploadImages;
+    // $scope.registerImageInfo = function (imageEleId) {
+    //     // 注册图片上传的信息
+    //     return $scope.inspectUploadImages;
+    // };
+
+    $scope.onUpdateInspectImages = function (images) {
+        $scope.inspectUploadImages = images;
     };
 
     function updateTaskInfo(data) {
@@ -1943,8 +1947,8 @@ app.controller('TaskHandlerUpload', ['$scope', '$timeout', function ($scope, $ti
     $scope.images = [];
     $scope.description = '';
 
-    $scope.registerImageInfo = function (imageEleId) {
-        return $scope.images;
+    $scope.onUpdateImages = function (images) {
+        $scope.images = images;
     };
 
     $scope.submitAndBack = function() {   //上传描述和图片
@@ -2159,8 +2163,8 @@ app.controller('TaskCreateCtrl', ['$scope', '$timeout', 'userService', 'routerSe
         });
     }
 
-    $scope.registerImageInfo = function (imageEleId) {
-        return $scope.imageList;
+    $scope.onUpdateImages = function (images) {
+        $scope.imageList = images;
     };
 
     $scope.openDeviceSelector = function () {
@@ -2541,8 +2545,8 @@ app.controller('TaskDeviceCheckCtrl', ['$scope', 'ajax', 'platformService', func
     $scope.enableSubmitDts = false;
 
 
-    $scope.registerImageInfo = function (imageEleId) {
-        return $scope.deviceImages;
+    $scope.onUpdateDeviceImages = function (images) {
+        $scope.deviceImages = images;
     };
     
     function getDeviceBySn(deviceSn) {

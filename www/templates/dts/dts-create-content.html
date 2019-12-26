@@ -49,7 +49,7 @@
                     <span ng-show="myForm.name.$error.required">缺陷描述不能为空</span>
                 </label>
             </div>
-            <div ng-include="'/templates/image-uploader.html'" ng-init="elementId='imageList'"></div>
+            <image-uploader images="images" on-update="onUpdateImages"></image-uploader>
         </div>
         <div class="mui-button-row" style="padding: 8px 16px;">
             <button type="submit" class="mui-btn mui-btn-primary mui-btn-block"

@@ -60,8 +60,8 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
         initMembers();
     }
 
-    $scope.registerImageInfo = function (imageEleId) {
-        return $scope.images;
+    $scope.onUpdateImages = function (images) {
+        $scope.images = images;
     };
 
     function getStaticDevicesOfStation() {

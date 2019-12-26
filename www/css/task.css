@@ -537,6 +537,7 @@
     background: transparent;
     border: none;
     margin: 0;
+    min-height: 44px;
 }
 .task-create-rows.mui-input-group .mui-input-row {
     min-height: 40px;
@@ -549,7 +550,7 @@
     color: red;
     margin-left: 115px;
     font-size: 12px;
-    margin-top: -16px;
+    margin-top: -8px;
     padding: 4px 0;
 }
 .task-create-rows input {

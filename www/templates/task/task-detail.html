@@ -253,7 +253,7 @@
         <div class="card" ng-if="taskData.task_type_id === TaskTypes.Xunjian && canHandle && taskData.stage_id === TaskStatus.Arrived">
             <div class="mui-card-content">
                 <div>拍照签到</div>
-                <div ng-include="'/templates/image-uploader.html'" ng-init="elementId='imageList'" style="margin-left: -16px;"></div>
+                <image-uploader images="inspectUploadImages" on-update="onUpdateInspectImages"></image-uploader>
             </div>
         </div>
         <div class="mui-card card" style="box-shadow: none;margin-top: 6px;" ng-if="handleResult">

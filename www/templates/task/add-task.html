@@ -106,7 +106,7 @@
         <div class="mui-input-row" style="margin-bottom: 5px;height: auto;">
             <textarea rows="2" placeholder="详细描述" name="desp" ng-model="taskData.desp"></textarea>
         </div>
-        <div ng-include="'/templates/image-uploader.html'" ng-init="elementId='imageList'"></div>
+        <image-uploader images="imageList" on-update="onUpdateImages"></image-uploader>
         <div class="mui-button-row" style="padding: 8px 16px;">
             <button type="submit" class="mui-btn mui-btn-primary mui-btn-block"
                     style="background-color: rgba(88,107,243,0.88);border-color: rgba(88,107,243,0.88);height: 42px;">提交</button>

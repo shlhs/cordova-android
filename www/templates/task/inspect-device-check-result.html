@@ -52,7 +52,7 @@
                     </div>
                 </li>
             </ul>
-            <div ng-include="'/templates/image-uploader.html'" ng-init="elementId='imageList'" style="margin-left: -16px;" ng-if="canEdit"></div>
+            <image-uploader images="deviceImages" on-update="onUpdateDeviceImages" ng-if="canEdit"></image-uploader>
             <div style="margin: 6px 0 4px 0;font-size: 13px;" ng-click="setEnableDtsSubmit()" ng-if="canEdit">
                 <label class="mui-checkbox mui-left checkbox-square">
                     <a class="checkbox" ng-class="{checked: enableSubmitDts}" style="font-size: 13px;"></a>

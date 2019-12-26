@@ -317,3 +317,166 @@ app.directive('teamAndHandlerSelector',[function(){
         }]
     };
 }]);
+
+var gCurrentImageContainerScope = null;     // 当前操作的图片的scope
+
+function onAndroid_taskImageImport(imageData, filename) {    // 从Android读取的图片
+    if (gCurrentImageContainerScope) {
+        gCurrentImageContainerScope.addImagesWithBase64(imageData, filename);
+    }
+}
+
+function onAndroid_taskImageDelete(filename) {       // Android手机上删除所选图片
+    if (gCurrentImageContainerScope) {
+        gCurrentImageContainerScope.deleteImageFromMobile(filename);
+    }
+}
+
+app.directive('imageUploader', [function () {
+    return {
+        replace: true,
+        restrict: 'E',
+        templateUrl: '/templates/image-uploader.html',
+        scope: {
+            images: '=',        // 图片列表，默认[]
+            rowCount: '@',      // 一行几个，默认一行4个
+            single: '@',        // 是否只允许一张照片，默认false
+            style: '@',
+            onUpdate: '='       // function(images) {}
+        },
+        controller:['$scope', '$attrs', 'routerService', function($scope, $attrs, routerService){
+            var files = {};
+            $scope.isSingle = $attrs.single === 'true';
+            $scope.style = $attrs.style || '';
+            $scope.itemStyle = '';
+            if ($attrs.rowCount) {
+                var width = (100 / $attrs.rowCount) + '%';
+                $scope.itemStyle += 'width: ' + width + ';padding-top: ' + width + ';';
+            }
+
+            $scope.isPC = IsPC();
+            $scope.useMobileGallery = window.android && window.android.openGallery;
+
+            function clearAllExist() {
+                window.android && window.android.clearSelectedPhotos && window.android.clearSelectedPhotos();      // 调用Android js接口，清除选择的所有照片
+            }
+
+            function fileExist(fileName) {
+                return files[fileName] !== undefined;
+            }
+
+            $scope.chooseImage = function (tmpFiles) {     // 选择图片
+                $scope.canDelete = true;
+                for (var i = 0; i < tmpFiles.length; i++) {
+                    var reader = new FileReader(), file=tmpFiles[i];
+                    // 如果文件已选择过，则无法再选择
+                    if (fileExist(file.name)) {
+                        continue;
+                    }
+                    reader.readAsDataURL(file);
+                    reader.onloadstart = function () {
+                        //用以在上传前加入一些事件或效果，如载入中...的动画效果
+                    };
+                    reader.onload = function (event) {
+                        var img = new Image();
+                        img.src = event.target.result;
+                        img.onload = function(){
+                            var dataUrl = imageHandler.compress(this, 75, file.orientation).src;
+                            if ($scope.isSingle) {
+                                $scope.images = [dataUrl];
+                            } else {
+                                files[file.name] = dataUrl;
+                                $scope.images.push(dataUrl);
+                            }
+                            notify();
+                            $scope.$apply();
+                        };
+                    };
+                }
+            };
+
+            $scope.addImagesWithBase64 = function (data, filename) {
+                $scope.canDelete = true;
+                if (fileExist(filename)) {
+                    return;
+                }
+                if ($scope.isSingle) {
+                    $scope.images = [data];
+                } else {
+                    files[filename] = data;
+                    $scope.images.push(data);
+                }
+                notify();
+                $scope.$apply();
+            };
+
+            $scope.deleteImageFromMobile = function (filename) {
+                if (files[filename] !== undefined) {
+                    var fileData = files[filename];
+                    var fileDataLen = fileData.length;
+                    delete files[filename];
+                    for (var i=0; i<$scope.images.length; i++) {
+                        var imageData = $scope.images[i];
+                        if (fileDataLen === imageData.length) {
+                            if (fileData === imageData) {
+                                $scope.images.splice(i, 1);
+                                break;
+                            }
+                        }
+                    }
+                    delete files[filename];
+                    notify();
+                    $scope.$apply();
+                }
+            };
+
+            $scope.openMobileGallery = function () {
+                gCurrentImageContainerScope = $scope;
+                if ($scope.isSingle) {
+                    clearAllExist();
+                    window.android.openGallery(1, 'onAndroid_taskImageImport', 'onAndroid_taskImageDelete');
+                } else {
+                    window.android.openGallery(9, 'onAndroid_taskImageImport', 'onAndroid_taskImageDelete');
+                }
+            };
+
+            $scope.deleteImage = function (index) {
+                // 删除某一张图片
+                // 找到index对应的文件名
+                var fileNames = Object.keys(files);
+                var imageData = $scope.images[index];
+                var imageDataLen = imageData.length;
+                for (var i=0; i<fileNames.length; i++) {
+                    var fileName = fileNames[i];
+                    var fileData = files[fileName];
+                    if (fileData.length === imageDataLen && fileData === imageData) {
+                        window.android && window.android.deleteSelectedPhoto && window.android.deleteSelectedPhoto(fileName);
+                        delete files[fileName];
+                        break;
+                    }
+                }
+                $scope.images.splice(index, 1);
+                notify();
+            };
+
+            $scope.openGallery = function (index) {
+                routerService.openPage($scope, '/templates/base-gallery.html', {
+                    index: index+1,
+                    images: $scope.images,
+                    canDelete: true,
+                    onDelete: $scope.deleteImage
+                }, {
+                    hidePrev: false
+                });
+            };
+
+            function notify() {
+                if ($scope.onUpdate) {
+                    $scope.onUpdate($scope.images);
+                }
+            }
+
+            clearAllExist();
+        }]
+    };
+}]);

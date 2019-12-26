@@ -1,12 +1,16 @@
-<ul class="image-list imageUploadContainer" ng-controller="ImageUploaderCtrl">
-    <li class="image-item" ng-repeat="file in images" ng-click="openGallery($index)">
+<ul class="image-list imageUploadContainer" style="{{style}}">
+    <li class="image-item" style="{{itemStyle}}" ng-repeat="file in images" ng-click="openGallery($index)" ng-if="!isSingle">
         <div class="content">
             <a class="img-file" style="background-image: url({{file}})"></a>
         </div>
     </li>
-    <li class="upload-item">
+    <li class="upload-item image-item" style="{{itemStyle}}">
+        <div class="content" ng-if="isSingle">
+            <a class="img-file" style="background-image: url({{images[0]}})" ng-if="images.length"></a>
+            <a class="img-file" ng-if="!images.length"></a>
+        </div>
         <div class="content">
-            <div class="image-uploader">
+            <div class="image-uploader" ng-class="{'no-image': isSingle && images.length}">
                 <input class="add-btn" type="file" accept="image/*" name="upload" multiple ng-model="chosenFile" onchange="angular.element(this).scope().chooseImage(this.files)" ng-if="!useMobileGallery">
                 <input class="add-btn" name="upload" ng-model="chosenFile" ng-click="openMobileGallery()" ng-if="useMobileGallery">
             </div>
