@@ -220,6 +220,7 @@ app.service('platformService', function () {
 
     this.getCloudHost = function () {
         return this.host + ':8099/v1';
+        // return 'http://127.0.0.1:8099/v1';
     };
 
     this.getAuthHost = function () {
@@ -275,7 +276,6 @@ app.service('platformService', function () {
     };
 
     this.host = this.getHost();
-    // this.host = 'http://127.0.0.1:8099/v1';
     this.thumbHost = this.getImageThumbHost();
 });
 

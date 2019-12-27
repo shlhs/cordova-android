@@ -1,7 +1,7 @@
 <ul class="image-list imageUploadContainer" style="{{style}}">
-    <li class="image-item" style="{{itemStyle}}" ng-repeat="file in images" ng-click="openGallery($index)" ng-if="!isSingle">
+    <li class="image-item" style="{{itemStyle}}" ng-repeat="data in images" ng-click="openGallery($index)" ng-if="!isSingle">
         <div class="content">
-            <a class="img-file" style="background-image: url({{file}})"></a>
+            <a class="img-file" style="background-image: url({{getImageUrl(data)}})"></a>
         </div>
     </li>
     <li class="upload-item image-item" style="{{itemStyle}}">

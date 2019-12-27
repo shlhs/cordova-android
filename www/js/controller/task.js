@@ -1390,15 +1390,6 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
         $scope.updateRecordsVisible = !$scope.updateRecordsVisible;
     };
 
-    // $scope.registerImageInfo = function (imageEleId) {
-    //     // 注册图片上传的信息
-    //     return $scope.inspectUploadImages;
-    // };
-
-    $scope.onUpdateInspectImages = function (images) {
-        $scope.inspectUploadImages = images;
-    };
-
     function updateTaskInfo(data) {
         $scope.taskData = formatTaskStatusName(data);
         $scope.taskData.expect_complete_time = data.expect_complete_time ? data.expect_complete_time.substring(0, 16) : '';
@@ -1614,21 +1605,21 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
         }
     };
 
-    $scope.showImageGallery = function (images, index) {        // 点击任务处理历史中的图片显示相册
-        var imageList = [];
-        for (var i=0; i<images.length; i++){
-            imageList.push(images[i]);
-        }
-        // $state.go('task.gallery', {index: index, images: imageList});
-
-        routerService.openPage($scope, '/templates/base-gallery.html', {
-            index: index,
-            images: imageList,
-            canDelete: false
-        }, {
-            hidePrev: false
-        });
-    };
+    // $scope.showImageGallery = function (images, index) {        // 点击任务处理历史中的图片显示相册
+    //     var imageList = [];
+    //     for (var i=0; i<images.length; i++){
+    //         imageList.push(images[i]);
+    //     }
+    //     // $state.go('task.gallery', {index: index, images: imageList});
+    //
+    //     routerService.openPage($scope, '/templates/base-gallery.html', {
+    //         index: index,
+    //         images: imageList,
+    //         canDelete: false
+    //     }, {
+    //         hidePrev: false
+    //     });
+    // };
 
     $scope.taskHandler = {
         execute : function (actionId) {
@@ -1947,10 +1938,6 @@ app.controller('TaskHandlerUpload', ['$scope', '$timeout', function ($scope, $ti
     $scope.images = [];
     $scope.description = '';
 
-    $scope.onUpdateImages = function (images) {
-        $scope.images = images;
-    };
-
     $scope.submitAndBack = function() {   //上传描述和图片
         if (!$scope.description && !$scope.images.length){
             mui.alert('评论与图片不能同时为空', '无法提交', function() {
@@ -2162,10 +2149,6 @@ app.controller('TaskCreateCtrl', ['$scope', '$timeout', 'userService', 'routerSe
             }
         });
     }
-
-    $scope.onUpdateImages = function (images) {
-        $scope.imageList = images;
-    };
 
     $scope.openDeviceSelector = function () {
         // 打开设备选择页面
@@ -2531,43 +2514,31 @@ app.controller('TaskDevicesHandlerCtrl',['$scope', 'routerService', 'ajax',  fun
 }]);
 
 // 巡检单个设备的处理页面
-app.controller('TaskDeviceCheckCtrl', ['$scope', 'ajax', 'platformService', function ($scope, ajax, platformService) {
+app.controller('TaskDeviceCheckCtrl', ['$scope', 'ajax', function ($scope, ajax) {
     var taskId = $scope.taskData.id;
     var deviceSn = $scope.device.device_sn;
     $scope.deviceName = $scope.device.device_name;
     $scope.result = {};
     $scope.checkItems = [];
-    $scope.deviceImages = [];
     $scope.total = 0;
     $scope.checked = 0;
     $scope.exception = 0;
     $scope.isLoading = false;
     $scope.enableSubmitDts = false;
+    $scope.expandItems = !$scope.canEdit;
 
-
-    $scope.onUpdateDeviceImages = function (images) {
-        $scope.deviceImages = images;
+    $scope.onExpandItems = function () {
+        $scope.expandItems = !$scope.expandItems;
     };
-    
-    function getDeviceBySn(deviceSn) {
-        ajax.get({
-            url: '/staticdevices?sn=' + deviceSn,
-            success: function (data) {
-
-            }
-        })
-    }
 
     function getDeviceCheckItems() {
         ajax.get({
             url: '/opstasks/' + taskId + '/devices/' + deviceSn + "?withCheckItems=true",
             success: function (data) {
                 if (data.photo_links) {
-                    var images = [];
-                    data.photo_links.split(',').forEach(function (t) {
-                        images.push(platformService.getCloudHost() + t);
-                    });
-                    data.images = images;
+                    data.images = data.photo_links ? data.photo_links.split(',') : [];
+                } else {
+                    data.images = [];
                 }
                 $scope.result = data;
                 if (data.check_items) {
@@ -2578,6 +2549,11 @@ app.controller('TaskDeviceCheckCtrl', ['$scope', 'ajax', 'platformService', func
                             if (item.pass === 2) {
                                 $scope.exception += 1;
                             }
+                        }
+                        if (item.photo_links) {
+                            item.images = item.photo_links.split(',');
+                        } else {
+                            item.images = [];
                         }
                     });
                     $scope.checkItems = data.check_items;
@@ -2603,6 +2579,7 @@ app.controller('TaskDeviceCheckCtrl', ['$scope', 'ajax', 'platformService', func
     $scope.saveDeviceResult = function () {
         if ($scope.result.status === '2' && !$scope.result.desp) {
             // 当设备状态设置为异常时，需要输入异常结果
+            $.notify.toast('请输入设备异常描述');
             return;
         }
         var checkItems = [];
@@ -2610,7 +2587,8 @@ app.controller('TaskDeviceCheckCtrl', ['$scope', 'ajax', 'platformService', func
             checkItems.push({
                 id: t.id,
                 pass: t.pass,
-                result_desp: t.result_desp
+                result_desp: t.result_desp,
+                images: t.images
             });
         });
         $.notify.progressStart();
@@ -2618,8 +2596,7 @@ app.controller('TaskDeviceCheckCtrl', ['$scope', 'ajax', 'platformService', func
             status: $scope.result.status || '1',
             check_items: checkItems,
             desp: $scope.result.desp,
-            images: $scope.deviceImages,
-            photo_links: $scope.result.photo_links
+            images: $scope.result.images,
         };
         ajax.post({
             url: '/opstasks/' + taskId + '/setDeviceResult/' + deviceSn,
@@ -2737,15 +2714,15 @@ app.controller('DeviceXunjianTaskDetailCtrl', ['$scope', 'ajax', 'platformServic
         });
     }
 
-    $scope.openGallery = function (index) {
-        routerService.openPage($scope, '/templates/base-gallery.html', {
-            index: index+1,
-            images: $scope.checkResult.images,
-            canDelete: false
-        }, {
-            hidePrev: false
-        });
-    };
+    // $scope.openGallery = function (index) {
+    //     routerService.openPage($scope, '/templates/base-gallery.html', {
+    //         index: index+1,
+    //         images: $scope.checkResult.images,
+    //         canDelete: false
+    //     }, {
+    //         hidePrev: false
+    //     });
+    // };
 
     getTaskDetail(taskId);
 }]);

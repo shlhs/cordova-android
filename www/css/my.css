@@ -2794,7 +2794,7 @@ color: #a7a7a7;
     color: #FB6868;
 }
 .text-normal {
-    color: #2fca59;
+    color: #44D36B;
 }
 
 .toast {
@@ -3455,4 +3455,20 @@ table.dataTable tbody th, table.dataTable tbody td {
     white-space: nowrap;
     text-overflow: ellipsis;
     color: #929292;
+}
+.navigate-down:after, .navigate-up:after {
+    font-family: Muiicons;
+    font-size: inherit;
+    line-height: 1;
+    display: inline-block;
+    text-decoration: none;
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    content: '\e583';
+}
+.navigate-down:after {
+    content: '\e581';
+}
+.navigate-up:after {
+    content: '\e580';
 }

@@ -332,7 +332,7 @@ function onAndroid_taskImageDelete(filename) {       // Android手机上删除�
     }
 }
 
-app.directive('imageUploader', [function () {
+app.directive('imageUploader', ['platformService', function (platformService) {
     return {
         replace: true,
         restrict: 'E',
@@ -342,9 +342,19 @@ app.directive('imageUploader', [function () {
             rowCount: '@',      // 一行几个，默认一行4个
             single: '@',        // 是否只允许一张照片，默认false
             style: '@',
-            onUpdate: '='       // function(images) {}
+            onUpdate: '='       // 不必需，function(images) {}
         },
         controller:['$scope', '$attrs', 'routerService', function($scope, $attrs, routerService){
+
+            $scope.getImageUrl = function (data) {
+                if (data.indexOf('data:image') === 0) {
+                    return data;
+                } else if (data.indexOf('http') === 0) {
+                    return data;
+                }
+                return platformService.getCloudHost() + data;
+            };
+
             var files = {};
             $scope.isSingle = $attrs.single === 'true';
             $scope.style = $attrs.style || '';
@@ -460,9 +470,13 @@ app.directive('imageUploader', [function () {
             };
 
             $scope.openGallery = function (index) {
+                var tmpImages = [];
+                $scope.images.forEach(function (data) {
+                    tmpImages.push($scope.getImageUrl(data));
+                });
                 routerService.openPage($scope, '/templates/base-gallery.html', {
                     index: index+1,
-                    images: $scope.images,
+                    images: tmpImages,
                     canDelete: true,
                     onDelete: $scope.deleteImage
                 }, {
@@ -477,6 +491,37 @@ app.directive('imageUploader', [function () {
             }
 
             clearAllExist();
+        }]
+    };
+}]);
+
+// 图片相册，不可编辑时使用
+app.directive('imageGridList', [function () {
+    return {
+        replace: true,
+        restrict: 'E',
+        templateUrl: '/templates/image-grid-list.html',
+        scope: {
+            images: '='        // 图片列表，默认[]
+        },
+        controller: ['$scope', '$attrs', 'routerService', 'platformService', function ($scope, $attrs, routerService, platformService) {
+            $scope.imageList = [];
+            if (!$scope.images) {
+                $scope.imageList = [];
+            } else {
+                $scope.images.forEach(function (url) {
+                    $scope.imageList.push(platformService.getCloudHost() + url);
+                });
+            }
+            $scope.openGallery = function (index) {
+                routerService.openPage($scope, '/templates/base-gallery.html', {
+                    index: index+1,
+                    images: $scope.imageList,
+                    canDelete: false,
+                }, {
+                    hidePrev: false
+                });
+            };
         }]
     };
 }]);
