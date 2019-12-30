@@ -28,7 +28,7 @@
                         <span class="task-info-label">站点名称：</span><span class="task-info-value">{{task.station_name}}</span>
                     </div>
                 </div>
-                <div class="task-btn-grab" ng-click="onClickGrab($event, task)"><label>抢单</label></div>
+                <!--<div class="task-btn-grab" ng-click="onClickGrab($event, task)"><label>抢单</label></div>-->
             </li>
         </ul>
         <div class="page-alert-wrapper" ng-if="tasks.length==0 && !isLoading">
@@ -39,7 +39,7 @@
         </div>
     </div>
 </div>
-<handlers-selector on-hide="onHideGrab" visible="userPickerVisible" callback="postGrabTask" users="toAcceptUsers" title="'您可以选择其他人协助'"></handlers-selector>
+<!--<handlers-selector on-hide="onHideGrab" visible="userPickerVisible" callback="postGrabTask" users="toAcceptUsers" title="'您可以选择其他人协助'"></handlers-selector>-->
 <div class="page-alert-wrapper" ng-if="isLoading">
     <div class="page-alert">
         <span class="mui-spinner"></span>

@@ -105,7 +105,7 @@
 </header>
 <div style="margin-top: 62px;">
     <!-- 正在处理的任务单 -->
-    <div class="mui-content" style="background-color: transparent; top: 62px;" ng-class="{'page-bottom': canHandle}" >
+    <div class="mui-content" style="background-color: transparent; top: 62px;" ng-class="{'page-bottom': canHandle}" ng-style="{'padding-bottom': actions.length>0 ? '50px' : ''}" >
         <div class="xunjian-devices-area horizontal" ng-if="xunjianStage === 'toStart'">
             <div class="name">应检设备数</div>
             <div class="count">{{taskData.device_record.length}}</div>
@@ -139,7 +139,7 @@
                         <span class="task-type" ng-class="{'ergent': taskData.task_type_id===3}">{{taskData.task_type_name}}:</span>
                         <span style="font-size: 14px;">{{taskData.no}}</span>
 
-                        <label class="btn-status" style="float: right;" ng-class="{running: taskData.stage_id!==TaskStatus.Closed, closed: taskData.stage_id===TaskStatus.Closed}">
+                        <label class="btn-status" style="float: right;" ng-class="{running: taskData.stage_id!=='已完成', closed: taskData.stage_name==='已完成'}">
                             {{taskData.isToStart ? '任务未开始' : taskData.stage_name}}
                         </label>
                     </div>
@@ -253,7 +253,7 @@
         <div class="card" ng-if="taskData.task_type_id === TaskTypes.Xunjian && canHandle && taskData.stage_id === TaskStatus.Arrived">
             <div class="mui-card-content">
                 <div>拍照签到</div>
-                <div ng-include="'/templates/image-uploader.html'" ng-init="elementId='imageList'" style="margin-left: -16px;"></div>
+                <image-uploader images="inspectUploadImages"></image-uploader>
             </div>
         </div>
         <div class="mui-card card" style="box-shadow: none;margin-top: 6px;" ng-if="handleResult">
@@ -307,38 +307,32 @@
                         <span class="time">{{taskComment.post_time}}</span>
                     </div>
                     <div class="comment">{{taskComment.comment}}</div>
-                    <ul class="image-list" style="padding: 0;" ng-if="taskComment.picture_list">
-                        <li class="image-item" ng-repeat="url in taskComment.picture_list" ng-click="showImageGallery(taskComment.picture_list, $index+1)">
-                            <div class="content">
-                                <img src="{{url}}" alt="">
-                            </div>
-                        </li>
-                    </ul>
+                    <image-grid-list images="taskComment.picture_list" ng-if="taskComment.picture_list"></image-grid-list>
                 </div>
             </div>
         </div>
         <div ng-if="taskData.stage_id===4 || taskData.stage_id === 5 || taskData.stage_id === 8"> <!-- 只有用户接单并到现场后才能看到报告 -->
-        <div class="mui-card card" ng-if="taskData.task_type_id===1" ng-click="gotoHandleTask()">
-            <div class="mui-card-content mui-navigate-right">
-                <div class="mui-card-content-inner" style="padding: 2px 6px;">
-                    <i class="icon icon-ms icon-security pull-left" style="margin-top:8px;margin-right:8px;"></i>
-                    <div class="mui-media-body" style="line-height: 40px;font-size: 1.2em;">
-                        查看安全运行检测报告
+            <div class="mui-card card" ng-if="taskData.task_type_id===1" ng-click="gotoHandleTask()">
+                <div class="mui-card-content mui-navigate-right">
+                    <div class="mui-card-content-inner" style="padding: 2px 6px;">
+                        <i class="icon icon-ms icon-security pull-left" style="margin-top:8px;margin-right:8px;"></i>
+                        <div class="mui-media-body" style="line-height: 40px;font-size: 1.2em;">
+                            查看安全运行检测报告
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="mui-card card" ng-if="taskData.task_type_id===6" ng-click="gotoHandleTask()">
-            <div class="mui-card-content mui-navigate-right">
-                <div class="mui-card-content-inner" style="padding: 2px 6px;">
-                    <i class="icon icon-ms icon-poweroff pull-left" style="margin-top:8px;margin-right:8px;"></i>
-                    <div class="mui-media-body" style="line-height: 40px;font-size: 1.2em;">
-                        查看停电维护报告
+            <div class="mui-card card" ng-if="taskData.task_type_id===6" ng-click="gotoHandleTask()">
+                <div class="mui-card-content mui-navigate-right">
+                    <div class="mui-card-content-inner" style="padding: 2px 6px;">
+                        <i class="icon icon-ms icon-poweroff pull-left" style="margin-top:8px;margin-right:8px;"></i>
+                        <div class="mui-media-body" style="line-height: 40px;font-size: 1.2em;">
+                            查看停电维护报告
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
         </div>
         <div ng-include="'/templates/task/task-update-history.html'"></div>
         <div class="card" ng-show="taskData.stage_id === TaskStatus.Competition && taskData.station_longitude">

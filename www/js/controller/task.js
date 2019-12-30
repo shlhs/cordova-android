@@ -1015,7 +1015,7 @@ app.controller('TaskListCtrl', ['$scope', '$rootScope', 'scrollerService', 'user
             }]
         }, {
             title: '类型',
-            key: 'task_types',
+            key: 'task_type',
             items: [{
                 id: 'type_xunjian',
                 name: '巡检',
@@ -1319,7 +1319,6 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
     $scope.assignPickerVisible = false;     // 是否显示指派的对话框
     $scope.acceptPickerVisible = false;     // 是否显示接单时的对话框，可用于选择一起接单的维修工
     $scope.transferPickerVisible = false;     // 是否显示转单时的对话框，可用于选择一起接单的维修工
-    $scope.actions = [];
     var map = null, stationLongitude, stationLatitude;
     var innerPageQuery=null,historyState = [];    // 浏览器历史状态
     $scope.actions = [];
@@ -1340,7 +1339,7 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
                         url: '/OpsTeams/' + data.operator_team + '?with_user=true',
                         success: function (res) {
                             $scope.toAcceptUsers = [];
-                            res.forEach(function (user) {
+                            res.users.forEach(function (user) {
                                 if (user.account != userAccount) {
                                     $scope.toAcceptUsers.push(user);
                                 }
@@ -1361,15 +1360,12 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
                                 $scope.taskComment = res[0];
                                 if ($scope.taskComment.pictures) {
                                     var pictureList = [];
-                                    $scope.taskComment.pictures.split(',').forEach(function (url) {
-                                        pictureList.push(platformService.getCloudHost() + url);
-                                    });
-                                    $scope.taskComment.picture_list = pictureList;
+                                    $scope.taskComment.picture_list = $scope.taskComment.pictures.split(',');
                                 }
                                 $scope.$apply();
                             }
                         }
-                    })
+                    });
                 }
             },
             error: function (a, b, c) {
@@ -1415,11 +1411,6 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
 
     $scope.onToggleUpdateRecord = function () {
         $scope.updateRecordsVisible = !$scope.updateRecordsVisible;
-    };
-
-    $scope.registerImageInfo = function (imageEleId) {
-        // 注册图片上传的信息
-        return $scope.inspectUploadImages;
     };
 
     function updateTaskInfo(data) {
@@ -1473,7 +1464,7 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
             }
         });
         var end = new BMap.Point(stationLongitude, stationLatitude);
-        map.centerAndZoom(end, 15);
+        map.centerAndZoom(end, 12);
         map.enableScrollWheelZoom();
         var marker = new BMap.Marker(end);
         var mgr = new BMapLib.MarkerManager(map,{
@@ -1520,7 +1511,7 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
         // 设置巡检的阶段
         $scope.xunjianStage = '';
         var stageId= taskData.stage_id;
-        if (taskData.task_type_id === 11) {
+        if (taskData.task_type_id === TaskTypes.Xunjian) {
             switch (stageId) {
                 case TaskStatus.Arrived:
                     $scope.xunjianStage = 'toHandle';
@@ -1577,14 +1568,6 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
         }
     }
 
-    function cloneTaskList(){
-        var historyList = [];
-        for (var i in $scope.history){
-            historyList.push($scope.history[i]);
-        }
-        return historyList;
-    }
-
     $scope.postAction = function(actionType, description, images, cb) {
         $scope.commonPostAction(id, actionType, description, images, function (data) {
             refreshAfterPostAction(data);
@@ -1597,8 +1580,7 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
             url: '/opstasks/' + id + '/update_records',
             success: function (data) {
                 console.log('get task history success');
-                var history = cloneTaskList();
-                history = data;
+                var history = data;
                 if (data.length){
                     $scope.lastHistory = history[0];
                 }
@@ -1646,21 +1628,21 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
         }
     };
 
-    $scope.showImageGallery = function (images, index) {        // 点击任务处理历史中的图片显示相册
-        var imageList = [];
-        for (var i=0; i<images.length; i++){
-            imageList.push(images[i]);
-        }
-        // $state.go('task.gallery', {index: index, images: imageList});
-
-        routerService.openPage($scope, '/templates/base-gallery.html', {
-            index: index,
-            images: imageList,
-            canDelete: false
-        }, {
-            hidePrev: false
-        });
-    };
+    // $scope.showImageGallery = function (images, index) {        // 点击任务处理历史中的图片显示相册
+    //     var imageList = [];
+    //     for (var i=0; i<images.length; i++){
+    //         imageList.push(images[i]);
+    //     }
+    //     // $state.go('task.gallery', {index: index, images: imageList});
+    //
+    //     routerService.openPage($scope, '/templates/base-gallery.html', {
+    //         index: index,
+    //         images: imageList,
+    //         canDelete: false
+    //     }, {
+    //         hidePrev: false
+    //     });
+    // };
 
     $scope.getUserHeadImage = function (user) {
         if (!user || !user.photo_data) {
@@ -2022,10 +2004,6 @@ app.controller('TaskHandlerUpload', ['$scope', '$timeout', function ($scope, $ti
     $scope.images = [];
     $scope.description = '';
 
-    $scope.registerImageInfo = function (imageEleId) {
-        return $scope.images;
-    };
-
     $scope.submitAndBack = function() {   //上传描述和图片
         if (!$scope.description && !$scope.images.length){
             mui.alert('评论与图片不能同时为空', '无法提交', function() {
@@ -2237,10 +2215,6 @@ app.controller('TaskCreateCtrl', ['$scope', '$timeout', 'userService', 'routerSe
             }
         });
     }
-
-    $scope.registerImageInfo = function (imageEleId) {
-        return $scope.imageList;
-    };
 
     $scope.openDeviceSelector = function () {
         // 打开设备选择页面
@@ -2520,14 +2494,6 @@ app.controller('TaskDevicesHandlerCtrl',['$scope', 'routerService', 'ajax',  fun
             $.notify.toast('请至少选择一个设备', 1000);
             return;
         }
-        var params = [];
-        $scope.checkedSns.forEach(function (t) { 
-            params.push({
-                task_id: $scope.task.id,
-                device_sn: t,
-                status: '1'
-            })
-        });
         $scope.isSubmitting = true;
         ajax.post({
             url: '/opstasks/' + taskId + '/setDevicesPass?device_sns=' + $scope.checkedSns,
@@ -2614,43 +2580,31 @@ app.controller('TaskDevicesHandlerCtrl',['$scope', 'routerService', 'ajax',  fun
 }]);
 
 // 巡检单个设备的处理页面
-app.controller('TaskDeviceCheckCtrl', ['$scope', 'ajax', 'platformService', function ($scope, ajax, platformService) {
+app.controller('TaskDeviceCheckCtrl', ['$scope', 'ajax', function ($scope, ajax) {
     var taskId = $scope.taskData.id;
     var deviceSn = $scope.device.device_sn;
     $scope.deviceName = $scope.device.device_name;
     $scope.result = {};
     $scope.checkItems = [];
-    $scope.deviceImages = [];
     $scope.total = 0;
     $scope.checked = 0;
     $scope.exception = 0;
     $scope.isLoading = false;
     $scope.enableSubmitDts = false;
+    $scope.expandItems = !$scope.canEdit;
 
-
-    $scope.registerImageInfo = function (imageEleId) {
-        return $scope.deviceImages;
+    $scope.onExpandItems = function () {
+        $scope.expandItems = !$scope.expandItems;
     };
-    
-    function getDeviceBySn(deviceSn) {
-        ajax.get({
-            url: '/staticdevices?sn=' + deviceSn,
-            success: function (data) {
-
-            }
-        })
-    }
 
     function getDeviceCheckItems() {
         ajax.get({
             url: '/opstasks/' + taskId + '/devices/' + deviceSn + "?withCheckItems=true",
             success: function (data) {
                 if (data.photo_links) {
-                    var images = [];
-                    data.photo_links.split(',').forEach(function (t) {
-                        images.push(platformService.getCloudHost() + t);
-                    });
-                    data.images = images;
+                    data.images = data.photo_links ? data.photo_links.split(',') : [];
+                } else {
+                    data.images = [];
                 }
                 $scope.result = data;
                 if (data.check_items) {
@@ -2661,6 +2615,11 @@ app.controller('TaskDeviceCheckCtrl', ['$scope', 'ajax', 'platformService', func
                             if (item.pass === 2) {
                                 $scope.exception += 1;
                             }
+                        }
+                        if (item.photo_links) {
+                            item.images = item.photo_links.split(',');
+                        } else {
+                            item.images = [];
                         }
                     });
                     $scope.checkItems = data.check_items;
@@ -2686,6 +2645,7 @@ app.controller('TaskDeviceCheckCtrl', ['$scope', 'ajax', 'platformService', func
     $scope.saveDeviceResult = function () {
         if ($scope.result.status === '2' && !$scope.result.desp) {
             // 当设备状态设置为异常时，需要输入异常结果
+            $.notify.toast('请输入设备异常描述');
             return;
         }
         var checkItems = [];
@@ -2693,7 +2653,8 @@ app.controller('TaskDeviceCheckCtrl', ['$scope', 'ajax', 'platformService', func
             checkItems.push({
                 id: t.id,
                 pass: t.pass,
-                result_desp: t.result_desp
+                result_desp: t.result_desp,
+                images: t.images
             });
         });
         $.notify.progressStart();
@@ -2701,8 +2662,7 @@ app.controller('TaskDeviceCheckCtrl', ['$scope', 'ajax', 'platformService', func
             status: $scope.result.status || '1',
             check_items: checkItems,
             desp: $scope.result.desp,
-            images: $scope.deviceImages,
-            photo_links: $scope.result.photo_links
+            images: $scope.result.images,
         };
         ajax.post({
             url: '/opstasks/' + taskId + '/setDeviceResult/' + deviceSn,
@@ -2820,15 +2780,15 @@ app.controller('DeviceXunjianTaskDetailCtrl', ['$scope', 'ajax', 'platformServic
         });
     }
 
-    $scope.openGallery = function (index) {
-        routerService.openPage($scope, '/templates/base-gallery.html', {
-            index: index+1,
-            images: $scope.checkResult.images,
-            canDelete: false
-        }, {
-            hidePrev: false
-        });
-    };
+    // $scope.openGallery = function (index) {
+    //     routerService.openPage($scope, '/templates/base-gallery.html', {
+    //         index: index+1,
+    //         images: $scope.checkResult.images,
+    //         canDelete: false
+    //     }, {
+    //         hidePrev: false
+    //     });
+    // };
 
     getTaskDetail(taskId);
 }]);
@@ -2838,12 +2798,8 @@ app.controller('TaskCommentCtrl', ['$scope', 'ajax', 'platformService', function
 
     var comment = $scope.comment;
     $scope.score = comment.score || 5;
-    $scope.imageList = comment.picture_list;
+    $scope.imageList = comment.picture_list || [];
     $scope.description = comment.comment;
-
-    $scope.registerImageInfo = function (imageEleId) {
-        return $scope.imageList;
-    };
 
     $scope.setScore = function (i) {
         $scope.score = i;
