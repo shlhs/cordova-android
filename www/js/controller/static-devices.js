@@ -270,10 +270,6 @@ app.controller('StaticDeviceEditCtrl', ['$scope', 'ajax', 'routerService', 'plat
     $scope.showTab = 'info';
     $scope.editObj = {};
 
-    $scope.registerImageInfo = function (imageEleId) {
-      return $scope.deviceImages;
-    };
-
     $scope.changeTabType = function ($event, tab) {
         $scope.showTab = tab;
     };

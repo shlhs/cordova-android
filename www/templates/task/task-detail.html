@@ -105,7 +105,7 @@
 </header>
 <div style="margin-top: 62px;">
     <!-- 正在处理的任务单 -->
-    <div class="mui-content" style="background-color: transparent; top: 62px;" ng-class="{'page-bottom': canHandle}" >
+    <div class="mui-content" style="background-color: transparent; top: 62px;" ng-class="{'page-bottom': canHandle}" ng-style="{'padding-bottom': actions.length>0 ? '50px' : ''}" >
         <div class="xunjian-devices-area horizontal" ng-if="xunjianStage === 'toStart'">
             <div class="name">应检设备数</div>
             <div class="count">{{taskData.device_record.length}}</div>
@@ -139,7 +139,7 @@
                         <span class="task-type" ng-class="{'ergent': taskData.task_type_id===3}">{{taskData.task_type_name}}:</span>
                         <span style="font-size: 14px;">{{taskData.no}}</span>
 
-                        <label class="btn-status" style="float: right;" ng-class="{running: taskData.stage_id!==TaskStatus.Closed, closed: taskData.stage_id===TaskStatus.Closed}">
+                        <label class="btn-status" style="float: right;" ng-class="{running: taskData.stage_id!=='已完成', closed: taskData.stage_name==='已完成'}">
                             {{taskData.isToStart ? '任务未开始' : taskData.stage_name}}
                         </label>
                     </div>
@@ -253,7 +253,7 @@
         <div class="card" ng-if="taskData.task_type_id === TaskTypes.Xunjian && canHandle && taskData.stage_id === TaskStatus.Arrived">
             <div class="mui-card-content">
                 <div>拍照签到</div>
-                <div ng-include="'/templates/image-uploader.html'" ng-init="elementId='imageList'" style="margin-left: -16px;"></div>
+                <image-uploader images="inspectUploadImages"></image-uploader>
             </div>
         </div>
         <div class="mui-card card" style="box-shadow: none;margin-top: 6px;" ng-if="handleResult">
@@ -282,6 +282,32 @@
                             </li>
                         </ul>
                     </div>
+                </div>
+            </div>
+        </div>
+        <div class="mui-card card" ng-if="taskComment != null">
+            <div class="mui-card-content">
+                <div class="mui-card-content-inner task-comment" style="padding: 0;">
+                    <div class="comment-title">用户评价：
+                        <div class="stars small">
+                           <span ng-repeat="i in [1,2,3,4,5]" class="star" ng-class="{'empty': !taskComment.score || score < i, 'full': taskComment.score >= i}">
+                            </span>
+                            <span class="desp">{{getScoreDesp()}}</span>
+                        </div>
+                        <a ng-click="taskHandler.commentTask()" class="iconfont anticon-edit"></a>
+                    </div>
+                    <div ng-if="taskComment.update_by" class="task-comment-user">
+                        <img ng-src="{{getUserHeadImage(taskComment.update_user)}}" class="head" />
+                        <span class="name">{{taskComment.update_user.name}}</span>
+                        <span class="time">{{taskComment.update_time}}</span>
+                    </div>
+                    <div ng-if="!taskComment.update_by" class="task-comment-user">
+                        <img ng-src="{{getUserHeadImage(taskComment.post_user)}}" class="head" />
+                        <span class="name">{{taskComment.post_user.name}}</span>
+                        <span class="time">{{taskComment.post_time}}</span>
+                    </div>
+                    <div class="comment">{{taskComment.comment}}</div>
+                    <image-grid-list images="taskComment.picture_list" ng-if="taskComment.picture_list"></image-grid-list>
                 </div>
             </div>
         </div>
