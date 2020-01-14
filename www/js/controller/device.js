@@ -567,7 +567,7 @@ app.controller('DeviceTreeCommonCtrl', ['$scope', function ($scope) {
     };
 }]);
 
-app.controller('DeviceMonitorListCtrl', ['$scope', 'ajax', function ($scope, ajax) {       // 检测设备列表页
+app.controller('DeviceMonitorListCtrl', ['$scope', 'ajax', 'platformService', function ($scope, ajax, platformService) {       // 检测设备列表页
     var stationSn = GetQueryString('sn');
     $scope.deviceDatas = [];
     $scope.treeData = [];
@@ -607,8 +607,9 @@ app.controller('DeviceMonitorListCtrl', ['$scope', 'ajax', function ($scope, aja
         $scope.isLoading = true;
         $scope.loadingFailed = false;
         ajax.get({
-            url: '/stations/' + stationSn + '/devicetree',
-            success: function (data) {
+            url: platformService.getDeviceMgmtHost() + '/management/devices?&station_sn=' + stationSn,
+            success: function (res) {
+                var data = res.data;
                 $scope.isLoading = false;
                 // 默认状态为"未知"
                 data.forEach(function (d) {
