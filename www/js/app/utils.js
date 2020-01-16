@@ -83,6 +83,7 @@ var apiLocation = {
     start: function (cb) {
         this.callback = cb;
         window.android && window.android.startLocation();
+        cb(121.366648,31.142033);
     },
     setLocation: function (longtitude, latitude, error) {
         if (this.callback){
@@ -215,7 +216,9 @@ function formatToTreeData(data) {
     }
 
     // 根据父节点的indexs对树再次进行排序
-    _indexs_sort(formatted[0]);
+    if (formatted.length) {
+        _indexs_sort(formatted[0]);
+    }
     return formatted;
 }
 

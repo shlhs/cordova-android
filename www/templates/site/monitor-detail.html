@@ -18,7 +18,6 @@
             width: 100%;
             padding: 0;
             margin: 0;
-            background-color: #fff;
         }
         iframe{
             border: 0;
@@ -39,7 +38,7 @@
 <!--<header class="mui-bar mui-bar-transparent" style="z-index: 1000;">-->
     <!--<a class="mui-icon  mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()" style="color: #fff;"></a>-->
 <!--</header>-->
-<div style="position:relative;width: 100%;height: 100%;overflow: hidden;">
+<div style="position:relative;width: 100%;height: 100%;overflow: hidden;" id="container">
     <div id="targetObj" style="width: 100%;height: 100%;position:relative;transform-origin:center;"  >
         <div style="width: 100%;height: 100%;">
             <div style="width: 100%;height: 100%;">
@@ -47,7 +46,7 @@
             </div>
         </div>
     </div>
-    <div style="position: fixed;right: 6px;top: 6px;width: 36px;height: 36px;padding: 6px;" onclick="pageBack()">
+    <div style="position: fixed;right: 6px;top: 6px;width: 36px;height: 36px;padding: 6px;" onclick="back()">
         <div style="background-color: rgba(232, 232, 232, 0.65);opacity: 0.7;width: 24px;height: 24px;">
             <img src="/img/light/64X64/close.png" style="width: 16px;height: 16px;margin: 4px 0 0 4px;display: inline-block;">
         </div>
@@ -59,12 +58,34 @@
     <!--<script src="../../components/pinch-zoom-js/dist/underscore.js"></script>-->
     <!--<script src="../../components/pinch-zoom-js/dist/pinch-zoom.js"></script>-->
     <script>
+        function GetQueryString(name, url)
+        {
+            var search = window.location.search;
+            if (url) {
+                search = url.substring(url.indexOf('?'));
+            }
+            var search = search.substring(1), params = search.split('&');
+            var index, param;
+            for (var i=0; i<params.length; i++){
+                param = params[i];
+                index = param.indexOf('=');
+                if (index > 0 && param.substring(0, index) == name){
+                    return decodeURIComponent(param.substring(index+1));
+                }
+            }
+            return null;
+        }
+        var backgroundColor = GetQueryString('background');
+        if (backgroundColor) {
+            document.getElementById('container').style.backgroundColor = '#' + backgroundColor;
+        }
 
-        function pageBack() {
+        var historyLen = history.length-1;
+        function back() {
             if (window.android){
                 location.href = '/app/home';
-            }else{
-                history.back();
+            } else {
+                window.history.go(-(history.length-historyLen));     // 站点列表页认为是history的第一个记录
             }
         }
 
@@ -74,7 +95,7 @@
                 frames[i].postMessage('Bearer' + (getStorageItem('accountToken') || ''), '*');
             }
         }, false);
-        var url = location.search.substring(location.search.lastIndexOf('http://'));
+        var url = GetQueryString('url');
         url += "&mobile=1";
         window.onload = function () {
             var iframe = document.getElementById('iframe');

@@ -29,6 +29,10 @@
     height: 36px !important;;
     width: 36px !important;;
 }
+.icon-40{
+    height: 40px !important;;
+    width: 40px !important;;
+}
 .icon-24{
     height: 24px !important;;
     width: 24px !important;;
@@ -46,6 +50,9 @@
 }
 .icon-dashboard-dts{
     background-image: url("../img/dashboard/icon-dts@2x.png");
+}
+.icon-add-task {
+    background-image: url("../img/dashboard/icon-add-task.png");
 }
 .icon-events{
     background-image: url("../img/light/icon-events@2x.png");
@@ -271,4 +278,31 @@
 .icon-ipc-record {
     background-image: url("../img/ipc-record.png");
     background-size: contain;
+}
+.icon-dashboard-energy-overview {
+    background-image: url("../img/dashboard/icon-energy-overview.png");
+}
+.icon-dashboard-energy-monitor {
+    background-image: url("../img/dashboard/icon-energy-monitor.png");
+}
+.icon-dashboard-energy-cost-analysis {
+    background-image: url("../img/dashboard/icon-energy-cost-analysis.png");
+}
+.icon-dashboard-energy-charge {
+    background-image: url("../img/dashboard/icon-energy-charge.png");
+}
+.icon-dashboard-energy-max-demand {
+    background-image: url("../img/dashboard/icon-energy-max-demand.png");
+}
+.icon-dashboard-energy-quality-report {
+    background-image: url("../img/dashboard/icon-energy-report.png");
+}
+.icon-archives-new {
+    background-image: url("../img/dashboard/icon-archives-new.png");
+}
+.icon-device-monitor-new {
+    background-image: url("../img/dashboard/icon-device-monitor-new.png");
+}
+.icon-edit {
+    background-image: url("../img/light/64X64/edit.png");
 }
