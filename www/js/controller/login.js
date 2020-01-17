@@ -3,7 +3,7 @@
 /**
  * Created by liucaiyun on 2017/7/23.
  */
-var gPublicApiHost = 'http://47.105.142.12:8090';        // 博仕电务
+var gPublicApiHost = 'http://47.105.142.128:8090';        // 博仕电务
 
 app.controller('LoginCtrl', ['$scope', '$timeout', 'platformService', 'userService', '$state', '$http', 'ajax', function ($scope, $timeout, platformService, userService, $state, $http, ajax) {
     $scope.error = '';
