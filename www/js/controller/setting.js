@@ -7,7 +7,7 @@ app.controller('SettingCtrl', function ($scope, platformService, userService, $s
     $scope.user = userService.user;
     $scope.company = null;
     $scope.version = GetQueryString('version') || '0.0.0';
-    $scope.appName = GetQueryString('appName') || '快控电管家';
+    $scope.appName = GetQueryString('appName') || 'CK云上运维';
 
     $scope.logout = function () {
         userService.setPassword('');
