@@ -567,7 +567,7 @@ app.controller('DeviceTreeCommonCtrl', ['$scope', function ($scope) {
     };
 }]);
 
-app.controller('DeviceMonitorListCtrl', ['$scope', 'ajax', function ($scope, ajax) {       // 检测设备列表页
+app.controller('DeviceMonitorListCtrl', ['$scope', 'ajax', 'platformService', function ($scope, ajax, platformService) {       // 检测设备列表页
     var stationSn = GetQueryString('sn');
     $scope.deviceDatas = [];
     $scope.treeData = [];
@@ -607,8 +607,9 @@ app.controller('DeviceMonitorListCtrl', ['$scope', 'ajax', function ($scope, aja
         $scope.isLoading = true;
         $scope.loadingFailed = false;
         ajax.get({
-            url: '/stations/' + stationSn + '/devicetree',
-            success: function (data) {
+            url: platformService.getDeviceMgmtHost() + '/management/devices?&station_sn=' + stationSn,
+            success: function (res) {
+                var data = res.data;
                 $scope.isLoading = false;
                 // 默认状态为"未知"
                 data.forEach(function (d) {
@@ -824,9 +825,6 @@ app.controller('DeviceRemoteControlCtrl', ['$scope', '$interval', 'routerService
         $scope.isLoading = true;
         ajax.get({
             url: platformService.getDeviceMgmtHost() + '/management/devices/' + $scope.device_sn + '/variables',
-            data: {
-                type: 'Digital'
-            },
             success: function (response) {
                 $scope.isLoading = false;
                 // 状态量在前，模拟量在后
@@ -883,7 +881,7 @@ app.controller('DeviceRemoteControlCtrl', ['$scope', '$interval', 'routerService
                             if (v.type === 'Digital') {
                                 v.value = data[i].data > 0 ? '1' : '0';
                             } else {
-                                v.value = data[i].data + (data[i].unit || '');
+                                v.value = (data[i].data === null ? '' : data[i].data) + (data[i].unit || '');
                             }
                             exist = true;
                             break;
@@ -946,6 +944,7 @@ app.controller('DeviceRemoteControlCtrl', ['$scope', '$interval', 'routerService
 
 app.controller('DeviceRemoteControlConfirmCtrl', ['$scope', 'ajax', function ($scope, ajax) {
     $scope.okEnable = $scope.controlObj.type === 'Digital' ? true : false;
+    $scope.inputError = '';
     $scope.error = '';
     $scope.isSubmitting = false;
     $scope.inputValid = true;
@@ -958,7 +957,7 @@ app.controller('DeviceRemoteControlConfirmCtrl', ['$scope', 'ajax', function ($s
 
     $scope.onInputValidate = function (value) {
         newValue = value;
-        $scope.error = '';
+        $scope.inputError = '';
     };
 
     $scope.onPwdChange = function (value) {
@@ -987,10 +986,10 @@ app.controller('DeviceRemoteControlConfirmCtrl', ['$scope', 'ajax', function ($s
         }
         if ($scope.controlObj.type === 'Analog') {
             if (!newValue) {
-                $scope.error = '请输入需要设置的值';
+                $scope.inputError = '请输入需要设置的值';
                 return;
             } else if (!isNumber(newValue)) {
-                $scope.error = '请输入数字';
+                $scope.inputError = '请输入数字';
                 return;
             }
         }
@@ -1225,6 +1224,8 @@ app.controller('HistoryVarCtrl', ['$scope', 'ajax', function ($scope, ajax) {
             },
             tooltip: {
                 trigger: 'axis',
+                alwaysShowContent: false,
+                confine: true,
             },
             xAxis: {
                 type: 'category',
@@ -1263,6 +1264,7 @@ app.controller('HistoryVarCtrl', ['$scope', 'ajax', function ($scope, ajax) {
             },
             series: series,
         };
+        echarts.dispose(document.getElementById('chartContainer'));
         echarts.init(document.getElementById('chartContainer')).setOption(option);
     }
 }]);

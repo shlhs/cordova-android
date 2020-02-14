@@ -3,8 +3,10 @@
         <div class="mui-popup-inner">
             <div class="form-group" ng-if="controlObj.type==='Analog'">
                 <label>设置变量【{{controlObj.name}}】的值为：</label>
-                <input type="text" ng-model="newValue" ng-change="onInputValidate(newValue)">
-                <div style="color: red;font-size: 12px;">{{error}}</div>
+                <input type="text" ng-model="newValue" ng-change="onInputValidate(newValue)" autocomplete="off">
+                <div class="text-danger" ng-if="inputError" style="margin-top: 8px;text-align: left;font-size: 12px;">{{inputError}}</div>
+                <label style="margin-top: 10px;color: #444;">出于安全考虑，需要再次验证登录密码：</label>
+                <input placeholder="请输入您的登录密码" autocomplete="new-password" style="font-size: 14px" type="password" ng-model="pwd" ng-change="onPwdChange(pwd)">
             </div>
             <div class="form-group" ng-if="controlObj.type==='Digital'">
                 <label style="color: #333;">将对变量【{{controlObj.name}}】进行以下操作！</label>
@@ -17,7 +19,7 @@
                     <input name="digitalValue" type="radio" id="radio1" ng-checked="controlObj.value === '0'" ng-model="controlObj.value">
                 </div>
                 <label style="margin-top: 10px;color: #444;">出于安全考虑，需要再次验证登录密码：</label>
-                <input placeholder="请输入您的登录密码" style="font-size: 14px" type="password" ng-model="pwd" ng-change="onPwdChange(pwd)">
+                <input placeholder="请输入您的登录密码" autocomplete="new-password" style="font-size: 14px" type="password" ng-model="pwd" ng-change="onPwdChange(pwd)">
             </div>
             <div class="text-danger" ng-if="error" style="margin-top: 8px;text-align: left;font-size: 12px;">{{error}}</div>
         </div>
