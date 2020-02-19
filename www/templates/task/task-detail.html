@@ -338,7 +338,7 @@
         <div class="card" ng-show="taskData.stage_id === TaskStatus.Competition && taskData.station_longitude">
             <div id="map" style="height: 300px;width: 100%;"></div>
         </div>
-        <nav class="mui-bar mui-bar-tab bg-transparent">
+        <nav class="mui-bar mui-bar-tab bg-transparent" ng-if="actions.length">
             <a class="mui-tab-item mui-active mui-segmented-control-vertical" href="#" ng-repeat="action in actions">
                 <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-btn-outlined mui-control-item task-btn"
                         ng-click="taskHandler.execute(action.id)" style="background-color: {{action.color}}">{{action.name}}</button>
