@@ -1224,6 +1224,8 @@ app.controller('HistoryVarCtrl', ['$scope', 'ajax', function ($scope, ajax) {
             },
             tooltip: {
                 trigger: 'axis',
+                alwaysShowContent: false,
+                confine: true,
             },
             xAxis: {
                 type: 'category',
@@ -1262,6 +1264,7 @@ app.controller('HistoryVarCtrl', ['$scope', 'ajax', function ($scope, ajax) {
             },
             series: series,
         };
+        echarts.dispose(document.getElementById('chartContainer'));
         echarts.init(document.getElementById('chartContainer')).setOption(option);
     }
 }]);
