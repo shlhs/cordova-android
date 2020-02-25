@@ -407,7 +407,9 @@ app.controller('EventListCtrl', ['$scope', 'scrollerService', 'userService', 'aj
             page_start:0,
             page_len: 500,
             secho: 1,
-            status: checked
+            status: checked,
+            starttime: moment().subtract(3, 'months').format('YYYY-MM-DDTHH:mm:ss.000') + 'Z',
+            endtime: moment().format('YYYY-MM-DDTHH:mm:ss.000') + 'Z'
         };
         if ($scope.isDevice){
             params.deviceSn = $scope.sn;
