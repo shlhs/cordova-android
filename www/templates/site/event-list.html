@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="../../css/setting.css">
     <!--<script type="text/javascript" src="../../cordova.js"></script>-->
     <!--<script type="text/javascript" src="../../cordova_plugins.js"></script>-->
-    <script type="text/javascript" src="../../components/libs/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="../../components/libs/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
     <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
     <script type="text/javascript" src="../../components/angular-animate/angular-animate.js"></script>
@@ -60,7 +60,7 @@
                             {{e.info}}
                         </div>
                         <div style="font-size: 13px;">
-                            <a class="event-task" ng-click="goToCreateTaskHtml($event, e.id, e.info)" ng-if="hasOpsAuth">发布任务</a>
+                            <a class="event-task" ng-click="goToCreateTaskHtml($event, e)" ng-if="hasOpsAuth">发布任务</a>
                             <a class="close" ng-click="postCheckEventAction($event, e.id)">确认</a>
                             <div style="clear: both"></div>
                         </div>
@@ -91,9 +91,7 @@
 <script src="../../components/fastclick-master/lib/fastclick.js"></script>
 <script src="../../js/my/notify.js"></script>
 <script src="../../components/dropload-gh-pages/dist/dropload.min.js"></script>
+<script src="../../components/moment.min.js"></script>
 <script type="text/javascript" src="../../js/controller/sites.js"></script>
-<script type="text/javascript" src="../../js/controller/device.js"></script>
-<script src="../../js/controller/monitor.js"></script>
-<script src="../../js/controller/kanban.js"></script>
 </body>
 </html>

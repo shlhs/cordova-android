@@ -1,7 +1,7 @@
 "use strict";
 
 
-app.controller('MonitorListCtrl', function ($scope, $stateParams, platformService, scrollerService, ajax) {
+app.controller('MonitorListCtrl', ['$scope', '$stateParams', 'platformService', 'scrollerService', 'ajax', 'routerService', function ($scope, $stateParams, platformService, scrollerService, ajax, routerService) {
     $scope.monitorScreens = [];
     $scope.monitorLoading = true;
     $scope.loadingFailed = false;
@@ -39,25 +39,61 @@ app.controller('MonitorListCtrl', function ($scope, $stateParams, platformServic
         });
     };
 
-    $scope.getDataList();
-});
-
-
-app.controller('MonitorDetailCtrl', function ($stateParams) {
-
-    var url = GetQueryString('url');
-    var iframe = document.getElementById('iframe');
-    iframe.src = url;
-    $.notify.progressStart();
-    if (!/*@cc_on!@*/0) { //if not IE
-        iframe.onload = function(){
-            $.notify.progressStop();
-        };
-    } else {
-        iframe.onreadystatechange = function(){
-            if (iframe.readyState === "complete"){
-                $.notify.progressStop();
+    $scope.openMonitorDetail = function (item) {
+        var url = item.mobile_screen_link;
+        var backgroundColor = item.background;
+        if (window.android && window.android.setScreenOrient) {
+            routerService.openPage($scope, "/templates/site/monitor-detail-template.html", {
+                url: url,
+                background: backgroundColor
+            });
+        } else {
+            if (backgroundColor && backgroundColor.indexOf('#') === 0) {
+                backgroundColor = backgroundColor.substring(1);     // #号在url里会导致参数被截断
             }
-        };
+            location.href = "/templates/site/monitor-detail.html?url=" + url + "&background=" + backgroundColor + "&screen=h";
+        }
+    };
+
+    $scope.getDataList();
+}]);
+
+
+app.controller('MonitorDetailCtrl', ['$scope', function ($scope) {
+
+    var url = $scope.url;
+    var iframe = document.getElementById('iframe');
+    $scope.clickedBack = false;     // 是否点击过返回按钮，防止重复点击
+
+    setTimeout(function () {
+        iframe.src = url;
+        $.notify.progressStart();
+        if (!/*@cc_on!@*/0) { //if not IE
+            iframe.onload = function(){
+                $.notify.progressStop();
+                window.android && window.android.setScreenOrient("LANDSCAPE");
+            };
+        } else {
+            iframe.onreadystatechange = function(){
+                if (iframe.readyState === "complete"){
+                    $.notify.progressStop();
+                    window.android && window.android.setScreenOrient("LANDSCAPE");
+                }
+            };
+        }
+    }, 500);
+
+    $scope.back = function () {
+        $scope.clickedBack = true;
+        window.history.go(-(history.length-1));     // 站点列表页认为是history的第一个记录
+    };
+
+    function pageBackCallback() {
+        window.android && window.android.setScreenOrient("PORTRAIT");
+        $("#iframe").remove();
+        window.removeEventListener('popstate', pageBackCallback);
     }
-});
+
+
+    window.addEventListener('popstate', pageBackCallback);
+}]);
