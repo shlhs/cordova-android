@@ -2,10 +2,10 @@
 	"versionCode": 230,
 	"versionName": "2.3.0",
 	"description": "",
-	"downloadUrl": "http://114.215.90.83/apk/dianguanjia-2.3.0.apk",
+	"downloadUrl": "http://47.105.134.180:8123/version/baoquan-2.3.0.apk",
 	"isLaunched": true,
 	"isGatedLaunch": true,
 	"forceUpdate": false,
 	"whiteList": ["zoujian"],
-	"webVersion": "20200309 11:21"
+	"webVersion": "20200310 15:30"
 }
