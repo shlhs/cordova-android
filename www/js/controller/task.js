@@ -215,6 +215,7 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
                         s.search_key = s.name.toLowerCase() + ' ' + s.sn.toLowerCase();
                         stationSns.push(s.sn);
                     }
+                    s.urlName = encodeURIComponent(s.name);
                     s.full_address = (s.address_province || '') + (s.address_city || '') + (s.address_district || '') + (s.address || '');
                     sites.push(s);
                 });
