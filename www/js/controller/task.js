@@ -40,7 +40,7 @@ var TaskActionName = {
     8: '评论',
     9: {
         name: '抢单',
-        color: '#f0ad4e'
+        color: '#00BFA5'
     },
     10: '已到达，开始处理',
     11: '提交处理结果',
@@ -760,7 +760,7 @@ app.controller('CompetitionTaskListCtrl', ['$scope', '$rootScope', 'scrollerServ
             return;
         }
         ajax.get({
-            url: "/opstasks/" + companyId,
+            url: "/opstasks/competition",
             data: {
                 stage: TaskStatus.Competition
             },
@@ -1901,7 +1901,7 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
         var param = {
             transfer_user: accounts.join(',')
         };
-        $scope.commonPostActionWithParams($scope.taskData.id, TaskAction.Transfer, param, function (data) {
+        $scope.commonPostActionWithParams($scope.taskData.id, TaskAction.Grab, param, function (data) {
             refreshAfterPostAction(data);
             $scope.acceptPickerVisible = false;
             $scope.$apply();
