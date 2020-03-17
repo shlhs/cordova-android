@@ -782,7 +782,7 @@ app.controller('CompetitionTaskListCtrl', ['$scope', '$rootScope', 'scrollerServ
             error: function (a, b, c) {
                 $scope.isLoading = false;
                 $scope.$apply();
-                $.notify.error('读取待办失败');
+                $.notify.error('读取抢单任务失败');
             }
         });
     };
