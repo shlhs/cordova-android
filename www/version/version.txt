@@ -1,11 +1,11 @@
 {
-	"versionCode": 230,
-	"versionName": "2.3.0",
+	"versionCode": 310,
+	"versionName": "3.1.0",
 	"description": "",
-	"downloadUrl": "http://114.215.90.83:8123/version/dianguanjia-2.3.0.apk",
+	"downloadUrl": "http://114.215.90.83:8123/version/dianliyun-3.1.0.apk",
 	"isLaunched": true,
 	"isGatedLaunch": true,
 	"forceUpdate": false,
 	"whiteList": ["zoujian"],
-	"webVersion": "20200309 11:21"
+	"webVersion": "20200318 15:00"
 }
