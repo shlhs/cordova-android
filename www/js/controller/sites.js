@@ -272,7 +272,9 @@ app.controller('EventListCtrl', function ($scope, scrollerService, userService, 
             page_start:0,
             page_len: 500,
             secho: 1,
-            status: $scope.status === undefined ? 1 : $scope.status
+            status: $scope.status === undefined ? 1 : $scope.status,
+            starttime: moment().subtract(3, 'months').format('YYYY-MM-DDTHH:mm:ss.000') + 'Z',
+            endtime: moment().format('YYYY-MM-DDTHH:mm:ss.000') + 'Z'
         };
         if ($scope.isDevice){
             params.deviceSn = $scope.sn;
@@ -456,7 +458,7 @@ app.controller('SiteDocsCtrl', function ($scope, routerService, platformService,
             case 'png':
             case 'jpg':
             case 'bmp':
-                icon = null;
+                icon = 'icon-doc-picture'
                 doc['isImage'] = true;
                 break;
         }
