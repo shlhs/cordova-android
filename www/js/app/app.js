@@ -220,6 +220,7 @@ app.service('platformService', function () {
 
     this.getCloudHost = function () {
         return this.host + ':8099/v1';
+        // return 'http://127.0.0.1:8099/v1';
     };
 
     this.getAuthHost = function () {
@@ -275,7 +276,6 @@ app.service('platformService', function () {
     };
 
     this.host = this.getHost();
-    // this.host = 'http://127.0.0.1:8099/v1';
     this.thumbHost = this.getImageThumbHost();
 });
 
@@ -824,164 +824,6 @@ app.controller('BaseGalleryCtrl', ['$scope', '$stateParams', '$timeout', functio
     $scope.hide = function () {
         history.back();
     };
-}]);
-
-function onAndroid_taskImageImport(imageData, filename) {    // 从Android读取的图片
-    var scope = angular.element(".imageUploadContainer").last().scope();
-    if (scope) {
-        scope.addImagesWithBase64(imageData, filename);
-    }
-}
-
-function onAndroid_taskImageDelete(filename) {       // Android手机上删除所选图片
-    var scope = angular.element(".imageUploadContainer").last().scope();
-    if (scope) {
-        scope.deleteImageFromMobile(filename);
-    }
-}
-
-// 图片选择控制器
-// 使用的父级controller需要实现方法： $scope.registerImageInfo(imageEleId) { return $scope.images }
-app.controller('ImageUploaderCtrl', ['$document', '$scope', '$timeout', 'routerService', function ($document, $scope, $timeout, routerService) {
-    $scope.elementId = '';
-    $scope.singleImage = false;     // 是否只允许一张图片
-    $scope.files = [];
-    $scope.images = [];
-    $scope.isPC = IsPC();
-    $scope.useMobileGallery = window.android && window.android.openGallery;
-
-
-    function clearAllExist() {
-        window.android && window.android.clearSelectedPhotos && window.android.clearSelectedPhotos();      // 调用Android js接口，清除选择的所有照片
-    }
-
-    function fileExist(fileName) {
-        if (!fileName) {
-            return false;
-        }
-        for (var i=0; i<$scope.files.length; i++) {
-            if (fileName === $scope.files[0].name) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    $scope.chooseImage = function (files) {     // 选择图片
-        $scope.canDelete = true;
-        for (var i = 0; i < files.length; i++) {
-            var reader = new FileReader(), file=files[i];
-            // 如果文件已选择过，则无法再选择
-            if (fileExist(file.name)) {
-                continue;
-            }
-            reader.readAsDataURL(file);
-            reader.onloadstart = function () {
-                //用以在上传前加入一些事件或效果，如载入中...的动画效果
-            };
-            reader.onload = function (event) {
-                var img = new Image();
-                img.src = event.target.result;
-                img.onload = function(){
-                    var dataUrl = imageHandler.compress(this, 75, file.orientation).src;
-                    if ($scope.singleImage && $scope.files.length) {
-                        $scope.files[0] = {name: file.name};
-                        $scope.images[0] = dataUrl;
-                    } else {
-                        $scope.files.push({name: file.name});
-                        $scope.images.push(dataUrl);
-                    }
-                    if ($scope.onAddImage) {
-                        $scope.onAddImage($scope.elementId, dataUrl);
-                    }
-                    $scope.$apply();
-                };
-            };
-        }
-    };
-
-    $scope.addImagesWithBase64 = function (data, filename) {
-        $scope.canDelete = true;
-        if (filename === undefined) {
-            filename = '';
-        }
-        if (fileExist(filename)) {
-            return;
-        }
-        if ($scope.singleImage && $scope.files.length) {
-            $scope.files[0] = {name: filename};
-            $scope.images[0] = data;
-        } else {
-            $scope.files.push({name: filename});
-            $scope.images.push(data);
-        }
-        if ($scope.onAddImage) {
-            $scope.onAddImage($scope.elementId, data);
-        }
-        $scope.$apply();
-    };
-
-    $scope.deleteImageFromMobile = function (filename) {
-        for (var i=0; i<$scope.files.length; i++) {
-            if ($scope.files[i].name === filename) {
-                $scope.files.splice(i, 1);
-                $scope.images.splice(i, 1);
-                if ($scope.onDeleteImage) {
-                    $scope.onDeleteImage($scope.elementId, i);
-                }
-                break;
-            }
-        }
-        $scope.$apply();
-    };
-
-    $scope.openMobileGallery = function () {
-        if ($scope.singleImage) {
-            clearAllExist();
-            window.android.openGallery(1, 'onAndroid_taskImageImport', 'onAndroid_taskImageDelete');
-        } else {
-            window.android.openGallery(9, 'onAndroid_taskImageImport', 'onAndroid_taskImageDelete');
-        }
-    };
-
-    $scope.deleteImage = function (index) {
-        // 删除某一张图片
-        var filename = $scope.files[index].name;
-        window.android && window.android.deleteSelectedPhoto && window.android.deleteSelectedPhoto(filename);
-        $scope.files.splice(index, 1);
-        $scope.images.splice(index, 1);
-        if ($scope.onDeleteImage) {
-            $scope.onDeleteImage($scope.elementId, index);
-        }
-    };
-
-    $scope.openGallery = function (index, images) {
-        routerService.openPage($scope, '/templates/base-gallery.html', {
-            index: index+1,
-            images: $scope.images,
-            canDelete: true,
-            onDelete: $scope.deleteImage
-        }, {
-            hidePrev: false
-        });
-    };
-
-    // 向上级注册图片列表信息，
-    setTimeout(function () {
-        $scope.images = $scope.registerImageInfo($scope.elementId);
-        if ($scope.images.length) {
-            $scope.images.forEach(function (n) {
-               $scope.files.push({
-                   name: ''
-               }) ;
-            });
-        }
-    }, 100);
-    clearAllExist();
-
-    $scope.$on('$destroy', function (event) {
-        clearAllExist();
-    });
 }]);
 
 app.directive('dropDownMenu', function () {
