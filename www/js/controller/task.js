@@ -42,7 +42,7 @@ var TaskActionName = {
     8: '评论',
     9: {
         name: '抢单',
-        color: '#f0ad4e'
+        color: '#00BFA5'
     },
     10: '已到达，开始处理',
     11: '提交处理结果',
@@ -1812,7 +1812,7 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
         var param = {
             transfer_user: accounts.join(',')
         };
-        $scope.commonPostActionWithParams($scope.taskData.id, TaskAction.Transfer, param, function (data) {
+        $scope.commonPostActionWithParams($scope.taskData.id, TaskAction.Grab, param, function (data) {
             refreshAfterPostAction(data);
             $scope.acceptPickerVisible = false;
             $scope.$apply();
