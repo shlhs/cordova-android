@@ -576,7 +576,7 @@ app.controller('SiteDocsCtrl', ['$scope', 'ajax', 'platformService', function ($
             case 'png':
             case 'jpg':
             case 'bmp':
-                icon = null;
+                icon = 'icon-doc-picture';
                 doc['isImage'] = true;
                 break;
         }
