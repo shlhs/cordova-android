@@ -2604,7 +2604,7 @@ app.controller('TaskDeviceCheckCtrl', ['$scope', 'ajax', 'platformService', func
         $scope.checkItems.forEach(function (t) {
             checkItems.push({
                 id: t.id,
-                pass: t.pass,
+                pass: t.pass || 1, // 默认通过
                 result_desp: t.result_desp
             });
         });
