@@ -760,7 +760,8 @@ app.controller('CompetitionTaskListCtrl', ['$scope', '$rootScope', 'scrollerServ
             return;
         }
         ajax.get({
-            url: "/opstasks/competition",
+            // url: "/opstasks/competition",
+            url: "/opstasks/" + companyId,
             data: {
                 stage: TaskStatus.Competition
             },

@@ -4,7 +4,7 @@
  */
 var app = angular.module('myApp', ['ngAnimate', 'ui.router', 'ui.router.state.events']);
 var loginExpireCheckEnable = false;       // 是否检查鉴权过期
-var defaultPlatIpAddr = "";     // 平台默认ip，格式为：http://118.190.51.135
+var defaultPlatIpAddr = "http://111.42.38.119";     // 黑龙江华源
 var defaultImgThumbHost = "";     // 如果为空则与 host一样
 var gShowEnergyPage = false;     // 是否显示能效页面，不显示能效页面时运维人员会看到抢单页面
 
@@ -219,37 +219,40 @@ app.service('platformService', function () {
     };
 
     this.getCloudHost = function () {
-        return this.host + ':8099/v1';
-        // return 'http://127.0.0.1:8099/v1';
+        // return this.host + ':8099/v1';
+        return this.host + ':28099/v1'; // 华源
     };
 
     this.getAuthHost = function () {
-        return this.host + ":8096/v1"
+        return this.host + ":28096/v1" // 华源
     };
 
     this.getImageThumbHost = function () {      // 获取图片压缩服务的地址
         // 格式为： http://ip:8888/unsafe
         if (defaultImgThumbHost) {
-            return defaultImgThumbHost + ":8888/unsafe";
+            return defaultImgThumbHost + ":28888/unsafe"; // 华源
         }
         if (this.host)
         {
-            return this.host + ":8888/unsafe"
+            return this.host + ":28888/unsafe"; // 华源
         }
         return null;
     };
 
     this.getGraphHost = function () {
-        return this.host + ':8920/v1';
+        // return this.host + ':8920/v1';
+        return this.host + ':28920/v1'; // 华源
     };
 
     this.getGraphScreenUrl = function (graphSn) {
         // 新的监控画面服务
-        return this.host + ':8921/monitor.html?sn=' + graphSn;
+        // return this.host + ':8921/monitor.html?sn=' + graphSn;
+        return this.host + ':28921/monitor.html?sn=' + graphSn; // 华源
     };
 
     this.getDeviceMgmtHost = function () {
-        return this.host + ':8097';
+        // return this.host + ':8097';
+        return this.host + ':28097'; // 华源
     };
 
     this.getOldMonitorScreenUrl = function (screenSn) {
@@ -268,7 +271,8 @@ app.service('platformService', function () {
     };
 
     this.getIpcServiceHost = function () {
-        return this.host + ':8095/v1';
+        // return this.host + ':8095/v1';
+        return this.host + ':28095/v1'; // 华源
     };
 
     this.setUiMode = function (mode) {
