@@ -2,10 +2,10 @@
 	"versionCode": 230,
 	"versionName": "2.3.0",
 	"description": "",
-	"downloadUrl": "http://114.215.90.83:8123/version/dianguanjia-2.3.0.apk",
+	"downloadUrl": "http://111.42.38.119:28123/version/huayuan-2.3.0.apk",
 	"isLaunched": true,
 	"isGatedLaunch": true,
 	"forceUpdate": false,
 	"whiteList": ["zoujian"],
-	"webVersion": "20200309 11:21"
+	"webVersion": "20200320 11:00"
 }
