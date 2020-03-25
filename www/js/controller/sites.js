@@ -407,7 +407,9 @@ app.controller('EventListCtrl', ['$scope', 'scrollerService', 'userService', 'aj
             page_start:0,
             page_len: 500,
             secho: 1,
-            status: checked
+            status: checked,
+            starttime: moment().subtract(3, 'months').format('YYYY-MM-DDTHH:mm:ss.000') + 'Z',
+            endtime: moment().format('YYYY-MM-DDTHH:mm:ss.000') + 'Z'
         };
         if ($scope.isDevice){
             params.deviceSn = $scope.sn;
@@ -574,7 +576,7 @@ app.controller('SiteDocsCtrl', ['$scope', 'ajax', 'platformService', function ($
             case 'png':
             case 'jpg':
             case 'bmp':
-                icon = null;
+                icon = 'icon-doc-picture';
                 doc['isImage'] = true;
                 break;
         }
@@ -643,13 +645,20 @@ app.controller('SiteReportsCtrl', ['$scope', 'ajax', 'routerService', 'platformS
 
     $scope.download = function ($event, link) {
         $event.stopPropagation();
-        if (window.android && window.android.saveImageToGallery) {
-            window.android.saveImageToGallery(link);
+        // if (window.android && window.android.saveImageToGallery) {
+        //     window.android.saveImageToGallery(link);
+        // }
+        if (window.android){
+            window.android.openFile(link);
+        }else
+        {
+            window.location.href =link;
         }
     };
 
     $scope.openReport = function (name, link) {
-        routerService.openPage($scope, '/templates/base-image-zoom.html', {link: link, name: name});
+        // routerService.openPage($scope, '/templates/base-image-zoom.html', {link: link, name: name});
+        window.open('/pdf-viewer/viewer.html?file=' + link, '_self', 'width:100%;height:100%;top:0;left:0;');
     };
 
     $scope.getDataList();

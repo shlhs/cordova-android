@@ -4,7 +4,7 @@
  * Created by liucaiyun on 2017/7/23.
  */
 
-var gPublicApiHost = 'http://47.104.75.86:8090';        // 公有云接口
+var gPublicApiHost = 'http://47.105.145.8:8090';        // 新的公有云接口
 // var gPublicApiHost = 'http://47.105.143.250:8090';        // 因泰来接口
 var defaultActiveEnergyMode = false; // 是否默认使用能效管理模式
 
@@ -56,7 +56,7 @@ app.controller('LoginCtrl', ['$scope', '$timeout', 'platformService', 'userServi
     function login() {
         $scope.error = '';
         var data = {
-            username: $scope.username,
+            username: $scope.username.trim(),
             password: $scope.password
         };
         var loginUrl = platformService.getAuthHost();
@@ -109,7 +109,7 @@ app.controller('LoginCtrl', ['$scope', '$timeout', 'platformService', 'userServi
 
     function getUserInfo() {
         ajax.get({
-            url: '/user/' + $scope.username,
+            url: '/user/' + $scope.username.trim(),
             ignoreAuthExpire: true,
             success: function (data) {
                 userService.saveLoginUser(data, $scope.password);
