@@ -1077,43 +1077,68 @@ app.controller('EnergyStatisticsZhiluCtrl', ['$scope', 'ajax', 'platformService'
     $scope.labelName = null;
     $scope.hasConfig = false;
     $scope.width = screen.width + 'px';     // 直接用屏幕宽度定义chart宽度
+    var varSns = [];
+    var queryPeriod = 'QUARTER'; // 趋势图的请求周期，今日用能曲线根据存盘周期来决定queryPeriod
 
     $scope.$on('$zhiluRefresh', function (event) {
         currentItem = $scope.$parent.currentItem;
+        varSns = distinctVarSns(currentItem.deviceVarSns);
+        // 获取变量信息
+        recordPeriod = null;
         $scope.labelName = $scope.$parent.currentLabel.name;
         if ($scope.categoryName !== $scope.$parent.currentCategory.name) {
             $scope.categoryName = $scope.$parent.currentCategory.name;
-            getTotalEnergyDegree();
+            getTotalEnergyDegree(varSns);
         }
         if (currentItem) {
             $scope.hasConfig = true;
-            refreshData();
+            refreshData(varSns);
         } else {
             $scope.hasConfig = false;
         }
     });
+
     $scope.$on('$otherRefresh', function (event) {      // 显示非支路时，不显示
         $scope.hasConfig = false;
     });
 
-
-    function getTotalEnergyDegree() {
-        // 获取一级支路今日总用能
-        var sns = [];
-        $scope.$parent.energyItems.forEach(function (item) {
-           if (item.level === 1) {
-               item.deviceVarSns.forEach(function (sn) {
-                   if (sns.indexOf(sn) < 0) {
-                       sns.push(sn);
-                   }
-               });
-           }
+    function getQueryPeriod(sns, callback) { // 根据变量存盘周期决定趋势图的请求周期
+        ajax.get({
+            url: platformService.getDeviceMgmtHost() + '/management/variables',
+            data: {
+                sns: sns.join(',')
+            },
+            success: function (res) {
+                if (res && res.data && res.data.length) {
+                    res.data.forEach(function (v) {
+                        if (v.record_period === '30分钟') {
+                            queryPeriod = 'HALF_HOUR';
+                        } else if (v.record_period === '1小时') {
+                            queryPeriod = 'HOUR';
+                        }
+                    });
+                    callback();
+                }
+            }
         });
+    }
+
+
+    function getTotalEnergyDegree(sns) {
+        // 获取一级支路今日总用能
         $scope.todayTotalDegree = null;
-        fetchElectricDegree(sns, moment().format('YYYY-MM-DD 00:00:00.000'), moment().format('YYYY-MM-DD 23:59:59.000'), function (data) {
+        fetchElectricDegree(sns, moment().format('YYYY-MM-DD 00:00:00.000'), moment().format('YYYY-MM-DD HH:mm:ss.000'), function (data) {
             $scope.todayTotalDegree = data;
             $scope.$apply();
         });
+    }
+
+    function refreshData(sns) {
+        createElectricStatistics(sns);
+        getQueryPeriod(sns, function () {
+            createElectricTrendLine(sns);
+        });
+        createElectricBarTrend(sns);
     }
 
     $scope.getItemRate = function() {        // 获取支路用能占比
@@ -1124,15 +1149,9 @@ app.controller('EnergyStatisticsZhiluCtrl', ['$scope', 'ajax', 'platformService'
         }
     };
 
-    function refreshData() {
-        createElectricStatistics(currentItem);
-        createElectricTrendLine();
-        createElectricBarTrend();
-    }
-
     $scope.onSelectTimeType = function (type) {
         $scope.timeType = type;
-        createElectricBarTrend();
+        createElectricBarTrend(varSns);
     };
 
     function fetchElectricDegree(sns, startTime, endTime, callback) {
@@ -1144,17 +1163,17 @@ app.controller('EnergyStatisticsZhiluCtrl', ['$scope', 'ajax', 'platformService'
                 sns: tmpSns.join(','),
                 startTime: startTime,
                 endTime: endTime,
-                calcmethod: 'MAX,MIN'
+                calcmethod: 'DIFF'
             },
             success: function (data) {
                 var total = null;
                 // 将最大-最小=总电量
                 data.forEach(function (item) {
-                    if (item.max_value_data !== null && item.min_value_data !== null) {
+                    if (item.accu_value_data !== null) {
                         if (total === null) {
-                            total = item.max_value_data - item.min_value_data;
+                            total = item.accu_value_data;
                         } else {
-                            total += (item.max_value_data - item.min_value_data);
+                            total += item.accu_value_data;
                         }
                     }
                 });
@@ -1167,11 +1186,10 @@ app.controller('EnergyStatisticsZhiluCtrl', ['$scope', 'ajax', 'platformService'
 
     function fetchElectricTrend(sns, startTime, endTime, queryPeriod, callback) {
         // 对sn去重
-        var tmpSns = distinctVarSns(sns);
         ajax.get({
             url:  platformService.getDeviceMgmtHost() + '/variables/data/historytrend',
             data: {
-                sns: tmpSns.join(','),
+                sns: sns.join(','),
                 startTime: startTime,
                 endTime: endTime,
                 calcmethod: 'DIFF',
@@ -1184,14 +1202,13 @@ app.controller('EnergyStatisticsZhiluCtrl', ['$scope', 'ajax', 'platformService'
         });
     }
 
-    function createElectricStatistics(item) {
+    function createElectricStatistics(sns) {
         var formatStr = 'YYYY-MM-DD 00:00:00.000';
         var today = [moment().format(formatStr), moment().format('YYYY-MM-DD HH:mm:ss.000')];
         var yesterday = [moment().subtract(1, 'd').format(formatStr), moment().subtract(1, 'd').format('YYYY-MM-DD HH:mm:ss.000')];
         var thisMonth = [moment().format('YYYY-MM-01 00:00:00.000'), moment().format('YYYY-MM-DD HH:mm:ss.000')];
         var lastMonth = [moment().subtract(1, 'month').format('YYYY-MM-01 00:00:00.000'), moment().subtract(1, 'month').format('YYYY-MM-DD HH:mm:ss.000')];
         $scope.electricData = {};
-        var sns = distinctVarSns(item.deviceVarSns);
         $scope.electricData = {
             today: '-',
             yesterday: '-',
@@ -1245,19 +1262,28 @@ app.controller('EnergyStatisticsZhiluCtrl', ['$scope', 'ajax', 'platformService'
             $scope.$apply();
         }
     }
-    
-    function createElectricTrendLine() {
-        var item = currentItem;
+
+    function getChartTime(h) {
+        function _getStrHour(h) {
+            if (h < 10) {
+                return '0' + h;
+            }
+            return h;
+        }
+        h = parseInt(h);
+        return _getStrHour(h) + '时(' + _getStrHour(h) + ':00~' + _getStrHour(h+1) + ':00)';
+    }
+
+    function createElectricTrendLine(sns) {
         var today = [moment().format('YYYY-MM-DD 00:00:00.000'), moment().format('YYYY-MM-DD 23:59:59.000')];
         var yesterday = [moment().subtract(1, 'd').format('YYYY-MM-DD 00:00:00.000'), moment().subtract(1, 'd').format('YYYY-MM-DD 23:59:59.000')];
 
-        var sns = distinctVarSns(item.deviceVarSns);
         var data = {};
-        fetchElectricTrend(sns, today[0], today[1], 'QUARTER', function (response) {
+        fetchElectricTrend(sns, today[0], today[1], queryPeriod, function (response) {
             data['today'] = response;
             _paint(data);
         });
-        fetchElectricTrend(sns, yesterday[0], yesterday[1], 'QUARTER', function (response) {
+        fetchElectricTrend(sns, yesterday[0], yesterday[1], queryPeriod, function (response) {
             data['yesterday'] = response;
             _paint(data);
         });
@@ -1282,8 +1308,6 @@ app.controller('EnergyStatisticsZhiluCtrl', ['$scope', 'ajax', 'platformService'
                 }
                 times.push(t.substring(11, 16));
             });
-            // 比实际少一个点
-            times.splice(times.length-1, 1);
             // 根据times长度截取数据长度
             var todaySeriesData = [], yesterdaySeriesData=[];
             for (var i=0; i<times.length; i++) {
@@ -1295,6 +1319,19 @@ app.controller('EnergyStatisticsZhiluCtrl', ['$scope', 'ajax', 'platformService'
                     trigger: 'axis',
                     axisPointer: {
                         type: 'cross'
+                    },
+                    confine: true,
+                    formatter: function (params) {
+                        var p0 = params[0];
+                        var p1 = params[1];
+                        var hour = parseInt(p0.axisValue.substring(0, 2));
+                        var timeLabel = getChartTime(hour);
+                        var lines = [timeLabel];
+                        params.forEach(function (p) {
+                            lines.push('<br />');
+                            lines.push(p.marker + p.seriesName + '：' + (p.data === null ? '-' : p.data) + ' kWh');
+                        });
+                        return lines.join('');
                     }
                 },
                 legend: {
@@ -1351,8 +1388,7 @@ app.controller('EnergyStatisticsZhiluCtrl', ['$scope', 'ajax', 'platformService'
         }
     }
 
-    function createElectricBarTrend() {
-        var item = currentItem;
+    function createElectricBarTrend(sns) {
         var startTime, endTime, queryPeriod, startTime1, endTime1;
         var labels = [];
         switch ($scope.timeType) {
@@ -1382,11 +1418,11 @@ app.controller('EnergyStatisticsZhiluCtrl', ['$scope', 'ajax', 'platformService'
                 break;
         }
         var data = {};
-        fetchElectricTrend(item.deviceVarSns, startTime, endTime, queryPeriod, function (response) {
+        fetchElectricTrend(sns, startTime, endTime, queryPeriod, function (response) {
             data['now'] = response;
             _paint(data);
         });
-        fetchElectricTrend(item.deviceVarSns, startTime1, endTime1, queryPeriod, function (response) {
+        fetchElectricTrend(sns, startTime1, endTime1, queryPeriod, function (response) {
             data['history'] = response;
             _paint(data);
         });
@@ -1423,6 +1459,19 @@ app.controller('EnergyStatisticsZhiluCtrl', ['$scope', 'ajax', 'platformService'
                     trigger: 'axis',
                     axisPointer: {
                         type: 'shadow',
+                    },
+                    confine: true,
+                    formatter: function (params) {
+                        if (!params.length) {
+                            return null;
+                        }
+                        var p0 = params[0];
+                        var lines = [p0.axisValue];
+                        params.forEach(function (p) {
+                            lines.push('<br />');
+                            lines.push(p.marker + p.seriesName + '：' + (p.data === null ? '-' : p.data) + ' kWh');
+                        });
+                        return lines.join('');
                     },
                 },
                 legend: {
@@ -1640,7 +1689,8 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
             var config = {
                 tooltip: {
                     trigger: 'item',
-                    formatter: '{b} : {c} ({d}%)',
+                    formatter: '{b} : {c} kWh({d}%)',
+                    confine: true
                 },
                 backgroundColor:'#ffffff',
                 title: [
@@ -1772,6 +1822,8 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
                     axisPointer: {
                         type: 'shadow',
                     },
+                    formatter: '{b} : {c}%',
+                    confine: true
                 },
                 legend: {
                     show: false,
@@ -1851,9 +1903,11 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
             var config = {
                 tooltip: {
                     trigger: 'axis',
+                    formatter: '{b} \r\n: {c} kWh',
                     axisPointer: {
-                        type: 'cross'
-                    }
+                        type: 'shadow',
+                    },
+                    confine: true,
                 },
                 legend: {
                     data: [],
@@ -1932,6 +1986,16 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
                     axisPointer: {
                         type: 'shadow',
                     },
+                    confine: true,
+                    formatter: function (params) {
+                        var p0 = params[0];
+                        var lines = [p0.axisValue];
+                        params.forEach(function (p) {
+                            lines.push('<br />');
+                            lines.push(p.marker + p.seriesName + '：' + (p.data === null ? '-' : p.data) + ' kWh');
+                        });
+                        return lines.join('');
+                    }
                 },
                 legend: {
                     data: ['本期', '上期'],
@@ -2089,10 +2153,25 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
                     axisPointer: {
                         type: 'shadow',
                     },
+                    confine: true,
+                    formatter: function (params) {
+                        if (!params.length) {
+                            return null;
+                        }
+                        var p0 = params[0];
+                        var lines = [p0.axisValue];
+                        params.forEach(function (p) {
+                            lines.push('<br />');
+                            lines.push(p.marker + p.seriesName + '：' + (p.data === null ? '-' : p.data) + ' kWh');
+                        });
+                        return lines.join('');
+                    }
                 },
                 legend: {
                     data: labels,
                     bottom: 0,
+                    itemWidth: 10,
+                    itemHeight: 6,
                     textStyle: {
                         fontSize: 9,
                         rich: {
