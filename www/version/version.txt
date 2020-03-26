@@ -1,0 +1,11 @@
+{
+	"versionCode": 231,
+	"versionName": "2.3.1",
+	"description": "",
+	"downloadUrl": "http://47.105.216.220:8123/version/dianguanjia-2.3.1.apk",
+	"isLaunched": true,
+	"isGatedLaunch": true,
+	"forceUpdate": false,
+	"whiteList": ["zoujian"],
+	"webVersion": "20200326 16:00"
+}

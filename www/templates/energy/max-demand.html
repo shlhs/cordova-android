@@ -1,0 +1,87 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+    <!--<meta charset="UTF-8">-->
+    <!--<title>最大需量</title>-->
+    <!--<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">-->
+    <!--<meta name="apple-mobile-web-app-capable" content="yes">-->
+    <!--<meta name="apple-mobile-web-app-status-bar-style" content="black">-->
+    <!--<meta http-equiv="Access-Control-Allow-Origin" content="*">-->
+    <!--<link rel="stylesheet" href="../../components/mui/css/mui.min.css">-->
+    <!--<link rel="stylesheet" href="../../components/mui/css/mui.picker.min.css">-->
+    <!--<link rel="stylesheet" href="../../css/iconfont/iconfont.css">-->
+    <!--<link rel="stylesheet" href="../../css/animate.css">-->
+    <!--<link rel="stylesheet" href="../../css/my.css">-->
+    <!--<link rel="stylesheet" href="../../css/energy.css">-->
+    <!--<link rel="stylesheet" type="text/css" href="../../js/lib/datatables/jquery.dataTables.min.css">-->
+    <!--<script type="text/javascript" src="../../components/libs/jquery-2.1.4.min.js"></script>-->
+    <!--<script type="text/javascript" src="../../components/angular/angular.min.js"></script>-->
+    <!--<script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>-->
+    <!--<script type="text/javascript" src="../../components/angular-animate/angular-animate.js"></script>-->
+    <!--<script type="text/javascript" src="../../components/angular-ui-router/release/stateEvents.min.js"></script>-->
+    <!--<script type="text/javascript" src="../../js/app/utils.js"></script>-->
+    <!--<script type="text/javascript" src="../../js/app/app.js"></script>-->
+    <!--<script type="text/javascript" src="../../js/controller/user-energy.js"></script>-->
+    <!--<script type="text/javascript" src="../../js/controller/sites.js"></script>-->
+<!--</head>-->
+<!--<body ng-app="myApp" ng-cloak ng-controller="EnergyBaseCtrl" class="energy-page timeType-MONTH">-->
+<div ng-controller="EnergyBaseCtrl" class="energy-page page page-left">
+<header class="mui-bar bg-header mui-segmented-control-vertical">
+    <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="history.back()"></a>
+    <h1 class="mui-title">最大需量</h1>
+</header>
+<div class="mui-content energy-page-body" style="background-color: transparent;">
+    <div class="head-select-tabs">
+        <div class="item" ng-click="openDeviceSelector()">
+            <label class="title">监测点</label>
+            <label class="value">{{currentDevice.name}}</label>
+        </div>
+        <div class="item" id="datePicker">
+            <label class="title">用电周期</label>
+            <label class="value">{{showDateName}}</label>
+        </div>
+    </div>
+    <div ng-controller="EnergyMaxDemandCtrl">
+        <div style="display: flex;width: 100%;padding-top: 12px;">
+            <div class="value-tab">
+                <label class="top">本月最大需量</label>
+                <label class="value" style="margin: -4px 0 4px 0;">{{maxDemand}}<span class="unit">kW</span></label>
+                <label class="bottom">发生时间：{{maxDemandTime}}</label>
+            </div>
+        </div>
+        <div class="h-values value-mask" style="padding: 10px 28px;margin-top: 20px;display: block;">
+            <div class="item" style="text-align: left;font-size: 14px;"><span class="name" style="font-size: 13px;">申报需量</span> <span class="value" style="font-size: 15px;">{{requiredMaxDemand}}</span> <span class="unit">kW</span></div>
+            <div class="opt-tip" style="margin-top: 4px;" ng-if="showTip">
+                需量调整为{{optMaxDemand}}kW，可节省电费{{saveMoney}}元
+                <span class="hand left"></span>
+            </div>
+        </div>
+        <div style="background-color: #fff;min-height: {{contentHeight - 226}}px;">
+            <div>
+                <div class="chart-title" style="padding: 10px;">最大需量</div>
+                <ul class="selector-group" style="margin-top: 10px; padding-right: 10px;">
+                    <li class="selector-tab" style="background-color: #F2F2F2;padding: 4px 20px 4px 0;height: 28px;width: 50%;margin-left: 16px;">
+                        <label>{{startDate}}</label>
+                        <button style="position: absolute;top:0;width: 100%;height: 100%;left: 0;background-color: transparent;border: none;" id="datePicker1"></button>
+                    </li>
+                    <li style="padding: 4px 0 0 14px; font-size: 14px;color: #666;">至</li>
+                    <li class="selector-tab" style="background-color: #F2F2F2;padding: 4px 20px 4px 0;height: 28px;width: 50%;margin-left: 16px;">
+                        <label>{{endDate}}</label>
+                        <button style="position: absolute;top:0;width: 100%;height: 100%;left: 0;background-color: transparent;border: none;" id="datePicker2"></button>
+                    </li>
+                </ul>
+                <div id="chart1" style="height: 180px;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<!--<script src="../../components/fastclick-master/lib/fastclick.js"></script>-->
+<!--<script src="../../js/my/notify.js"></script>-->
+<!--<script src="../../components/moment.min.js"></script>-->
+<!--<script src="../../components/mui/js/mui.min.js"></script>-->
+<!--<script src="../../components/mui/js/mui.picker.min.js"></script>-->
+<!--<script src="../../components/echart/echarts.common.min.js"></script>-->
+<!--<script type="text/javascript" src="../../js/service/varData.js"></script>-->
+<!--</body>-->
+<!--</html>-->
