@@ -1300,15 +1300,27 @@ app.controller('EnergyStatisticsZhiluCtrl', ['$scope', 'ajax', 'platformService'
         }
     }
 
-    function getChartTime(h) {
-        function _getStrHour(h) {
-            if (h < 10) {
-                return '0' + h;
+    function getNextTime(t, period) {
+        function _i_to_2_str(i) {
+            if (i < 10) {
+                return '0' + i;
             }
-            return h;
+            return i.toString();
         }
-        h = parseInt(h);
-        return _getStrHour(h) + '时(' + _getStrHour(h) + ':00~' + _getStrHour(h+1) + ':00)';
+        var h = parseInt(t.substring(0, 2));
+        var m = parseInt(t.substring(3, 5));
+        if (period === 'HOUR') {
+            h += 1;
+        } else if (period === 'QUARTER') {
+            m += 15;
+        } else if (period === 'HALF_HOUR') {
+            m += 30;
+        }
+        if (m >= 60) {
+            h += 1;
+            m -= 60;
+        }
+        return _i_to_2_str(h) + ':' + _i_to_2_str(m);
     }
     
     function createElectricTrendLine(sns) {
@@ -1360,10 +1372,14 @@ app.controller('EnergyStatisticsZhiluCtrl', ['$scope', 'ajax', 'platformService'
                     confine: true,
                     formatter: function (params) {
                         var p0 = params[0];
-                        var p1 = params[1];
-                        var hour = parseInt(p0.axisValue.substring(0, 2));
-                        var timeLabel = getChartTime(hour);
-                        var lines = [timeLabel];
+                        var xIndex = p0.dataIndex;
+                        var thisTime = p0.axisValue;
+                        var nextTime = times[xIndex + 1];
+                        if (xIndex === times.length - 1) { // 最后一个节点，需要自行生成时间
+                            nextTime = getNextTime(thisTime, queryPeriod);
+                        }
+                        var t = thisTime + '(' + thisTime + '~' + nextTime + ')';
+                        var lines = [t];
                         params.forEach(function (p) {
                             lines.push('<br />');
                             lines.push(p.marker + p.seriesName + '：' + (p.data === null ? '-' : p.data) + ' kWh');
