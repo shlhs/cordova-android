@@ -1378,7 +1378,7 @@ app.controller('EnergyStatisticsZhiluCtrl', ['$scope', 'ajax', 'platformService'
                         if (xIndex === times.length - 1) { // 最后一个节点，需要自行生成时间
                             nextTime = getNextTime(thisTime, queryPeriod);
                         }
-                        var t = thisTime + '(' + thisTime + '~' + nextTime + ')';
+                        var t = parseInt(thisTime.substring(0, 2)) + '时(' + thisTime + '~' + nextTime + ')';
                         var lines = [t];
                         params.forEach(function (p) {
                             lines.push('<br />');
