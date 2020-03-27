@@ -1629,25 +1629,18 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
     }
 
     function fetchElectricDegree(sns, startTime, endTime, callback) {
-        // 对sn去重
-        var tmpSns = [];
-        sns.forEach(function (sn) {
-            if (tmpSns.indexOf(sn) < 0) {
-                tmpSns.push(sn);
-            }
-        });
         ajax.get({
             url: platformService.getDeviceMgmtHost() + '/variables/data/summarized',
             data: {
-                sns: tmpSns.join(','),
+                sns: sns.join(','),
                 startTime: startTime,
                 endTime: endTime,
-                calcmethod: 'MAX,MIN'
+                calcmethod: 'DIFF'
             },
             success: function (data) {
                 data.forEach(function (item) {
-                   if (item.max_value_data !== null && item.min_value_data !== null) {
-                       item.all_degree = parseFloat((item.max_value_data - item.min_value_data).toFixed(2));
+                   if (item.accu_value_data !== null) {
+                       item.all_degree = parseFloat(item.accu_value_data);
                    } else {
                        item.all_degree = 0;
                    }
@@ -1658,17 +1651,10 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
     }
 
     function fetchElectricTrend(sns, startTime, endTime, queryPeriod, callback) {
-        // 对sn去重
-        var tmpSns = [];
-        sns.forEach(function (sn) {
-            if (tmpSns.indexOf(sn) < 0) {
-                tmpSns.push(sn);
-            }
-        });
         ajax.get({
             url:  platformService.getDeviceMgmtHost() + '/variables/data/historytrend',
             data: {
-                sns: tmpSns.join(','),
+                sns: sns.join(','),
                 startTime: startTime,
                 endTime: endTime,
                 calcmethod: 'DIFF',
@@ -1805,7 +1791,7 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
                     total += varDegreeMap[sn];
                 }
             });
-            itemDegreeMap[item.path] = total.toFixed(2);
+            itemDegreeMap[item.path] = parseFloat(total.toFixed(2));
         });
         return itemDegreeMap;
     }
@@ -1837,13 +1823,13 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
                 var nowValue = currentDegreeMap[item.path];
                 var historyValue = historyDegreeMap[item.path];
                 var value = null;
-                if (nowValue !== null && historyValue !== undefined && historyValue !== undefined && historyValue !== null) {
+                if (nowValue !== null && historyValue !== undefined && historyValue !== undefined && historyValue !== null && nowValue > 0) {
                     value = parseFloat(nowValue/historyValue*100-100).toFixed(2);
                 }
                 values.push({name: item.aliasName, value: value});
             });
             values.sort(function (v1, v2) {
-                return v2.value - v1.value;
+                return Math.abs(v2.value - v1.value);
             });
             // 取前5名
             var seriesData = [], labels=[];
@@ -2013,9 +1999,13 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
             var labels = [], currentValues=[], historyValues=[];
             showItems.forEach(function (item) {
                 // 计算增幅
-                labels.push(item.aliasName);
-                currentValues.push(currentDegreeMap[item.path]);
-                historyValues.push(historyDegreeMap[item.path]);
+                var nv = currentDegreeMap[item.path]; // 本期值
+                var hv = historyDegreeMap[item.path]; // 上期值
+                if (nv || hv) {
+                    currentValues.push(nv);
+                    historyValues.push(hv);
+                    labels.push(item.aliasName);
+                }
             });
             var config = {
                 tooltip: {
@@ -2038,6 +2028,14 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
                     data: ['本期', '上期'],
                     top: 2,
                     right: 20,
+                    itemWidth: 12,
+                    itemHeight: 8,
+                    textStyle: {
+                        fontSize: 11,
+                        rich: {
+                            fonSize: 11
+                        }
+                    },
                     x: 'right'
                 },
                 grid: {
