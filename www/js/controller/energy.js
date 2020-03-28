@@ -1190,18 +1190,18 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
                 sns: sns.join(','),
                 startTime: startTime,
                 endTime: endTime,
-                calcmethod: 'MAX,MIN'
+                calcmethod: 'DIFF'
             },
             timeout: 45000,
             success: function (data) {
                 var total = null;
                 // 将最大-最小=总电量
                 data.forEach(function (item) {
-                    if (item.max_value_data !== null && item.min_value_data !== null) {
+                    if (item.accu_value_data !== null) {
                         if (total === null) {
-                            total = item.max_value_data - item.min_value_data;
+                            total = item.accu_value_data;
                         } else {
-                            total += (item.max_value_data - item.min_value_data);
+                            total += item.accu_value_data;
                         }
                     }
                 });
@@ -1343,7 +1343,8 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
                     trigger: 'axis',
                     axisPointer: {
                         type: 'cross'
-                    }
+                    },
+                    confine: true,
                 },
                 legend: {
                     left: 'right',
@@ -1470,6 +1471,7 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
                     axisPointer: {
                         type: 'shadow',
                     },
+                    confine: true,
                 },
                 legend: {
                     left: 'right',
@@ -1600,13 +1602,13 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
                 sns: sns.join(','),
                 startTime: startTime,
                 endTime: endTime,
-                calcmethod: 'MAX, MIN'
+                calcmethod: 'DIFF'
             },
             timeout: 45000,
             success: function (data) {
                 data.forEach(function (item) {
-                    if (item.max_value_data !== null && item.min_value_data !== null) {
-                        item.all_degree = parseFloat((item.max_value_data - item.min_value_data).toFixed(2));
+                    if (item.accu_value_data !== null) {
+                        item.all_degree = item.accu_value_data;
                     } else {
                         item.all_degree = 0;
                     }
@@ -1685,6 +1687,7 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
                 tooltip: {
                     trigger: 'item',
                     formatter: '{b} : {c} ({d}%)',
+                    confine: true,
                 },
                 backgroundColor:'#ffffff',
                 title: [
@@ -1819,6 +1822,7 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
                     axisPointer: {
                         type: 'shadow',
                     },
+                    confine: true,
                 },
                 legend: {
                     show: false,
@@ -1904,7 +1908,8 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
                     trigger: 'axis',
                     axisPointer: {
                         type: 'cross'
-                    }
+                    },
+                    confine: true,
                 },
                 legend: {
                     data: [],
@@ -1986,6 +1991,7 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
                     axisPointer: {
                         type: 'shadow',
                     },
+                    confine: true,
                 },
                 legend: {
                     top: 2,
@@ -2146,15 +2152,19 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
                     axisPointer: {
                         type: 'shadow',
                     },
+                    confine: true,
                 },
                 legend: {
                     data: labels,
+                    top: 'bottom',
                     left: 'right',
                     itemWidth: 15,
                     itemHeight: 8,
                     textStyle: {
                         fontSize: 9,
-                    }
+                    },
+                    height: 40,
+                    type: 'scroll',
                 },
                 grid: {
                     top: 20,
