@@ -1912,7 +1912,7 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
                 values.push({name: item.aliasName, value: value});
             });
             values.sort(function (v1, v2) {
-                return Math.abs(v2.value - v1.value);
+                return Math.abs(v2.value) - Math.abs(v1.value);
             });
             // 取前5名
             var seriesData = [], labels=[];
@@ -2281,6 +2281,7 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
                     }
                 },
                 legend: {
+                    type: 'scroll',
                     data: labels,
                     top: 'bottom',
                     left: 'left',
