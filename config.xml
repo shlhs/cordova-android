@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.luohusi.kuaikong" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>MingYang</name>
+<widget id="com.yuming.brilliantyun" version="1.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>Boruini</name>
     <description>
-        电力物联云平台.
+        博瑞云
     </description>
     <author email="isdavid@126.com" href="http://www.uscada.com/">
         罗湖斯自动化技术有限公司
