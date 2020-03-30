@@ -1845,7 +1845,7 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
                 values.push({name: item.aliasName, value: value});
             });
             values.sort(function (v1, v2) {
-                return Math.abs(v2.value - v1.value);
+                return Math.abs(v2.value) - Math.abs(v1.value);
             });
             // 取前5名
             var seriesData = [], labels=[];
