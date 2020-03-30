@@ -1300,15 +1300,27 @@ app.controller('EnergyStatisticsZhiluCtrl', ['$scope', 'ajax', 'platformService'
         }
     }
 
-    function getChartTime(h) {
-        function _getStrHour(h) {
-            if (h < 10) {
-                return '0' + h;
+    function getNextTime(t, period) {
+        function _i_to_2_str(i) {
+            if (i < 10) {
+                return '0' + i;
             }
-            return h;
+            return i.toString();
         }
-        h = parseInt(h);
-        return _getStrHour(h) + '时(' + _getStrHour(h) + ':00~' + _getStrHour(h+1) + ':00)';
+        var h = parseInt(t.substring(0, 2));
+        var m = parseInt(t.substring(3, 5));
+        if (period === 'HOUR') {
+            h += 1;
+        } else if (period === 'QUARTER') {
+            m += 15;
+        } else if (period === 'HALF_HOUR') {
+            m += 30;
+        }
+        if (m >= 60) {
+            h += 1;
+            m -= 60;
+        }
+        return _i_to_2_str(h) + ':' + _i_to_2_str(m);
     }
     
     function createElectricTrendLine(sns) {
@@ -1360,10 +1372,14 @@ app.controller('EnergyStatisticsZhiluCtrl', ['$scope', 'ajax', 'platformService'
                     confine: true,
                     formatter: function (params) {
                         var p0 = params[0];
-                        var p1 = params[1];
-                        var hour = parseInt(p0.axisValue.substring(0, 2));
-                        var timeLabel = getChartTime(hour);
-                        var lines = [timeLabel];
+                        var xIndex = p0.dataIndex;
+                        var thisTime = p0.axisValue;
+                        var nextTime = times[xIndex + 1];
+                        if (xIndex === times.length - 1) { // 最后一个节点，需要自行生成时间
+                            nextTime = getNextTime(thisTime, queryPeriod);
+                        }
+                        var t = parseInt(thisTime.substring(0, 2)) + '时(' + thisTime + '~' + nextTime + ')';
+                        var lines = [t];
                         params.forEach(function (p) {
                             lines.push('<br />');
                             lines.push(p.marker + p.seriesName + '：' + (p.data === null ? '-' : p.data) + ' kWh');
@@ -1629,25 +1645,18 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
     }
 
     function fetchElectricDegree(sns, startTime, endTime, callback) {
-        // 对sn去重
-        var tmpSns = [];
-        sns.forEach(function (sn) {
-            if (tmpSns.indexOf(sn) < 0) {
-                tmpSns.push(sn);
-            }
-        });
         ajax.get({
             url: platformService.getDeviceMgmtHost() + '/variables/data/summarized',
             data: {
-                sns: tmpSns.join(','),
+                sns: sns.join(','),
                 startTime: startTime,
                 endTime: endTime,
-                calcmethod: 'MAX,MIN'
+                calcmethod: 'DIFF'
             },
             success: function (data) {
                 data.forEach(function (item) {
-                   if (item.max_value_data !== null && item.min_value_data !== null) {
-                       item.all_degree = parseFloat((item.max_value_data - item.min_value_data).toFixed(2));
+                   if (item.accu_value_data !== null) {
+                       item.all_degree = parseFloat(item.accu_value_data);
                    } else {
                        item.all_degree = 0;
                    }
@@ -1658,17 +1667,10 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
     }
 
     function fetchElectricTrend(sns, startTime, endTime, queryPeriod, callback) {
-        // 对sn去重
-        var tmpSns = [];
-        sns.forEach(function (sn) {
-            if (tmpSns.indexOf(sn) < 0) {
-                tmpSns.push(sn);
-            }
-        });
         ajax.get({
             url:  platformService.getDeviceMgmtHost() + '/variables/data/historytrend',
             data: {
-                sns: tmpSns.join(','),
+                sns: sns.join(','),
                 startTime: startTime,
                 endTime: endTime,
                 calcmethod: 'DIFF',
@@ -1805,7 +1807,7 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
                     total += varDegreeMap[sn];
                 }
             });
-            itemDegreeMap[item.path] = total.toFixed(2);
+            itemDegreeMap[item.path] = parseFloat(total.toFixed(2));
         });
         return itemDegreeMap;
     }
@@ -1837,13 +1839,13 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
                 var nowValue = currentDegreeMap[item.path];
                 var historyValue = historyDegreeMap[item.path];
                 var value = null;
-                if (nowValue !== null && historyValue !== undefined && historyValue !== undefined && historyValue !== null) {
+                if (nowValue !== null && historyValue !== undefined && historyValue !== undefined && historyValue !== null && nowValue > 0) {
                     value = parseFloat(nowValue/historyValue*100-100).toFixed(2);
                 }
                 values.push({name: item.aliasName, value: value});
             });
             values.sort(function (v1, v2) {
-                return v2.value - v1.value;
+                return Math.abs(v2.value) - Math.abs(v1.value);
             });
             // 取前5名
             var seriesData = [], labels=[];
@@ -2013,9 +2015,13 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
             var labels = [], currentValues=[], historyValues=[];
             showItems.forEach(function (item) {
                 // 计算增幅
-                labels.push(item.aliasName);
-                currentValues.push(currentDegreeMap[item.path]);
-                historyValues.push(historyDegreeMap[item.path]);
+                var nv = currentDegreeMap[item.path]; // 本期值
+                var hv = historyDegreeMap[item.path]; // 上期值
+                if (nv || hv) {
+                    currentValues.push(nv);
+                    historyValues.push(hv);
+                    labels.push(item.aliasName);
+                }
             });
             var config = {
                 tooltip: {
@@ -2038,6 +2044,14 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
                     data: ['本期', '上期'],
                     top: 2,
                     right: 20,
+                    itemWidth: 12,
+                    itemHeight: 8,
+                    textStyle: {
+                        fontSize: 11,
+                        rich: {
+                            fonSize: 11
+                        }
+                    },
                     x: 'right'
                 },
                 grid: {
