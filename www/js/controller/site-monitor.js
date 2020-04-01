@@ -331,13 +331,10 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', function ($scope, ajax
             createPfvSettingMark(pfvSetting, arr);
         }
         $.extend(chartOption, {
-            legend: {
-                data: namearr,
-                show: false
-            },
             yAxis: yAxis,
             series: arr,
         });
+        chartOption.legend.data = namearr;
     }
 
     function _getPfvOfDevice(varInfo, pfvSetting, deviceSetting) {
@@ -479,26 +476,32 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', function ($scope, ajax
         }
         var echartsObj = echarts.init(getChartDiv(groupId));
         var that = "";
+        var legendData = [];
+        data.data.forEach(function (item) {
+            legendData.push(item.name);
+        });
         var option = {
             color: g_line_colors,
             grid: {
-                'left': 55,
-                'right': 30,
-                'top': 20,
-                bottom: 30
+                left: 55,
+                right: 30,
+                top: 20,
+                bottom: 45,
             },
             tooltip: {
                 trigger: 'axis',
                 confine: true
             },
             legend: {
-                left: 'center',
-                bottom: 0,
-                orient: 'horizontal',
-                formatter: function(name) {
-                    return (name.length > 8 ? (name.slice(0, 8) + "...") : name);
+                type: 'scroll',
+                top: 'bottom',
+                pageIconSize: 10,
+                itemWidth: 15,
+                itemHeight: 8,
+                textStyle: {
+                    color: '#848484',
+                    fontSize: 11,
                 },
-                padding: [0, 0, 2, 0]
             },
             xAxis: {
                 type: xType,
