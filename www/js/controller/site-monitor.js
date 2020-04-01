@@ -11,13 +11,15 @@ var g_line_colors = ['#9474df','#ef7e9c', '#6bc1dd', '#13cf5a',  '#f3a15d', '#6c
 var g_pvf_colors = {
     'p': 'rgba(239, 150, 166, 0.18)',
     'v': 'rgba(138, 212, 199, 0.18)',
-    'f': 'rgba(136, 169, 248, 0.18)'
+    'f': 'rgba(136, 169, 248, 0.18)',
+    's': 'rgba(254,139,106, 0.18)',
 };
 
 var g_pvf_label_colors = {
     'p': 'rgba(239, 150, 166, 1)',
     'v': 'rgba(138, 212, 199, 1)',
     'f': 'rgba(136, 169, 248, 1)',
+    's': 'rgba(254,139,106, 1)',
 };
 // 历史曲线
 app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', function ($scope, ajax) {
@@ -392,6 +394,10 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', function ($scope, ajax
                 tempName = '谷';
                 tempColor = g_pvf_colors.v;
                 tempLabelColor = g_pvf_label_colors.v;
+            } else if(tempPfv === 's') {
+                tempName = '尖';
+                tempColor = g_pvf_colors.s;
+                tempLabelColor = g_pvf_label_colors.s;
             }
             var now = new Date();
             var startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(),
@@ -415,6 +421,9 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', function ($scope, ajax
                 yAxisIndex: 1,
                 type:'line',
                 symbolSize: 0,
+                tooltip: {
+                    show: false,
+                },
                 itemStyle: {
                     normal: {
                         color: tempLabelColor,
