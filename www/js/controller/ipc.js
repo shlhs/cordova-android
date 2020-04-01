@@ -12,7 +12,7 @@ function onVideoPause(ipcId) {       // 暂停视频播放
     }
 }
 
-app.controller('VideoMonitorCtrl', ['$scope', '$timeout', 'platformService', 'ajax', 'routerService', function ($scope, $timeout, platformService, ajax, routerService) {
+app.controller('VideoMonitorCtrl', ['$scope', '$timeout', '$sce', 'platformService', 'ajax', 'routerService', function ($scope, $timeout, $sce, platformService, ajax, routerService) {
     $scope.sn = GetQueryString("sn");
     $scope.ipcs = [];
     $scope.isLoading = true;
@@ -44,11 +44,14 @@ app.controller('VideoMonitorCtrl', ['$scope', '$timeout', 'platformService', 'aj
                         ipc.statusName = '';
                         ipc.online = true;
                     }
+                    var address = ipc.liveAddressApp;
                     if (ipc.type === 'YS7') {
-                        ipc.streamUrl = '/templates/video-monitor/iframe/ys7-player.html?url=' + ipc.liveAddressApp + '&autoplay&ipcId=' + ipc.id;
+                        ipc.streamUrl = '/templates/video-monitor/iframe/ys7-player.html?url=' + address + '&autoplay&ipcId=' + ipc.id;
+                    } else if (address.indexOf('http:') === 0) {
+                        ipc.streamUrl = $sce.trustAsResourceUrl(address);
                     } else {
                         // 从liveAddress中解析出flv视频地址
-                        var liveAddress = ipc.liveAddressApp;
+                        var liveAddress = address;
                         var serviceHost = liveAddress.substring(0, liveAddress.indexOf(':', 5)),
                             deviceId=GetQueryString("device", liveAddress),
                             channelId=GetQueryString("channel", liveAddress);
