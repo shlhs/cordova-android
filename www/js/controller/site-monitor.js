@@ -271,10 +271,14 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', function ($scope, ajax
             var mhharr = [];
             for (var h = 0; h < item.time_keys.length; h++) {
                 var myarr = [];
+
+                var nian = item.time_keys[h].slice(0, 4);
+                var yue = item.time_keys[h].slice(5, 7) - 1;
+                var ri = item.time_keys[h].slice(8, 10);
                 var shi = item.time_keys[h].slice(11, 13);
                 var fen = item.time_keys[h].slice(14, 16);
                 var miao = item.time_keys[h].slice(17, 19);
-                myarr[0] = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), shi, fen, miao);
+                myarr[0] = new Date(nian, yue, ri, shi, fen, miao);
                 myarr[1] = item.datas[h];
                 mhharr.push(myarr)
             }
