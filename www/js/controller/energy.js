@@ -1,7 +1,34 @@
-function formatEnergyTree(category, labelName, allEnergyItems) {
+function formatEnergyItems(category, labelName, energyItems) { // 对能源配置项数据进行处理：补充path，aliasName
+    if (!energyItems) {
+        return;
+    }
+    // 先组成树，补充path、aliasName，然后再将树的节点变成list
+    var tree = formatEnergyTree(category, labelName, energyItems);
+    var items = [];
+
+    function _getChildren(parent) {
+        if (parent) {
+            var children = parent.children;
+            parent.children = null;
+            items.push(parent);
+            if (children) {
+                children.forEach(function (c) {
+                    _getChildren(c);
+                });
+            }
+        }
+    }
+    tree.forEach(function (item) {
+        _getChildren(item);
+    });
+    return items;
+}
+
+function formatEnergyTree(category, labelName, allEnergyItems) { //
     var depthItems = {};    // 按层次存放项目
     var maxDepth = 0;
     allEnergyItems.forEach(function (item) {
+        item.path = item.parentPath === '/' ? ('/' + item.name) : (item.parentPath + '/' + item.name);
         if (item.category === category && item.labelName === labelName && item.path.length > 1) {
             if (depthItems[item.depth]) {
                 depthItems[item.depth].push(item);
@@ -24,16 +51,25 @@ function formatEnergyTree(category, labelName, allEnergyItems) {
         if (!item.isLeaf) {
             item.children = [];
         }
+        item.aliasName = item.name;
         treeObj.push(item);
     });
+    var firstDepthNum = treeObj.length;
     function _findAndInsert(itemList, toInsertItem) {
         for (var i=0; i<itemList.length; i++) {
-            if (itemList[i].path === toInsertItem.parentPath) {
+            var parent = itemList[i];
+            if (parent.path === toInsertItem.parentPath) {
                 if (!toInsertItem.isLeaf) {
                     toInsertItem.children = [];
                     tmpParentItems.push(toInsertItem);
                 }
-                itemList[i].children.push(toInsertItem);
+                // 创建aliasName
+                if (parent.depth === 1 && firstDepthNum === 1) { // 如果一级目录只有一个节点，那么二级目录不需要增加父级节点名称
+                    toInsertItem.aliasName = toInsertItem.name;
+                } else {
+                    toInsertItem.aliasName = parent.name + '/' + toInsertItem.name;
+                }
+                parent.children.push(toInsertItem);
             }
         }
     }
@@ -966,7 +1002,7 @@ app.controller('EnergyStatisticsCtrl', ['$scope', 'ajax', 'platformService', '$c
         var items = [];
         var category = $scope.currentCategory.name, labelName = $scope.currentLabel.name;
         allEnergyItems.forEach(function (item) {
-            if (item.category === category && item.labelName === labelName && item.path.length > 1 && !item.isVirtual) {
+            if (item.category === category && item.labelName === labelName && !item.isVirtual) {
                 if (labelName === '支路') {
                     if (item.level >= 1 && item.level <= 2){
                         items.push(item);
@@ -976,6 +1012,7 @@ app.controller('EnergyStatisticsCtrl', ['$scope', 'ajax', 'platformService', '$c
                 }
             }
         });
+        items = formatEnergyItems(category, labelName, allEnergyItems);
         $scope.energyItems = [];
         items.forEach(function (item, i) {
             $scope.energyItems.push($.extend({}, item, {name: item.aliasName, id: i}));
@@ -1285,7 +1322,7 @@ app.controller('EnergyStatisticsZhiluCtrl', ['$scope', 'ajax', 'platformService'
         }
         return _i_to_2_str(h) + ':' + _i_to_2_str(m);
     }
-
+    
     function createElectricTrendLine(sns) {
         var today = [moment().format('YYYY-MM-DD 00:00:00.000'), moment().format('YYYY-MM-DD 23:59:59.000')];
         var yesterday = [moment().subtract(1, 'd').format('YYYY-MM-DD 00:00:00.000'), moment().subtract(1, 'd').format('YYYY-MM-DD 23:59:59.000')];
@@ -1608,25 +1645,18 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
     }
 
     function fetchElectricDegree(sns, startTime, endTime, callback) {
-        // 对sn去重
-        var tmpSns = [];
-        sns.forEach(function (sn) {
-            if (tmpSns.indexOf(sn) < 0) {
-                tmpSns.push(sn);
-            }
-        });
         ajax.get({
             url: platformService.getDeviceMgmtHost() + '/variables/data/summarized',
             data: {
-                sns: tmpSns.join(','),
+                sns: sns.join(','),
                 startTime: startTime,
                 endTime: endTime,
-                calcmethod: 'MAX,MIN'
+                calcmethod: 'DIFF'
             },
             success: function (data) {
                 data.forEach(function (item) {
-                   if (item.max_value_data !== null && item.min_value_data !== null) {
-                       item.all_degree = parseFloat((item.max_value_data - item.min_value_data).toFixed(2));
+                   if (item.accu_value_data !== null) {
+                       item.all_degree = parseFloat(item.accu_value_data);
                    } else {
                        item.all_degree = 0;
                    }
@@ -1637,17 +1667,10 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
     }
 
     function fetchElectricTrend(sns, startTime, endTime, queryPeriod, callback) {
-        // 对sn去重
-        var tmpSns = [];
-        sns.forEach(function (sn) {
-            if (tmpSns.indexOf(sn) < 0) {
-                tmpSns.push(sn);
-            }
-        });
         ajax.get({
             url:  platformService.getDeviceMgmtHost() + '/variables/data/historytrend',
             data: {
-                sns: tmpSns.join(','),
+                sns: sns.join(','),
                 startTime: startTime,
                 endTime: endTime,
                 calcmethod: 'DIFF',
@@ -1784,7 +1807,7 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
                     total += varDegreeMap[sn];
                 }
             });
-            itemDegreeMap[item.path] = total.toFixed(2);
+            itemDegreeMap[item.path] = parseFloat(total.toFixed(2));
         });
         return itemDegreeMap;
     }
@@ -1816,13 +1839,13 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
                 var nowValue = currentDegreeMap[item.path];
                 var historyValue = historyDegreeMap[item.path];
                 var value = null;
-                if (nowValue !== null && historyValue !== undefined && historyValue !== undefined && historyValue !== null) {
+                if (nowValue !== null && historyValue !== undefined && historyValue !== undefined && historyValue !== null && nowValue > 0) {
                     value = parseFloat(nowValue/historyValue*100-100).toFixed(2);
                 }
                 values.push({name: item.aliasName, value: value});
             });
             values.sort(function (v1, v2) {
-                return v2.value - v1.value;
+                return Math.abs(v2.value) - Math.abs(v1.value);
             });
             // 取前5名
             var seriesData = [], labels=[];
@@ -1992,9 +2015,13 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
             var labels = [], currentValues=[], historyValues=[];
             showItems.forEach(function (item) {
                 // 计算增幅
-                labels.push(item.aliasName);
-                currentValues.push(currentDegreeMap[item.path]);
-                historyValues.push(historyDegreeMap[item.path]);
+                var nv = currentDegreeMap[item.path]; // 本期值
+                var hv = historyDegreeMap[item.path]; // 上期值
+                if (nv || hv) {
+                    currentValues.push(nv);
+                    historyValues.push(hv);
+                    labels.push(item.aliasName);
+                }
             });
             var config = {
                 tooltip: {
@@ -2017,6 +2044,14 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
                     data: ['本期', '上期'],
                     top: 2,
                     right: 20,
+                    itemWidth: 12,
+                    itemHeight: 8,
+                    textStyle: {
+                        fontSize: 11,
+                        rich: {
+                            fonSize: 11
+                        }
+                    },
                     x: 'right'
                 },
                 grid: {

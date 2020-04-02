@@ -134,16 +134,22 @@ app.controller('KanbanCtrl', ['$scope', '$stateParams', 'ajax', '$timeout', func
                     }else if(contentsResult[i].type === 'trend-analysis'){
                         var deviceVarSns = [];
                         var deviceVarAliasMap = {};
+                        var colors = {};
+                        var lineTypes = {};
                         for(var j in contentsResult[i].content) {
-                            deviceVarSns.push(contentsResult[i].content[j].varInfo.deviceVarSn);
-                            deviceVarAliasMap[contentsResult[i].content[j].varInfo.deviceVarSn] = contentsResult[i].content[j].varInfo.deviceVarAlias;
+                            var varInfo = contentsResult[i].content[j].varInfo;
+                            deviceVarSns.push(varInfo.deviceVarSn);
+                            deviceVarAliasMap[varInfo.deviceVarSn] = varInfo.deviceVarAlias;
+                            colors[varInfo.deviceVarSn] = varInfo.lineColor;
+                            lineTypes[varInfo.deviceVarSn] = varInfo.lineStyle || 'line';
                         }
                         if(deviceVarSns.length === 0) {
                             continue;
                         }
                         haveChart = true;
                         needChartCount += 1;
-                        getTrendAnalysis(contentsResult[i].title, deviceVarSns, deviceVarAliasMap, contentsResult[i].period, $scope.queryTime, contentsResult[i].pfvSettings, contentsResult[i].showType, contentsResult[i].calcMethod);
+                        getTrendAnalysis(contentsResult[i].title, deviceVarSns, deviceVarAliasMap, colors, lineTypes, contentsResult[i].period,
+                            $scope.queryTime, contentsResult[i].pfvSettings, contentsResult[i].showType, contentsResult[i].calcMethod);
                     }else if(contentsResult[i].type === 'ratio-pie'){
                         var ratioPieData = [];
                         var unit = '';
@@ -617,7 +623,7 @@ app.controller('KanbanCtrl', ['$scope', '$stateParams', 'ajax', '$timeout', func
         });
     }
 
-    function getTrendAnalysis(name, deviceVarSns, deviceVarAliasMap, period, queryTime, pfvSettings, inputShowType, inputCalcMethod) { 
+    function getTrendAnalysis(name, deviceVarSns, deviceVarAliasMap, lineColors, lineTypes, period, queryTime, pfvSettings, inputShowType, inputCalcMethod) {
         var queryType = 'MONTH';
         if(period === 'current_day') {
             queryType = 'DAY';
@@ -670,7 +676,10 @@ app.controller('KanbanCtrl', ['$scope', '$stateParams', 'ajax', '$timeout', func
 
                 var chartDatas = [];
                 for(var j in data) {
-                    chartDatas.push({name: (deviceVarAliasMap[data[j].var.sn] ? deviceVarAliasMap[data[j].var.sn] : data[j].name)+' '+data[j].unit, type:showType, data: data[j].datas, yAxisIndex: 0});
+                    var alias = deviceVarAliasMap[data[j].var.sn];
+                    var name1 = (alias ? alias : data[j].name)+' '+data[j].unit;
+                    var sn = data[j].var.sn;
+                    chartDatas.push({name: name1, type: lineTypes[sn], data: data[j].datas, yAxisIndex: 0, color: lineColors[sn] || ''});
                 }
 
                 var showPfvSetting = (period === 'current_day' || period === 'normal')&& (pfvSettings === 'pfv-settings-f' || pfvSettings === 'pfv-settings-r');

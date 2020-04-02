@@ -567,7 +567,7 @@ app.controller('DeviceTreeCommonCtrl', ['$scope', function ($scope) {
     };
 }]);
 
-app.controller('DeviceMonitorListCtrl', ['$scope', 'ajax', function ($scope, ajax) {       // 检测设备列表页
+app.controller('DeviceMonitorListCtrl', ['$scope', 'ajax', 'platformService', function ($scope, ajax, platformService) {       // 检测设备列表页
     var stationSn = GetQueryString('sn');
     $scope.deviceDatas = [];
     $scope.treeData = [];
@@ -607,8 +607,9 @@ app.controller('DeviceMonitorListCtrl', ['$scope', 'ajax', function ($scope, aja
         $scope.isLoading = true;
         $scope.loadingFailed = false;
         ajax.get({
-            url: '/stations/' + stationSn + '/devicetree',
-            success: function (data) {
+            url: platformService.getDeviceMgmtHost() + '/management/devices?&station_sn=' + stationSn,
+            success: function (res) {
+                var data = res.data;
                 $scope.isLoading = false;
                 // 默认状态为"未知"
                 data.forEach(function (d) {
@@ -674,7 +675,7 @@ app.controller('DeviceMonitorListCtrl', ['$scope', 'ajax', function ($scope, aja
     }
 
     $scope.gotoDevice = function (deviceData) {
-        location.href = '/templates/site/device-monitor.html?stationSn=' + stationSn + '&deviceSn=' + deviceData.sn + '&deviceName=' + deviceData.name;
+        location.href = '/templates/site/device-monitor.html?stationSn=' + stationSn + '&deviceSn=' + deviceData.sn + '&deviceName=' + encodeURIComponent(deviceData.name);
     };
 
     $scope.getDataList();
@@ -1223,6 +1224,8 @@ app.controller('HistoryVarCtrl', ['$scope', 'ajax', function ($scope, ajax) {
             },
             tooltip: {
                 trigger: 'axis',
+                alwaysShowContent: false,
+                confine: true,
             },
             xAxis: {
                 type: 'category',
@@ -1261,6 +1264,7 @@ app.controller('HistoryVarCtrl', ['$scope', 'ajax', function ($scope, ajax) {
             },
             series: series,
         };
+        echarts.dispose(document.getElementById('chartContainer'));
         echarts.init(document.getElementById('chartContainer')).setOption(option);
     }
 }]);
