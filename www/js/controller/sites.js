@@ -472,24 +472,25 @@ app.controller('SiteDocsCtrl', function ($scope, routerService, platformService,
             $("#slides").hide();
             window.removeEventListener("popstate", hide);
         }
+        var url = host+doc.src_link;
         if (doc.isImage){
-            $scope.currentImage = host + doc.src_link;
-            // $("#slides").show().on('click', function () {
-            //     $("#slides").off('click');
-            //     history.back();
-            // });
-            // history.pushState('dialog', 'dialog', null);
-            // window.addEventListener("popstate", hide);
+            $scope.currentImage = url;
             routerService.openPage($scope, '/templates/base-gallery.html', {
                 images: [$scope.currentImage],
                 index: 0
             });
         } else {
             if (window.android){
-                window.android.openFile(host + doc.src_link);
+                window.android.openFile(url);
+            } else if (cordova && cordova.InAppBrowser) {
+                cordova.InAppBrowser.open(url, '_blank', 'location=false', {
+                    hidden: 'yes',
+                    enableViewportScale: 'yes',
+                    zoom: 'yes'
+                });
             } else
             {
-                window.open(host+doc.src_link, '_blank', 'location=no,enableViewportScale=yes,zoom=yes');
+                window.open(url, '_blank', 'location=no,enableViewportScale=yes,zoom=yes');
             }
         }
     };
