@@ -56,7 +56,7 @@ app.controller('LoginCtrl', ['$scope', '$timeout', 'platformService', 'userServi
     function login() {
         $scope.error = '';
         var data = {
-            username: $scope.username,
+            username: $scope.username.trim(),
             password: $scope.password
         };
         var loginUrl = platformService.getAuthHost();
@@ -109,7 +109,7 @@ app.controller('LoginCtrl', ['$scope', '$timeout', 'platformService', 'userServi
 
     function getUserInfo() {
         ajax.get({
-            url: '/user/' + $scope.username,
+            url: '/user/' + $scope.username.trim(),
             ignoreAuthExpire: true,
             success: function (data) {
                 userService.saveLoginUser(data, $scope.password);
