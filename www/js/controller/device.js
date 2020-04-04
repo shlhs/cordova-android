@@ -1039,19 +1039,22 @@ app.controller('DeviceRemoteControlConfirmCtrl', ['$scope', 'ajax', function ($s
 app.controller('VarRealtimeCtrl', ['$scope', 'ajax', function ($scope, ajax) {
 
     var deviceSn=$scope.$parent.deviceSn;
-    $scope.realtime = {};       // 实时数据
+    $scope.realtime = null;       // 实时数据
     $scope.realtimeType = '';
     $scope.realtimeValues = [];
-    $scope.isLoading = false;
+    $scope.isLoading = true;
     var interval = null;
 
     $scope.$on('$onRealtimeTypeChanged', function (event, realtimeItem) {
-
-        $scope.realtime = realtimeItem;
-        $scope.realtimeType = realtimeItem.name;
-        getRealTimeData();
-        if (null == interval) {
-            interval = setInterval(getRealTimeData, 5000);
+        if (realtimeItem) {
+            $scope.realtime = realtimeItem;
+            $scope.realtimeType = realtimeItem.name;
+            getRealTimeData();
+            if (null === interval) {
+                interval = setInterval(getRealTimeData, 5000);
+            }
+        } else {
+            $scope.isLoading = false;
         }
     });
 
