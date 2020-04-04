@@ -1054,7 +1054,7 @@ app.controller('VarRealtimeCtrl', function ($scope, ajax) {
     $scope.realtime = null;       // 实时数据
     $scope.realtimeType = '';
     $scope.realtimeValues = [];
-    $scope.isLoading = false;
+    $scope.isLoading = true;
     var interval = null;
 
     var typeChangeListener = $scope.$on('$onRealtimeTypeChanged', function (event, realtimeItem) {
@@ -1065,6 +1065,8 @@ app.controller('VarRealtimeCtrl', function ($scope, ajax) {
             if (null === interval) {
                 interval = setInterval(getRealTimeData, 5000);
             }
+        } else {
+            $scope.isLoading = false;
         }
     });
 
