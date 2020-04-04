@@ -636,9 +636,127 @@ app.controller('BaseGalleryCtrl', function ($scope, $stateParams, $timeout) {
     };
 });
 
+
+app.controller('mapCtrl', function ($scope, $timeout, cordovaService) {
+    var sn = $scope.stationSn;
+
+    $scope.siteData = {};
+    $scope.distance = '';
+    $scope.enableNavigate = false;
+    function getSite() {
+        var host = JSON.parse(getStorageItem('latestPlatform')).url;
+        $.ajax({
+            url: host + '/stations/' + sn,
+            xhrFields: {
+                withCredentials: true
+            },
+            crossDomain: true,
+            headers: {
+                Authorization: 'Bearer' + (getStorageItem('accountToken') || ''),
+                credentials: 'include',
+                mode: 'cors'
+            },
+            success: function (data) {
+                data.address = (data.address_province?data.address_province:'') + (data.address_city?data.address_city:'')
+                    + (data.address_district?data.address_district:'') + (data.address || '');
+                $scope.siteData = data;
+                $scope.$apply();
+                drawMap(data);
+            },
+            error: function (a, b, c) {
+                $.notify.error('获取站点信息失败');
+                console.log('login fail');
+            }
+        });
+    }
+
+    function drawMap(siteData) {
+        var map = new BMap.Map("stationMap");          // 创建地图实例
+        if (!map){ return; }
+        // 导航
+        var driving = new BMap.DrivingRoute(map, {
+            renderOptions: {
+                map   : map,
+                panel : "results",
+                autoViewport: true
+            },
+            onSearchComplete: function (result) {
+                if (result){
+                    $scope.distance = result.getPlan(0).getDistance();
+                    $scope.$apply();
+                }
+            }
+        });
+        var end = new BMap.Point(siteData.longitude, siteData.latitude);
+        // 添加标注
+        map.centerAndZoom(end, 15);
+        map.enableScrollWheelZoom();
+        var marker = new BMap.Marker(end);
+        var mgr = new BMapLib.MarkerManager(map,{
+            maxZoom: 15,
+            trackMarkers: true
+        });
+        mgr.addMarker(marker,1, 15);
+        mgr.showMarkers();
+        if (window.android && window.android.gotoThirdMap) {
+            $scope.enableNavigate = true;
+        }
+
+        $scope.$apply();
+        if (cordovaService.deviceReady) {
+            navigator.geolocation.getCurrentPosition(function (position) {
+                var longtitude = position.coords.longtitude;
+                var latitude = position.coords.latitude;
+                // 添加标注
+                var start = new BMap.Point(longtitude, latitude);
+                // 坐标转换
+                var convertor = new BMap.Convertor();
+                var pointArr = [start];
+                convertor.translate(pointArr, 3, 5, function (data) {   //3: gcj02坐标，5：百度坐标
+                    driving.search(data.points[0], end);
+                    map.centerAndZoom(end, 15);                 // 初始化地图，设置中心点坐标和地图级别
+                });
+            }, function (error) {
+                console.log(error);
+            });
+        } else {
+            apiLocation.start(function (longtitude, latitude) {
+                //如果获取不到用户的定位，则直接显示站点的位置
+                if (longtitude && latitude){
+                    // 添加标注
+                    var start = new BMap.Point(longtitude, latitude);
+                    // 坐标转换
+                    var convertor = new BMap.Convertor();
+                    var pointArr = [start];
+                    convertor.translate(pointArr, 3, 5, function (data) {   //3: gcj02坐标，5：百度坐标
+                        driving.search(data.points[0], end);
+                        map.centerAndZoom(end, 15);                 // 初始化地图，设置中心点坐标和地图级别
+                    });
+                }
+            });
+        }
+
+    }
+
+    // 打开第三方地图
+    $scope.openThirdMap = function () {
+        if (window.android && window.android.gotoThirdMap){
+            var sitePoint = new BMap.Point($scope.siteData.longitude, $scope.siteData.latitude);
+
+            var convertor = new BMap.Convertor();
+            var pointArr = [sitePoint];
+            convertor.translate(pointArr, 5, 3, function (data) {   //3: gcj02坐标，5：百度坐标
+                window.android.gotoThirdMap($scope.siteData.latitude, $scope.siteData.longitude, data.points[0].lat, data.points[0].lng);
+            });
+        }
+    };
+
+    $timeout(getSite, 500);
+});
+
 // 图片选择控制器
 // 使用的父级controller需要实现方法： $scope.registerImageInfo(imageEleId) { return $scope.images }
-app.controller('ImageUploaderCtrl', function ($document, $scope, $timeout, routerService) {
+app.controller('ImageUploaderCtrl', ['$document', '$scope', '$timeout', 'routerService', function ($document, $scope, $timeout, routerService) {
     $scope.elementId = '';
     $scope.singleImage = false;     // 是否只允许一张图片
     $scope.files = [];
@@ -734,7 +852,7 @@ app.controller('ImageUploaderCtrl', function ($document, $scope, $timeout, route
     $scope.openMobileGallery = function () {
         if ($scope.singleImage) {
             clearAllExist();
-            window.android.openGallery(9, 'onAndroid_taskImageImport', 'onAndroid_taskImageDelete');
+            window.android.openGallery(1, 'onAndroid_taskImageImport', 'onAndroid_taskImageDelete');
         } else {
             window.android.openGallery(9, 'onAndroid_taskImageImport', 'onAndroid_taskImageDelete');
         }
@@ -778,121 +896,77 @@ app.controller('ImageUploaderCtrl', function ($document, $scope, $timeout, route
     $scope.$on('$destroy', function (event) {
         clearAllExist();
     });
+}]);
+
+app.directive('dropDownMenu', function () {
+    return {
+        restrict: 'E',
+        templateUrl: 'templates/site-monitor/dropdown-menu.html',
+        scope: {
+            options: '=',
+            onSelect: '=',
+            modelName: '=',
+            defaultValue: '=',
+            selected: '=',
+            disabled: '='
+        },
+        replace: true,
+        controller:['$scope', '$attrs', function($scope, $attrs){
+            $scope.active = false;
+            $scope.selected = $scope.selected || {};
+
+            $scope.toggle = function () {
+                if ($scope.disabled) {
+                    return;
+                }
+                $scope.active = !$scope.active;
+                if ($scope.active) {
+                    var mark = $('<div style="position: fixed;background-color: transparent;width: 100%;height: 100%;top:60px;z-index: 1;left: 0;" ng-click="toggle()"></div>')
+                        .appendTo($scope.domEle);
+                } else {
+                    $scope.domEle.find('div:last').remove();
+                }
+            };
+
+            $scope.onClick = function ($event, id) {
+                if ($event) {
+                    $event.preventDefault();
+                    $event.stopPropagation();
+                }
+                for (var i=0; i<$scope.options.length; i++) {
+                    if ($scope.options[i].id === id) {
+                        $scope.selected = $scope.options[i];
+                        $scope.toggle();
+                        $scope.onSelect($scope.modelName, $scope.selected.id, $scope.selected.name);
+                        return false;
+                    }
+                }
+            };
+
+            if ($scope.defaultValue !== undefined) {
+                for (var i=0; i<$scope.options.length; i++) {
+                    if ($scope.options[i].id === $scope.defaultValue) {
+                        $scope.selected = $scope.options[i];
+                        break;
+                    }
+                }
+            } else if ($scope.options.length) {
+                $scope.selected = $scope.options[0];
+            }
+        }],
+        link: function (scope, element, attrs) {
+            console.log(element);
+            scope.domEle = element;
+        }
+    }
 });
 
-app.controller('mapCtrl', function ($scope, $timeout, cordovaService) {
-    var sn = $scope.stationSn;
+app.controller('PDFViewerCtrl', function ($scope) {
+   $scope.url = 'pdf-viewer/viewer.html?file=' + $scope.url;
+   $scope.show = false;
 
-    $scope.siteData = {};
-    $scope.distance = '';
-    $scope.enableNavigate = false;
-    function getSite() {
-        var host = JSON.parse(getStorageItem('latestPlatform')).url;
-        $.ajax({
-            url: host + '/stations/' + sn,
-            xhrFields: {
-                withCredentials: true
-            },
-            crossDomain: true,
-            headers: {
-                Authorization: 'Bearer' + (getStorageItem('accountToken') || ''),
-                credentials: 'include',
-                mode: 'cors'
-            },
-            success: function (data) {
-                data.address = (data.address_province?data.address_province:'') + (data.address_city?data.address_city:'')
-                    + (data.address_district?data.address_district:'') + (data.address || '');
-                $scope.siteData = data;
-                $scope.$apply();
-                drawMap(data);
-            },
-            error: function (a, b, c) {
-                $.notify.error('获取站点信息失败');
-                console.log('login fail');
-            }
-        });
-    }
-
-    function drawMap(siteData) {
-        var map = new BMap.Map("siteMap");          // 创建地图实例
-        if (!map){ return; }
-        // 导航
-        var driving = new BMap.DrivingRoute(map, {
-            renderOptions: {
-                map   : map,
-                panel : "results",
-                autoViewport: true
-            },
-            onSearchComplete: function (result) {
-                if (result){
-                    $scope.distance = result.getPlan(0).getDistance();
-                    $scope.$apply();
-                }
-            }
-        });
-        var end = new BMap.Point(siteData.longitude, siteData.latitude);
-        // 添加标注
-        map.centerAndZoom(end, 15);
-        map.enableScrollWheelZoom();
-        var marker = new BMap.Marker(end);
-        var mgr = new BMapLib.MarkerManager(map,{
-            maxZoom: 15,
-            trackMarkers: true
-        });
-        mgr.addMarker(marker,1, 15);
-        mgr.showMarkers();
-        if (window.android && window.android.gotoThirdMap) {
-            $scope.enableNavigate = true;
-        }
-
-        $scope.$apply();
-        if (cordovaService.deviceReady) {
-            navigator.geolocation.getCurrentPosition(function (position) {
-                var longtitude = position.coords.longtitude;
-                var latitude = position.coords.latitude;
-                // 添加标注
-                var start = new BMap.Point(longtitude, latitude);
-                // 坐标转换
-                var convertor = new BMap.Convertor();
-                var pointArr = [start];
-                convertor.translate(pointArr, 3, 5, function (data) {   //3: gcj02坐标，5：百度坐标
-                    driving.search(data.points[0], end);
-                    map.centerAndZoom(end, 15);                 // 初始化地图，设置中心点坐标和地图级别
-                });
-            }, function (error) {
-                console.log(error);
-            });
-        } else {
-            apiLocation.start(function (longtitude, latitude) {
-                //如果获取不到用户的定位，则直接显示站点的位置
-                if (longtitude && latitude){
-                    // 添加标注
-                    var start = new BMap.Point(longtitude, latitude);
-                    // 坐标转换
-                    var convertor = new BMap.Convertor();
-                    var pointArr = [start];
-                    convertor.translate(pointArr, 3, 5, function (data) {   //3: gcj02坐标，5：百度坐标
-                        driving.search(data.points[0], end);
-                        map.centerAndZoom(end, 15);                 // 初始化地图，设置中心点坐标和地图级别
-                    });
-                }
-            });
-        }
-
-    }
-
-    // 打开第三方地图
-    $scope.openThirdMap = function () {
-        if (window.android && window.android.gotoThirdMap){
-            var sitePoint = new BMap.Point($scope.siteData.longitude, $scope.siteData.latitude);
-
-            var convertor = new BMap.Convertor();
-            var pointArr = [sitePoint];
-            convertor.translate(pointArr, 5, 3, function (data) {   //3: gcj02坐标，5：百度坐标
-                window.android.gotoThirdMap($scope.siteData.latitude, $scope.siteData.longitude, data.points[0].lat, data.points[0].lng);
-            });
-        }
-    };
-
-    $timeout(getSite, 500);
+   setTimeout(function () {
+       $scope.show = true;
+       $scope.$apply();
+   }, 300);
 });

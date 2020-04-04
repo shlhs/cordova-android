@@ -12,7 +12,7 @@
                             </h4>
                         </div>
                     </div>
-                    <div class="sub-body">
+                    <div class="sub-body task-infos">
                         <p class="task-name">
                             {{task.name}}
                         </p>
@@ -40,17 +40,8 @@
                                 <span ng-switch-default>未巡检</span>
                             </span>
                         </div>
-                        <!--<div ng-if="task.task_type_id === TaskTypes.Xunjian && (task.stage_id !== TaskStatus.Closed && task.stage_id !== TaskTypes.ToClose)">-->
-                            <!--<span class="task-info-label" style="padding-right: 0;">巡检结果：</span>-->
-                            <!--<span class="task-info-value" ng-switch="task.device_record.status">-->
-                                <!--<span ng-switch-when="1" style="color: #44D36B;">正常</span>-->
-                                <!--<span ng-switch-when="2" style="color: #ff0000;">有异常</span>-->
-                                <!--<span ng-switch-default>未巡检</span>-->
-                            <!--</span>-->
-                        <!--</div>-->
                     </div>
                     <div class="task-status">
-                        <!--<span style="color: #6f6f6f;margin: 0 2px;">{{task.current_handler_name}}</span>{{task.stage_name}}-->
                         <span ng-if="!task.isMyself" style="color: #6f6f6f;">{{task.stage_name}}</span>
                         <span ng-if="task.isMyself">{{task.stage_name}}</span>
                     </div>

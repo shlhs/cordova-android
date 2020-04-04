@@ -1,11 +1,11 @@
 <div class="page page-left" ng-controller="TaskBaseCtrl" style="background-color: #f5f5f5;">
-    <div ng-controller="TaskListCtrl">
+    <div id="taskList" ng-controller="TaskListCtrl">
         <header class="mui-bar bg-header">
             <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
             <h1 class="mui-title">{{pageTitle}}</h1>
             <a ng-click="openTaskCreatePage()" class="mui-action-menu mui-icon mui-pull-right" ng-if="hasOpsAuth"><i class="header-icon white icon-add"></i></a>
         </header>
-        <div style="top:61px;" class="mui-content" ng-controller="TaskListCtrl" id="taskList">
+        <div style="top:62px;" class="scroll-wrapper">
             <div class="filter-btn" ng-click="toggleFilter()">
                 筛选<label class="iconfont anticon-filter" style="font-size: 13px;"></label>
             </div>

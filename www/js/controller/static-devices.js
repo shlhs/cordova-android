@@ -191,10 +191,12 @@ app.controller('StaticDeviceDetailCtrl', function ($scope, $stateParams, ajax, r
         );
     };
 
-    $scope.gotoDtsList = function () {
+    $scope.gotoDtsList = function (status) {
+        // status: doing表示未完成，finish表示已完成
         routerService.openPage($scope, '/templates/site/static-devices/device-dts-history.html', {
             device_sn: $scope.device.sn,
-            sn: $scope.device.station_sn
+            sn: $scope.device.station_sn,
+            status: status
         });
         // window.location.href = '/templates/site/static-devices/device-dts-history.html?device_sn=' + $scope.device.sn + '&station_sn=' + $scope.device.station_sn;
     };

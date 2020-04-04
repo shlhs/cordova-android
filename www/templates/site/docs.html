@@ -15,11 +15,10 @@
             <div class="mui-card-content">
                 <ul class="mui-table-view">
                     <li class="mui-table-view-cell mui-media" ng-repeat="doc in group.docs" style="padding-right: 60px;">
-                        <i class="mui-media-object mui-pull-left icon icon-md {{doc.icon}}" ng-if="!doc.isImage"></i>
-                        <i class="mui-media-object mui-pull-left icon icon-md" style="background-image: url({{ host + doc.src_link}});" ng-if="doc.isImage"></i>
+                        <i class="mui-media-object mui-pull-left icon icon-28 {{doc.icon}}"></i>
                         <div class="mui-media-body mui-ellipsis" ng-click="open(doc)">
                             {{doc.name}}
-                            <p class="mui-ellipsis">{{doc.create_time}}<span class="mui-pull-right">{{doc.creator}}</span></p>
+                            <p class="mui-ellipsis">{{doc.create_time}}</p>
                         </div>
                         <!--<i class="mui-pull-right icon icon-ms icon-download"></i>-->
                     </li>

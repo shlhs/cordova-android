@@ -200,7 +200,7 @@ app.controller('SiteBaseInfoCtrl', function ($scope, $timeout, $stateParams, aja
                     data.site_image = platformService.getImageUrl(width, height, platformService.getCloudHost() + data.photo_src_link);
                 }
                 else {
-                    data.site_image = 'img/background/site-default.png';
+                    data.site_image = 'img/site-default.png';
                 }
                 $scope.siteData = data;
                 getUnhandledEventCount(data);
@@ -272,7 +272,9 @@ app.controller('EventListCtrl', function ($scope, scrollerService, userService, 
             page_start:0,
             page_len: 500,
             secho: 1,
-            status: $scope.status === undefined ? 1 : $scope.status
+            status: $scope.status === undefined ? 1 : $scope.status,
+            starttime: moment().subtract(3, 'months').format('YYYY-MM-DDTHH:mm:ss.000') + 'Z',
+            endtime: moment().format('YYYY-MM-DDTHH:mm:ss.000') + 'Z'
         };
         if ($scope.isDevice){
             params.deviceSn = $scope.sn;
@@ -456,7 +458,7 @@ app.controller('SiteDocsCtrl', function ($scope, routerService, platformService,
             case 'png':
             case 'jpg':
             case 'bmp':
-                icon = null;
+                icon = 'icon-doc-picture'
                 doc['isImage'] = true;
                 break;
         }
@@ -535,8 +537,10 @@ app.controller('SiteReportsCtrl', function ($scope, $state,ajax, scrollerService
     };
 
     $scope.openReport = function (name, link) {
-        routerService.openPage($scope, '/templates/base-image-zoom.html', {link: link, name: name});
-        // $state.go('.detail', {link: link, name: name});
+        // routerService.openPage($scope, '/pdf-viewer/viewer.html?file=' + link, '_self', 'width:100%;height:100%;top:0;left:0;');
+        routerService.openPage($scope, '/pdf-viewer/pdf-container.html', {
+            url: link,
+        });
     };
 
     $scope.getDataList();

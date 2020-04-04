@@ -52,9 +52,12 @@ app.controller('MonitorListCtrl', function ($scope, $state, routerService, scrol
 app.controller('MonitorDetailCtrl', function ($scope, cordovaService) {
     var url = $scope.url;
     var iframe = document.getElementById('iframe');
+
+    var originHistoryLen = history.length;      // 记录location history初始的个数
     setTimeout(function () {
         setLandscape();
-        iframe.src = url;
+        // iframe.src = url;
+        iframe.contentWindow.location.replace(url);
         $.notify.progressStart();
         if (!/*@cc_on!@*/0) { //if not IE
             iframe.onload = function(){
@@ -73,6 +76,11 @@ app.controller('MonitorDetailCtrl', function ($scope, cordovaService) {
             };
         }
     }, 500);
+
+    $scope.back = function () {
+        var currentHistoryLen = history.length;
+        window.history.go(-(currentHistoryLen - originHistoryLen));
+    };
 
     function setLandscape() {
         // 设置横屏

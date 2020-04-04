@@ -149,7 +149,6 @@ app.directive('deviceTreeView',[function(){
             deviceList: '=',
             clickCallback: '=',
             showStatus: '=',
-            checkbox: '=',
             canChecked: '=',
             textField: '@',
             itemClicked: '&',
@@ -251,6 +250,7 @@ app.directive('deviceTreeView',[function(){
         }]
     };
 }]);
+
 
 /* 运维班组选择 */
 app.directive('operatorTeamSelector',[function(){

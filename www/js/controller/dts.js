@@ -31,20 +31,15 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
 
     $scope.images = [];
     $scope.description = '';
-
     $scope.teams = [];
     $scope.teamVisible = false;         // 是否显示运维班组选择窗口
     $scope.teamUsers = [];
     $scope.handlerVisible = false;      // 是否显示维修工选择窗口
     $scope.handlerRowSpan = 1;       // 默认为一行
-
-    $scope.isPC = IsPC();
-    $scope.useMobileGallery = window.android && window.android.openGallery;
     var staticDevices = [];
 
     var taskTypePicker = null;
     var datePicker = null;
-    var userPicker = null;
     var opsCompanyId = null;
     var companyId = userService.getCompanyId();
     if ($scope.needResign) {
@@ -53,7 +48,6 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
 
     // 先清除上一次选择的图片
     window.android && window.android.clearSelectedPhotos();
-
     function init() {
         if (!$scope.device.sn && $scope.device.station_sn) {
             // 如果设备sn为空的话，则需要用户选择设备
@@ -109,21 +103,6 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
                 $scope.$apply();
             }
         });
-    }
-
-    function _format(data, idKey, nameKey) {
-        var d = null;
-        if (typeof (idKey) === 'undefined'){
-            idKey = 'id';
-        }
-        if (typeof (nameKey) === 'undefined'){
-            nameKey = 'name'
-        }
-        for(var i=0; i<data.length; i++){
-            d = data[i];
-            d['value'] = d[idKey];
-            d['text'] = d[nameKey];
-        }
     }
 
     function initTaskTypeList() {
@@ -245,100 +224,6 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
         })
     };
 
-    $scope.chooseImage = function (files) {     // 选择图片
-        $scope.canDelete = true;
-        for (var i = 0; i < files.length; i++) {
-            var reader = new FileReader(), file=files[i];
-            reader.readAsDataURL(file);
-            reader.onloadstart = function () {
-                //用以在上传前加入一些事件或效果，如载入中...的动画效果
-            };
-            reader.onload = function (event) {
-                var img = new Image();
-                img.src = event.target.result;
-                img.onload = function(){
-                    var quality =  75;
-                    var dataUrl = imageHandler.compress(this, 75, file.orientation).src;
-                    $scope.files.push({name: file.name});
-                    $scope.images.push(dataUrl);
-                    $scope.$apply();
-                };
-            };
-        }
-    } ;
-
-    $scope.openMobileGallery = function () {
-        window.android.openGallery(9, 'onAndroid_dtsImageImport', 'onAndroid_dtsImageDelete');
-    };
-
-    $scope.submitAndBack = function() {   //上传描述和图片
-        if (!$scope.description && !$scope.files.length){
-            mui.alert('评论与图片不能同时为空', '无法提交', function() {
-            });
-            return;
-        }
-        var images = [];
-        insertPosition.prevAll().each(function (i, n) {
-            var imageUrl = $(n).find('.img-file').css('background-image');
-            images.push(imageUrl.substring(5, imageUrl.length-2));
-        });
-        $scope.postAction(TaskAction.Update, $scope.description, images, function () {       // 上传成功，清空本次信息
-            $timeout(function () {
-                $scope.cancel();
-            }, 500);
-        });
-    };
-
-    $scope.addImagesWithBase64 = function (data, filename) {
-        // alert('add images for dts create');
-        $scope.canDelete = true;
-        if (filename === undefined) {
-            filename = '';
-        }
-        $scope.files.push({name: filename});
-        $scope.images.push(data);
-        $scope.$apply();
-    };
-
-    $scope.deleteImageFromMobile = function (filename) {
-        for (var i=0; i<$scope.files.length; i++) {
-            if ($scope.files[i].name === filename) {
-                $scope.files.splice(i, 1);
-                $scope.images.splice(i, 1);
-                break;
-            }
-        }
-        $scope.$apply();
-    };
-
-    $scope.openMobileGallery = function () {
-        window.android.openGallery(9, 'onAndroid_dtsImageImport', 'onAndroid_dtsImageDelete');
-    };
-
-    $scope.cancel = function () {
-        window.android && window.android.clearSelectedPhotos && window.android.clearSelectedPhotos();      // 调用Android js接口，清除选择的所有照片
-        window.history.back();
-    };
-
-    $scope.openGallery = function (index) {
-        routerService.openPage($scope, '/templates/base-gallery.html', {
-            index: index+1,
-            images: $scope.images,
-            canDelete: true,
-            onDelete: $scope.deleteImage
-        }, {
-            hidePrev: false
-        });
-    };
-
-    $scope.deleteImage = function (index) {
-        // 删除某一张图片
-        var filename = $scope.files[index].name;
-        window.android && window.android.deleteSelectedPhoto && window.android.deleteSelectedPhoto(filename);
-        $scope.files.splice(index, 1);
-        $scope.images.splice(index, 1);
-    };
-
     $scope.submitForm = function() {
         if($scope.myForm.$invalid){
             console.log('form invalid');
@@ -353,12 +238,14 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
             sn: $scope.device.sn,
             name: $scope.device.name
         }];
+        // 增加图片信息
         if ($scope.images.length) {
             taskData.pictures = $scope.images;
         }
         taskData.events = [];
         taskData.station_sn = $scope.device.station_sn;
         taskData.mother_task_id = taskId;
+        taskData.source = taskId ? TaskSource.Inspect : TaskSource.Repaire;     // 如果是从其他任务创建，即mother_task_id不为空，则来源为巡检，否则为报修
         $.notify.progressStart();
         ajax.post({
             url: '/opstasks/' + companyId,
@@ -379,6 +266,7 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
     };
 
     function notifyCreate(taskId) {
+        destroyPicker();
         ajax.get({
             url: '/opstasks',
             data: {
@@ -396,6 +284,10 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
     }
 
     $scope.$on('$destroy', function (event) {
+        destroyPicker();
+    });
+
+    function destroyPicker() {
         if (taskTypePicker) {
             taskTypePicker.dispose();
             taskTypePicker = null;
@@ -404,23 +296,21 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
             datePicker.dispose();
             datePicker = null;
         }
-        if (userPicker) {
-            userPicker.dispose();
-            userPicker = null;
-        }
-    });
+    }
 
     init();
 });
 
 // 设备缺陷记录
-app.controller('DeviceDtsListCtrl', function ($scope, ajax, scrollerService, routerService) {
+app.controller('DeviceDtsListCtrl', function ($scope, ajax, scrollerService, routerService, userService) {
+    var status = $scope.status;
     var deviceSn = $scope.device_sn;
     var stationSn = $scope.sn;
     $scope.TaskStatus = TaskStatus;
     $scope.tasks = [];
     $scope.isLoading = true;
     $scope.loadingFailed = false;
+    var userAccount = userService.getUser().account;
 
     function sortDts(d1, d2) {
         // 排序规则：未完成、待审批、已关闭，同样状态的按截止日期排序
@@ -460,12 +350,20 @@ app.controller('DeviceDtsListCtrl', function ($scope, ajax, scrollerService, rou
         scrollerService.initScroll("#taskList", $scope.getDataList);
         $scope.isLoading = true;
         $scope.loadingFailed = false;
+        var params = {
+            device_sn: deviceSn
+        };
+        if (status === 'doing') {
+            var allStages = Object.values(TaskStatus);
+            allStages.splice(allStages.indexOf(TaskStatus.Closed), 1).splice(allStages.indexOf(TaskSource.ToClose), 1);
+            params.stage = allStages.join(',');
+        } else if (status === 'finish') {
+            params.stage = [TaskStatus.ToClose, TaskStatus.Closed].join(',');
+        }
 
         ajax.get({
             url: "/dts",
-            data:{
-                device_sn: deviceSn
-            },
+            data: params,
             success: function(result) {
                 $scope.isLoading = false;
                 result.sort(sortDts);
@@ -473,6 +371,12 @@ app.controller('DeviceDtsListCtrl', function ($scope, ajax, scrollerService, rou
                 for (var i in tasks){
                     task = tasks[i];
                     formatTaskStatusName(task);
+                    if (isTodoTask(task, userAccount)) {
+                        task.isMyself = true;
+                    }
+                    if (task.finish_time) {
+                        task.finish_time = task.finish_time.substring(0, 16);
+                    }
                     task.isTimeout = $scope.taskTimeout(task);
                 }
                 $scope.tasks = tasks;
