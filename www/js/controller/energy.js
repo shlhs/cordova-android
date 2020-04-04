@@ -638,6 +638,7 @@ app.controller('EnergyReportCtrl', function ($scope, ajax, $compile, platformSer
         ajax.get({
             url: '/energy/' + stationSn + '/config',
             success: function (response) {
+                $scope.isLoading = false;
                 var labels = [];
                 var categories = [];
                 response.energyItems.forEach(function (item) {
