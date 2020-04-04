@@ -63,5 +63,15 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
             templateUrl: '/templates/site/monitor-detail.html',
             controller: 'MonitorDetailCtrl'
         })
+        .state('index.deviceList.deviceDetail', {
+            url: '/deviceDetail',
+            params: {
+                sn: null,
+                deviceSn: null,
+                deviceName: null
+            },
+            templateUrl: '/templates/site/device-detail.html',
+            controller: 'DeviceDetailCtrl'
+        })
     ;
 }]);

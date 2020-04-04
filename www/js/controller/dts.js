@@ -48,6 +48,9 @@ app.controller('DtsCreateCtrl', function ($scope, $timeout, ajax, userService, r
 
     // 先清除上一次选择的图片
     window.android && window.android.clearSelectedPhotos();
+
+    var insertPosition = angular.element("#imageList>.upload-item");
+
     function init() {
         if (!$scope.device.sn && $scope.device.station_sn) {
             // 如果设备sn为空的话，则需要用户选择设备
@@ -391,7 +394,7 @@ app.controller('DeviceDtsListCtrl', function ($scope, ajax, scrollerService, rou
     };
 
     $scope.updateTask = function (taskData) {
-        if (DtsTaskType.indexOf(taskData.task_type_id) < 0 || !taskData.device_record || !taskData.device_record.length || taskData.device_record[0].device_sn !== deviceSn) {
+        if (DtsTaskType.indexOf(taskData.task_type_id) < 0 || !taskData.device_record.length || taskData.device_record[0].device_sn !== deviceSn) {
             return;
         }
         // 查找任务是否存在

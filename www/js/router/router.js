@@ -79,10 +79,7 @@ app.config(['myStateProvider', function(myStateProvider){
         })
         .state('index.company', {
             url: '/company',
-            templateUrl: 'templates/setting/company.html',
-            params: {
-                company: {}
-            }
+            templateUrl: 'templates/setting/company.html'
         })
         .state('index.share', {
             url: '/share',

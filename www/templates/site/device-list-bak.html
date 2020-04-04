@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>所有设备</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <link rel="stylesheet" href="../../components/mui/css/mui.min.css">
+    <link rel="stylesheet" href="../../css/my.css">
+    <link rel="stylesheet" href="../../css/icon.css">
+    <link rel="stylesheet" href="../../css/animate.css">
+    <link rel="stylesheet" href="../../components/mui/css/icons-extra.css">
+    <link rel="stylesheet" href="../../css/setting.css">
+    <!--<script type="text/javascript" src="../../cordova.js"></script>-->
+    <!--<script type="text/javascript" src="../../cordova_plugins.js"></script>-->
+    <script type="text/javascript" src="../../components/libs/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <!--<script type="text/javascript" src="components/ui-router-extras/release/ct-ui-router-extras.js"></script>-->
+    <script type="text/javascript" src="../../components/angular-animate/angular-animate.js"></script>
+    <script type="text/javascript" src="../../components/angular-ui-router/release/stateEvents.min.js"></script>
+    <script type="text/javascript" src="../../js/app/utils.js"></script>
+    <script type="text/javascript" src="../../js/app/app.js"></script>
+    <script type="text/javascript" src="../../js/service/common-service.js"></script>
+    <!--<script type="text/javascript" src="../../js/router/site-router.js"></script>-->
+
+    <style>
+        html,body{
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        #deviceList .mui-media{
+            height: 42px;
+        }
+        #deviceList .mui-media img{
+            height: 42px;
+            width: 42px;
+            line-height:42px;
+        }
+    </style>
+</head>
+<body class="box-vertical-center" ng-app="myApp" ng-controller="DeviceListCtrl">
+    <header class="mui-bar bg-header">
+        <a class="mui-icon mui-icon-left-nav mui-pull-left text-white" onclick="pageBack()"></a>
+        <h1 class="mui-title">所有设备</h1>
+        <a ng-click="openTaskCreatePage()" class="mui-action-menu mui-icon mui-pull-right" ><i class="header-icon white icon-add"></i></a>
+    </header>
+    <!--<div ng-include="'../../templates/top-menu.html'"></div>-->
+    <div class="mui-content" ng-cloak>
+        <div id="task_types" class="mui-slider-indicator mui-segmented-control mui-segmented-control-inverted" style="margin-left: 0;position: fixed;top:60px;background-color: #fff;box-shadow: 0 0 1px #ccc;z-index:100;">
+            <a class="mui-control-item mui-active" ng-click="changeDeviceType('$event', 'all')" ng-class="{'mui-active': showType=='all'}">
+                所有设备({{deviceList.length}})
+            </a>
+            <a class="mui-control-item" ng-click="changeDeviceType($event, 'fault')" ng-class="{'mui-active': showType=='fault'}">
+                故障设备({{faultDeviceList.length}})
+            </a>
+        </div>
+        <div class="scroll-wrapper" id="devices" style="top:32px;">
+            <div class="mui-scroll">
+                <div class="card" ng-repeat="device in currentDevices" style="margin-top:6px;" id="deviceList" ng-click="gotoDevice(deviceevice.station_sn, device.sn, device.name)">
+                    <div class="card-header">{{device.name}}</div>
+                    <div class="card-content" style="padding-top: 0;">
+                        <div class="mui-media">
+                            <img class="mui-media-object mui-pull-left" ng-src="{{device.product.photo_src_link ? device.product.photo_src_link : '../../img/icon/icon-device-default.png'}}">
+                            <div class="mui-media-body box-vertical-center" style="position: relative;">
+                                <h5 class=" site-var" ng-if="device.important_realtime_datas.length">
+                                    <span style="display: block">
+                                        <span class="mui-ellipsis" style="display: inline-block;width:calc(100% - 90px);">{{device.important_realtime_datas[0].name}}</span>
+                                        <label>
+                                            <span class="value">{{device.important_realtime_datas[0].data}}</span>
+                                            <span class="unit">{{device.important_realtime_datas[0].unit && device.important_realtime_datas[0].unit}}</span>
+                                        </label>
+                                    </span>
+                                    <span style="display: block;margin-top: 6px;">
+                                        <span class="mui-ellipsis" style="display: inline-block;width:calc(100% - 90px);">{{device.important_realtime_datas[1].name}}</span>
+                                        <label>
+                                            <span class="value">{{device.important_realtime_datas[1].data}}</span>
+                                            <span class="unit">{{device.important_realtime_datas[1] && device.important_realtime_datas[1].unit}}</span>
+                                        </label>
+                                    </span>
+                                </h5>
+                                <h5 class="site-var" ng-if="device.important_realtime_datas.length === 0">
+                                    <span></span>
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-status status-top-right {{device.status}}">{{device.status_name}}</div>
+                </div>
+                <div class="page-alert-wrapper" ng-if="!deviceList.length && !deviceLoading">
+                    <div class="page-alert">
+                        <div class="page-alert">
+                            <i class="alert-icon nodata"></i>
+                            <div class="alert-text info">站点无设备</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="page-alert-wrapper" ng-if="deviceLoading">
+                    <div class="page-alert">
+                        <span class="mui-spinner"></span>
+                        <div class="alert-text info">正在加载...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="page page-left" ui-view></div>
+<script src="../../components/fastclick-master/lib/fastclick.js"></script>
+<script src="../../js/my/notify.js"></script>
+<script src="../../components/dropload-gh-pages/dist/dropload.min.js"></script>
+<script type="text/javascript" src="../../js/controller/sites.js"></script>
+<script type="text/javascript" src="../../js/controller/device.js"></script>
+<script src="../../js/controller/monitor.js"></script>
+<script src="../../js/controller/kanban.js"></script>
+</body>
+</html>

@@ -1639,7 +1639,7 @@ app.controller('EnergyOverviewZhiluCtrl', function ($scope, ajax, platformServic
                     }
                 },
                 grid: {
-                    top: 25,
+                    top: 20,
                     left: 10,
                     right: 20,
                     bottom: 35,
@@ -2016,7 +2016,6 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
                     type: 'category',
                     data: labels,
                     inverse: true,
-                    nameGap: 0
                 },
                 color: ENERGY_LINE_COLORS,
                 series: [{
@@ -2095,7 +2094,7 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
                     type: 'value',
                     boundaryGap: [0, 0.01],
                     name: 'kWh',
-                    nameGap: 0
+                    nameGap: '5',
                 },
                 color: ENERGY_LINE_COLORS,
                 series: {
@@ -2169,12 +2168,13 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
                     }
                 },
                 legend: {
+                    top: 2,
                     left: 'right',
                     itemWidth: 15,
                     itemHeight: 8,
                     textStyle: {
-                        fontSize: 9
-                    }
+                        fontSize: 9,
+                    },
                 },
                 grid: {
                     top: 30,
@@ -2193,7 +2193,6 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
                 yAxis: {
                     type: 'category',
                     data: labels,
-                    nameGap: 0
                 },
                 color: ENERGY_LINE_COLORS,
                 series: [{
@@ -2371,7 +2370,7 @@ app.controller('EnergyOverviewOtherCtrl', function ($scope, ajax, platformServic
                 yAxis: {
                     type: 'value',
                     name: 'kWh',
-                    nameGap: 0
+                    nameGap: '5'
                 },
                 color: ENERGY_LINE_COLORS,
                 series: seriesData,

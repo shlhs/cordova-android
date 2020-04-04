@@ -2955,17 +2955,19 @@ div.pinch-zoom, div.pinch-zoom-container{
 }
 .static-device-list li {
     padding-left: 10px;
-    position: relative;
 }
 .static-device-list .device-body {
     border-bottom: #E6E6E6 1px solid;
     width: calc(100% - 24px);
-    padding: 12px 12px 8px 8px;
+    padding: 12px 12px 12px 8px;
     position: relative;
-    font-size: 14px;
 }
-.static-device-list .device-name {
-    margin-right: 30px;
+.mui-checkbox .checkbox:before {
+    font-family: iconfont;
+    content: '\a601';
+    font-size: 20px;
+    display: inline-block;
+    color: #D0D4D8;
 }
 .status-danger {
     color: #FB6868;
@@ -2975,13 +2977,6 @@ div.pinch-zoom, div.pinch-zoom-container{
 }
 .text-normal {
     color: #2fca59;
-}
-.mui-checkbox .checkbox:before {
-    font-family: iconfont;
-    content: '\a601';
-    font-size: 20px;
-    display: inline-block;
-    color: #D0D4D8;
 }
 .checkbox-tree .tree-cell>a {
     position: relative;
@@ -3718,9 +3713,6 @@ table.dataTable tbody th, table.dataTable tbody td {
     font-size: 24px;
     color: #007aff;
 }
-.mui-bar {
-    box-shadow: none;
-}
 .my-picker .mui-poppicker-body{
     border-top: none;
     background-color: #fff;
@@ -3730,7 +3722,7 @@ table.dataTable tbody th, table.dataTable tbody td {
     transform: translateY(380px);
 }
 .my-picker.mui-poppicker.mui-active {
-    transform: translateY(0);
+    transform: translateY(0px);
 }
 .mui-checkbox.control-radio input[type=checkbox], .mui-radio.control-radio input[type=radio] {
     top: -5px;

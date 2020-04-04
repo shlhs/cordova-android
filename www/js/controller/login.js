@@ -3,8 +3,9 @@
 /**
  * Created by liucaiyun on 2017/7/23.
  */
-// var gPublicApiHost = 'http://47.104.75.86:8090';        // 公有云接口
-var gPublicApiHost = 'http://47.97.167.195:8090';       // 因泰来
+
+var gPublicApiHost = 'http://47.104.75.86:8090';     // 公有云
+// var gPublicApiHost = 'http://27.115.22.254:8090';
 
 function onFinishVersionCheck() {
     var scope = angular.element('div[ng-controller="AutoLoginCtrl"]').scope();
