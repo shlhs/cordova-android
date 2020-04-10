@@ -102,6 +102,16 @@ app.controller('KanbanCtrl', ['$scope', '$stateParams', 'ajax', '$timeout', func
                                         } else {
                                             tempVarData.value = value;
                                         }
+                                        // 处理自定义键值对
+                                        if(contentItem.customMeaningChecked && contentItem.customMeaningdatas) {
+                                            for (let index = 0; index < contentItem.customMeaningdatas.length; index +=1 ) {
+                                                var element = contentItem.customMeaningdatas[index];
+                                                if(element.key === tempVarData.value) {
+                                                    tempVarData.value = element.meaning;
+                                                    break;
+                                                }
+                                            }
+                                        }
                                         tempVarData.unit = processedValue.unit;
                                     }
                                 }
@@ -124,16 +134,22 @@ app.controller('KanbanCtrl', ['$scope', '$stateParams', 'ajax', '$timeout', func
                     }else if(contentsResult[i].type === 'trend-analysis'){
                         var deviceVarSns = [];
                         var deviceVarAliasMap = {};
+                        var colors = {};
+                        var lineTypes = {};
                         for(var j in contentsResult[i].content) {
-                            deviceVarSns.push(contentsResult[i].content[j].varInfo.deviceVarSn);
-                            deviceVarAliasMap[contentsResult[i].content[j].varInfo.deviceVarSn] = contentsResult[i].content[j].varInfo.deviceVarAlias;
+                            var varInfo = contentsResult[i].content[j].varInfo;
+                            deviceVarSns.push(varInfo.deviceVarSn);
+                            deviceVarAliasMap[varInfo.deviceVarSn] = varInfo.deviceVarAlias;
+                            colors[varInfo.deviceVarSn] = varInfo.lineColor;
+                            lineTypes[varInfo.deviceVarSn] = varInfo.lineStyle || 'line';
                         }
                         if(deviceVarSns.length === 0) {
                             continue;
                         }
                         haveChart = true;
                         needChartCount += 1;
-                        getTrendAnalysis(contentsResult[i].title, deviceVarSns, deviceVarAliasMap, contentsResult[i].period, $scope.queryTime, contentsResult[i].pfvSettings, contentsResult[i].showType, contentsResult[i].calcMethod);
+                        getTrendAnalysis(contentsResult[i].title, deviceVarSns, deviceVarAliasMap, colors, lineTypes, contentsResult[i].period,
+                            $scope.queryTime, contentsResult[i].pfvSettings, contentsResult[i].showType, contentsResult[i].calcMethod);
                     }else if(contentsResult[i].type === 'ratio-pie'){
                         var ratioPieData = [];
                         var unit = '';
@@ -574,7 +590,8 @@ app.controller('KanbanCtrl', ['$scope', '$stateParams', 'ajax', '$timeout', func
                     }],
                     tooltip: {
                         trigger: 'item',
-                        formatter: '{a} <br/>{b}: {c} ({d}%)'
+                        formatter: '{a} <br/>{b}: {c} ({d}%)',
+                        confine: true,
                     },
                     legend: {
                         orient: 'vertical',
@@ -606,7 +623,7 @@ app.controller('KanbanCtrl', ['$scope', '$stateParams', 'ajax', '$timeout', func
         });
     }
 
-    function getTrendAnalysis(name, deviceVarSns, deviceVarAliasMap, period, queryTime, pfvSettings, inputShowType, inputCalcMethod) { 
+    function getTrendAnalysis(name, deviceVarSns, deviceVarAliasMap, lineColors, lineTypes, period, queryTime, pfvSettings, inputShowType, inputCalcMethod) {
         var queryType = 'MONTH';
         if(period === 'current_day') {
             queryType = 'DAY';
@@ -659,7 +676,10 @@ app.controller('KanbanCtrl', ['$scope', '$stateParams', 'ajax', '$timeout', func
 
                 var chartDatas = [];
                 for(var j in data) {
-                    chartDatas.push({name: (deviceVarAliasMap[data[j].var.sn] ? deviceVarAliasMap[data[j].var.sn] : data[j].name)+' '+data[j].unit, type:showType, data: data[j].datas, yAxisIndex: 0});
+                    var alias = deviceVarAliasMap[data[j].var.sn];
+                    var name1 = (alias ? alias : data[j].name)+' '+data[j].unit;
+                    var sn = data[j].var.sn;
+                    chartDatas.push({name: name1, type: lineTypes[sn], data: data[j].datas, yAxisIndex: 0, color: lineColors[sn] || ''});
                 }
 
                 var showPfvSetting = (period === 'current_day' || period === 'normal')&& (pfvSettings === 'pfv-settings-f' || pfvSettings === 'pfv-settings-r');
@@ -806,7 +826,19 @@ app.controller('KanbanCtrl', ['$scope', '$stateParams', 'ajax', '$timeout', func
         return {
             tooltip: {
                 trigger: 'axis',
-                formatter: "{b} <br/>{a} : {c}",
+                confine: true,
+                formatter: function (params) {
+                    if (!params.length) {
+                        return null;
+                    }
+                    var p0 = params[0];
+                    var lines = [p0.axisValue];
+                    params.forEach(function (p) {
+                        lines.push('<br />');
+                        lines.push(p.marker + p.seriesName + '：' + (p.data === null ? '-' : p.data));
+                    });
+                    return lines.join('');
+                }
             },
             legend: {
                 data: legendData,
@@ -891,7 +923,6 @@ app.controller('KanbanCtrl', ['$scope', '$stateParams', 'ajax', '$timeout', func
             <div class="mui-content-padded no-margin">\
             <span>'+ name +'</span>\
             <div class="chart" id="' + id + '"></div>\
-            <div style="position: absolute;left:0;top:0;width:100%;height:100%;"></div>\
             </div>\
             </div>').prependTo($("#chartSlider"));
         echarts.init(document.getElementById(id)).setOption(config);
