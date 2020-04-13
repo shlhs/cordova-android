@@ -19,9 +19,14 @@ app.controller('LoginCtrl', ['$scope', '$timeout', 'platformService', 'userServi
     $scope.isLogin = false;
     $scope.isAutoLogin = false;
     $scope.passwordVisible = false;
+    $scope.privacyChecked = false;
 
     $scope.togglePasswordVisible = function () {
         $scope.passwordVisible = !$scope.passwordVisible;
+    };
+
+    $scope.hasReadPrivacy = function (event) {
+        $scope.privacyChecked = event.target.checked;
     };
 
     $scope.inputChange = function () {
@@ -34,6 +39,9 @@ app.controller('LoginCtrl', ['$scope', '$timeout', 'platformService', 'userServi
     $scope.inputChange();
 
     $scope.login = function () {
+        if (!$scope.enable || !$scope.privacyChecked) {
+            return;
+        }
         $scope.enable = false;
         if (defaultPlatIpAddr) {
             login();
