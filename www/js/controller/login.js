@@ -52,6 +52,7 @@ app.controller('LoginCtrl', ['$scope', '$timeout', 'platformService', 'userServi
 
     $scope.setAutoLogin = function(isAutoLogin){
         $scope.isAutoLogin = isAutoLogin;
+        $scope.privacyChecked = true;
     };
 
     function toast(message) {

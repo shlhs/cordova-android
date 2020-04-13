@@ -11,7 +11,7 @@
 </head>
 <body>
 <header class="mui-bar bg-header mui-segmented-control-vertical">
-    <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back btn-back" onclick="history.back()"></a>
+    <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back btn-back" onclick="pageBack()"></a>
     <h1 class="mui-title">隐私政策</h1>
 </header>
 <div style="padding: 62px 10px; height: 100%;overflow-y: auto;">
@@ -53,5 +53,14 @@
 <br>(a)如果决定更改隐私政策，我们会在本政策中、本公司网站中以及我们认为适当的位置发布这些更改，以便您了解我们如何收集、使用您的个人信息，哪些人可以访问这些信息，以及在什么情况下我们会透露这些信息。
 <br>(b)本公司保留随时修改本政策的权利，因此请经常查看。如对本政策作出重大更改，本公司会通过网站通知的形式告知。
 </div>
+<script>
+    function pageBack() {
+        if (window.android){
+            location.href = '/app/home';
+        }else{
+            history.back();
+        }
+    }
+</script>
 </body>
 </html>

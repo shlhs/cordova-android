@@ -186,12 +186,12 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
     $scope.searchSiteResult = [];
     $scope.role = userService.getUserRole();
     if (gShowEnergyPage) {
-        $scope.navMenus = [_getDefaultHomeMenu(), _getEnergyMenu(), _getTaskTodoMenu()];
+        $scope.navMenus = [_getDefaultHomeMenu()];
     } else if ($scope.role === 'OPS_ADMIN' || $scope.role === 'OPS_OPERATOR') {
-        $scope.navMenus = [_getDefaultHomeMenu(), _getGrabTasksMenu(), _getTaskTodoMenu()];
+        $scope.navMenus = [_getDefaultHomeMenu()];
     } else {
         // 普通用户或平台管理员，不能看到抢单页
-        $scope.navMenus = [_getDefaultHomeMenu(), _getTaskTodoMenu()];
+        $scope.navMenus = [_getDefaultHomeMenu()];
     }
     var menuInited = false;     // 导航栏菜单是否初始化
 
