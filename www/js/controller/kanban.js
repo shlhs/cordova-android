@@ -847,6 +847,7 @@ app.controller('KanbanCtrl', ['$scope', '$stateParams', 'ajax', '$timeout', func
                     fontSize: 9,
                     lineHeight: 10
                 },
+                type: 'scroll',
                 pageIconSize: 10,
                 itemWidth: 15,
                 itemHeight: 10
