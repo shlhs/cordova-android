@@ -138,6 +138,14 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
             templateUrl: '/templates/setting/password_setter.html',
             controller: 'PasswordCtrl'
         })
+        .state('index.setting2', {
+            url: 'setting2',
+            templateUrl: '/templates/setting/setting2.html'
+        })
+        .state('index.setting2.privacy', {
+            url: '/privacy',
+            templateUrl: '/templates/setting/privacy.html'
+        })
     ;
 
     $urlRouterProvider.when('', '/');
