@@ -19,7 +19,8 @@ app.controller('LoginCtrl', ['$scope', '$timeout', 'platformService', 'userServi
     $scope.isLogin = false;
     $scope.isAutoLogin = false;
     $scope.passwordVisible = false;
-    $scope.privacyChecked = false;
+    $scope.privacyAccepted = getStorageItem('privacyAccept');
+    $scope.privacyChecked = $scope.privacyAccepted === 'accepted';
 
     $scope.togglePasswordVisible = function () {
         $scope.passwordVisible = !$scope.passwordVisible;
@@ -87,6 +88,8 @@ app.controller('LoginCtrl', ['$scope', '$timeout', 'platformService', 'userServi
             },
             crossDomain: true,
             success: function (data) {
+                // 设置隐私已接受
+                setStorageItem('privacyAccept', 'accepted');
                 var result = KJUR.jws.JWS.verify(data.token, 'zjlhstest');
                 if (result) {
                     if (!getStorageItem('latestPlatform')) {

@@ -146,6 +146,10 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
             url: '/privacy',
             templateUrl: '/templates/setting/privacy.html'
         })
+        .state('index.setting2.license', {
+            url: '/privacy',
+            templateUrl: '/templates/setting/user-license.html'
+        })
     ;
 
     $urlRouterProvider.when('', '/');

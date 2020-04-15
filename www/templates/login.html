@@ -186,8 +186,9 @@
                 <input type="text" ng-model="password" ng-change="inputChange('password')" placeholder="请输入密码" ng-show="passwordVisible">
                 <i class="password-can-seen" ng-if="passwordVisible" ng-click="togglePasswordVisible()"></i>
             </div>
-            <div style="margin-top: 12px;text-align: center;font-size: 13px;">
-                <input type="checkbox" ng-click="hasReadPrivacy($event)">我已阅读<a href="/templates/privacy.html">应用隐私政策</a>
+            <div style="margin-top: 12px;text-align: center;font-size: 13px;" ng-if="!privacyAccepted">
+                <input type="checkbox" ng-click="hasReadPrivacy($event)">我已阅读<a href="/templates/privacy.html">应用隐私政策</a>和
+                <a href="/templates/user-license.html">用户协议</a>
             </div>
             <div class="login-btn" ng-class="{'enable': enable && privacyChecked}" ng-click="login()">
                 <span ng-if="!isLogin">登录</span>
