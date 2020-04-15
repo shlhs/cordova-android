@@ -40,6 +40,9 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
     $scope.inputChange();
 
     $scope.login = function () {
+        if (!$scope.enable) {
+            return;
+        }
         if (!cordovaService.networkIsValid()){
             mui.toast('网络异常，登录失败');
             if ($scope.isAutoLogin){
@@ -57,6 +60,7 @@ app.controller('LoginCtrl', function ($scope, $timeout, platformService, userSer
 
     $scope.setAutoLogin = function(isAutoLogin){
         $scope.isAutoLogin = isAutoLogin;
+        $scope.enable = true;
     };
 
     function toast(message) {
