@@ -847,6 +847,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                     fontSize: 9,
                     lineHeight: 10
                 },
+                type: 'scroll',
                 pageIconSize: 10,
                 itemWidth: 15,
                 itemHeight: 10
