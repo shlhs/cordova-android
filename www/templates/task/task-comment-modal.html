@@ -1,0 +1,22 @@
+<div class="page page-fade" ng-controller="TaskCommentCtrl">
+    <header class="mui-bar mui-bar-transparent mui-segmented-control-vertical" style=" -webkit-box-shadow: none;box-shadow: none;position: relative;">
+        <a class="mui-icon mui-pull-left mui-control-item" style="font-size: 18px;margin-left: 6px;color: #9e9e9e;top:10px;" ng-click="cancel()">取消</a>
+        <a class="mui-icon mui-action-menu mui-pull-right mui-control-item" style="font-size: 18px;margin-right: 6px;top:10px;" ng-click="submitAndBack()">确认</a>
+    </header>
+    <div class="mui-content" style="top:0;padding: 0;position: relative" >
+        <div class="task-result">
+            <div class="mui-input-row" style="padding: 10px 5px 5px 16px; border-bottom: 1px solid #e1e1e1; font-size: 14px;">
+                请为该服务打分：
+               <div class="stars">
+                   <span ng-repeat="i in [1,2,3,4,5]" class="star" ng-class="{'empty': !score || score < i, 'full': score >= i}" ng-click="setScore(i)">
+                    </span>
+                   <span class="desp">{{getScoreDesp()}}</span>
+               </div>
+            </div>
+            <div class="mui-input-row" style="padding: 0 5px;">
+                <textarea rows="3" placeholder="输入您的评价..." name="description" ng-model="description"></textarea>
+            </div>
+            <image-uploader images="imageList"></image-uploader>
+        </div>
+    </div>
+</div>
