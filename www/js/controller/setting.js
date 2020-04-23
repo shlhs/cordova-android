@@ -110,3 +110,7 @@ app.controller('CompanyCtrl', ['$scope', '$stateParams', function ($scope, $stat
 app.controller('AccountCtrl', ['$scope', 'userService', function ($scope, userService) {
     $scope.user = userService.user;
 }]);
+
+app.controller('AppShareCtrl', ['$scope', function ($scope) {
+    $scope.src = gQrDownloadUrl + "?t=" + new Date().getTime();
+}]);
