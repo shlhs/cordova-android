@@ -567,7 +567,7 @@ app.controller('DeviceTreeCommonCtrl', ['$scope', function ($scope) {
     };
 }]);
 
-app.controller('DeviceMonitorListCtrl', ['$scope', 'ajax', function ($scope, ajax) {       // 检测设备列表页
+app.controller('DeviceMonitorListCtrl', ['$scope', 'ajax', 'platformService', function ($scope, ajax, platformService) {       // 检测设备列表页
     var stationSn = GetQueryString('sn');
     $scope.deviceDatas = [];
     $scope.treeData = [];
@@ -607,8 +607,9 @@ app.controller('DeviceMonitorListCtrl', ['$scope', 'ajax', function ($scope, aja
         $scope.isLoading = true;
         $scope.loadingFailed = false;
         ajax.get({
-            url: '/stations/' + stationSn + '/devicetree',
-            success: function (data) {
+            url: platformService.getDeviceMgmtHost() + '/management/devices?&station_sn=' + stationSn,
+            success: function (res) {
+                var data = res.data;
                 $scope.isLoading = false;
                 // 默认状态为"未知"
                 data.forEach(function (d) {
@@ -674,7 +675,7 @@ app.controller('DeviceMonitorListCtrl', ['$scope', 'ajax', function ($scope, aja
     }
 
     $scope.gotoDevice = function (deviceData) {
-        location.href = '/templates/site/device-monitor.html?stationSn=' + stationSn + '&deviceSn=' + deviceData.sn + '&deviceName=' + deviceData.name;
+        location.href = '/templates/site/device-monitor.html?stationSn=' + stationSn + '&deviceSn=' + deviceData.sn + '&deviceName=' + encodeURIComponent(deviceData.name);
     };
 
     $scope.getDataList();
@@ -1038,19 +1039,22 @@ app.controller('DeviceRemoteControlConfirmCtrl', ['$scope', 'ajax', function ($s
 app.controller('VarRealtimeCtrl', ['$scope', 'ajax', function ($scope, ajax) {
 
     var deviceSn=$scope.$parent.deviceSn;
-    $scope.realtime = {};       // 实时数据
+    $scope.realtime = null;       // 实时数据
     $scope.realtimeType = '';
     $scope.realtimeValues = [];
-    $scope.isLoading = false;
+    $scope.isLoading = true;
     var interval = null;
 
     $scope.$on('$onRealtimeTypeChanged', function (event, realtimeItem) {
-
-        $scope.realtime = realtimeItem;
-        $scope.realtimeType = realtimeItem.name;
-        getRealTimeData();
-        if (null == interval) {
-            interval = setInterval(getRealTimeData, 5000);
+        if (realtimeItem) {
+            $scope.realtime = realtimeItem;
+            $scope.realtimeType = realtimeItem.name;
+            getRealTimeData();
+            if (null === interval) {
+                interval = setInterval(getRealTimeData, 5000);
+            }
+        } else {
+            $scope.isLoading = false;
         }
     });
 
@@ -1223,6 +1227,8 @@ app.controller('HistoryVarCtrl', ['$scope', 'ajax', function ($scope, ajax) {
             },
             tooltip: {
                 trigger: 'axis',
+                alwaysShowContent: false,
+                confine: true,
             },
             xAxis: {
                 type: 'category',
@@ -1261,6 +1267,7 @@ app.controller('HistoryVarCtrl', ['$scope', 'ajax', function ($scope, ajax) {
             },
             series: series,
         };
+        echarts.dispose(document.getElementById('chartContainer'));
         echarts.init(document.getElementById('chartContainer')).setOption(option);
     }
 }]);
