@@ -30,14 +30,14 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
 
     function paintFailed() {        // 检测图表绘制是否已完成
         paintFailedCount += 1;
-        if (paintedChartCount + paintFailedCount == needChartCount) {
+        if (paintedChartCount + paintFailedCount === needChartCount) {
             _initSlider(paintedChartCount);
         }
     }
 
     function paintSuccess() {
         paintedChartCount += 1;
-        if (paintedChartCount + paintFailedCount == needChartCount) {
+        if (paintedChartCount + paintFailedCount === needChartCount) {
             _initSlider(paintedChartCount);
         }
     }
@@ -135,19 +135,21 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                         var deviceVarSns = [];
                         var deviceVarAliasMap = {};
                         var colors = {};
+                        var lineTypes = {};
                         for(var j in contentsResult[i].content) {
                             var varInfo = contentsResult[i].content[j].varInfo;
                             deviceVarSns.push(varInfo.deviceVarSn);
                             deviceVarAliasMap[varInfo.deviceVarSn] = varInfo.deviceVarAlias;
                             colors[varInfo.deviceVarSn] = varInfo.lineColor;
+                            lineTypes[varInfo.deviceVarSn] = varInfo.lineStyle || 'line';
                         }
-                        if(deviceVarSns.length == 0) {
+                        if(deviceVarSns.length === 0) {
                             continue;
                         }
                         haveChart = true;
                         needChartCount += 1;
-                        getTrendAnalysis(contentsResult[i].title, deviceVarSns, deviceVarAliasMap, colors, contentsResult[i].period, $scope.queryTime,
-                            contentsResult[i].pfvSettings, contentsResult[i].showType, contentsResult[i].calcMethod);
+                        getTrendAnalysis(contentsResult[i].title, deviceVarSns, deviceVarAliasMap, colors, lineTypes, contentsResult[i].period,
+                            $scope.queryTime, contentsResult[i].pfvSettings, contentsResult[i].showType, contentsResult[i].calcMethod);
                     }else if(contentsResult[i].type === 'ratio-pie'){
                         var ratioPieData = [];
                         var unit = '';
@@ -337,7 +339,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                 async: false,
                 success: function (data) {
                     if(!data || !data.length) {
-                        return [resultValue, unit, isDigital];;
+                        return [resultValue, unit, isDigital];
                     }
                     var value = data[0].data;
                     var varInfo = data[0].var;
@@ -621,7 +623,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
           });
     }
 
-    function getTrendAnalysis(name, deviceVarSns, deviceVarAliasMap, lineColors, period, queryTime, pfvSettings, inputShowType, inputCalcMethod) {
+    function getTrendAnalysis(name, deviceVarSns, deviceVarAliasMap, lineColors, lineTypes, period, queryTime, pfvSettings, inputShowType, inputCalcMethod) {
         var queryType = 'MONTH';
         if(period === 'current_day') {
             queryType = 'DAY';
@@ -661,11 +663,11 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                 var times = [];
                 for(var i in data[0].time_keys) {
                     var t = data[0].time_keys[i];
-                    if(queryType == 'DAY' || queryType == 'NORMAL') {
+                    if(queryType === 'DAY' || queryType === 'NORMAL') {
                         times.push(t.substring(11, 16));
-                    } else if(queryType == 'MONTH') {
+                    } else if(queryType === 'MONTH') {
                         times.push(t.substring(5, 10));
-                    } else if(queryType == 'YEAR') {
+                    } else if(queryType === 'YEAR') {
                         times.push(t.substring(0, 7));
                     } else {
                         times.push(t);
@@ -676,10 +678,11 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                 for(var j in data) {
                     var alias = deviceVarAliasMap[data[j].var.sn];
                     var name1 = (alias ? alias : data[j].name)+' '+data[j].unit;
-                    chartDatas.push({name: name1, type:showType, data: data[j].datas, yAxisIndex: 0, color: lineColors[data[j].var.sn] || ''});
+                    var sn = data[j].var.sn;
+                    chartDatas.push({name: name1, type: lineTypes[sn], data: data[j].datas, yAxisIndex: 0, color: lineColors[sn] || ''});
                 }
 
-                var showPfvSetting = (period == 'current_day' || period == 'normal')&& (pfvSettings == 'pfv-settings-f' || pfvSettings == 'pfv-settings-r')
+                var showPfvSetting = (period === 'current_day' || period === 'normal')&& (pfvSettings === 'pfv-settings-f' || pfvSettings === 'pfv-settings-r');
                 drawEchart(name, getTrendAnalysisEchartOption(showPfvSetting, pfvSettings, times, chartDatas, boundaryGap));
             },
             error: function () {
@@ -823,7 +826,19 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
         return {
             tooltip: {
                 trigger: 'axis',
-                formatter: "{b} <br/>{a} : {c}",
+                confine: true,
+                formatter: function (params) {
+                    if (!params.length) {
+                        return null;
+                    }
+                    var p0 = params[0];
+                    var lines = [p0.axisValue];
+                    params.forEach(function (p) {
+                        lines.push('<br />');
+                        lines.push(p.marker + p.seriesName + '：' + (p.data === null ? '-' : p.data));
+                    });
+                    return lines.join('');
+                }
             },
             legend: {
                 data: legendData,
@@ -832,6 +847,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                     fontSize: 9,
                     lineHeight: 10
                 },
+                type: 'scroll',
                 pageIconSize: 10,
                 itemWidth: 15,
                 itemHeight: 10
@@ -864,12 +880,12 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
             url: '/stations/' + $scope.sn,
             async: false,
             success: function (data) {
-              if(data.pfv_settings_f && data.pfv_settings_f != '') {
-                pfvSettingsF = JSON.parse(data.pfv_settings_f);
-              }
-              if(data.pfv_settings_r && data.pfv_settings_r != '') {
-                pfvSettingsR = JSON.parse(data.pfv_settings_r);
-              }
+                if(data.pfv_settings_f && data.pfv_settings_f !== '') {
+                    pfvSettingsF = JSON.parse(data.pfv_settings_f);
+                }
+                if(data.pfv_settings_r && data.pfv_settings_r !== '') {
+                    pfvSettingsR = JSON.parse(data.pfv_settings_r);
+                }
             },
             error: function(err) {
               console.log('获取站点信息失败 '+$scope.sn+err);
@@ -908,7 +924,6 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
             <div class="mui-content-padded no-margin">\
             <span>'+ name +'</span>\
             <div class="chart" id="' + id + '"></div>\
-            <div style="position: absolute;left:0;top:0;width:100%;height:100%;"></div>\
             </div>\
             </div>').prependTo($("#chartSlider"));
         echarts.init(document.getElementById(id)).setOption(config);
@@ -922,4 +937,337 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
         getKanbanData();
     }, 500);
 
+});
+
+
+app.controller('SiteOverviewCtrl', function ($scope, ajax, varDataService) {
+    var stationData = null;
+    $scope.fuheLoading = true; // 负荷数据获取
+    $scope.fuheError = null; // 负荷变量错误
+    $scope.electricLoading = true; // 电量获取
+    $scope.electricError = null; // 用电量错误
+    $scope.monthDegree = '-'; // 本月用电量
+    $scope.todayDegree = '-'; // 今日用电
+    $scope.realtimeLoad = '-'; // 实时负荷
+    var realtimeLoadInterval = null;
+
+    ajax.get({
+        url: '/stations/' + $scope.sn,
+        success: function (data) {
+            stationData = data;
+            getLoadTrend(data.realtime_load_var);
+            getLoadRealtime(data.realtime_load_var);
+            getElectricData(data.sum_epf_var);
+        }
+    });
+
+    function getLoadRealtime(varSn) {
+        if (!varSn) {
+            return;
+        }
+
+        function fetchFunc() {
+            varDataService.getRealtimeValue([varSn], function (data) {
+                if (data && data.length) {
+                    $scope.realtimeLoad = data[0].data;
+                    $scope.$apply();
+                }
+            });
+        }
+        if (!realtimeLoadInterval) {
+            realtimeLoadInterval = setInterval(function () {
+                fetchFunc();
+            }, 3000);
+        }
+        fetchFunc();
+    }
+
+    function getLoadTrend(varSn) { // 获取昨日、今日负荷趋势
+        if (!varSn) {
+            $scope.fuheLoading = false;
+            $scope.fuheError = '站点未配置实时负荷属性';
+            return;
+        }
+        // 获取昨日、今日变量趋势
+        var startTime = moment().subtract(1, 'days').format('YYYY-MM-DD 00:00:00.000');
+        var endTime = moment().format('YYYY-MM-DD 23:59:59.000');
+        varDataService.getHistoryTrend([varSn], startTime, endTime, 'HOUR', 'AVG', function (data) {
+            $scope.fuheLoading = false;
+            $scope.$apply();
+            if (data && data.length) {
+                var result = fillTrendDataVacancy(startTime, endTime, 'HOUR', data[0].time_keys, data[0].datas, 'YYYY-MM-DD HH:mm:ss.000');
+                // 拆分出昨天和今天的数据
+                var yesterdayData = result.datas.slice(0, 24);
+                var todayData = result.datas.slice(24, 48);
+                paintLoadTrendChart(yesterdayData, todayData);
+            }
+        }, function () {
+            $scope.fuheLoading = false;
+            $scope.fuheError = "获取数据失败";
+            $scope.$apply();
+        });
+    }
+
+    function getElectricData(varSn) {
+        if (!varSn) {
+            $scope.electricLoading = false;
+            $scope.electricError = '站点未配置总用电量属性';
+            return;
+        }
+        // 获取今日用电
+        varDataService.getDegreeSummary(varSn, moment(), 'DAY', function (data) {
+            if (data) {
+                $scope.todayDegree = data.allDegree;
+                $scope.$apply();
+            }
+        });
+        // 获取月度电量
+        varDataService.getDegreeSummary(varSn, moment(), 'MONTH', function (data) {
+            if (data) {
+                $scope.monthDegree = data.allDegree;
+                $scope.$apply();
+            }
+        });
+        // 获取本月用电趋势
+        varDataService.getDegreeChargeTrend(varSn, moment(), function (dataList) {
+            $scope.electricLoading = false;
+            $scope.$apply();
+            if (!dataList) {
+                $scope.electricError = '获取用电数据失败';
+                return;
+            }
+            var degrees = {
+                p: [],
+                s: [],
+                v: [],
+                f: []
+            };
+            var index = 0;
+            var times = [];
+            var monthDays = moment().endOf('month').date();
+            for (var day=1; day<=monthDays; day++) {
+                if (dataList.length > index) {
+                    var item = dataList[index];
+                    var d = Number.parseInt(item.time.substring(8, 10), 10);
+                    if (day === d) {
+                        degrees.p.push(item.pDegree);
+                        degrees.f.push(item.fDegree);
+                        degrees.v.push(item.vDegree);
+                        degrees.s.push(item.sDegree);
+                        index += 1;
+                    } else if (d > day) {
+                        degrees.p.push(null);
+                        degrees.f.push(null);
+                        degrees.v.push(null);
+                        degrees.s.push(null);
+                        index += 1;
+                    }
+                }
+                times.push(day + '日');
+            }
+            paintElectricDegreeTrend(times, degrees);
+            paintElectricDegreeBar(degrees);
+        });
+    }
+
+    function paintLoadTrendChart(yesterdayData, todayData) {
+        var times = [];
+        for (var i=0; i<24; i++) {
+            times.push(i + '时');
+        }
+        var option = {
+            tooltip: {
+                trigger: 'axis',
+                confine: true,
+                formatter: function (params) {
+                    if (!params.length) {
+                        return null;
+                    }
+                    var p0 = params[0];
+                    var lines = [p0.axisValue];
+                    params.forEach(function (p) {
+                        lines.push('<br />');
+                        lines.push(p.marker + p.seriesName + '：' + (p.data === null ? '-' : (p.data + ' kW')));
+                    });
+                    return lines.join('');
+                }
+            },
+            legend: {
+                bottom: -5,
+                textStyle: {
+                    fontSize: 9,
+                    lineHeight: 10
+                },
+                itemWidth: 15,
+                itemHeight: 10
+            },
+            grid: {
+                top: 15,
+                left: 4,
+                right: 2,
+                bottom: 20,
+                containLabel: true
+            },
+            toolbox: {
+                feature: {
+                    saveAsImage: false
+                }
+            },
+            xAxis: {
+                type: 'category',
+                data: times
+            },
+            yAxis: {
+                name: 'kW'
+            },
+            color: ['#F9CC13', '#369FFF'],
+            series: [{
+                type: 'line',
+                data: yesterdayData,
+                name: '昨日'
+            }, {
+                type: 'line',
+                data: todayData,
+                name: '今日'
+            }]
+        };
+        echarts.init(document.getElementById('loadChart')).setOption(option);
+    }
+    var g_pvf_label = {
+        p: '峰',
+        f: '平',
+        v: '谷',
+        s: '尖'
+    };
+    var g_pvf_colors = {
+        'p': 'rgba(239, 150, 166, 1)',
+        'v': 'rgba(138, 212, 199, 1)',
+        'f': 'rgba(136, 169, 248, 1)',
+        's': 'rgba(254,139,106, 1)',
+    };
+
+    function paintElectricDegreeTrend(times, data) {
+        var series = [];
+        ['s', 'p', 'f', 'v'].forEach(function (key) {
+            series.push({
+                type: 'bar',
+                name: g_pvf_label[key],
+                data: data[key],
+                stack: 'one',
+                color: g_pvf_colors[key]
+            });
+        });
+        var option = {
+            tooltip: {
+                trigger: 'axis',
+                confine: true,
+                formatter: function (params) {
+                    if (!params.length) {
+                        return null;
+                    }
+                    var p0 = params[0];
+                    var lines = [p0.axisValue];
+                    params.forEach(function (p) {
+                        lines.push('<br />');
+                        lines.push(p.marker + p.seriesName + '：' + (p.data === null ? '-' : (p.data + ' kWh')));
+                    });
+                    return lines.join('');
+                }
+            },
+            legend: {
+                bottom: -5,
+                textStyle: {
+                    fontSize: 9,
+                    lineHeight: 10
+                },
+                itemWidth: 15,
+                itemHeight: 10
+            },
+            grid: {
+                top: 15,
+                left: 4,
+                right: 2,
+                bottom: 20,
+                containLabel: true
+            },
+            toolbox: {
+                feature: {
+                    saveAsImage: false
+                }
+            },
+            xAxis: {
+                type: 'category',
+                data: times
+            },
+            yAxis: {
+                name: 'kWh'
+            },
+            series: series
+        };
+        echarts.init(document.getElementById('electricChart')).setOption(option);
+    }
+
+    function sum(datalist) {
+        var total = 0;
+        datalist.forEach(function (d) {
+            if (d) {
+                total += d;
+            }
+        });
+        return Number.parseFloat(total.toFixed(2));
+    }
+    function paintElectricDegreeBar(data) { // 峰谷平占比
+        var series = [];
+        ['s', 'p', 'f', 'v'].forEach(function (key) {
+            var value = sum(data[key]);
+            series.push({
+                name: g_pvf_label[key],
+                value: value,
+                itemStyle: {
+                    color: g_pvf_colors[key],
+                },
+                label: {
+                    normal: {
+                        formatter: '{b}：{c}kWh\n{d}%',
+                    },
+                },
+                labelLine: {
+                    length: 5,
+                    length2: 10
+                }
+            });
+        });
+        var option = {
+            legend: {
+                bottom: -5,
+                textStyle: {
+                    fontSize: 9,
+                    lineHeight: 10
+                },
+                itemWidth: 15,
+                itemHeight: 10
+            },
+            grid: {
+                top: 15,
+                left: 4,
+                right: 2,
+                bottom: 20,
+                containLabel: true
+            },
+            toolbox: {
+                feature: {
+                    saveAsImage: false
+                }
+            },
+            series: [
+                {
+                    type:'pie',
+                    radius : ['0%', '65%'],
+                    center : ['50%', '45%'],
+                    data: series,
+                },
+            ],
+        };
+        echarts.init(document.getElementById('electricPie')).setOption(option);
+    }
 });

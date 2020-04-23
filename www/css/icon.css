@@ -109,6 +109,10 @@
 .icon-csv{
     background-image: url("../img/dark/64X64/csv.png");
 }
+.icon-doc-picture {
+    background-image: url("../img/dark/64X64/doc-pic.png");
+    background-size: contain;
+}
 .icon-download{
     background-image: url("../img/icon/icon-report-download@2x.png");
 }

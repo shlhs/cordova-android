@@ -8,16 +8,18 @@ function getCurrentMonthLast(data) {
 }
 
 var g_line_colors = ['#9474df','#ef7e9c', '#6bc1dd', '#13cf5a',  '#f3a15d', '#6c7fff', '#ca8622', '#bda29a','#6e7074', '#546570', '#c4ccd3'];
-var g_pvf_colors = {
+var g_pvf_colors_opacity = {
     'p': 'rgba(239, 150, 166, 0.18)',
     'v': 'rgba(138, 212, 199, 0.18)',
-    'f': 'rgba(136, 169, 248, 0.18)'
+    'f': 'rgba(136, 169, 248, 0.18)',
+    's': 'rgba(254,139,106, 0.18)',
 };
 
 var g_pvf_label_colors = {
     'p': 'rgba(239, 150, 166, 1)',
     'v': 'rgba(138, 212, 199, 1)',
     'f': 'rgba(136, 169, 248, 1)',
+    's': 'rgba(254,139,106, 1)',
 };
 
 app.directive('historyTable', [function(){
@@ -84,8 +86,8 @@ app.directive('siteHistoryRepeatFinish',function(){
 // 历史曲线
 app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
     var stationSn = $scope.sn;    // GetQueryString("sn");
-    var pfvSettingsF = null;     // 用电电价
-    var pfvSettingsR = null;     // 发电电价
+    var deviceChargeSettingF = null;    // 设备用电电价配置
+    var deviceChargeSettingR = null;    // 设备发电电价配置
     $scope.timeTypeList = [{
         id: 'DAY',
         name: '按日'
@@ -203,13 +205,19 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
     function getStationInfo(sn) {
         // 获取站点信息，主要是为了得到电价配置
         ajax.get({
-            url: '/stations/' + sn,
+            url: '/stations/' + sn + '/charge_config?chargeType=electricity',
             success: function (data) {
-                if(data.pfv_settings_f && data.pfv_settings_f != '') {
-                    pfvSettingsF = JSON.parse(data.pfv_settings_f);
+                if(data.pfv_settings_f && data.pfv_settings_f !== '') {
+                    stationPfvSettingF = JSON.parse(data.pfv_settings_f);
                 }
-                if(data.pfv_settings_r && data.pfv_settings_r != '') {
-                    pfvSettingsR = JSON.parse(data.pfv_settings_r);
+                if(data.pfv_settings_r && data.pfv_settings_r !== '') {
+                    stationPfvSettingR = JSON.parse(data.pfv_settings_r);
+                }
+                if (data.device_settings) {
+                    deviceChargeSettingF = JSON.parse(data.device_settings);
+                }
+                if (data.device_settings_r) {
+                    deviceChargeSettingR = JSON.parse(data.device_settings_r);
                 }
                 getTrendGroupOfSite(sn);
             }
@@ -270,7 +278,8 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
             }
         });
     }
-    function createChartSeriesForGroup(data, chartOption) {
+
+    function createChartSeriesForGroup(groupId, data, chartOption) {
         // 从datainfo返回的数据创建曲线的series
         var arr = [];
         var namearr = [];
@@ -299,7 +308,7 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
                 axisTick: {
                     "show": false
                 },
-                scale: true
+                scale: false
             },
             {
                 "axisLine": {
@@ -309,39 +318,66 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
                 },
             }
         ];
-        for (var l = 0; l < data.data.length; l++) {
-            if(!data.data[l].unit) {
-                data.data[l].unit = '';
+        var group = $scope.trendGroups.find(function (item) {
+            return item.id === groupId;
+        }); // 配置信息
+        if (group && group.extend_js) {
+            var extendJs = JSON.parse(group.extend_js);
+            if (extendJs.yAxisScale) {
+                yAxis[0].scale = true;
             }
-            if(data.data[l].unit.indexOf("kW") != -1) {
-                showPfvSettingsF = true;
+        }
+        var groupVars = group ? group.device_vars : [];
+        var pfvSetting = null;
+        for (var l = 0; l < data.data.length; l++) {
+            var item = data.data[l];
+            if(!item.unit) {
+                item.unit = '';
             }
             var mhharr = [];
-            for (var h = 0; h < data.data[l].time_keys.length; h++) {
+            for (var h = 0; h < item.time_keys.length; h++) {
                 var myarr = [];
-                var nian = data.data[l].time_keys[h].slice(0, 4);
-                var yue = data.data[l].time_keys[h].slice(5, 7) - 1;
-                var ri = data.data[l].time_keys[h].slice(8, 10);
-                var shi = data.data[l].time_keys[h].slice(11, 13);
-                var fen = data.data[l].time_keys[h].slice(14, 16);
-                var miao = data.data[l].time_keys[h].slice(17, 19);
+                var nian = item.time_keys[h].slice(0, 4);
+                var yue = item.time_keys[h].slice(5, 7) - 1;
+                var ri = item.time_keys[h].slice(8, 10);
+                var shi = item.time_keys[h].slice(11, 13);
+                var fen = item.time_keys[h].slice(14, 16);
+                var miao = item.time_keys[h].slice(17, 19);
                 myarr[0] = new Date(nian, yue, ri, shi, fen, miao);
-                myarr[1] = data.data[l].datas[h];
+                myarr[1] = item.datas[h];
                 mhharr.push(myarr)
             }
-            arr.push({
-                name: data.data[l].name,
+            var name = item.name;
+            var setting = groupVars.find(function (v) {
+                return v.sn === item.var.sn;
+            });
+            if (setting && setting.label1_value) {
+                name = setting.label1_value;
+            }
+            if (item.unit) {
+                name += "(" + item.unit + ")";
+            }
+            var s = {
+                name: name,
                 type: 'line',
                 symbolSize: 2,
                 symbol: 'circle',
                 yAxisIndex: 0,
-                data: mhharr
-            });
-            namearr.push(data.data[l].name + "(" + data.data[l].unit + ")");
+                data: mhharr,
+                color: setting.label2_value || null
+            };
+            if (setting && setting.label2_value) {
+                s.color = setting.label2_value;
+            }
+            arr.push(s);
+            namearr.push(name);
+            if (!pfvSetting) {
+                pfvSetting = getPfvSetting(item.var);
+            }
         }
 
         //增加电价信息
-        if(showPfvSettingsF && pfvSettingsF && data.type === "day") {
+        if(pfvSetting && data.type === "day") {
             if(data.data.length > 0 && data.data[0].time_keys.length) {
                 ri = data.data[0].time_keys[0].slice(8, 10); //针对最后一个点 为第二天0点 的特殊处理
             }
@@ -361,55 +397,93 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
                 },
                 type: 'value'
             };
-            createPfvSettingMark(pfvSettingsF, [nian, yue, ri], arr);
+            var dateTime = item.time_keys[0];
+            createPfvSettingMark(pfvSetting, dateTime, arr);
         }
         $.extend(chartOption, {
-            legend: {
-                data: namearr
-            },
             yAxis: yAxis,
-            series: arr
+            series: arr,
         });
+        chartOption.legend.data = namearr;
     }
 
-    function createPfvSettingMark(tempPfvSettings, ymd, series) {
-        var nian = ymd[0], yue = ymd[1], ri = ymd[2];
-        for(var i=0; i<tempPfvSettings.length; i++){
+    function _getPfvOfDevice(varInfo, pfvSetting, deviceSetting) {
+        if (!pfvSetting || !pfvSetting.length) {
+            return null;
+        }
+        if (deviceSetting) { // 获取设备对应的用电电价设置。 如果设备没有配置，则返回第一个电价设置
+            for (var i=0; i<deviceSetting.length; i++) {
+                if (varInfo.device_sn === deviceSetting[i].device_sn) {
+                    var label = deviceSetting[i].label;
+                    for (var j=0; j<pfvSetting.length; j++) {
+                        if (pfvSetting[j].label === label) {
+                            return pfvSetting[j].pfv;
+                        }
+                    }
+                }
+            }
+        }
+        return pfvSetting[0].pfv;
+    }
+
+    function getPfvSetting(varInfo) { // 获取变量对应的电价设置，如果不是有功电度或电价未配置，则返回null
+        if (varInfo.var_code === 'EPr') { // 反向有功功率，使用发电
+            return _getPfvOfDevice(varInfo, stationPfvSettingR, deviceChargeSettingR);
+        } else if (varInfo.unit.toLowerCase().indexOf('kw') === 0 || varInfo.unit.toLowerCase().indexOf('mw') === 0 ||
+            varInfo.var_code === 'EPf') { // 有功电度或以kw/mw为单位的变量
+            return _getPfvOfDevice(varInfo, stationPfvSettingF, deviceChargeSettingF);
+        }
+        return null;
+    }
+
+    function createPfvSettingMark(pfvSetting, dateTime, series) {
+        if (!pfvSetting) {
+            return;
+        }
+        var nian = Number.parseInt(dateTime.slice(0, 4));
+        var yue = Number.parseInt(dateTime.slice(5, 7)) - 1;
+        var ri = Number.parseInt(dateTime.slice(8, 10));
+        for(var i=0; i<pfvSetting.length; i++){
             var markAreaData = [];
             var chargeData = [];
-
-            var tempPfv = tempPfvSettings[i].pfv;
-            var tempCharge = tempPfvSettings[i].charge;
+            var pfvItem = pfvSetting[i];
+            var tempPfv = pfvItem.pfv;
+            var tempCharge = pfvItem.charge;
             var tempName = '';
             var tempColor = 'gray';
             var tempLabelColor = 'gray';
             if(tempPfv === 'p') {
                 tempName = '峰';
-                tempColor = g_pvf_colors.p;
+                tempColor = g_pvf_colors_opacity.p;
                 tempLabelColor = g_pvf_label_colors.p;
             } else if(tempPfv === 'f') {
                 tempName = '平';
-                tempColor = g_pvf_colors.f;
+                tempColor = g_pvf_colors_opacity.f;
                 tempLabelColor = g_pvf_label_colors.f;
             } else if(tempPfv === 'v') {
                 tempName = '谷';
-                tempColor = g_pvf_colors.v;
+                tempColor = g_pvf_colors_opacity.v;
                 tempLabelColor = g_pvf_label_colors.v;
+            } else if(tempPfv === 's') {
+                tempName = '尖';
+                tempColor = g_pvf_colors_opacity.s;
+                tempLabelColor = g_pvf_label_colors.s;
             }
-
-            var startDate = new Date(nian, yue, ri, parseInt(tempPfvSettings[i].starttime.substr(0,2)), parseInt(tempPfvSettings[i].starttime.substr(3,5)), 00);
-            var endDate = new Date(nian, yue, ri, parseInt(tempPfvSettings[i].endtime.substr(0,2)), parseInt(tempPfvSettings[i].endtime.substr(3,5)), 00);
-
+            var now = new Date();
+            var startDate = new Date(nian, yue, ri,
+                parseInt(pfvItem.starttime.substr(0,2)), parseInt(pfvItem.starttime.substr(3,5)), 10);
+            var endDate = new Date(nian, yue, ri,
+                parseInt(pfvItem.endtime.substr(0,2)), parseInt(pfvItem.endtime.substr(3,5)), 10);
             var tempAreaData = [{
-                name: tempName+'\n'+tempPfvSettings[i].charge+'元',
+                name: tempName+'\n'+pfvItem.charge+'元',
                 xAxis: startDate,
                 yAxis: 0
             }, {
                 xAxis: endDate,
-                yAxis: tempPfvSettings[i].charge,
+                yAxis: pfvItem.charge,
             }];
 
-            chargeData.push([endDate, tempPfvSettings[i].charge]);
+            chargeData.push([endDate, pfvItem.charge]);
             markAreaData.push(tempAreaData);
 
             var newDate = {
@@ -417,12 +491,15 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
                 yAxisIndex: 1,
                 type:'line',
                 symbolSize: 0,
+                tooltip: {
+                    show: false,
+                },
                 itemStyle: {
                     normal: {
                         color: tempLabelColor,
                         lineStyle: {
-                            width: 0
-                        }
+                            width: 0,
+                        },
                     }
                 },
                 data: chargeData,
@@ -430,7 +507,7 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
                     data: markAreaData,
                     itemStyle: {
                         normal: {
-                            color: tempColor
+                            color: tempColor,
                         }
                     }
                 }
@@ -475,22 +552,25 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
         var option = {
             color: g_line_colors,
             grid: {
-                'left': 55,
-                'right': 30,
-                'top': 20,
-                bottom: 30
+                left: 55,
+                right: 30,
+                top: 20,
+                bottom: 50
             },
             tooltip: {
-                trigger: 'axis'
+                trigger: 'axis',
+                confine: true
             },
             legend: {
-                left: 'center',
-                bottom: 0,
-                orient: 'horizontal',
-                formatter: function(name) {
-                    return (name.length > 8 ? (name.slice(0, 8) + "...") : name);
+                type: 'scroll',
+                top: 'bottom',
+                pageIconSize: 10,
+                itemWidth: 15,
+                itemHeight: 8,
+                textStyle: {
+                    color: '#848484',
+                    fontSize: 11,
                 },
-                padding: [0, 0, 2, 0]
             },
             xAxis: {
                 type: xType,
@@ -539,7 +619,7 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
             yAxis: {},
             series: []
         };
-        createChartSeriesForGroup(data, option);
+        createChartSeriesForGroup(groupId, data, option);
         echartsObj.setOption(option);
     }
     $scope.$on('$destroy', function (event) {

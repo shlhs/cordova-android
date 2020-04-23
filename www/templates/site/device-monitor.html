@@ -39,8 +39,8 @@
         </ul>
         <div class="mui-scroll" style="background-color: #ffffff;">
             <div class="card" style="margin-top: 16px;">
-                <div id="chartContainer"></div>
-                <div class="page-alert-wrapper" ng-if="!currentGroup">
+                <div id="chartContainer" style="height: 320px"></div>
+                <div class="page-alert-wrapper" ng-if="!currentGroup" style="margin-top: -400px;">
                     <div class="page-alert">
                         <div class="page-alert">
                             <i class="alert-icon nodata"></i>
@@ -75,6 +75,11 @@
                 </table>
             </div>
         </div>
+        <div class="page-alert-wrapper" ng-if="!isLoading && !realtime">
+            <div class="page-alert">
+                <div class="alert-text info">该设备未配置任何变量</div>
+            </div>
+        </div>
         <div class="page-alert-wrapper" ng-if="isLoading">
             <div class="page-alert">
                 <i class="alert-icon loading-spinner"></i>
@@ -82,11 +87,11 @@
             </div>
         </div>
     </div>
-    <div class="page-alert-wrapper" ng-if="isLoading">
-        <div class="page-alert">
-            <i class="alert-icon loading-spinner"></i>
-            <div class="alert-text info">正在加载...</div>
-        </div>
-    </div>
+    <!--<div class="page-alert-wrapper" ng-if="isLoading">-->
+        <!--<div class="page-alert">-->
+            <!--<i class="alert-icon loading-spinner"></i>-->
+            <!--<div class="alert-text info">正在加载...</div>-->
+        <!--</div>-->
+    <!--</div>-->
 </div>
 </div>
