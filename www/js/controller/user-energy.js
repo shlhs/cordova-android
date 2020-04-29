@@ -85,7 +85,7 @@ EnergyFuncApi.prototype.fetchAndCalcCharges = function (stationSn, electricConfi
             return;
         }
         // 获取电度电费统计值
-        varDataApi.getDegreeSummary(varMap.EPf.sn, month, function (degreeData) {
+        varDataApi.getDegreeSummary(varMap.EPf.sn, month, 'MONTH', function (degreeData) {
             if (degreeData && degreeData.allCharge !== null) {
                 Object.assign(returnObj, {
                     degreeDetail: degreeData,
@@ -1051,7 +1051,7 @@ app.controller('EnergyCostAnalysisCtrl', function ($scope, ajax, platformService
                 $scope.degreeVarSn = degreeVar.sn;
                 $scope.chargeTexts = [];
                 $scope.degreeTexts = [];
-                varDataService.getDegreeSummary(degreeVar.sn, $scope.selectedDate, function (data) {
+                varDataService.getDegreeSummary(degreeVar.sn, $scope.selectedDate, 'MONTH', function (data) {
                     if (data) {
                         var keys = ['s', 'p', 'v', 'f'];
                         var degreeMap = {};

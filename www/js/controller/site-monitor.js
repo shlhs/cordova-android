@@ -88,6 +88,8 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
     var stationSn = $scope.sn;    // GetQueryString("sn");
     var deviceChargeSettingF = null;    // 设备用电电价配置
     var deviceChargeSettingR = null;    // 设备发电电价配置
+    var stationPfvSettingF = null; // 站点发电价配置
+    var stationPfvSettingR = null; // 站点用电价配置
     $scope.timeTypeList = [{
         id: 'DAY',
         name: '按日'
