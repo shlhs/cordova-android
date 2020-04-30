@@ -6,6 +6,7 @@ var app = angular.module('myApp', ['ngAnimate', 'ui.router', 'ui.router.state.ev
 var loginExpireCheckEnable = false;       // 是否检查鉴权过期
 var defaultPlatIpAddr = "http://111.42.38.119";     // 黑龙江华源
 var defaultImgThumbHost = "";     // 如果为空则与 host一样
+var gQrDownloadUrl = defaultPlatIpAddr + ':8123/version/qr.png'; // 二维码下载链接
 var gShowEnergyPage = false;     // 是否显示能效页面，不显示能效页面时运维人员会看到抢单页面
 
 app.run(function ($animate) {

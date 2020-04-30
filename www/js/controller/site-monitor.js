@@ -332,7 +332,8 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', function ($scope, ajax
                 },
                 type: 'value'
             };
-            createPfvSettingMark(pfvSetting, arr);
+            var dateTime = item.time_keys[0]; // 用于电价marker取得年、月、日信息
+            createPfvSettingMark(pfvSetting, dateTime, arr);
         }
         $.extend(chartOption, {
             yAxis: yAxis,
@@ -370,10 +371,13 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', function ($scope, ajax
         return null;
     }
 
-    function createPfvSettingMark(pfvSetting, series) {
+    function createPfvSettingMark(pfvSetting, dateTime, series) {
         if (!pfvSetting) {
             return;
         }
+        var nian = Number.parseInt(dateTime.slice(0, 4));
+        var yue = Number.parseInt(dateTime.slice(5, 7)) - 1;
+        var ri = Number.parseInt(dateTime.slice(8, 10));
         for(var i=0; i<pfvSetting.length; i++){
             var markAreaData = [];
             var chargeData = [];
@@ -401,9 +405,9 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', function ($scope, ajax
                 tempLabelColor = g_pvf_label_colors.s;
             }
             var now = new Date();
-            var startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(),
+            var startDate = new Date(nian, yue, ri,
                 parseInt(pfvItem.starttime.substr(0,2)), parseInt(pfvItem.starttime.substr(3,5)), 10);
-            var endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(),
+            var endDate = new Date(nian, yue, ri,
                 parseInt(pfvItem.endtime.substr(0,2)), parseInt(pfvItem.endtime.substr(3,5)), 10);
             var tempAreaData = [{
                 name: tempName+'\n'+pfvItem.charge+'元',
@@ -463,16 +467,16 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', function ($scope, ajax
         var xlm = "";
         var xType = "time";
         if (timety === "DAY") {
-            mintime = new Date(nian, yue, ri, 00, 00, 00);
-            maxtime = new Date(nian, yue, ri, 24, 00, 00);
+            mintime = new Date(nian, yue, ri, 0, 0, 0);
+            maxtime = new Date(nian, yue, ri, 24, 0, 0);
         }
         if (timety === "MONTH") {
-            mintime = new Date(nian, yue, 01, 00, 00, 00);
+            mintime = new Date(nian, yue, 1, 0, 0, 0);
             maxtime = getCurrentMonthLast(dataday.slice(0, 10));
         }
         if (timety === "YEAR") {
-            mintime = new Date(nian, 00, 01, 00, 00, 00);
-            maxtime = new Date(nian, 11, 11, 00, 00, 00);
+            mintime = new Date(nian, 0, 1, 0, 0, 0);
+            maxtime = new Date(nian, 11, 11, 0, 0, 0);
         }
         var echartsDiv = $('#chart' + groupId);
         if (echartsDiv.length) {
