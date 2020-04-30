@@ -1,0 +1,33 @@
+<div class="page page-fade" ng-controller="DeviceRemoteControlConfirmCtrl">
+    <div class="mui-popup property-editor-popup" style="display: block;opacity: 1;">
+        <div class="mui-popup-inner">
+            <div class="form-group" ng-if="controlObj.type==='Analog'">
+                <label>设置变量【{{controlObj.name}}】的值为：</label>
+                <input type="text" ng-model="newValue" ng-change="onInputValidate(newValue)" autocomplete="off">
+                <div class="text-danger" ng-if="inputError" style="margin-top: 8px;text-align: left;font-size: 12px;">{{inputError}}</div>
+                <label style="margin-top: 10px;color: #444;">出于安全考虑，需要再次验证登录密码：</label>
+                <input placeholder="请输入您的登录密码" autocomplete="new-password" style="font-size: 14px" type="password" ng-model="pwd" ng-change="onPwdChange(pwd)">
+            </div>
+            <div class="form-group" ng-if="controlObj.type==='Digital'">
+                <label style="color: #333;">将对变量【{{controlObj.name}}】进行以下操作！</label>
+                <div class="mui-input-row mui-radio mui-left control-radio" ng-click="onCheck('1')">
+                    <label for="radio2">{{controlObj.one_meaning}}</label>
+                    <input name="digitalValue" type="radio" id="radio2" ng-checked="controlObj.value === '1'" >
+                </div>
+                <div class="mui-input-row mui-radio mui-left control-radio" ng-click="onCheck('0')">
+                    <label for="radio1">{{controlObj.zero_meaning}}</label>
+                    <input name="digitalValue" type="radio" id="radio1" ng-checked="controlObj.value === '0'" ng-model="controlObj.value">
+                </div>
+                <label style="margin-top: 10px;color: #444;">出于安全考虑，需要再次验证登录密码：</label>
+                <input placeholder="请输入您的登录密码" autocomplete="new-password" style="font-size: 14px" type="password" ng-model="pwd" ng-change="onPwdChange(pwd)">
+            </div>
+            <div class="text-danger" ng-if="error" style="margin-top: 8px;text-align: left;font-size: 12px;">{{error}}</div>
+        </div>
+        <div class="mui-popup-buttons">
+            <a class="mui-popup-button" ng-click="onCancel()" style="color: #848484;">取消</a>
+            <a class="mui-popup-button" ng-click="confirm()" style="color: #439AF2;" ng-if="!isSubmitting">下发</a>
+            <a class="mui-popup-button" ng-if="isSubmitting" disabled style="color: #848484;">正在下发...</a>
+        </div>
+    </div>
+    <div class="mui-popup-backdrop mui-active" style="display: block;"></div>
+</div>

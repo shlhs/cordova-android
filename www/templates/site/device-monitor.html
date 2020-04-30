@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="../../css/animate.css">
     <link rel="stylesheet" href="../../components/mui/css/icons-extra.css">
     <link rel="stylesheet" href="../../css/setting.css">
-    <script type="text/javascript" src="../../components/libs/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="../../components/libs/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
     <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
     <!--<script type="text/javascript" src="components/ui-router-extras/release/ct-ui-router-extras.js"></script>-->
@@ -21,6 +21,7 @@
     <script type="text/javascript" src="../../components/angular-ui-router/release/stateEvents.min.js"></script>
     <script type="text/javascript" src="../../js/app/utils.js"></script>
     <script type="text/javascript" src="../../js/app/app.js"></script>
+    <script type="text/javascript" src="../../js/service/appstore.js"></script>
     <script type="text/javascript" src="../../js/service/common-service.js"></script>
     <!--<script type="text/javascript" src="../../js/router/site-router.js"></script>-->
 
@@ -61,9 +62,10 @@
 <header class="mui-bar bg-header">
     <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
     <h1 class="mui-title">{{deviceName}}</h1>
-    <a href="/templates/task/add-task.html" class="mui-action-menu mui-icon mui-pull-right" ><i class="header-icon white icon-add"></i></a>
+    <!--<a href="/templates/task/add-task.html" class="mui-action-menu mui-icon mui-pull-right" ng-if="hasOpsAuthMenu"><i class="header-icon white icon-add"></i></a>-->
+    <a href="/templates/site/device-monitor/remote-control.html?device_sn={{deviceSn}}"
+       class="mui-action-menu mui-icon mui-pull-right" style="color: #fff;font-size: 14px;line-height: 24px;" ng-if="canControl">控制中心</a>
 </header>
-<div ng-include="'../../templates/top-menu.html'"></div>
 <div class="mui-content" ng-cloak style="background-color: #fff;">
     <div class="cascade-selector" style="top: 60px;" ng-class="{'collapse': collapse[0] || collapse[1]}">
         <div class="selector-mask"  ng-if="collapse[0] || collapse[1]" ng-click="toggleCollapse(-1)" style="top: 105px;"></div>
@@ -97,8 +99,8 @@
             </li>
         </ul>
         <div class="mui-scroll" style="background-color: #ffffff;">
-            <div class="card" style="margin-top: 16px;">
-                <div id="chartContainer"></div>
+            <div class="card">
+                <div id="chartContainer" style="height: 320px;"></div>
                 <div class="page-alert-wrapper" ng-if="!currentGroup">
                     <div class="page-alert">
                         <div class="page-alert">
@@ -135,6 +137,11 @@
                 </table>
             </div>
         </div>
+        <div class="page-alert-wrapper" ng-if="!isLoading && !realtime">
+            <div class="page-alert">
+                <div class="alert-text info">该设备未配置任何变量</div>
+            </div>
+        </div>
         <div class="page-alert-wrapper" ng-if="isLoading">
             <div class="page-alert">
                 <img src="../../img/page-loading.gif" class="loading-img">
@@ -142,50 +149,11 @@
             </div>
         </div>
     </div>
-    <div class="page-alert-wrapper" ng-if="isLoading">
-        <div class="page-alert">
-            <img src="../../img/page-loading.gif" class="loading-img">
-            <div class="alert-text info">正在加载...</div>
-        </div>
-    </div>
-    <!--<div class="scroll-wrapper" ng-if="showType==='history'" style="top:32px;" ng-controller="HistoryVarCtrl1">-->
-        <!--<div ng-if="history.length">-->
-            <!--<div style="padding: 6px 16px;">-->
-                <!--<button class="mui-btn" ng-repeat="item in history" ng-click="switchGroup(item.name)"-->
-                        <!--ng-class="{'mui-btn-primary': currentGroupName===item.name}">-->
-                    <!--{{item.name}}-->
-                <!--</button>-->
-            <!--</div>-->
-            <!--<div style="padding: 0 0 6px 16px;">-->
-                <!--<button class="mui-btn mui-btn-outlined" ng-class="{'mui-btn-primary': timeRange==='DAY'}" ng-click="switchTimeRange('DAY')">今日</button>-->
-                <!--<button class="mui-btn mui-btn-outlined" ng-class="{'mui-btn-primary': timeRange==='MONTH'}" ng-click="switchTimeRange('MONTH')">本月</button>-->
-            <!--</div>-->
-            <!--<div class="mui-scroll">-->
-                <!--<div class="card">-->
-                    <!--<div id="chartContainer"></div>-->
-                <!--</div>-->
-            <!--</div>-->
-        <!--</div>-->
-        <!--<div class="page-alert-wrapper" ng-if="!history.length && !isLoading">-->
-            <!--<div class="page-alert">-->
-                <!--<div class="page-alert">-->
-                    <!--<i class="alert-icon nodata"></i>-->
-                    <!--<div class="alert-text info">变量未关联标准定义</div>-->
-                <!--</div>-->
-            <!--</div>-->
-        <!--</div>-->
-        <!--<div class="page-alert-wrapper" ng-if="isLoading">-->
-            <!--<div class="page-alert">-->
-                <!--<span class="mui-spinner"></span>-->
-                <!--<div class="alert-text info">正在加载...</div>-->
-            <!--</div>-->
-        <!--</div>-->
-    <!--</div>-->
 </div>
 <div class="page page-left" ui-view></div>
 <script src="../../components/fastclick-master/lib/fastclick.js"></script>
 <script src="../../js/my/notify.js"></script>
 <script type="text/javascript" src="../../js/controller/device.js"></script>
-<script src="../../components/highcharts/highcharts.js"></script>
+<script src="../../components/echart/echarts.min-3.x.js"></script>
 </body>
 </html>

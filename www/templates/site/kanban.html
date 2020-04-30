@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="../../css/setting.css">
     <!--<script type="text/javascript" src="../../cordova.js"></script>-->
     <!--<script type="text/javascript" src="../../cordova_plugins.js"></script>-->
-    <script type="text/javascript" src="../../components/libs/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="../../components/libs/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
     <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
     <!--<script type="text/javascript" src="components/ui-router-extras/release/ct-ui-router-extras.js"></script>-->
@@ -25,6 +25,7 @@
     <script type="text/javascript" src="../../js/app/app.js"></script>
     <script type="text/javascript" src="../../js/controller/sites.js"></script>
     <script type="text/javascript" src="../../js/service/common-service.js"></script>
+    <script type="text/javascript" src="../../js/service/appstore.js"></script>
     <script src="../../js/controller/kanban.js"></script>
     <!--<script src="../../components/libs/echarts-all.js"></script>-->
 
@@ -132,6 +133,12 @@
         .mui-table-view:after{
             display: none;
         }
+        ul.slidesjs-pagination {
+            height: 14px;
+        }
+        .chart {
+            height: 216px;
+        }
     </style>
 </head>
 <body class="box-vertical-center" ng-app="myApp">
@@ -159,7 +166,7 @@
                     <div class="card-header border">
                         <i class="icon icon-ms icon-card-event"></i>
                         事件与告警
-                        <a class="mui-pull-right" href="/templates/site/event-list.html?sn={{sn}}" style="font-size: 14px;">更多</a>
+                        <a class="mui-pull-right" href="/templates/site/event-list.html?sn={{sn}}&name={{stationName}}" style="font-size: 14px;">更多</a>
                     </div>
                     <div class="card-content">
                         <div ng-if="events.length === 0" style="text-align: center">无告警</div>
@@ -193,7 +200,6 @@
     <div class="page page-left" ui-view=""></div>
     <script src="../../components/fastclick-master/lib/fastclick.js"></script>
     <script src="../../js/my/notify.js"></script>
-    <script src="../../components/highcharts/highcharts.js"></script>
     <script src="../../components/echart/echarts.common.min.js"></script>
     <script src="../../components/moment.min.js"></script>
     <script src="../../components/slides-playing/js/jquery.slides.js"></script>

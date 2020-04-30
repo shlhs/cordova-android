@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="../../components/mui/css/icons-extra.css">
     <link rel="stylesheet" href="../../css/my.css">
     <link rel="stylesheet" href="../../css/task.css">
-    <script type="text/javascript" src="../../components/libs/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="../../components/libs/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
     <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
     <script type="text/javascript" src="../../components/angular-animate/angular-animate.js"></script>
@@ -41,7 +41,7 @@
                      style="margin-left: 0;position: fixed;top:60px;background-color: #fff;box-shadow: 0 0 1px #ccc;">
                     <a class="mui-control-item" ng-click="changeTaskType('open')" ng-class="{'mui-active': showType=='open'}">未关闭({{openTaskCount}})</a>
                     <a class="mui-control-item" ng-click="changeTaskType('closed')" ng-class="{'mui-active': showType=='closed'}">
-                        已关闭({{closedTaskCount}})
+                        已完成({{closedTaskCount}})
                     </a>
                 </div>
                 <div class="scroll-wrapper" style="position: fixed;top: 96px;bottom: 0px;overflow-y: auto;" id="task_history_scroll">

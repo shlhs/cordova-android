@@ -3,6 +3,11 @@
  * Created by liucaiyun on 2017/5/4.
  */
 var app = angular.module('myApp', ['ngAnimate', 'ui.router', 'ui.router.state.events']);
+var loginExpireCheckEnable = false;       // 是否检查鉴权过期
+var defaultPlatIpAddr = "http://121.42.242.86";     // 平台默认ip，格式为：http://118.190.51.135
+var defaultImgThumbHost = "";     // 如果为空则与 host一样
+var gQrDownloadUrl = defaultPlatIpAddr + ':8123/version/qr.png'; // 二维码下载链接
+var gShowEnergyPage = false;     // 是否显示能效页面，不显示能效页面时运维人员会看到抢单页面
 
 app.run(function ($animate) {
     $animate.enabled(true);
@@ -16,13 +21,28 @@ app.run(function ($animate) {
 //     });
 // }]);
 
-app.controller('MainCtrl', function ($scope, $rootScope, userService) {
+app.filter(
+    'to_trusted', ['$sce', function ($sce) {
+        return function (text) {
+            return $sce.trustAsHtml(text);
+        }
+    }]
+);
 
-});
+app.controller('MainCtrl', ['$scope', '$rootScope', 'userService', function ($scope, $rootScope, userService) {
+}]);
+
+app.controller('LoginExpireCtrl', ['$scope', 'userService', function ($scope, userService) {
+    $scope.gotoLogin = function () {
+        // 先清空密码
+        userService.setPassword('');
+        window.location.href = '/templates/login.html';
+    };
+}]);
 
 var UserRole = {SuperUser: 'SUPERUSER', OpsAdmin: 'OPS_ADMIN', OpsOperator: 'OPS_OPERATOR', Normal: 'USER'};
 
-app.service('userService', function ($rootScope) {
+app.service('userService', ['$rootScope', function ($rootScope) {
 
     this.setAccountToken = function (token) {
         setStorageItem('accountToken', token);
@@ -36,6 +56,13 @@ app.service('userService', function ($rootScope) {
         setStorageItem('user', JSON.stringify(user));
         setStorageItem('username', user.account);
         setStorageItem('password', password);
+        if (user.permissions) {
+            const permissions = [];
+            user.permissions.forEach(function (perm) {
+                permissions.push(perm.authrity_name);
+            });
+            setStorageItem('permissions', permissions.join(','));
+        }
         setStorageItem('company', '');
         this.username = user.account;
         this.password = password;
@@ -50,6 +77,24 @@ app.service('userService', function ($rootScope) {
         } else {
             return null;
         }
+    };
+
+    this.getCompanyId = function () {
+        if (!getStorageItem("permissions")) {
+            return null;
+        }
+        var roles = getStorageItem("permissions").split(',');
+        for (var i=0; i<roles.length; i++) {
+            var role = roles[i];
+            if (role.indexOf("COMPANY_OPS_COMPANY_VIEWCOMPANY") === 0) {
+                return role.substring("COMPANY_OPS_COMPANY_VIEWCOMPANY".length);
+            }
+            //用户公司
+            if (role.indexOf("USER_COMPANY_USERUSER_COMPANY") === 0) {
+                return 'user' + role.substring("USER_COMPANY_USERUSER_COMPANY".length);
+            }
+        }
+        return null;
     };
 
     /* 获取用户角色：
@@ -126,7 +171,7 @@ app.service('userService', function ($rootScope) {
     this.company = this.getCompany();
 
     $rootScope.permission = {canEditTask: this.getUserRole() != UserRole.Normal && this.getUserRole() != UserRole.OpsOperator};
-});
+}]);
 
 app.service('platformService', function () {
     this.addPlatform = function (username, platform) {
@@ -152,8 +197,7 @@ app.service('platformService', function () {
 
     this.setLatestPlatform = function (platform) {
         setStorageItem('latestPlatform', JSON.stringify(platform));
-        this.host = platform.url;
-        this.ipAddress = this.host.substring(0, this.host.indexOf(':', 5));
+        this.host = platform.url.substring(0, platform.url.indexOf(':', platform.url.indexOf(':')+1));
         this.thumbHost = this.getImageThumbHost();
     };
 
@@ -168,61 +212,245 @@ app.service('platformService', function () {
 
     this.getHost = function () {
         // 格式为： http://ip:port/v1
+        if (defaultPlatIpAddr) {
+            return defaultPlatIpAddr;
+        }
         var platform = this.getLatestPlatform();
-        return platform ? platform.url : null;
+        return platform ? platform.url.substring(0, platform.url.indexOf(':', platform.url.indexOf(':')+1)) : null;
+    };
+
+    this.getCloudHost = function () {
+        return this.host + ':8099/v1';
+        // return 'http://127.0.0.1:8099/v1';
     };
 
     this.getAuthHost = function () {
-        return this.ipAddress + ":8096/v1"
+        return this.host + ":8096/v1"
     };
 
     this.getImageThumbHost = function () {      // 获取图片压缩服务的地址
         // 格式为： http://ip:8888/unsafe
-        if (this.ipAddress)
+        if (defaultImgThumbHost) {
+            return defaultImgThumbHost + ":8888/unsafe";
+        }
+        if (this.host)
         {
-            return this.ipAddress + ":8888/unsafe"
+            return this.host + ":8888/unsafe"
         }
         return null;
     };
 
     this.getGraphHost = function () {
-        return this.ipAddress + ':8920/v1';
+        return this.host + ':8920/v1';
     };
 
     this.getGraphScreenUrl = function (graphSn) {
         // 新的监控画面服务
-        return this.ipAddress + ':8921/monitor.html?sn=' + graphSn;
+        return this.host + ':8921/monitor.html?sn=' + graphSn;
     };
 
     this.getDeviceMgmtHost = function () {
-        return this.ipAddress + ':8097';
+        return this.host + ':8097';
     };
 
     this.getOldMonitorScreenUrl = function (screenSn) {
         // 老的监控画面服务
-        return this.ipAddress + ':8098/monitor_screen?sn=' + screenSn;
+        return this.host + ':8098/monitor_screen?sn=' + screenSn;
     };
 
     this.getImageUrl = function (width, height, imageUrl) {
+        // When using gifsicle engine, filters will be skipped. Thumbor will not do smart cropping as well
+        var urlLength = imageUrl.length;
+        if(urlLength > 4 && imageUrl.toLocaleLowerCase().lastIndexOf('.gif') === (urlLength -4)) {
+            return imageUrl;
+        }
+
         return this.thumbHost + '/' + width + 'x' + height + '/' + imageUrl;
     };
 
+    this.getIpcServiceHost = function () {
+        return this.host + ':8095/v1';
+    };
+
+    this.setUiMode = function (mode) {
+        setStorageItem('globalUiMode', mode);
+    };
+
     this.host = this.getHost();
-    // this.host = 'http://127.0.0.1:8099/v1';
-    this.ipAddress = this.host ? this.host.substring(0, this.host.indexOf(':', 5)) : '';
     this.thumbHost = this.getImageThumbHost();
 });
 
-app.service('ajax', function ($rootScope, platformService, userService, $http) {
+// routerService
+app.service('routerService', ['$timeout', '$compile', function ($timeout, $compile) {
+    var pages = [], pageLength=0, currentIndex=0;
+    var nextPage = {};      // 保存下一个页面的数据
+    window.addEventListener('popstate', function () {
+        if (!pageLength){
+            return;
+        }
+        // 显示前一个页面
+        if (pageLength>1){
+            pages[pageLength - 2].ele.show();
+        }else{
+            pages[0].ele.prevAll().show();
+        }
+        var item = pages[currentIndex], element=item.ele;
+        element.addClass('ng-leave');
+        item.scope.$broadcast('$destroy');
+        pages.splice(pageLength-1, 1);
+        pageLength -= 1;
+        currentIndex = pageLength - 1;
+        element[0].addEventListener('webkitAnimationEnd', _animateEnd);
+        function _animateEnd() {
+            element.remove();
+        }
+    });
+
+    this.addHistory = function (scope, element) {
+        var pageData = this.getNextPage();
+        var config = pageData.config;
+        var data = {
+            ele: element,
+            scope: scope,
+            config: config
+        };
+        var toFinishPage = null, addNewHistory=true;
+        element.addClass('ng-enter');
+
+        function _animationEnd(event) {
+
+            if (config && config.finish){   // 打开这个页面时，需要关闭前一个页面
+                toFinishPage = pages[currentIndex].ele;
+                pages[currentIndex] = data;
+                addNewHistory = false;
+            }else{
+                pages.push(data);
+                pageLength += 1;
+                currentIndex = pageLength - 1;
+            }
+            element.removeClass('ng-enter');
+            if (config.hidePrev)        // 如果配置
+            {
+                element.prevAll().hide();
+            }
+
+            if (toFinishPage){
+                toFinishPage.remove();
+            }
+            if (addNewHistory){
+                history.pushState(null, null, null);
+            }
+            element[0].removeEventListener('webkitAnimationEnd', _animationEnd);
+        }
+        element[0].addEventListener('webkitAnimationEnd', _animationEnd);
+    };
+
+    this.openPage = function (scope, templateUrl, params, config) {
+        var html = "<route-page template=" + templateUrl;
+        this._setNextPage(params, config);
+        html += '></route-page>';
+        var compileFn = $compile(html);
+        var $dom = compileFn(scope);
+        // 添加到文档中
+        $dom.appendTo($('body'));
+    };
+
+    this._setNextPage = function (params, config) {
+        config = $.extend({}, {
+            hidePrev: true,      // 默认打开新页面时会隐藏前一页
+            addHistory: true    // 是否加到history中
+        }, config);
+        nextPage = {
+            params: params,
+            config: config
+        };
+    };
+
+    this.getNextPage = function () {
+        return nextPage;
+    };
+
+    this.hasNoHistory = function () {       // 当前是否已经是第一集页面
+        if (pageLength === 0) {
+            return true;
+        } else {
+            return false;
+        }
+    };
+}]);
+
+app.directive('routePage', ['$log', 'routerService', function($log, routerService){
+    return {
+        restrict: 'E', // E = Element, A = Attribute, C = Class, M = Comment
+        // templateUrl: '/templates/site/site-detail.html',
+        replace: true,
+        controller: function($scope, $element){
+            var pageData = routerService.getNextPage();
+            var params = pageData.params, config=pageData.config;
+            if (params){
+                for (var key in params){
+                    $scope[key] = params[key];
+                }
+            }
+            if (config.addHistory)
+            {
+                routerService.addHistory($scope, $element);
+            }
+        },
+        templateUrl: function (ele, attr) {
+            return attr.template;
+        },
+        scope: true     // scope隔离
+
+        // compile: function(element, attributes) {
+        //     return {
+        //         pre: function preLink(scope, element, attributes) {
+        //             scope.sn = attributes.sn;
+        //         },
+        //         post: function postLink(scope, element, attributes) {
+        //             element.prevAll().hide();
+        //         }
+        //     };
+        // }
+    };
+}]);
+
+app.directive('rootPage', ['$log', 'routerService', function($log, routerService){
+    return {
+        restrict: 'E', // E = Element, A = Attribute, C = Class, M = Comment
+        replace: true,
+        templateUrl: function (ele, attr) {
+            return attr.template;
+        },
+        scope: true,     // scope隔离
+        controller: function ($scope, $element) {
+            var search = window.location.search.substring(1), params = search.split('&');
+            var index, param;
+            for (var i=0; i<params.length; i++){
+                param = params[i];
+                index = param.indexOf('=');
+                var key = param.substring(0, index), value = param.substring(index+1);
+                if (key !== 'template') {
+                    $scope[key] = decodeURIComponent(value);
+                }
+            }
+        }
+    };
+}]);
+// routerService end
+
+app.service('ajax', ['$rootScope', 'platformService', 'userService', 'routerService', function ($rootScope, platformService, userService, routerService) {
     var host = platformService.host;
     $rootScope.host = host;
     var username = userService.getUsername(), password = userService.getPassword();
 
     $rootScope.user = null;
 
+    var expireNotified = false;     // 是否已通知用户注册过期
+
     $rootScope.getCompany = function(callback) {
         $.ajax({
-            url: platformService.host + '/user/' + username + '/opscompany',
+            url: platformService.getCloudHost() + '/user/' + username + '/opscompany',
             xhrFields: {
                 withCredentials: true
             },
@@ -261,9 +489,8 @@ app.service('ajax', function ($rootScope, platformService, userService, $http) {
     };
 
     function request(option) {
-        if (option.url.indexOf("http://") !== 0){
-            option.url = platformService.host + option.url;
-            // option.url = 'http://127.0.0.1:8099/v1' + option.url;
+        if (option.url.indexOf("http://") !== 0 && option.url.indexOf("https://") !== 0){
+            option.url = platformService.getCloudHost() + option.url;
         }
         var headers = $.extend({
             Authorization: userService.getAccountToken(),
@@ -271,16 +498,46 @@ app.service('ajax', function ($rootScope, platformService, userService, $http) {
             mode: 'cors'
         }, option.headers);
         option = $.extend({}, {timeout: 30000}, option);
+        const errorFunc = option.error;
+        var startTime = new Date().getTime();
+        const timeout = option.timeout;
         $.extend(option, {
             xhrFields: {withCredentials: true},
             crossDomain: true,
-            headers: headers
+            headers: headers,
+            error: function (xhr, statusText, error) {
+                // 如果请求本身设置了ignoreAuthExpire，则不提示认证过期
+                if (loginExpireCheckEnable && new Date().getTime() - startTime < timeout && !option.ignoreAuthExpire) {
+                    var statusCode = xhr.status;
+                    if (errorFunc) {
+                        errorFunc(xhr, statusText, error);
+                    }
+                    if (statusCode !== 400 || statusCode !== 500 || statusCode !== 404) {
+                        notifyLoginExpire();
+                    }
+                } else if (errorFunc) {
+                    errorFunc(xhr, statusText, error);
+                }
+            }
         });
-		var newOption = $.extend({}, option
-        );
+		var newOption = $.extend({}, option);
         var r = $.ajax(newOption);
         return r;
     }
+
+    function notifyLoginExpire() {
+        if (!expireNotified) {      // 不重复通知
+            expireNotified = true;
+            routerService.openPage($rootScope, '/templates/login-expire-warning.html', {}, {hidePrev: false});
+        }
+    }
+
+    if (loginExpireCheckEnable) {
+        window.addEventListener('popstate', function () {
+            expireNotified = false;
+        });
+    }
+
    this.get = function (option) {
         option.type = 'get';
        return request(option);
@@ -297,7 +554,8 @@ app.service('ajax', function ($rootScope, platformService, userService, $http) {
        option.type = 'patch';
        return request(option);
    }
-});
+}]);
+
 
 Date.prototype.format = function(fmt) {
     var o = {
@@ -527,7 +785,7 @@ app.controller('ImageZoomCtrl', function ($scope, $timeout) {
 
 });
 
-app.controller('BaseGalleryCtrl', function ($scope, $stateParams, $timeout) {
+app.controller('BaseGalleryCtrl', ['$scope', '$stateParams', '$timeout', function ($scope, $stateParams, $timeout) {
     // $scope.canDelete = false;
     // $scope.index = $stateParams.index;
     // $scope.images = $stateParams.images;
@@ -567,7 +825,7 @@ app.controller('BaseGalleryCtrl', function ($scope, $stateParams, $timeout) {
     $scope.hide = function () {
         history.back();
     };
-});
+}]);
 
 app.directive('dropDownMenu', function () {
     return {
@@ -578,7 +836,8 @@ app.directive('dropDownMenu', function () {
             onSelect: '=',
             modelName: '=',
             defaultValue: '=',
-            selected: '='
+            selected: '=',
+            disabled: '='
         },
         replace: true,
         controller:['$scope', '$attrs', function($scope, $attrs){
@@ -586,6 +845,9 @@ app.directive('dropDownMenu', function () {
             $scope.selected = $scope.selected || {};
 
             $scope.toggle = function () {
+                if ($scope.disabled) {
+                    return;
+                }
                 $scope.active = !$scope.active;
                 if ($scope.active) {
                     var mark = $('<div style="position: fixed;background-color: transparent;width: 100%;height: 100%;top:60px;z-index: 1;left: 0;" ng-click="toggle()"></div>')

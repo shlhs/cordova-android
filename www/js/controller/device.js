@@ -4,7 +4,7 @@
  * Created by liucaiyun on 2017/8/26.
  */
 
-app.controller('DeviceListCtrl', function ($scope, ajax, scrollerService) {
+app.controller('DeviceListCtrl', ['$scope', 'ajax', 'scrollerService', function ($scope, ajax, scrollerService) {
     var sn = GetQueryString('sn');
     $scope.sn = sn;
     $scope.deviceList = [];
@@ -107,9 +107,9 @@ app.controller('DeviceListCtrl', function ($scope, ajax, scrollerService) {
     };
 
     // $scope.getDataList();
-});
+}]);
 
-app.controller('DeviceDetailCtrl', function ($scope, $rootScope, $stateParams, ajax) {
+app.controller('DeviceDetailCtrl', ['$scope', '$rootScope', '$stateParams', 'ajax', function ($scope, $rootScope, $stateParams, ajax) {
     // var stationSn = $stateParams.sn, deviceSn=$stateParams.deviceSn;
     $scope.stationSn = GetQueryString('stationSn');
     $scope.deviceSn=GetQueryString('deviceSn');
@@ -139,9 +139,9 @@ app.controller('DeviceDetailCtrl', function ($scope, $rootScope, $stateParams, a
             window.location.href =link;
         }
     };
-});
+}]);
 
-app.controller('DeviceAnalogVarCtrl', function ($scope, ajax, $interval) {        //模拟量
+app.controller('DeviceAnalogVarCtrl', ['$scope', 'ajax', '$interval', function ($scope, ajax, $interval) {        //模拟量
 
     var stationSn = GetQueryString('stationSn'), deviceSn=GetQueryString('deviceSn');
     var analogVars = [];
@@ -207,9 +207,9 @@ app.controller('DeviceAnalogVarCtrl', function ($scope, ajax, $interval) {      
     });
 
     $scope.getDeviceVar();
-});
+}]);
 
-app.controller('DeviceDigitalVarCtrl', function ($scope, ajax, $interval) {        //状态量
+app.controller('DeviceDigitalVarCtrl', ['$scope', 'ajax', '$interval', function ($scope, ajax, $interval) {        //状态量
 
     var stationSn = GetQueryString('stationSn'), deviceSn=GetQueryString('deviceSn');
     var digitalVars=[];
@@ -277,9 +277,9 @@ app.controller('DeviceDigitalVarCtrl', function ($scope, ajax, $interval) {     
     });
 
     $scope.getDeviceVar();
-});
+}]);
 
-app.controller('DeviceInfoDetailCtrl', function ($scope, ajax) {
+app.controller('DeviceInfoDetailCtrl', ['$scope', 'ajax', function ($scope, ajax) {
     var sn = GetQueryString("sn");
     $scope.deviceInfo = null;
     $scope.isLoading = true;
@@ -295,9 +295,9 @@ app.controller('DeviceInfoDetailCtrl', function ($scope, ajax) {
             $.notify.error("获取设备信息失败");
         }
     })
-});
+}]);
 
-app.controller('DeviceTaskHistoryCtrl', function ($scope, ajax, scrollerService) {
+app.controller('DeviceTaskHistoryCtrl', ['$scope', 'ajax', 'scrollerService', function ($scope, ajax, scrollerService) {
     var deviceSn = GetQueryString('deviceSn');
     var allTasks = [];
     $scope.TaskStatus = TaskStatus;
@@ -380,9 +380,9 @@ app.controller('DeviceTaskHistoryCtrl', function ($scope, ajax, scrollerService)
     };
 
     $scope.getDataList();
-});
+}]);
 
-app.controller('DeviceTreeCommonCtrl', function ($scope, ajax) {
+app.controller('DeviceTreeCommonCtrl', ['$scope', function ($scope) {
     $scope.treeData = [];
     $scope.selectOptions = [
         {name: '分组1',children: [{name: '分组2'}]},
@@ -565,9 +565,9 @@ app.controller('DeviceTreeCommonCtrl', function ($scope, ajax) {
         }
         return false;
     };
-});
+}]);
 
-app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile) {       // 检测设备列表页
+app.controller('DeviceMonitorListCtrl', ['$scope', 'ajax', 'platformService', function ($scope, ajax, platformService) {       // 检测设备列表页
     var stationSn = GetQueryString('sn');
     $scope.deviceDatas = [];
     $scope.treeData = [];
@@ -607,8 +607,9 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile) {     
         $scope.isLoading = true;
         $scope.loadingFailed = false;
         ajax.get({
-            url: '/stations/' + stationSn + '/devicetree',
-            success: function (data) {
+            url: platformService.getDeviceMgmtHost() + '/management/devices?&station_sn=' + stationSn,
+            success: function (res) {
+                var data = res.data;
                 $scope.isLoading = false;
                 // 默认状态为"未知"
                 data.forEach(function (d) {
@@ -674,18 +675,19 @@ app.controller('DeviceMonitorListCtrl', function ($scope, ajax, $compile) {     
     }
 
     $scope.gotoDevice = function (deviceData) {
-        location.href = '/templates/site/device-monitor.html?stationSn=' + stationSn + '&deviceSn=' + deviceData.sn + '&deviceName=' + deviceData.name;
-
+        location.href = '/templates/site/device-monitor.html?stationSn=' + stationSn + '&deviceSn=' + deviceData.sn + '&deviceName=' + encodeURIComponent(deviceData.name);
     };
 
     $scope.getDataList();
-});
+}]);
 
-app.controller('DeviceMonitorCtrl', function ($scope, ajax) {
+app.controller('DeviceMonitorCtrl', ['$scope', 'ajax', 'appStoreProvider', 'userService', 'platformService', function ($scope, ajax, appStoreProvider, userService, platformService) {
     $scope.isLoading = true;
     $scope.stationSn = GetQueryString('stationSn');
     $scope.deviceSn=GetQueryString('deviceSn');
     $scope.deviceName = GetQueryString('deviceName');
+
+    $scope.canControl = userService.getUserRole() === UserRole.OpsAdmin || userService.getUserRole() === UserRole.OpsOperator;  // 能效模式不能远程控制
     $scope.secondOptions = {
         '实时数据': [],
         '历史数据': []
@@ -751,95 +753,308 @@ app.controller('DeviceMonitorCtrl', function ($scope, ajax) {
     function getDeviceVars() {  // 获取设备的所有变量
         $scope.isLoading = true;
         ajax.get({
-            url: '/devices/' + $scope.deviceSn + '/devicevars',
-            success: function (data) {
+            url: platformService.getDeviceMgmtHost() + '/management/devices/' + $scope.deviceSn + '/variables',
+            success: function (response) {
+                var data = response.data;
+                var analogs=[], digitals=[];
+                data.forEach(function (n) {
+                    if (n.type === 'Analog') {
+                        analogs.push(n.sn);
+                    } else {
+                        digitals.push(n.sn);
+                    }
+                });
+                if (analogs.length) {
+                    $scope.realtime.push({name: '模拟量', type: 'analog', sns: analogs});
+                    $scope.secondOptions['实时数据'].push({name: '模拟量', type: 'analog', sns: analogs})
+                }
+                if (digitals.length) {
+                    $scope.realtime.push({name: '状态量', type: 'digital', sns: digitals});
+                    $scope.secondOptions['实时数据'].push({name: '状态量', type: 'digital', sns: digitals})
+                }
                 $scope.isLoading = false;
                 $scope.vars = data;
-                if(data.length > 0) {
-                    $scope.deviceName = data[0].device_name;
-                }
-                groupVars(data);
+
+                getVarGroups(data);
             }, error: function () {
                 $scope.isLoading = false;
             }
         });
     }
 
-    function groupVars(vars) {      // 将变量按模拟量、状态量进行分组，再将模拟量进行分类
-        var analogs=[], digitals=[], varGroups={};
-        vars.forEach(function (n) {
-           if (n.type === 'Analog') {
-               analogs.push(n.sn);
-               // 如果是模拟量的话，再根据var_define_name进行分类
-               var groupName = n.var_group_name;
-               if (!groupName) {
-                   return;
-               }
-               if (varGroups[groupName]) {
-                   varGroups[groupName].push(n);
-               } else {
-                   varGroups[groupName] = [n];
-               }
-           } else {
-               digitals.push(n.sn);
-           }
-        });
-        if (analogs.length) {
-            $scope.realtime.push({name: '模拟量', type: 'analog', sns: analogs});
-            $scope.secondOptions['实时数据'].push({name: '模拟量', type: 'analog', sns: analogs})
-        }
-        if (digitals.length) {
-            $scope.realtime.push({name: '状态量', type: 'digital', sns: digitals});
-            $scope.secondOptions['实时数据'].push({name: '状态量', type: 'digital', sns: digitals})
-        }
-        for (var groupName in varGroups){
-            $scope.history.push({name: groupName, vars: varGroups[groupName], unit: varGroups[groupName][0].unit});
-            $scope.secondOptions['历史数据'].push({name: groupName, vars: varGroups[groupName], unit: varGroups[groupName][0].unit});
-        }
-        $scope.selectShowType('实时数据', true);
-        $scope.$apply();
-    }
-
-    function getRealTimeData(type, sns) {        // 获取变量的实时值
-        var url = "/devicevars/getrealtimevalues";
+    function getVarGroups() {      // 将变量按模拟量、状态量进行分组，再将模拟量进行分类
+        var varGroups={};
         ajax.get({
-            url: url,
-            data: "sns=" + sns.join(","),
-            success: function(data) {
-                $scope.digitalValues = data;
-                $scope.isLoading = false;
+            url: '/devices/devicevars?with_group=true&device_sns=' + $scope.deviceSn,
+            success: function (data) {
+                data.forEach(function (n) {
+                    var groupName = n.var_group_name;
+                    if (!groupName) {
+                        return;
+                    }
+                    if (varGroups[groupName]) {
+                        varGroups[groupName].push(n);
+                    } else {
+                        varGroups[groupName] = [n];
+                    }
+                });
+                for (var groupName in varGroups){
+                    $scope.history.push({name: groupName, vars: varGroups[groupName], unit: varGroups[groupName][0].unit});
+                    $scope.secondOptions['历史数据'].push({name: groupName, vars: varGroups[groupName], unit: varGroups[groupName][0].unit});
+                }
+                $scope.selectShowType('实时数据', true);
                 $scope.$apply();
-            },
-            error: function(err) {
-                $.notify.error("获取设备变量实时值失败");
-                $scope.isLoading = false;
-                $scope.$apply();
-                console.log(err);
             }
         });
+
     }
 
     getDeviceVars();
 
-});
+}]);
 
+app.controller('DeviceRemoteControlCtrl', ['$scope', '$interval', 'routerService', 'platformService', 'ajax', function ($scope, $interval, routerService, platformService, ajax) {
+    $scope.device_sn = GetQueryString('device_sn');
+    $scope.varList = [];
+    $scope.confirmVisible = false;
+    $scope.controlObj = null;
+    $scope.isLoading = true;
+    var refreshInterval = null;
 
-app.controller('VarRealtimeCtrl', function ($scope, ajax) {
+    function getWriteVarList() {
+        $scope.isLoading = true;
+        ajax.get({
+            url: platformService.getDeviceMgmtHost() + '/management/devices/' + $scope.device_sn + '/variables',
+            success: function (response) {
+                $scope.isLoading = false;
+                // 状态量在前，模拟量在后
+                $scope.varList = [];
+                response.data.forEach(function (v) {
+                    if (v.rw === 2 || v.rw === 3) {
+                        $scope.varList.push(v);
+                    }
+                });
+                $scope.varList = $scope.varList.sort(function (v1, v2) {
+                    if (v1.type === v2.type) {
+                        return 0;
+                    }
+                    if (v1.type === 'Analog' && v2.type === 'Digital') {
+                        return 1;
+                    }
+                    return -1;
+                });
+                // 修改状态量的0/1描述
+                $scope.varList.forEach(function (v) {
+                    if (v.type === 'Digital') {
+                        v.one_meaning = v.one_meaning || 'ON';
+                        v.zero_meaning = v.zero_meaning || 'OFF';
+                    }
+
+                });
+                getRealTimeData();
+                if (refreshInterval === null) {
+                    refreshInterval = $interval(getRealTimeData, 4000);
+                }
+                $scope.$apply();
+            },
+            error: function () {
+                $scope.isLoading = false;
+                $.notify.error('获取可控变量失败');
+            }
+        });
+    }
+
+    function getRealTimeData() {        // 获取变量的实时值
+        var sns = [];
+        $scope.varList.forEach(function (n) {
+            sns.push(n.sn);
+        });
+        var url = "/devicevars/getrealtimevalues";
+        ajax.get({
+            url: url,
+            data: {sns: sns.join(",")},
+            success: function(data) {
+                $scope.varList.forEach(function (v) {
+                    var exist = false;
+                    for (var i=0; i<data.length; i++) {
+                        if (data[i].var.sn === v.sn) {
+                            if (v.type === 'Digital') {
+                                v.value = data[i].data > 0 ? '1' : '0';
+                            } else {
+                                v.value = (data[i].data === null ? '' : data[i].data) + (data[i].unit || '');
+                            }
+                            exist = true;
+                            break;
+                        }
+                    }
+                    if (!exist) {
+                        v.value = null;
+                    }
+                });
+                $scope.$apply();
+            }
+        });
+    }
+
+    $scope.onToggleSwitcher = function (v) {     // 变量开关
+        if (v.value === '1') {
+            v.value = '0';
+        } else {
+            v.value = '1';
+        }
+        var controlObj = {
+            sn: v.sn,
+            value: v.value,
+            name: v.name,
+            action: 'yaokong-act',
+            type: 'Digital',
+            actionName: v.value === '1' ? v.one_meaning : v.zero_meaning,
+            one_meaning: v.one_meaning,
+            zero_meaning: v.zero_meaning
+        };
+        showConfirmModal(controlObj);
+    };
+
+    $scope.onEditAnalog = function (v) {        // 遥设
+        var controlObj = {
+            sn: v.sn,
+            name: v.name,
+            action: 'yaoshe-act',
+            type: 'Analog'
+        };
+        showConfirmModal(controlObj);
+    };
+
+    function showConfirmModal(controlObj) {
+        routerService.openPage($scope, '/templates/site/device-monitor/remote-control-confirm-modal.html', {
+            controlObj: controlObj
+        }, {
+            hidePrev: false
+        });
+    }
+
+    $scope.$on('$destroy',function(){
+        if (refreshInterval !== null) {
+            $interval.cancel(refreshInterval);
+        }
+    });
+
+    getWriteVarList();
+}]);
+
+app.controller('DeviceRemoteControlConfirmCtrl', ['$scope', 'ajax', function ($scope, ajax) {
+    $scope.okEnable = $scope.controlObj.type === 'Digital' ? true : false;
+    $scope.inputError = '';
+    $scope.error = '';
+    $scope.isSubmitting = false;
+    $scope.inputValid = true;
+    var newValue = '';
+    var pwd = '';
+
+    $scope.onCheck = function (value) {
+        $scope.controlObj.value = value;
+    };
+
+    $scope.onInputValidate = function (value) {
+        newValue = value;
+        $scope.inputError = '';
+    };
+
+    $scope.onPwdChange = function (value) {
+        pwd = value;
+        $scope.error = '';
+    };
+
+    $scope.onCancel = function () {
+        history.back();
+    };
+
+    function isNumber(val) {
+        var regPos = /^\d+(\.\d+)?$/; //非负浮点数
+        var regNeg = /^(-(([0-9]+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*)))$/; //负浮点数
+        if(regPos.test(val) || regNeg.test(val)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    $scope.confirm = function () {
+        if (!pwd) {
+            $scope.error = '请输入密码';
+            return;
+        }
+        if ($scope.controlObj.type === 'Analog') {
+            if (!newValue) {
+                $scope.inputError = '请输入需要设置的值';
+                return;
+            } else if (!isNumber(newValue)) {
+                $scope.inputError = '请输入数字';
+                return;
+            }
+        }
+        postControl();
+    };
+
+    function postControl() {
+        var controlObj = $scope.controlObj;
+        $scope.isSubmitting = true;
+        ajax.post({
+            url: '/varcontrol/action',
+            data: {
+                type: controlObj.action === 'yaokong-act' ? 1 : 2,
+                variable_sn: controlObj.sn,
+                variable_value: controlObj.type === 'Digital' ? controlObj.value : newValue,
+                pwd: pwd
+            },
+            success: function (response) {
+                if (response) {
+                    if (response.code === 200) {
+                        $.notify.info('成功下发');
+                        $scope.onCancel();
+                    } else if (response.code === 403) {
+                        $scope.isSubmitting = false;
+                        $scope.error = '密码错误';
+                        $scope.$apply();
+                    } else {
+                        $scope.isSubmitting = false;
+                        $scope.error = '下发失败';
+                        $scope.$apply();
+                    }
+                } else {
+                    $scope.isSubmitting = false;
+                    $scope.error = '下发失败';
+                    $scope.$apply();
+                }
+            },
+            error: function () {
+                $scope.isSubmitting = false;
+                $scope.error = '下发失败';
+                $scope.$apply();
+            }
+        })
+    }
+}]);
+
+app.controller('VarRealtimeCtrl', ['$scope', 'ajax', function ($scope, ajax) {
 
     var deviceSn=$scope.$parent.deviceSn;
-    $scope.realtime = {};       // 实时数据
+    $scope.realtime = null;       // 实时数据
     $scope.realtimeType = '';
     $scope.realtimeValues = [];
-    $scope.isLoading = false;
+    $scope.isLoading = true;
     var interval = null;
 
     $scope.$on('$onRealtimeTypeChanged', function (event, realtimeItem) {
-
-        $scope.realtime = realtimeItem;
-        $scope.realtimeType = realtimeItem.name;
-        getRealTimeData();
-        if (null == interval) {
-            interval = setInterval(getRealTimeData, 5000);
+        if (realtimeItem) {
+            $scope.realtime = realtimeItem;
+            $scope.realtimeType = realtimeItem.name;
+            getRealTimeData();
+            if (null === interval) {
+                interval = setInterval(getRealTimeData, 5000);
+            }
+        } else {
+            $scope.isLoading = false;
         }
     });
 
@@ -866,15 +1081,23 @@ app.controller('VarRealtimeCtrl', function ($scope, ajax) {
                 if (type === '状态量') {   // 状态量
                     data.forEach(function (n) {
                         if (n.data > 0) {
-                            n.value = n.var.one_meaning ? n.var.one_meaning : 'OFF';
+                            n.value = n.var.one_meaning ? n.var.one_meaning : 'ON';
                             n.status = 'danger';
                         } else {
-                            n.value = n.var.zero_meaning ? n.var.zero_meaning : 'ON';
+                            n.value = n.var.zero_meaning ? n.var.zero_meaning : 'OFF';
                             n.status = 'normal';
                         }
                     });
                 }
-                $scope.realtimeValues = data;
+                var dataMap = {};
+                data.forEach(function (d) {
+                    dataMap[d.var.sn] = d;
+                });
+                var sorted = [];
+                sns.forEach(function (sn) {
+                    sorted.push(dataMap[sn]);
+                });
+                $scope.realtimeValues = sorted;
                 $scope.$apply();
             },
             error: function(err) {
@@ -885,9 +1108,9 @@ app.controller('VarRealtimeCtrl', function ($scope, ajax) {
             }
         });
     }
-});
+}]);
 
-app.controller('HistoryVarCtrl', function ($scope, ajax, $timeout) {
+app.controller('HistoryVarCtrl', ['$scope', 'ajax', function ($scope, ajax) {
     $scope.currentGroupName = '';
     $scope.currentGroup = null;
     $scope.history = [];
@@ -973,7 +1196,7 @@ app.controller('HistoryVarCtrl', function ($scope, ajax, $timeout) {
             for (var i=0; i<data.length; i++) {
                 if (data[i].name === n.name) {
                     exist = true;
-                    series.push({name: n.name, data: data[i].datas});
+                    series.push({name: n.name, data: data[i].datas, symbolSize: 0, type: 'line'});
                     break;
                 }
             }
@@ -982,67 +1205,72 @@ app.controller('HistoryVarCtrl', function ($scope, ajax, $timeout) {
                 xAxis.forEach(function (n) {
                     tmpData.push(null);
                 });
-                series.push({name: n.name, data: tmpData});
+                series.push({name: n.name, data: tmpData, symbolSize: 0, type: 'line'});
             }
         });
-        var config = {
-            chart: {
-                spacingLeft: 0,
-                spacingRight: 0
-            },
+        var option = {
             title: {
                 text: currentGroup.name + ($scope.timeRange==='DAY' ? '今日' : '本月') + '趋势图' + (currentGroup.unit ? ('(' + currentGroup.unit + ')') : ''),
-                style: {
-                    fontSize: '14px'
+                x: 'center',
+                align: 'right',
+                textStyle: {
+                    fontSize: 14,
+                    fontWeight: 'normal',
+                    fontColor: '#333',
                 }
             },
-            credits: {
-                enabled: false
-            },
-            xAxis: {
-                categories: xAxis,
-                tickInterval: 6
-            },
-            yAxis: {
-                title: {
-                    text: currentGroup.unit,
-                    align: 'high',
-                    offset: 0,
-                    rotation: 0,
-                    y:-10
-                }
+            grid: {
+                top: 50,
+                left: 40,
+                right: 10,
+                bottom: 25
             },
             tooltip: {
-                formatter: function () {
-                    return this.x + '<br/>' + this.series.name + ':' + this.y + currentGroup.unit
+                trigger: 'axis',
+                alwaysShowContent: false,
+                confine: true,
+            },
+            xAxis: {
+                type: 'category',
+                data: xAxis,
+                axisLabel: {
+                    fontSize: 11,
+                    color: '#6b6b6b'
+                },
+                axisLine: {
+                    lineStyle: {
+                        color: '#E7EAED'
+                    }
                 }
             },
-            plotOptions: {
-                series: {
-                    marker: {
-                        enabled: false
+            yAxis: {
+                name: currentGroup.unit,
+                nameGap: 0,
+                nameTextStyle: {
+                    color: '#6b6b6b'
+                },
+                type: 'value',
+                axisLabel: {
+                    fontSize: 11,
+                    color: '#6b6b6b'
+                },
+                axisLine: {
+                    lineStyle: {
+                        color: '#E7EAED'
+                    }
+                },
+                splitLine: {
+                    lineStyle: {
+                        color: '#E7EAED'
                     }
                 }
             },
             series: series,
-            colors: ['#369FFF', '#F9CC13', '#F04863', '#12C1C1', '#8442E0', '#2FC15B']
         };
-        Highcharts.chart('chartContainer', config);
+        echarts.dispose(document.getElementById('chartContainer'));
+        echarts.init(document.getElementById('chartContainer')).setOption(option);
     }
-
-    // $scope.$on('loaded', function (event, realtimeVars, historyVars) {
-    //     $scope.history = historyVars;
-    //     if (historyVars && historyVars.length)
-    //     {
-    //         $scope.currentGroupName = historyVars[0].name;
-    //         $timeout(function () {
-    //             $scope.switchGroup($scope.currentGroupName);
-    //         }, 500);
-    //
-    //     }
-    //
-    // })
-});
+}]);
 
 app.directive('treeView',[function(){
     return {

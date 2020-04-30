@@ -10,10 +10,10 @@
     <link rel="stylesheet" href="../../components/mui/css/mui.min.css">
     <link rel="stylesheet" href="../../components/mui/css/mui.picker.min.css">
     <link rel="stylesheet" href="../../css/iconfont/iconfont.css">
+    <link rel="stylesheet" type="text/css" href="../../js/lib/datatables/jquery.dataTables.min.css">
     <link rel="stylesheet" href="../../css/my.css">
     <link rel="stylesheet" href="../../css/icon.css">
-    <link rel="stylesheet" type="text/css" href="../../js/lib/datatables/jquery.dataTables.min.css">
-    <script type="text/javascript" src="../../components/libs/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="../../components/libs/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
     <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
     <script type="text/javascript" src="../../components/angular-animate/angular-animate.js"></script>
@@ -49,7 +49,7 @@
             text-align: center;
         }
         table tr td:first-child, tr th:first-child {
-            width: 70px;
+            /*width: 70px;*/
         }
         table td, table th {
             border-right: #e8e8e8 1px solid;
@@ -67,6 +67,9 @@
         table tbody tr:nth-child(odd) td {
             background-color: #fff;
         }
+        table thead th.no-borderb {
+            border-bottom: none;
+        }
     </style>
 </head>
 <body ng-app="myApp" ng-cloak ng-controller="SiteHistoryReportCtrl" class="box-vertical-center timeType-{{timeType.id}}">
@@ -80,15 +83,7 @@
         <button style="position: absolute;top: 10px;width: 100%;bottom: -8px;left: 8px;background-color: transparent;border: none;"
                 id="reportPicker"></button>
     </h1>
-
 </header>
-<!--<div style="position: fixed;background-color: rgba(0,0,0,0.15);width: 100%;height: 100%;top:60px;z-index: 1;left: 0;" ng-click="toggle()">-->
-
-    <!--<div class="dropdown" style="display: block;">-->
-        <!--<div ng-repeat="option in reportGroups" ng-class="{active: option.id === selected.id}"-->
-             <!--ng-click="onClick($event, option.id)">{{option.name}}</div>-->
-    <!--</div>-->
-<!--</div>-->
 <div class="mui-content">
 
     <ul class="selector-group">
@@ -100,12 +95,22 @@
         </li>
         <drop-down-menu options="calcMethodList" on-select="onSelect" model-name="'calcMethod'" default-value="'MAX'" selected="calcMethod"></drop-down-menu>
     </ul>
-    <div style="position: absolute; top: 38px;bottom: 0;width: 100%;overflow: auto;border-top: #e8e8e8 1px solid;padding-bottom: 10px;" id="tableParent" site-history-repeat-finish>
+    <div style="position: absolute; top: 38px;bottom: 0;width: 100%;overflow: auto;border-top: #e8e8e8 1px solid;padding-bottom: 10px;"
+         id="tableParent" site-history-repeat-finish ng-class="{'data-loading-spin': dataRefreshing}">
         <table id="siteHistoryTable" class="stripe row-border order-column dataTable no-footer">
-            <thead>
-                <th ng-repeat="item in tableHeader" site-history-repeat-finish>
-                    {{item.name}}<br ng-if="item.unit"/><span ng-if="item.unit">({{item.unit}})</span>
-                </th>
+            <thead ng-if="hasGroup">
+                <tr>
+                    <th ng-repeat="item in tableHeader[0]" ng-bind-html="item.name|to_trusted" ng-if="hasGroup"
+                        rowspan="{{item.rowSpan || 1}}" colspan="{{item.colSpan || 1}}" ng-class="{'no-borderb': !(item.rowSpan>1)}"></th>
+                </tr>
+                <tr>
+                    <th ng-repeat="item in tableHeader[1]" site-history-repeat-finish ng-bind-html="item.name|to_trusted" ng-if="hasGroup"></th>
+                </tr>
+            </thead>
+            <thead ng-if="!hasGroup">
+                <tr>
+                    <th ng-repeat="item in tableHeader[0]" site-history-repeat-finish ng-bind-html="item.name|to_trusted" ng-if="!hasGroup"></th>
+                </tr>
             </thead>
             <tbody>
                 <tr ng-repeat="item in tableBodyData">
@@ -136,7 +141,7 @@
         </div>
     </div>
 </div>
-<script type="text/javascript" src="../../components/libs/jquery-2.1.4.js"></script>
+<script type="text/javascript" src="../../components/libs/jquery-2.1.4.min.js"></script>
 <script type="text/javascript" src="../../js/lib/datatables/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="../../js/lib/datatables/dataTables.fixedColumns.min.js"></script>
 <script type="text/javascript" src="../../js/lib/datatables/dataTables.fixedHeader.min.js"></script>
