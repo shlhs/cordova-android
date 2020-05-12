@@ -1,8 +1,9 @@
 "use strict";
 
 
-app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
+app.controller('KanbanCtrl', ['$scope', '$stateParams', 'ajax', '$timeout', function ($scope, $stateParams, ajax, $timeout) {
     $scope.sn = GetQueryString('sn');
+    $scope.stationName = GetQueryString('name');
     // $scope.sn = $stateParams.sn;
     $scope.hasData = true;
     $scope.isLoading = true;
@@ -30,14 +31,14 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
 
     function paintFailed() {        // 检测图表绘制是否已完成
         paintFailedCount += 1;
-        if (paintedChartCount + paintFailedCount == needChartCount) {
+        if (paintedChartCount + paintFailedCount === needChartCount) {
             _initSlider(paintedChartCount);
         }
     }
 
     function paintSuccess() {
         paintedChartCount += 1;
-        if (paintedChartCount + paintFailedCount == needChartCount) {
+        if (paintedChartCount + paintFailedCount === needChartCount) {
             _initSlider(paintedChartCount);
         }
     }
@@ -79,7 +80,8 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                 for(var i in contentsResult){
                     if(contentsResult[i].type === 'singlestate' || contentsResult[i].type === 'multistate'){
                         for(var j in contentsResult[i].content) {
-                            var processedValue = getProcessedValue($scope.sn, contentsResult[i].content[j], $scope.queryTime);
+                            var contentItem = contentsResult[i].content[j];
+                            var processedValue = getProcessedValue($scope.sn, contentItem, $scope.queryTime);
                             //只显示智能设备的数据；不显示 站点管理信息 和 自定义文本信息, 避免与站点概览页重复
                             if(contentsResult[i].content[j].type === 'device-data') {
                                 var tempVarData = {};
@@ -90,11 +92,27 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                                     tempVarData.name = processedValue.name;
                                 }
                                 // 将processed_value分解除值和单位
-                                if (processedValue.processed_value ) {
-                                    var value = parseFloat(processedValue.processed_value);
-                                    tempVarData.value = value.toFixed(1);
-                                    if (processedValue.processed_value.length > String(value).length) {
-                                        tempVarData.unit = processedValue.processed_value.substring(String(value).length);
+                                var value = processedValue.processed_value;
+                                if (value !== ''  && value !== null && value !== undefined) {
+                                    if(processedValue.isDigital) {
+                                        tempVarData.value = value;
+                                    } else {  
+                                        if (contentItem.valueFixNum && parseInt(contentItem.valueFixNum)) {
+                                            tempVarData.value = value.toFixed(parseInt(contentItem.valueFixNum));
+                                        } else {
+                                            tempVarData.value = value;
+                                        }
+                                        // 处理自定义键值对
+                                        if(contentItem.customMeaningChecked && contentItem.customMeaningdatas) {
+                                            for (let index = 0; index < contentItem.customMeaningdatas.length; index +=1 ) {
+                                                var element = contentItem.customMeaningdatas[index];
+                                                if(element.key === tempVarData.value) {
+                                                    tempVarData.value = element.meaning;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        tempVarData.unit = processedValue.unit;
                                     }
                                 }
                                 else {
@@ -115,35 +133,41 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                         getElectricalDegreeandCharge(contentsResult[i].title, deviceVarSn, contentsResult[i].period, $scope.queryTime, contentsResult[i].degreeOrCharge);
                     }else if(contentsResult[i].type === 'trend-analysis'){
                         var deviceVarSns = [];
+                        var deviceVarAliasMap = {};
+                        var colors = {};
+                        var lineTypes = {};
                         for(var j in contentsResult[i].content) {
-                            deviceVarSns.push(contentsResult[i].content[j].varInfo.deviceVarSn);
+                            var varInfo = contentsResult[i].content[j].varInfo;
+                            deviceVarSns.push(varInfo.deviceVarSn);
+                            deviceVarAliasMap[varInfo.deviceVarSn] = varInfo.deviceVarAlias;
+                            colors[varInfo.deviceVarSn] = varInfo.lineColor;
+                            lineTypes[varInfo.deviceVarSn] = varInfo.lineStyle || 'line';
                         }
-                        if(deviceVarSns.length == 0) {
+                        if(deviceVarSns.length === 0) {
                             continue;
                         }
                         haveChart = true;
                         needChartCount += 1;
-                        getTrendAnalysis(contentsResult[i].title, deviceVarSns, contentsResult[i].period, $scope.queryTime, contentsResult[i].pfvSettings, contentsResult[i].showType);
+                        getTrendAnalysis(contentsResult[i].title, deviceVarSns, deviceVarAliasMap, colors, lineTypes, contentsResult[i].period,
+                            $scope.queryTime, contentsResult[i].pfvSettings, contentsResult[i].showType, contentsResult[i].calcMethod);
                     }else if(contentsResult[i].type === 'ratio-pie'){
                         var ratioPieData = [];
                         var unit = '';
                         for(var j in contentsResult[i].content) {
                             var tempVarSn = contentsResult[i].content[j].varInfo.deviceVarSn;
-                            if(!tempVarSn || tempVarSn == '') {
+                            if(!tempVarSn || tempVarSn === '') {
                                 continue;
                             }
                             var tempData = {};
-                            var tempName = contentsResult[i].content[j].varInfo.deviceVarName;
+                            var tempName = contentsResult[i].content[j].varInfo.deviceVarAlias ? contentsResult[i].content[j].varInfo.deviceVarAlias : contentsResult[i].content[j].varInfo.deviceVarName;
                             if(tempName.length > 8) {
                                 var pos = parseInt(tempName.length/2);
                                 tempName = tempName.substring(0, pos) + "\n" + tempName.substring(pos)
                             }
                             tempData.name = tempName;
-                            var tempValue = getDeviceVarData(tempVarSn, $scope.queryTime, contentsResult[i].period, contentsResult[i].calcMethod);
-                            tempData.value = parseFloat(tempValue);
-                            if(unit == '' && tempValue.length > String(tempData.value).length) {
-                                unit = tempValue.substring(String(tempData.value).length);
-                            }
+                            var tmp = getDeviceVarData(tempVarSn, $scope.queryTime, contentsResult[i].period, contentsResult[i].calcMethod);
+                            tempData.value = tmp[0];
+                            unit = tmp[1];
                             ratioPieData.push(tempData);
                         }
                         haveChart = true;
@@ -276,7 +300,11 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                 }
             });
         } else if(tempType === 'device-data') {
-            tempValue = getDeviceVarData(tempContent.varInfo.deviceVarSn, queryTime, tempContent.period, tempContent.calcMethod);
+            var result = getDeviceVarData(tempContent.varInfo.deviceVarSn, queryTime, tempContent.period, tempContent.calcMethod);
+            processedValue.processed_value = result[0];
+            processedValue.unit = result[1];
+            processedValue.isDigital = result[2];
+            return processedValue;
         }
         processedValue.processed_value = tempValue;
 
@@ -284,36 +312,50 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
     }
 
     function getDeviceVarData(deviceSn, queryTime, queryPeriod, calcMethod){
-        if(deviceSn == null || deviceSn == '') {
+        var resultValue = '';
+        var unit = '';
+        var isDigital = false;
+        if(!deviceSn) {
             console.warn('no deviceSn for getDeviceVarData');
-            return '';
+            return [resultValue, unit, isDigital];
         }
-        if(queryTime == null || queryTime == '') {
+        if(!queryTime) {
             console.warn('no queryTime for getDeviceVarData');
-            return '';
+            return [resultValue, unit, isDigital];
         }
-        if(queryPeriod == null || queryPeriod == '') {
+        if(!queryPeriod) {
             console.warn('no queryPeriod for getDeviceVarData');
-            return '';
+            return [resultValue, unit, isDigital];
         }
-        if(calcMethod == null || calcMethod == '') {
+        if(!calcMethod) {
             console.warn('no calcMethod for getDeviceVarData');
-            return '';
+            return [resultValue, unit, isDigital];
         }
 
-        if(queryPeriod == 'real_time') {
-            var resultValue = '';
+        if(queryPeriod === 'real_time') {
             ajax.get({
                 url: '/devicevars/getrealtimevalues?sns=' + deviceSn,
                 async: false,
                 success: function (data) {
-                    if(!data || data.length == 0) {
-                        return;
+                    if(!data || !data.length) {
+                        return [resultValue, unit, isDigital];
                     }
-                    if (data[0].data === null) {
-                        resultValue = '';
+                    var value = data[0].data;
+                    var varInfo = data[0].var;
+                    if (varInfo.type === 'Analog') {
+                        unit = data[0].unit;
+                        if (value === null) {
+                            resultValue = '';
+                        } else {
+                            resultValue = value;
+                        }
                     } else {
-                        resultValue = data[0].data+data[0].unit;
+                        isDigital = true;
+                        if (value > 0) {
+                            resultValue = varInfo.one_meaning;
+                        } else {
+                            resultValue = varInfo.zero_meaning;
+                        }
                     }
                     g_devicevar_unit_map[deviceSn] = data[0].unit;
                 },
@@ -321,15 +363,14 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                     console.warn('获取设备变量实时值失败 '+deviceSn);
                 }
             });
-            return resultValue;
+            return [resultValue, unit, isDigital];
         }
 
 
         var tempQueryTime = queryTime.substr(0,10) + 'T' + queryTime.substr(11,8) + '.000Z';
 
-        if(calcMethod == 'average') {
-            if(queryPeriod == 'current_month') {
-                var resultValue = '';
+        if(calcMethod === 'average') {
+            if(queryPeriod === 'current_month') {
                 ajax.get({
                     url: '/devicevars/getstatisticalvalues?type=YEAR&calcmethod=AVG&sns=' + deviceSn + '&querytime=' + tempQueryTime,
                     async: false,
@@ -339,25 +380,26 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                     },
                     crossDomain: true,
                     success: function(data) {
-                        if(data.length == 0) {
+                        if(!data.length) {
                             return;
                         }
                         var varData = data[0];
                         var queryMonth = parseInt(tempQueryTime.substr(5,2));
                         var index = null;
-                        if(varData.time_keys != null) {
+                        if(varData.time_keys) {
                             for(var i=0; i<varData.time_keys.length; i++) {
                                 var temp = parseInt(varData.time_keys[i].substr(5,2));
-                                if(temp == queryMonth) {
+                                if(temp === queryMonth) {
                                     index=i;
                                     break;
                                 }
                             }
                         }
-                        if(index != null && varData.datas != null && varData.datas.length > index) {
-                            if(varData.datas[index] != null) {
+                        if(index !== null && varData.datas !== null && varData.datas.length > index) {
+                            if(varData.datas[index] !== null) {
                                 var tempValue = varData.datas[index];
-                                resultValue = tempValue+varData.unit;
+                                resultValue = tempValue;
+                                unit = data[0].unit;
                                 g_devicevar_unit_map[deviceSn] = data[0].unit;
                             }
                         }
@@ -366,12 +408,12 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                         console.log('获取设备变量值失败 '+deviceSn);
                     }
                 });
-                return resultValue;
+                return [resultValue, unit];
             }
         }
 
-        if(calcMethod == 'max') {
-            if(queryPeriod == 'current_month') {
+        if(calcMethod === 'max') {
+            if(queryPeriod === 'current_month') {
                 var resultValue = '';
                 ajax.get({
                     url: '/devicevars/getstatisticalvalues?type=YEAR&calcmethod=MAX&sns=' + deviceSn + '&querytime=' + tempQueryTime,
@@ -382,25 +424,26 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                     },
                     crossDomain: true,
                     success: function(data) {
-                        if(data.length == 0) {
+                        if(!data.length) {
                             return;
                         }
                         var varData = data[0];
                         var queryMonth = parseInt(tempQueryTime.substr(5,2));
                         var index = null;
-                        if(varData.time_keys != null) {
+                        if(varData.time_keys) {
                             for(var i=0; i<varData.time_keys.length; i++) {
                                 var temp = parseInt(varData.time_keys[i].substr(5,2));
-                                if(temp == queryMonth) {
+                                if(temp === queryMonth) {
                                     index=i;
                                     break;
                                 }
                             }
                         }
-                        if(index != null && varData.datas != null && varData.datas.length > index) {
-                            if(varData.datas[index] != null) {
+                        if(index !== null && varData.datas !== null && varData.datas.length > index) {
+                            if(varData.datas[index] !== null) {
                                 var tempValue = varData.datas[index];
-                                resultValue = tempValue+varData.unit;
+                                resultValue = tempValue;
+                                unit = data[0].unit;
                                 g_devicevar_unit_map[deviceSn] = data[0].unit;
                             }
                         }
@@ -409,12 +452,12 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                         console.log('获取设备变量值失败 '+deviceSn);
                     }
                 });
-                return resultValue;
+                return [resultValue, unit];
             }
         }
 
-        if(calcMethod == 'diff'){
-            if(queryPeriod == 'current_month') {
+        if(calcMethod === 'diff'){
+            if(queryPeriod === 'current_month') {
                 var diffValue = "";
 
                 var startQueryTime = queryTime.substr(0,7) + '-01T00:00:00.000Z';
@@ -435,24 +478,23 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                     success: function(values) {
                         var startValues, endValues = null;
                         for(var i=0; i<values.length; i++) {
-                            if(values[i].time == startQueryTime) {
+                            if(values[i].time === startQueryTime) {
                                 startValues = values[i].values;
                                 continue;
                             }
-                            if(values[i].time == endQueryTime) {
+                            if(values[i].time === endQueryTime) {
                                 endValues = values[i].values;
                                 continue;
                             }
                         }
-                        if(startValues == null || endValues == null){
-                            if(startValues == null) {
+                        if(startValues === null || endValues === null){
+                            if(startValues === null) {
                                 console.warn('获取时间点的值失败: '+startQueryTime+deviceSn);
                             }
-                            if(endValues == null) {
+                            if(endValues === null) {
                                 console.warn('获取时间点的值失败: '+endQueryTime+deviceSn);
                             }
                         } else {
-                            //resultValue = endValues[deviceSn] - startValues[deviceSn];
                             if(!g_devicevar_unit_map[deviceSn]) {
                                 //待后台
                                 ajax.get({
@@ -469,16 +511,15 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                                     }
                                 });
                             }
-                            var tempValue = endValues[deviceSn] - startValues[deviceSn];
-                            //tempValue = tempValue == 0 ? tempValue:tempValue.toFixed(valueFixNum);
-                            diffValue = tempValue + g_devicevar_unit_map[deviceSn];
+                            diffValue = endValues[deviceSn] - startValues[deviceSn];
+                            unit = g_devicevar_unit_map[deviceSn];
                         }
                     },
                     error: function(){
                         console.log('获取设备变量值失败 '+deviceSn);
                     }
                 });
-                return diffValue;
+                return [diffValue, unit];
             }
         }
         return '暂不支持：'+queryPeriod+'/'+calcMethod;
@@ -488,7 +529,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
         var queryType = 'MONTH';
         if(period === 'current_day') {
             queryType = 'DAY';
-        } else if(period == 'current_year') {
+        } else if(period === 'current_year') {
             queryType = 'YEAR';
         }
 
@@ -508,9 +549,9 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                 var f = 0;
                 var v = 0;
                 var sum = 0;
-                var unit = degreeOrCharge == 'charge' ? '元' : 'kWh';
+                var unit = degreeOrCharge === 'charge' ? '元' : 'kWh';
 
-                if(degreeOrCharge == 'charge') {
+                if(degreeOrCharge === 'charge') {
                     for(var i=0; i < data.length; i++) {
                         p += data[i].pCharge;
                         f += data[i].fCharge;
@@ -549,7 +590,8 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                     }],
                     tooltip: {
                         trigger: 'item',
-                        formatter: '{a} <br/>{b}: {c} ({d}%)'
+                        formatter: '{a} <br/>{b}: {c} ({d}%)',
+                        confine: true,
                     },
                     legend: {
                         orient: 'vertical',
@@ -581,22 +623,27 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
         });
     }
 
-    function getTrendAnalysis(name, deviceVarSns, period, queryTime, pfvSettings, inputShowType) {
+    function getTrendAnalysis(name, deviceVarSns, deviceVarAliasMap, lineColors, lineTypes, period, queryTime, pfvSettings, inputShowType, inputCalcMethod) {
         var queryType = 'MONTH';
-        if(period == 'current_day') {
+        if(period === 'current_day') {
             queryType = 'DAY';
-        } else if(period == 'current_year') {
+        } else if(period === 'current_year') {
             queryType = 'YEAR';
-        } else if(period == 'normal') {
+        } else if(period === 'normal') {
             queryType = 'NORMAL';
+        }
+
+        var calcMethod = 'AVG';
+        if(inputCalcMethod && inputCalcMethod.toLowerCase() === 'max') {
+            calcMethod = 'MAX';
         }
 
         var showType = 'line';
         var boundaryGap = true;
-        if(inputShowType != null && inputShowType != '') {
+        if(inputShowType) {
             showType = inputShowType;
         }
-        if(showType == 'line') {
+        if(showType === 'line') {
             boundaryGap = false;
         }
 
@@ -605,7 +652,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
             data: {
                 sns: deviceVarSns.join(','),
                 type: queryType,
-                calcmethod: 'AVG',
+                calcmethod: calcMethod,
                 querytime: queryTime.substr(0,10) + 'T' + queryTime.substr(11,8) + '.000Z'
             },
             success: function (data) {
@@ -616,11 +663,11 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                 var times = [];
                 for(var i in data[0].time_keys) {
                     var t = data[0].time_keys[i];
-                    if(queryType == 'DAY' || queryType == 'NORMAL') {
+                    if(queryType === 'DAY' || queryType === 'NORMAL') {
                         times.push(t.substring(11, 16));
-                    } else if(queryType == 'MONTH') {
+                    } else if(queryType === 'MONTH') {
                         times.push(t.substring(5, 10));
-                    } else if(queryType == 'YEAR') {
+                    } else if(queryType === 'YEAR') {
                         times.push(t.substring(0, 7));
                     } else {
                         times.push(t);
@@ -629,10 +676,13 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
 
                 var chartDatas = [];
                 for(var j in data) {
-                    chartDatas.push({name: data[j].name+' '+data[j].unit, type:showType, data: data[j].datas, yAxisIndex: 0});
+                    var alias = deviceVarAliasMap[data[j].var.sn];
+                    var name1 = (alias ? alias : data[j].name)+' '+data[j].unit;
+                    var sn = data[j].var.sn;
+                    chartDatas.push({name: name1, type: lineTypes[sn], data: data[j].datas, yAxisIndex: 0, color: lineColors[sn] || ''});
                 }
 
-                var showPfvSetting = (period == 'current_day' || period == 'normal')&& (pfvSettings == 'pfv-settings-f' || pfvSettings == 'pfv-settings-r')
+                var showPfvSetting = (period === 'current_day' || period === 'normal')&& (pfvSettings === 'pfv-settings-f' || pfvSettings === 'pfv-settings-r');
                 drawEchart(name, getTrendAnalysisEchartOption(showPfvSetting, pfvSettings, times, chartDatas, boundaryGap));
             },
             error: function () {
@@ -651,8 +701,8 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
             }];
 
         if(showPfvSetting) {
-            var tempPfvSettings = pfvSettings == 'pfv-settings-f' ? pfvSettingsF : pfvSettingsR;
-            if(tempPfvSettings != null) {
+            var tempPfvSettings = pfvSettings === 'pfv-settings-f' ? pfvSettingsF : pfvSettingsR;
+            if(tempPfvSettings !== null) {
                 yAxis[1]={
                     type: 'value'
                 };
@@ -685,21 +735,21 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                     var tempStartIndex = null;
                     var tempEndIndex = null;
                     for(var j=0; j<timesInt.length; j++) {
-                        if(tempStartIndex != null && tempEndIndex != null) {
+                        if(tempStartIndex !== null && tempEndIndex !== null) {
                             break;
                         }
-                        if(tempStartIndex == null && timesInt[j] >= tempStartTimeInt) {
+                        if(tempStartIndex === null && timesInt[j] >= tempStartTimeInt) {
                             tempStartIndex = j;
                         }
-                        if(tempEndIndex == null && timesInt[j] > tempEndTimeInt) {
+                        if(tempEndIndex === null && timesInt[j] > tempEndTimeInt) {
                             tempEndIndex = j > 0 ? (j-1) : 0;
                         }
-                        if(tempEndIndex == null && j==timesInt.length-1 && timesInt[j] <= tempEndTimeInt) {
+                        if(tempEndIndex === null && j===timesInt.length-1 && timesInt[j] <= tempEndTimeInt) {
                             tempEndIndex = j;
                         }
                     }
 
-                    if(tempStartIndex == null || tempEndIndex == null || tempStartIndex >= tempEndIndex) {
+                    if(tempStartIndex === null || tempEndIndex === null || tempStartIndex >= tempEndIndex) {
                         continue;
                     }
 
@@ -708,15 +758,15 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                     var tempName = '';
                     var tempColor = 'gray';
                     var tempLabelColor = 'gray';
-                    if(tempPfv == 'p') {
+                    if(tempPfv === 'p') {
                         tempName = '峰';
                         tempColor = 'rgba(193,35,35,0.2)';
                         tempLabelColor = 'rgba(193,35,35)';
-                    } else if(tempPfv == 'f') {
+                    } else if(tempPfv === 'f') {
                         tempName = '平';
                         tempColor = 'rgba(0,152,217,0.2)';
                         tempLabelColor = 'rgba(0,152,217)';
-                    } else if(tempPfv == 'v') {
+                    } else if(tempPfv === 'v') {
                         tempName = '谷';
                         tempColor = 'rgba(46,165,1,0.2)';
                         tempLabelColor = 'rgba(46,165,1)';
@@ -776,7 +826,19 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
         return {
             tooltip: {
                 trigger: 'axis',
-                formatter: "{b} <br/>{a} : {c}",
+                confine: true,
+                formatter: function (params) {
+                    if (!params.length) {
+                        return null;
+                    }
+                    var p0 = params[0];
+                    var lines = [p0.axisValue];
+                    params.forEach(function (p) {
+                        lines.push('<br />');
+                        lines.push(p.marker + p.seriesName + '：' + (p.data === null ? '-' : p.data));
+                    });
+                    return lines.join('');
+                }
             },
             legend: {
                 data: legendData,
@@ -785,6 +847,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
                     fontSize: 9,
                     lineHeight: 10
                 },
+                type: 'scroll',
                 pageIconSize: 10,
                 itemWidth: 15,
                 itemHeight: 10
@@ -817,10 +880,10 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
             url: '/stations/' + $scope.sn,
             async: false,
             success: function (data) {
-                if(data.pfv_settings_f && data.pfv_settings_f != '') {
+                if(data.pfv_settings_f && data.pfv_settings_f !== '') {
                     pfvSettingsF = JSON.parse(data.pfv_settings_f);
                 }
-                if(data.pfv_settings_r && data.pfv_settings_r != '') {
+                if(data.pfv_settings_r && data.pfv_settings_r !== '') {
                     pfvSettingsR = JSON.parse(data.pfv_settings_r);
                 }
             },
@@ -861,7 +924,6 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
             <div class="mui-content-padded no-margin">\
             <span>'+ name +'</span>\
             <div class="chart" id="' + id + '"></div>\
-            <div style="position: absolute;left:0;top:0;width:100%;height:100%;"></div>\
             </div>\
             </div>').prependTo($("#chartSlider"));
         echarts.init(document.getElementById(id)).setOption(config);
@@ -875,4 +937,338 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
         getKanbanData();
     }, 500);
 
-});
+}]);
+
+app.controller('SiteOverviewCtrl', ['$scope', 'ajax', 'varDataService', function ($scope, ajax, varDataService) {
+    $scope.sn = GetQueryString('sn');
+    $scope.stationName = GetQueryString('name');
+    var stationData = null;
+    $scope.fuheLoading = true; // 负荷数据获取
+    $scope.fuheError = null; // 负荷变量错误
+    $scope.electricLoading = true; // 电量获取
+    $scope.electricError = null; // 用电量错误
+    $scope.monthDegree = '-'; // 本月用电量
+    $scope.todayDegree = '-'; // 今日用电
+    $scope.realtimeLoad = '-'; // 实时负荷
+    var realtimeLoadInterval = null;
+
+    ajax.get({
+        url: '/stations/' + $scope.sn,
+        success: function (data) {
+            stationData = data;
+            getLoadTrend(data.realtime_load_var);
+            getLoadRealtime(data.realtime_load_var);
+            getElectricData(data.sum_epf_var);
+        }
+    });
+
+    function getLoadRealtime(varSn) {
+        if (!varSn) {
+            return;
+        }
+
+        function fetchFunc() {
+            varDataService.getRealtimeValue([varSn], function (data) {
+                if (data && data.length) {
+                    $scope.realtimeLoad = data[0].data;
+                    $scope.$apply();
+                }
+            });
+        }
+        if (!realtimeLoadInterval) {
+            realtimeLoadInterval = setInterval(function () {
+                fetchFunc();
+            }, 3000);
+        }
+        fetchFunc();
+    }
+
+    function getLoadTrend(varSn) { // 获取昨日、今日负荷趋势
+        if (!varSn) {
+            $scope.fuheLoading = false;
+            $scope.fuheError = '站点未配置实时负荷属性';
+            return;
+        }
+        // 获取昨日、今日变量趋势
+        var startTime = moment().subtract(1, 'days').format('YYYY-MM-DD 00:00:00.000');
+        var endTime = moment().format('YYYY-MM-DD 23:59:59.000');
+        varDataService.getHistoryTrend([varSn], startTime, endTime, 'HOUR', 'AVG', function (data) {
+            $scope.fuheLoading = false;
+            $scope.$apply();
+            if (data && data.length) {
+                var result = fillTrendDataVacancy(startTime, endTime, 'HOUR', data[0].time_keys, data[0].datas, 'YYYY-MM-DD HH:mm:ss.000');
+                // 拆分出昨天和今天的数据
+                var yesterdayData = result.datas.slice(0, 24);
+                var todayData = result.datas.slice(24, 48);
+                paintLoadTrendChart(yesterdayData, todayData);
+            }
+        }, function () {
+            $scope.fuheLoading = false;
+            $scope.fuheError = "获取数据失败";
+            $scope.$apply();
+        });
+    }
+
+    function getElectricData(varSn) {
+        if (!varSn) {
+            $scope.electricLoading = false;
+            $scope.electricError = '站点未配置总用电量属性';
+            return;
+        }
+        // 获取今日用电
+        varDataService.getDegreeSummary(varSn, moment(), 'DAY', function (data) {
+           if (data) {
+               $scope.todayDegree = data.allDegree;
+               $scope.$apply();
+           }
+        });
+        // 获取月度电量
+        varDataService.getDegreeSummary(varSn, moment(), 'MONTH', function (data) {
+            if (data) {
+                $scope.monthDegree = data.allDegree;
+                $scope.$apply();
+            }
+        });
+        // 获取本月用电趋势
+        varDataService.getDegreeChargeTrend(varSn, moment(), function (dataList) {
+            $scope.electricLoading = false;
+            $scope.$apply();
+            if (!dataList) {
+                $scope.electricError = '获取用电数据失败';
+                return;
+            }
+            var degrees = {
+                p: [],
+                s: [],
+                v: [],
+                f: []
+            };
+            var index = 0;
+            var times = [];
+            var monthDays = moment().endOf('month').date();
+            for (var day=1; day<=monthDays; day++) {
+                if (dataList.length > index) {
+                    var item = dataList[index];
+                    var d = Number.parseInt(item.time.substring(8, 10), 10);
+                    if (day === d) {
+                        degrees.p.push(item.pDegree);
+                        degrees.f.push(item.fDegree);
+                        degrees.v.push(item.vDegree);
+                        degrees.s.push(item.sDegree);
+                        index += 1;
+                    } else if (d > day) {
+                        degrees.p.push(null);
+                        degrees.f.push(null);
+                        degrees.v.push(null);
+                        degrees.s.push(null);
+                        index += 1;
+                    }
+                }
+                times.push(day + '日');
+            }
+            paintElectricDegreeTrend(times, degrees);
+            paintElectricDegreeBar(degrees);
+        });
+    }
+
+    function paintLoadTrendChart(yesterdayData, todayData) {
+        var times = [];
+        for (var i=0; i<24; i++) {
+            times.push(i + '时');
+        }
+        var option = {
+            tooltip: {
+                trigger: 'axis',
+                confine: true,
+                formatter: function (params) {
+                    if (!params.length) {
+                        return null;
+                    }
+                    var p0 = params[0];
+                    var lines = [p0.axisValue];
+                    params.forEach(function (p) {
+                        lines.push('<br />');
+                        lines.push(p.marker + p.seriesName + '：' + (p.data === null ? '-' : (p.data + ' kW')));
+                    });
+                    return lines.join('');
+                }
+            },
+            legend: {
+                bottom: -5,
+                textStyle: {
+                    fontSize: 9,
+                    lineHeight: 10
+                },
+                itemWidth: 15,
+                itemHeight: 10
+            },
+            grid: {
+                top: 15,
+                left: 4,
+                right: 2,
+                bottom: 20,
+                containLabel: true
+            },
+            toolbox: {
+                feature: {
+                    saveAsImage: false
+                }
+            },
+            xAxis: {
+                type: 'category',
+                data: times
+            },
+            yAxis: {
+                name: 'kW'
+            },
+            color: ['#F9CC13', '#369FFF'],
+            series: [{
+                type: 'line',
+                data: yesterdayData,
+                name: '昨日'
+            }, {
+                type: 'line',
+                data: todayData,
+                name: '今日'
+            }]
+        };
+        echarts.init(document.getElementById('loadChart')).setOption(option);
+    }
+    var g_pvf_label = {
+        p: '峰',
+        f: '平',
+        v: '谷',
+        s: '尖'
+    };
+    var g_pvf_colors = {
+        'p': 'rgba(239, 150, 166, 1)',
+        'v': 'rgba(138, 212, 199, 1)',
+        'f': 'rgba(136, 169, 248, 1)',
+        's': 'rgba(254,139,106, 1)',
+    };
+
+    function paintElectricDegreeTrend(times, data) {
+        var series = [];
+        ['s', 'p', 'f', 'v'].forEach(function (key) {
+            series.push({
+                type: 'bar',
+                name: g_pvf_label[key],
+                data: data[key],
+                stack: 'one',
+                color: g_pvf_colors[key]
+            });
+        });
+        var option = {
+            tooltip: {
+                trigger: 'axis',
+                confine: true,
+                formatter: function (params) {
+                    if (!params.length) {
+                        return null;
+                    }
+                    var p0 = params[0];
+                    var lines = [p0.axisValue];
+                    params.forEach(function (p) {
+                        lines.push('<br />');
+                        lines.push(p.marker + p.seriesName + '：' + (p.data === null ? '-' : (p.data + ' kWh')));
+                    });
+                    return lines.join('');
+                }
+            },
+            legend: {
+                bottom: -5,
+                textStyle: {
+                    fontSize: 9,
+                    lineHeight: 10
+                },
+                itemWidth: 15,
+                itemHeight: 10
+            },
+            grid: {
+                top: 15,
+                left: 4,
+                right: 2,
+                bottom: 20,
+                containLabel: true
+            },
+            toolbox: {
+                feature: {
+                    saveAsImage: false
+                }
+            },
+            xAxis: {
+                type: 'category',
+                data: times
+            },
+            yAxis: {
+                name: 'kWh'
+            },
+            series: series
+        };
+        echarts.init(document.getElementById('electricChart')).setOption(option);
+    }
+
+    function sum(datalist) {
+        var total = 0;
+        datalist.forEach(function (d) {
+            if (d) {
+                total += d;
+            }
+        });
+        return Number.parseFloat(total.toFixed(2));
+    }
+    function paintElectricDegreeBar(data) { // 峰谷平占比
+        var series = [];
+        ['s', 'p', 'f', 'v'].forEach(function (key) {
+            var value = sum(data[key]);
+            series.push({
+                name: g_pvf_label[key],
+                value: value,
+                itemStyle: {
+                    color: g_pvf_colors[key],
+                },
+                label: {
+                    normal: {
+                        formatter: '{b}：{c}kWh\n{d}%',
+                    },
+                },
+                labelLine: {
+                    length: 5,
+                    length2: 10
+                }
+            });
+        });
+        var option = {
+            legend: {
+                bottom: -5,
+                textStyle: {
+                    fontSize: 9,
+                    lineHeight: 10
+                },
+                itemWidth: 15,
+                itemHeight: 10
+            },
+            grid: {
+                top: 15,
+                left: 4,
+                right: 2,
+                bottom: 20,
+                containLabel: true
+            },
+            toolbox: {
+                feature: {
+                    saveAsImage: false
+                }
+            },
+            series: [
+                {
+                    type:'pie',
+                    radius : ['0%', '65%'],
+                    center : ['50%', '45%'],
+                    data: series,
+                },
+            ],
+        };
+        echarts.init(document.getElementById('electricPie')).setOption(option);
+    }
+}]);
