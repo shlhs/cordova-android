@@ -1016,60 +1016,50 @@ app.controller('SiteOverviewCtrl', ['$scope', 'ajax', 'varDataService', function
             return;
         }
         // 获取今日用电
-        varDataService.getDegreeSummary(varSn, moment(), 'DAY', function (data) {
-           if (data) {
-               $scope.todayDegree = data.allDegree;
+        varDataService.getDegreeSummary(varSn, 'DAY', moment(), moment(), function (res) {
+           if (res && res.length) {
+               var data = res[0];
+               $scope.todayDegree = data.all_degree;
                $scope.$apply();
            }
         });
         // 获取月度电量
-        varDataService.getDegreeSummary(varSn, moment(), 'MONTH', function (data) {
-            if (data) {
-                $scope.monthDegree = data.allDegree;
+        varDataService.getDegreeSummary(varSn, 'MONTH', moment(), moment(), function (res) {
+            if (res && res.length) {
+                var data = res[0];
+                $scope.monthDegree = data.all_degree;
                 $scope.$apply();
             }
         });
         // 获取本月用电趋势
-        varDataService.getDegreeChargeTrend(varSn, moment(), function (dataList) {
+        varDataService.getDegreeChargeTrend(varSn, 'DAY', moment().startOf('month'), moment().endOf('month'), function (res) {
             $scope.electricLoading = false;
             $scope.$apply();
-            if (!dataList) {
-                $scope.electricError = '获取用电数据失败';
-                return;
-            }
-            var degrees = {
-                p: [],
-                s: [],
-                v: [],
-                f: []
-            };
-            var index = 0;
-            var times = [];
-            var monthDays = moment().endOf('month').date();
-            for (var day=1; day<=monthDays; day++) {
-                if (dataList.length > index) {
-                    var item = dataList[index];
-                    var d = Number.parseInt(item.time.substring(8, 10), 10);
-                    if (day === d) {
-                        degrees.p.push(item.pDegree);
-                        degrees.f.push(item.fDegree);
-                        degrees.v.push(item.vDegree);
-                        degrees.s.push(item.sDegree);
-                        index += 1;
-                    } else if (d > day) {
-                        degrees.p.push(null);
-                        degrees.f.push(null);
-                        degrees.v.push(null);
-                        degrees.s.push(null);
-                        // index += 1;
-                    } else {
-                        index += 1;
-                    }
+            if (res && res.length) {
+                var dataList = res[0].datas;
+                if (!dataList) {
+                    $scope.electricError = '获取用电数据失败';
+                    return;
                 }
-                times.push(day + '日');
+                var degrees = {
+                    p: [],
+                    s: [],
+                    v: [],
+                    f: []
+                };
+                var times = [];
+                dataList.forEach(function (item) {
+                    var d = Number.parseInt(item.time.substring(8, 10), 10);
+                    times.push(d + '日');
+                    degrees.p.push(item.p_degree);
+                    degrees.f.push(item.f_degree);
+                    degrees.v.push(item.v_degree);
+                    degrees.s.push(item.s_degree);
+                });
+                paintElectricDegreeTrend(times, degrees);
+                paintElectricDegreeBar(degrees);
             }
-            paintElectricDegreeTrend(times, degrees);
-            paintElectricDegreeBar(degrees);
+
         });
     }
 
