@@ -153,7 +153,7 @@ app.service('varDataService', ['ajax', 'platformService', function (ajax, platfo
             data: {
                 sns: sn,
                 type: type,
-                querytime: time.format('YYYY-MM-01T00:00:00.000') + 'Z'
+                querytime: time.format('YYYY-MM-DDT00:00:00.000') + 'Z'
             },
             success: function (data) {
                 if (data && data.length) {
@@ -180,6 +180,17 @@ app.service('varDataService', ['ajax', 'platformService', function (ajax, platfo
             success: function (data) {
                 var degreeList = data[sn];
                 if (degreeList) {
+                    degreeList.sort(function (d1, d2) {
+                        const time1 = d1.time.substring(0, 10);
+                        const time2 = d2.time.substring(0, 10);
+                        if (time1 < time2) {
+                            return -1;
+                        }
+                        if (time1 > time2) {
+                            return 1;
+                        }
+                        return 0;
+                    });
                     callback(degreeList);
                 } else {
                     callback([]);

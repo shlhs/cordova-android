@@ -1061,6 +1061,8 @@ app.controller('SiteOverviewCtrl', ['$scope', 'ajax', 'varDataService', function
                         degrees.f.push(null);
                         degrees.v.push(null);
                         degrees.s.push(null);
+                        // index += 1;
+                    } else {
                         index += 1;
                     }
                 }
