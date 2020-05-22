@@ -333,7 +333,9 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', function ($scope, ajax
                 type: 'value'
             };
             var dateTime = item.time_keys[0]; // 用于电价marker取得年、月、日信息
-            createPfvSettingMark(pfvSetting, dateTime, arr);
+            if (dateTime) {
+                createPfvSettingMark(pfvSetting, dateTime, arr);
+            }
         }
         $.extend(chartOption, {
             yAxis: yAxis,
