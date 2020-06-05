@@ -1,6 +1,6 @@
 {
-	"versionCode": 2r0,
-	"versionName": "2.r.0",
+	"versionCode": 240,
+	"versionName": "2.4.0",
 	"description": "",
 	"downloadUrl": "http://47.106.79.119:8123/version/diananyun-2.4.0.apk",
 	"isLaunched": true,
