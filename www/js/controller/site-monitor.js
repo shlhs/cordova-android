@@ -11,13 +11,15 @@ var g_line_colors = ['#9474df','#ef7e9c', '#6bc1dd', '#13cf5a',  '#f3a15d', '#6c
 var g_pvf_colors = {
     'p': 'rgba(239, 150, 166, 0.18)',
     'v': 'rgba(138, 212, 199, 0.18)',
-    'f': 'rgba(136, 169, 248, 0.18)'
+    'f': 'rgba(136, 169, 248, 0.18)',
+    's': 'rgba(254,139,106, 0.18)',
 };
 
 var g_pvf_label_colors = {
     'p': 'rgba(239, 150, 166, 1)',
     'v': 'rgba(138, 212, 199, 1)',
     'f': 'rgba(136, 169, 248, 1)',
+    's': 'rgba(254,139,106, 1)',
 };
 // 历史曲线
 app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', function ($scope, ajax) {
@@ -269,10 +271,14 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', function ($scope, ajax
             var mhharr = [];
             for (var h = 0; h < item.time_keys.length; h++) {
                 var myarr = [];
+
+                var nian = item.time_keys[h].slice(0, 4);
+                var yue = item.time_keys[h].slice(5, 7) - 1;
+                var ri = item.time_keys[h].slice(8, 10);
                 var shi = item.time_keys[h].slice(11, 13);
                 var fen = item.time_keys[h].slice(14, 16);
                 var miao = item.time_keys[h].slice(17, 19);
-                myarr[0] = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), shi, fen, miao);
+                myarr[0] = new Date(nian, yue, ri, shi, fen, miao);
                 myarr[1] = item.datas[h];
                 mhharr.push(myarr)
             }
@@ -326,16 +332,16 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', function ($scope, ajax
                 },
                 type: 'value'
             };
-            createPfvSettingMark(pfvSetting, arr);
+            var dateTime = item.time_keys[0]; // 用于电价marker取得年、月、日信息
+            if (dateTime) {
+                createPfvSettingMark(pfvSetting, dateTime, arr);
+            }
         }
         $.extend(chartOption, {
-            legend: {
-                data: namearr,
-                show: false
-            },
             yAxis: yAxis,
             series: arr,
         });
+        chartOption.legend.data = namearr;
     }
 
     function _getPfvOfDevice(varInfo, pfvSetting, deviceSetting) {
@@ -367,10 +373,13 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', function ($scope, ajax
         return null;
     }
 
-    function createPfvSettingMark(pfvSetting, series) {
+    function createPfvSettingMark(pfvSetting, dateTime, series) {
         if (!pfvSetting) {
             return;
         }
+        var nian = Number.parseInt(dateTime.slice(0, 4));
+        var yue = Number.parseInt(dateTime.slice(5, 7)) - 1;
+        var ri = Number.parseInt(dateTime.slice(8, 10));
         for(var i=0; i<pfvSetting.length; i++){
             var markAreaData = [];
             var chargeData = [];
@@ -392,11 +401,15 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', function ($scope, ajax
                 tempName = '谷';
                 tempColor = g_pvf_colors.v;
                 tempLabelColor = g_pvf_label_colors.v;
+            } else if(tempPfv === 's') {
+                tempName = '尖';
+                tempColor = g_pvf_colors.s;
+                tempLabelColor = g_pvf_label_colors.s;
             }
             var now = new Date();
-            var startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(),
+            var startDate = new Date(nian, yue, ri,
                 parseInt(pfvItem.starttime.substr(0,2)), parseInt(pfvItem.starttime.substr(3,5)), 10);
-            var endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(),
+            var endDate = new Date(nian, yue, ri,
                 parseInt(pfvItem.endtime.substr(0,2)), parseInt(pfvItem.endtime.substr(3,5)), 10);
             var tempAreaData = [{
                 name: tempName+'\n'+pfvItem.charge+'元',
@@ -415,6 +428,9 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', function ($scope, ajax
                 yAxisIndex: 1,
                 type:'line',
                 symbolSize: 0,
+                tooltip: {
+                    show: false,
+                },
                 itemStyle: {
                     normal: {
                         color: tempLabelColor,
@@ -453,16 +469,16 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', function ($scope, ajax
         var xlm = "";
         var xType = "time";
         if (timety === "DAY") {
-            mintime = new Date(nian, yue, ri, 00, 00, 00);
-            maxtime = new Date(nian, yue, ri, 24, 00, 00);
+            mintime = new Date(nian, yue, ri, 0, 0, 0);
+            maxtime = new Date(nian, yue, ri, 24, 0, 0);
         }
         if (timety === "MONTH") {
-            mintime = new Date(nian, yue, 01, 00, 00, 00);
+            mintime = new Date(nian, yue, 1, 0, 0, 0);
             maxtime = getCurrentMonthLast(dataday.slice(0, 10));
         }
         if (timety === "YEAR") {
-            mintime = new Date(nian, 00, 01, 00, 00, 00);
-            maxtime = new Date(nian, 11, 11, 00, 00, 00);
+            mintime = new Date(nian, 0, 1, 0, 0, 0);
+            maxtime = new Date(nian, 11, 11, 0, 0, 0);
         }
         var echartsDiv = $('#chart' + groupId);
         if (echartsDiv.length) {
@@ -470,26 +486,32 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', function ($scope, ajax
         }
         var echartsObj = echarts.init(getChartDiv(groupId));
         var that = "";
+        var legendData = [];
+        data.data.forEach(function (item) {
+            legendData.push(item.name);
+        });
         var option = {
             color: g_line_colors,
             grid: {
-                'left': 55,
-                'right': 30,
-                'top': 20,
-                bottom: 30
+                left: 55,
+                right: 30,
+                top: 20,
+                bottom: 45,
             },
             tooltip: {
                 trigger: 'axis',
                 confine: true
             },
             legend: {
-                left: 'center',
-                bottom: 0,
-                orient: 'horizontal',
-                formatter: function(name) {
-                    return (name.length > 8 ? (name.slice(0, 8) + "...") : name);
+                type: 'scroll',
+                top: 'bottom',
+                pageIconSize: 10,
+                itemWidth: 15,
+                itemHeight: 8,
+                textStyle: {
+                    color: '#848484',
+                    fontSize: 11,
                 },
-                padding: [0, 0, 2, 0]
             },
             xAxis: {
                 type: xType,

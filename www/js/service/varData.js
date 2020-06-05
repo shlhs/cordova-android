@@ -14,7 +14,7 @@ app.service('varDataService', ['ajax', 'platformService', function (ajax, platfo
     };
 
     // 获取变量历史趋势
-    this.getHistoryTrend = function (sns, startTime, endTime, queryPeriod, calcMethod, callback) {
+    this.getHistoryTrend = function (sns, startTime, endTime, queryPeriod, calcMethod, callback, error) {
         /**
          * startTime, endTime: 'YYYY-MM-01 00:00:00.000'格式时间
          */
@@ -38,6 +38,11 @@ app.service('varDataService', ['ajax', 'platformService', function (ajax, platfo
                     });
                 }
                 callback(data);
+            },
+            error: function () {
+                if (error) {
+                    error();
+                }
             }
         })
     };
@@ -141,21 +146,27 @@ app.service('varDataService', ['ajax', 'platformService', function (ajax, platfo
     };
 
     // 获取月度电度电费统计值
-    this.getDegreeSummary = function (sn, month, callback) {
+    /**
+     * @param sns
+     * @param type：DAY/MONTH/YEAR，计算日、月、年的用电总和
+     * @param startTime：moment对象
+     * @param endTime：moment对象
+     * @param startTime
+     * @param endTime
+     * @param callback
+     */
+    this.getDegreeSummary = function (sns, type, startTime, endTime, callback) {
         var self = this;
         ajax.get({
-            url: '/devicevars/getelectricaldegreeandcharge',
+            url: platformService.getDeviceMgmtHost() + '/variables/data/electricaldegreeandcharge',
             data: {
-                sns: sn,
-                type: 'MONTH',
-                querytime: month.format('YYYY-MM-01T00:00:00.000') + 'Z'
+                sns: sns,
+                type: type,
+                startTime: startTime.format('YYYY-MM-DD 00:00:00.000'),
+                endTime: endTime.endOf('month').format('YYYY-MM-DD 00:00:00.000')
             },
-            success: function (data) {
-                if (data && data.length) {
-                    callback(data[0]);
-                } else {
-                    callback(null);
-                }
+            success: function (res) {
+                callback(res);
             },
             error: function () {
                 callback(null);
@@ -164,21 +175,25 @@ app.service('varDataService', ['ajax', 'platformService', function (ajax, platfo
     };
 
     // 获取变量的月电度趋势数据
-    this.getDegreeChargeTrend = function (sn, month, callback) {
+    /**
+     * @param sns
+     * @param type：DAY/MONTH/YEAR，计算日趋势、月趋势、年趋势
+     * @param startTime：moment对象
+     * @param endTime：moment对象
+     * @param callback
+     * @param error
+     */
+    this.getDegreeChargeTrend = function (sns, type, startTime, endTime, callback, error) {
         ajax.get({
-            url: '/devicevars/getelectricaldegreeandcharge/trend',
+            url: platformService.getDeviceMgmtHost() + '/variables/data/electricaldegreeandchargetrend',
             data: {
-                sns: sn,
-                start_date: month.format('YYYY-MM-01'),
-                end_date: month.endOf('month').format('YYYY-MM-DD')
+                sns: sns,
+                type: type,
+                startTime: startTime.format('YYYY-MM-DD 00:00:00.000'),
+                endTime: endTime.endOf('month').format('YYYY-MM-DD 00:00:00.000')
             },
             success: function (data) {
-                var degreeList = data[sn];
-                if (degreeList) {
-                    callback(degreeList);
-                } else {
-                    callback([]);
-                }
+                callback(data);
             },
             error: function () {
                 callback([]);

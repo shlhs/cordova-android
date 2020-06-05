@@ -187,11 +187,18 @@ app.config(['appStoreProviderProvider', function (appStoreServiceProvider) {
         {
             name: '站点监控',
             children: [
+                // {
+                //     name: '站点看板',
+                //     icon: 'icon-kanban',
+                //     templateUrl: '/templates/site/kanban.html',
+                //     url: 'site-kanban',
+                //     defaultChecked: true
+                // },
                 {
-                    name: '站点看板',
+                    name: '站点总览',
                     icon: 'icon-kanban',
-                    templateUrl: '/templates/site/kanban.html',
-                    url: 'site-kanban',
+                    templateUrl: '/templates/site/overview.html',
+                    url: 'site-overview',
                     defaultChecked: true
                 }, {
                     name: '画面',
