@@ -8,16 +8,18 @@ function getCurrentMonthLast(data) {
 }
 
 var g_line_colors = ['#9474df','#ef7e9c', '#6bc1dd', '#13cf5a',  '#f3a15d', '#6c7fff', '#ca8622', '#bda29a','#6e7074', '#546570', '#c4ccd3'];
-var g_pvf_colors = {
+var g_pvf_colors_opacity = {
     'p': 'rgba(239, 150, 166, 0.18)',
     'v': 'rgba(138, 212, 199, 0.18)',
-    'f': 'rgba(136, 169, 248, 0.18)'
+    'f': 'rgba(136, 169, 248, 0.18)',
+    's': 'rgba(254,139,106, 0.18)',
 };
 
 var g_pvf_label_colors = {
     'p': 'rgba(239, 150, 166, 1)',
     'v': 'rgba(138, 212, 199, 1)',
     'f': 'rgba(136, 169, 248, 1)',
+    's': 'rgba(254,139,106, 1)',
 };
 
 app.directive('historyTable', [function(){
@@ -86,8 +88,8 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
     var stationSn = $scope.sn;    // GetQueryString("sn");
     var deviceChargeSettingF = null;    // 设备用电电价配置
     var deviceChargeSettingR = null;    // 设备发电电价配置
-    var stationPfvSettingsF = null;     // 用电电价
-    var stationPfvSettingsR = null;     // 发电电价
+    var stationPfvSettingF = null; // 站点发电价配置
+    var stationPfvSettingR = null; // 站点用电价配置
     $scope.timeTypeList = [{
         id: 'DAY',
         name: '按日'
@@ -205,12 +207,12 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
     function getStationInfo(sn) {
         // 获取站点信息，主要是为了得到电价配置
         ajax.get({
-            url: '/stations/' + sn,
+            url: '/stations/' + sn + '/charge_config?chargeType=electricity',
             success: function (data) {
-                if(data.pfv_settings_f) {
+                if(data.pfv_settings_f && data.pfv_settings_f !== '') {
                     stationPfvSettingF = JSON.parse(data.pfv_settings_f);
                 }
-                if(data.pfv_settings_r) {
+                if(data.pfv_settings_r && data.pfv_settings_r !== '') {
                     stationPfvSettingR = JSON.parse(data.pfv_settings_r);
                 }
                 if (data.device_settings) {
@@ -337,10 +339,13 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
             var mhharr = [];
             for (var h = 0; h < item.time_keys.length; h++) {
                 var myarr = [];
+                var nian = item.time_keys[h].slice(0, 4);
+                var yue = item.time_keys[h].slice(5, 7) - 1;
+                var ri = item.time_keys[h].slice(8, 10);
                 var shi = item.time_keys[h].slice(11, 13);
                 var fen = item.time_keys[h].slice(14, 16);
                 var miao = item.time_keys[h].slice(17, 19);
-                myarr[0] = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), shi, fen, miao);
+                myarr[0] = new Date(nian, yue, ri, shi, fen, miao);
                 myarr[1] = item.datas[h];
                 mhharr.push(myarr)
             }
@@ -394,16 +399,14 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
                 },
                 type: 'value'
             };
-            createPfvSettingMark(pfvSetting, arr);
+            var dateTime = item.time_keys[0];
+            createPfvSettingMark(pfvSetting, dateTime, arr);
         }
         $.extend(chartOption, {
-            legend: {
-                data: namearr,
-                show: false
-            },
             yAxis: yAxis,
             series: arr,
         });
+        chartOption.legend.data = namearr;
     }
 
     function _getPfvOfDevice(varInfo, pfvSetting, deviceSetting) {
@@ -435,44 +438,54 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
         return null;
     }
 
-    function createPfvSettingMark(tempPfvSettings, ymd, series) {
-        var nian = ymd[0], yue = ymd[1], ri = ymd[2];
-        for(var i=0; i<tempPfvSettings.length; i++){
+    function createPfvSettingMark(pfvSetting, dateTime, series) {
+        if (!pfvSetting) {
+            return;
+        }
+        var nian = Number.parseInt(dateTime.slice(0, 4));
+        var yue = Number.parseInt(dateTime.slice(5, 7)) - 1;
+        var ri = Number.parseInt(dateTime.slice(8, 10));
+        for(var i=0; i<pfvSetting.length; i++){
             var markAreaData = [];
             var chargeData = [];
-
-            var tempPfv = tempPfvSettings[i].pfv;
-            var tempCharge = tempPfvSettings[i].charge;
+            var pfvItem = pfvSetting[i];
+            var tempPfv = pfvItem.pfv;
+            var tempCharge = pfvItem.charge;
             var tempName = '';
             var tempColor = 'gray';
             var tempLabelColor = 'gray';
             if(tempPfv === 'p') {
                 tempName = '峰';
-                tempColor = g_pvf_colors.p;
+                tempColor = g_pvf_colors_opacity.p;
                 tempLabelColor = g_pvf_label_colors.p;
             } else if(tempPfv === 'f') {
                 tempName = '平';
-                tempColor = g_pvf_colors.f;
+                tempColor = g_pvf_colors_opacity.f;
                 tempLabelColor = g_pvf_label_colors.f;
             } else if(tempPfv === 'v') {
                 tempName = '谷';
-                tempColor = g_pvf_colors.v;
+                tempColor = g_pvf_colors_opacity.v;
                 tempLabelColor = g_pvf_label_colors.v;
+            } else if(tempPfv === 's') {
+                tempName = '尖';
+                tempColor = g_pvf_colors_opacity.s;
+                tempLabelColor = g_pvf_label_colors.s;
             }
-
-            var startDate = new Date(nian, yue, ri, parseInt(tempPfvSettings[i].starttime.substr(0,2)), parseInt(tempPfvSettings[i].starttime.substr(3,5)), 00);
-            var endDate = new Date(nian, yue, ri, parseInt(tempPfvSettings[i].endtime.substr(0,2)), parseInt(tempPfvSettings[i].endtime.substr(3,5)), 00);
-
+            var now = new Date();
+            var startDate = new Date(nian, yue, ri,
+                parseInt(pfvItem.starttime.substr(0,2)), parseInt(pfvItem.starttime.substr(3,5)), 10);
+            var endDate = new Date(nian, yue, ri,
+                parseInt(pfvItem.endtime.substr(0,2)), parseInt(pfvItem.endtime.substr(3,5)), 10);
             var tempAreaData = [{
-                name: tempName+'\n'+tempPfvSettings[i].charge+'元',
+                name: tempName+'\n'+pfvItem.charge+'元',
                 xAxis: startDate,
                 yAxis: 0
             }, {
                 xAxis: endDate,
-                yAxis: tempPfvSettings[i].charge,
+                yAxis: pfvItem.charge,
             }];
 
-            chargeData.push([endDate, tempPfvSettings[i].charge]);
+            chargeData.push([endDate, pfvItem.charge]);
             markAreaData.push(tempAreaData);
 
             var newDate = {
@@ -480,12 +493,15 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
                 yAxisIndex: 1,
                 type:'line',
                 symbolSize: 0,
+                tooltip: {
+                    show: false,
+                },
                 itemStyle: {
                     normal: {
                         color: tempLabelColor,
                         lineStyle: {
-                            width: 0
-                        }
+                            width: 0,
+                        },
                     }
                 },
                 data: chargeData,
@@ -493,7 +509,7 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
                     data: markAreaData,
                     itemStyle: {
                         normal: {
-                            color: tempColor
+                            color: tempColor,
                         }
                     }
                 }
@@ -538,23 +554,25 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
         var option = {
             color: g_line_colors,
             grid: {
-                'left': 55,
-                'right': 30,
-                'top': 20,
-                bottom: 30
+                left: 55,
+                right: 30,
+                top: 20,
+                bottom: 50
             },
             tooltip: {
                 trigger: 'axis',
                 confine: true
             },
             legend: {
-                left: 'center',
-                bottom: 0,
-                orient: 'horizontal',
-                formatter: function(name) {
-                    return (name.length > 8 ? (name.slice(0, 8) + "...") : name);
+                type: 'scroll',
+                top: 'bottom',
+                pageIconSize: 10,
+                itemWidth: 15,
+                itemHeight: 8,
+                textStyle: {
+                    color: '#848484',
+                    fontSize: 11,
                 },
-                padding: [0, 0, 2, 0]
             },
             xAxis: {
                 type: xType,

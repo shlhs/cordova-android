@@ -46,7 +46,7 @@ app.controller('VideoMonitorCtrl', function ($scope, $timeout, $sce, platformSer
                     }
                     var address = ipc.liveAddressApp;
                     if (ipc.type === 'YS7') {
-                        ipc.streamUrl = '/templates/video-monitor/iframe/ys7-player.html?url=' + address + '&autoplay&ipcId=' + ipc.id;
+                        ipc.streamUrl = 'templates/video-monitor/iframe/ys7-player.html?url=' + address + '&autoplay&ipcId=' + ipc.id;
                     } else if (address.indexOf('http:') === 0) {
                         ipc.streamUrl = $sce.trustAsResourceUrl(address);
                     } else {
