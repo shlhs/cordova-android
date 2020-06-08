@@ -966,6 +966,10 @@ app.controller('DeviceRemoteControlConfirmCtrl', function ($scope, ajax, platfor
     var newValue = '';
     var pwd = '';
 
+    $scope.onCheck = function (value) {
+        $scope.controlObj.value = value;
+    };
+
     $scope.onInputValidate = function (value) {
         newValue = value;
         $scope.inputError = '';
