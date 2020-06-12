@@ -17,20 +17,22 @@ function onAndroid_dtsImageDelete (filename) {       // Android手机上删除�
 var TaskSource = {Repaire: 1, Event: 2, Inspect: 3};
 app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'routerService', function ($scope, $timeout, ajax, userService, routerService) {
     var taskId = GetQueryString("task_id") || $scope.task_id || '';
-    $scope.device = {
-        sn: GetQueryString('device_sn') || $scope.device_sn,
-        station_sn: GetQueryString('station_sn') || $scope.station_sn,
-        name: GetQueryString('name') || $scope.name,
-        path: GetQueryString('path') || $scope.path
-    };
+    var deviceSns = GetQueryString('device_sns');
+    var stationSn = GetQueryString('station_sn');
+    $scope.devices = [];
+    // $scope.device = {
+    //     sn: GetQueryString('device_sn') || $scope.device_sn,
+    //     station_sn: GetQueryString('station_sn') || $scope.station_sn,
+    //     name: GetQueryString('name') || $scope.name,
+    //     path: GetQueryString('path') || $scope.path
+    // };
     // if ($scope.device.name) {
     //     $scope.myForm = {name: $scope.device.name};
     // }
     $scope.role = userService.getUserRole();
     $scope.needResign = $scope.role === 'OPS_ADMIN';      // 是否需要指派维修工
-    $scope.isForDevice = $scope.device.sn ? true : false;
+    $scope.isForDevice = deviceSns.length > 0;
     $scope.taskData = {};
-    $scope.name = $scope.device.path ? $scope.device.path + '/' + $scope.device.name : $scope.device.name;
 
     $scope.images = [];
     $scope.description = '';
@@ -39,7 +41,9 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
     $scope.teamVisible = false;         // 是否显示运维班组选择窗口
     $scope.teamUsers = [];
     $scope.handlerVisible = false;      // 是否显示维修工选择窗口
-    $scope.handlerRowSpan = 1;       // 默认为一行
+    $scope.recheckSelectorVisible = false; // 是否显示复测人员的选择窗口
+    $scope.curentHandlers = [];
+    $scope.recheckHandlers = [];
     var staticDevices = [];
     var opsCompanyId = null;
     var companyId = userService.getTaskCompanyId();
@@ -48,12 +52,11 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
     }
 
     function init() {
-        if (!$scope.device.sn && $scope.device.station_sn) {
+        if (deviceSns.length) { // 如果只有设备sn，那么需要读取设备详情
+            getDeviceDetail(deviceSns);
+        } else {
             // 如果设备sn为空的话，则需要用户选择设备
             getStaticDevicesOfStation();
-        } else if ($scope.device.sn && !$scope.device.name) {
-            // 如果只有设备sn，那么需要读取设备详情
-            getDeviceDetail();
         }
         initTaskTypeList();
         initDatePicker();
@@ -62,7 +65,7 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
 
     function getStaticDevicesOfStation() {
         ajax.get({
-            url: '/stations/' + $scope.device.station_sn + '/staticdevices',
+            url: '/stations/' + stationSn + '/staticdevices',
             success: function (data) {
                 staticDevices = data;
             }, error: function () {
@@ -71,47 +74,17 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
         });
     }
 
-    function getDeviceDetail() {
+    function getDeviceDetail(sns) {
         ajax.get({
-            url: '/staticdevices',
+            url: '/stations/' + stationSn + '/staticdevices',
             data: {
-                sn: $scope.device.sn
+                sns: sns
             },
             success: function (data) {
-                $scope.device = data;
-                getDevicePath(data.sn);
+                $scope.devices = data;
                 $scope.$apply();
             }
         });
-    }
-
-    function getDevicePath(sn) {
-        ajax.get({
-            url: '/staticdevices/path',
-            data: {
-                station_sn: $scope.device.station_sn,
-                device_sns: sn
-            },
-            success: function (data) {
-                $scope.device.path = data[sn];
-                $scope.$apply();
-            }
-        });
-    }
-
-    function _format(data, idKey, nameKey) {
-        var d = null;
-        if (typeof (idKey) === 'undefined'){
-            idKey = 'id';
-        }
-        if (typeof (nameKey) === 'undefined'){
-            nameKey = 'name'
-        }
-        for(var i=0; i<data.length; i++){
-            d = data[i];
-            d['value'] = d[idKey];
-            d['text'] = d[nameKey];
-        }
     }
 
     function initTaskTypeList() {
@@ -143,13 +116,17 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
         $scope.teamVisible = !$scope.teamVisible;
     };
 
-    $scope.showHandlerSelector = function () {    // 显示维修工选择框
-        if (!$scope.operatorTeam) {
-            $.notify.toast('请先选择维修班组');
-        } else {
-            $scope.handlerVisible = !$scope.handlerVisible;
-        }
+    $scope.toggleHandlerSelector = function () {    // 显示维修工选择框
+        $scope.handlerVisible = !$scope.handlerVisible;
     };
+
+    $scope.toggleRecheckSelector = function () {    // 显示维修工选择框
+        $scope.recheckSelectorVisible = !$scope.recheckSelectorVisible;
+    };
+
+    $scope.startRecordVoice = function () {
+
+    }; // 启动语音
 
     function initMembers() {
         if (!$scope.needResign) {
@@ -168,28 +145,16 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
         });
     }
 
-    $scope.onSelectedTeam = function (team) {
-        // 先判断维修组是否改变了，改变了维修班组，需要情况维修工信息
-        if (!team || team.id !== $scope.taskData.operator_team) {
-            $scope.onSelectedUsers([]);
-        }
-        $scope.operatorTeam = team ? team.name : null;
+    $scope.onSelectedUsers = function (team, users) {
         $scope.taskData.operator_team = team ? team.id : null;
-        $scope.teamUsers = team ? team.users : [];
-        $scope.teamVisible = false;
+        $scope.curentHandlers = users;
+        $scope.toggleHandlerSelector();
     };
 
-    $scope.onSelectedUsers = function (users) {
-        var accounts = [];
-        var handlerNames = '';
-        users.forEach(function (user) {
-            accounts.push(user.account);
-            handlerNames+= user.name + (user.phone ? '/' + user.phone : '') + '\n';
-        });
-        $scope.taskData.current_handler = accounts.join(',');
-        $scope.handlerVisible = false;
-        $scope.handlerName = handlerNames;
-        $scope.handlerRowSpan = users.length || 1;
+    $scope.onSelectedRecheckHandlers = function (team, users) {
+        $scope.taskData.recheck_team = team ? team.id : null;
+        $scope.recheckHandlers = users;
+        $scope.toggleRecheckSelector();
     };
 
     function initDatePicker() {
@@ -234,6 +199,10 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
                 history.back();
             }
         })
+    };
+
+    $scope.showDeviceDetail = function (device) { // 打开设备详情页
+        routerService.openPage($scope, '/templates/site/static-devices/device-detail.html', {device_sn: device.sn, disableEdit: true});
     };
 
     $scope.submitForm = function() {

@@ -556,6 +556,40 @@
 .task-create-rows input {
     position: absolute;
 }
+.dts-create-rows .mui-input-row {
+    background-color: #F9F9F9;
+    margin: 6px 12px;
+}
+.dts-create-rows .mui-input-row:after {
+    display: none;
+}
+.mui-input-group.dts-create-rows .mui-input-row input, .mui-input-group.dts-create-rows .mui-input-row textarea {
+    text-align: right;
+}
+.dts-create-rows .devices {
+    padding: 0 15px 0px 15px;
+    width: 100%;
+    float: left;
+}
+.dts-create-rows .device-name {
+    font-size: 14px;
+    color: #586BF3;
+    cursor: pointer;
+    margin-right: 8px;
+}
+.dts-create-rows .mui-input-row .right-text {
+    font-size: 14px;
+    text-align: right;
+    padding: 8px 15px;
+    line-height: 28px;
+}
+.dts-create-rows .mui-input-row .right-placeholder {
+    color: #8e8e8e;
+    font-size: 14px;
+    text-align: right;
+    padding: 8px 15px;
+    line-height: 28px;
+}
 .mui-input-group .mui-input-row {
     height: 50px;
 }

@@ -255,7 +255,9 @@ app.directive('teamAndHandlerSelector',[function(){
             teams: '=',
             callback: '=',
             visible: '=',
-            onHide: '='
+            onHide: '=',
+            firstTitle: '=', // 第一页的描述
+            secondTitle: '=', // 第二页的描述
         },
         controller:['$scope', '$attrs', function($scope, $attrs){
             $scope.selectedTeam = null;

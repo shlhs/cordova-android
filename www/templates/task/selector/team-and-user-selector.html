@@ -6,7 +6,7 @@
     </div>
     <div class="mui-poppicker-body">
         <div ng-if="isTeamSelector">
-            <div style="font-size: 13px;text-align: center;padding-top: 10px;">请选择运维班组</div>
+            <div style="font-size: 13px;text-align: center;padding-top: 10px;">{{firstTitle || '请选择运维班组'}}</div>
             <div class="teams-selector">
                 <div ng-repeat="team in teams" ng-click="onToggleCheckTeam(team)">
                     <label ng-class="{'selected': isTeamSelected(team.id)}">{{team.name}}</label>
@@ -19,7 +19,7 @@
                 <!--<label class="team-name">{{selectedTeam.name}}</label>-->
                 <a ng-click="reSelectTeam()">重新选择</a>
             </div>
-            <div style="font-size: 13px;text-align: center;padding-top: 10px;">请选择运维工</div>
+            <div style="font-size: 13px;text-align: center;padding-top: 10px;">{{secondTitle || '请选择运维工'}}</div>
             <div class="teams-selector" style="height: 198px;">
                 <div ng-repeat="user in selectedTeam.users" ng-click="onToggleCheckUser(user.account)">
                     <label ng-class="{'selected': isUserSelected(user.account)}">{{getNameAndPhone(user)}}</label>

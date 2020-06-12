@@ -2526,11 +2526,7 @@ app.controller('TaskDevicesHandlerCtrl',['$scope', 'routerService', 'ajax',  fun
 
     $scope.openDtsPage = function () {
         if ($scope.checkedSns.length === 0) {
-            $.notify.toast('请选择一个设备再提交', 1000);
-            return;
-        }
-        if ($scope.checkedSns.length > 1) {
-            $.notify.toast('只能选择一个设备提交', 1000);
+            $.notify.toast('请至少选择一个设备再提交', 1000);
             return;
         }
         var record = null;
@@ -2540,16 +2536,14 @@ app.controller('TaskDevicesHandlerCtrl',['$scope', 'routerService', 'ajax',  fun
                 return false;
             }
         });
-        routerService.openPage($scope, '/templates/task/dts-create-from-task.html', {
-            task_id: $scope.task.id,
-            station_sn: $scope.task.station_sn,
-            device_sn: record.device_sn,
-            path: record.device.path,
-            name: record.device.name,
-            isInPage: true
-        });
-        // location.href = '/templates/dts/dts-create.html?task_id=' + $scope.task.id + '&station_sn=' + $scope.task.station_sn +
-        //     '&device_sn=' + record.device_sn + '&path=' + record.device.path + '&name=' + record.device.name;
+        // routerService.openPage($scope, '/templates/task/dts-create-from-task.html', {
+        //     task_id: $scope.task.id,
+        //     station_sn: $scope.task.station_sn,
+        //     device_sns: $scope.checkedSns,
+        //     // isInPage: true
+        // });
+        location.href = '/templates/dts/dts-create.html?task_id=' + $scope.task.id + '&station_sn=' + $scope.task.station_sn +
+            '&device_sns=' + $scope.checkedSns;
     };
 
     $scope.gotoDevice = function(deviceData){
@@ -2591,7 +2585,6 @@ app.controller('TaskDeviceCheckCtrl', ['$scope', 'ajax', function ($scope, ajax)
     $scope.checked = 0;
     $scope.exception = 0;
     $scope.isLoading = false;
-    $scope.enableSubmitDts = false;
     $scope.expandItems = !$scope.canEdit;
 
     $scope.onExpandItems = function () {
@@ -2673,14 +2666,13 @@ app.controller('TaskDeviceCheckCtrl', ['$scope', 'ajax', function ($scope, ajax)
                 Accept: "application/json"
             },
             success: function (response) {
-                if ($scope.enableSubmitDts) {
-                    submitDts();
-                } else {
-                    $.notify.progressStop();
-                    $.notify.info('结果已保存', 500);
-                }
+                $.notify.progressStop();
+                $.notify.info('结果已保存', 500);
                 Object.assign($scope.device, param);
                 $scope.recountFunc();       // 重新计算设备检查个数
+                setTimeout(function () {
+                    history.back();
+                }, 500);
                 $scope.$apply();
             },
             error: function () {
@@ -2693,41 +2685,6 @@ app.controller('TaskDeviceCheckCtrl', ['$scope', 'ajax', function ($scope, ajax)
     $scope.setDevicePass = function (pass) {
       $scope.result.status = pass;
     };
-
-    $scope.setEnableDtsSubmit = function () {
-        $scope.enableSubmitDts = !$scope.enableSubmitDts;
-    };
-
-    function submitDts() {
-        // 默认提交成dts单
-        $.notify.progressStart();
-        var opsCompanyId = $scope.taskData.company_id;
-        var param = {
-            devices: [{sn: deviceSn, label1_value: 1, name: $scope.deviceName}],
-            source: TaskSource.Inspect,
-            task_type_id: TaskTypes.NormalDts,
-            station_sn: $scope.taskData.station_sn,
-            name: $scope.result.desp,
-            pictures: $scope.deviceImages,
-            mother_task_id: taskId
-        };
-        ajax.post({
-            url: '/opstasks',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            contentType: 'application/json',
-            data: JSON.stringify(param),
-            success: function (data) {
-                $.notify.progressStop();
-                $.notify.info('保存巡检结果及创建缺陷单成功');
-            }, error: function () {
-                $.notify.progressStop();
-                $.notify.error('创建缺陷单失败');
-            }
-        });
-        $scope.enableSubmitDts = false;
-    }
 
     getDeviceCheckItems();
 }]);
