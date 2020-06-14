@@ -558,7 +558,7 @@
 }
 .dts-create-rows .mui-input-row {
     background-color: #F9F9F9;
-    margin: 6px 12px;
+    margin: 6px 0px;
 }
 .dts-create-rows .mui-input-row:after {
     display: none;
@@ -1034,4 +1034,68 @@
 }
 .task-comment .image-list {
     margin-left: 4px;
+}
+.voice-record {
+    color: #FFF;
+    display: inline-flex;
+    align-items: center;
+}
+.voice-record:after {
+    content: '';
+    display: block;
+    clear: both;
+}
+.voice-record .voice {
+    background-color: rgba(88,107,243,0.88);
+    border-radius: 4px;
+    height: 26px;
+    min-width: 50px;
+    position: relative;
+    padding: 0 8px 0 28px;
+    line-height: 26px;
+    text-align: left;
+}
+.voice-record .voice:before {
+    content: '';
+    width: 20px;
+    height: 20px;
+    background: url(../img/light/32X32/voice.png) 50% no-repeat;
+    background-size: contain;
+    display: block;
+    top: 2px;
+    position: absolute;
+    left: 4px;
+}
+.voice-record .clear {
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    background-color: rgba(88,107,243,0.88);
+    text-align: center;
+    cursor: pointer;
+    margin-left: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+.voice-record .clear:before {
+    content: '';
+    width: 1px;
+    height: 8px;
+    background-color: #FFF;
+    transform: rotate(45deg);
+    position: absolute;
+    left: 8px;
+    top: 4px;
+}
+.voice-record .clear:after {
+    content: '';
+    width: 1px;
+    height: 8px;
+    background-color: #FFF;
+    transform: rotate(-45deg);
+    position: absolute;
+    left: 8px;
+    top: 4px;
 }

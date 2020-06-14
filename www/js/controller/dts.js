@@ -42,8 +42,6 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
     $scope.teamUsers = [];
     $scope.handlerVisible = false;      // 是否显示维修工选择窗口
     $scope.recheckSelectorVisible = false; // 是否显示复测人员的选择窗口
-    $scope.curentHandlers = [];
-    $scope.recheckHandlers = [];
     var staticDevices = [];
     var opsCompanyId = null;
     var companyId = userService.getTaskCompanyId();
@@ -124,9 +122,18 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
         $scope.recheckSelectorVisible = !$scope.recheckSelectorVisible;
     };
 
-    $scope.startRecordVoice = function () {
+    $scope.startRecordVoice = function () { // 开始录音
 
     }; // 启动语音
+
+    $scope.clearVoice = function () { // 删除录音
+        $scope.taskData.voice_src = null;
+        $scope.taskData.voice_duration = null;
+    };
+
+    $scope.removeVideo = function () {
+        $scope.taskData.video_src = null; // 删除视频
+    };
 
     function initMembers() {
         if (!$scope.needResign) {
@@ -147,13 +154,13 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
 
     $scope.onSelectedUsers = function (team, users) {
         $scope.taskData.operator_team = team ? team.id : null;
-        $scope.curentHandlers = users;
+        $scope.taskData.current_handler_users = users;
         $scope.toggleHandlerSelector();
     };
 
     $scope.onSelectedRecheckHandlers = function (team, users) {
         $scope.taskData.recheck_team = team ? team.id : null;
-        $scope.recheckHandlers = users;
+        $scope.taskData.recheck_users = users;
         $scope.toggleRecheckSelector();
     };
 
@@ -169,8 +176,8 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
                     $scope.$apply();
                 });
             } else {
-                var optionsJson = this.getAttribute('data-options') || '{}';
-                var options = JSON.parse(optionsJson);
+                // var optionsJson = this.getAttribute('data-options') || '{}';
+                var options = {type: 'date'};
                 var id = this.getAttribute('id');
                 /*
                  * 首次显示时实例化组件
@@ -179,7 +186,7 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
                  */
                 _self.picker = new mui.DtPicker(options);
                 _self.picker.show(function(rs) {
-                    $scope.taskData.expect_complete_time = rs.text + ":00";
+                    $scope.taskData.expect_complete_time = rs.text;
                     _self.picker.dispose();
                     _self.picker = null;
                     $scope.$apply();
@@ -214,26 +221,42 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
     };
 
     $scope.createTask = function () {
-        var taskData = $scope.taskData;
-        taskData.devices = [{
-            sn: $scope.device.sn,
-            name: $scope.device.name
-        }];
+        var params = Object.assign({}, $scope.taskData);
+        params.devices = $scope.devices;
         // 增加图片信息
         if ($scope.images.length) {
-            taskData.pictures = $scope.images;
+            params.pictures = $scope.images;
         }
-        taskData.events = [];
-        taskData.station_sn = $scope.device.station_sn;
-        taskData.mother_task_id = taskId;
-        taskData.source = taskId ? TaskSource.Inspect : TaskSource.Repaire;     // 如果是从其他任务创建，即mother_task_id不为空，则来源为巡检，否则为报修
+        params.events = [];
+        params.station_sn = $scope.device.station_sn;
+        params.mother_task_id = taskId;
+        params.source = taskId ? TaskSource.Inspect : TaskSource.Repaire;     // 如果是从其他任务创建，即mother_task_id不为空，则来源为巡检，否则为报修
+        if (params.expect_complete_time) {
+            params = params.expect_complete_time + " 20:00:00";
+        }
+        params.recheck_handlers = null;
+        if (params.recheck_users.length) { // 复测人员
+            var accounts = [];
+            params.recheck_users.forEach(function (u) {
+                accounts.push(u.account);
+            });
+            params.recheck_handlers = accounts.join(',');
+        }
+        params.current_handlers = null;
+        if (params.current_handler_users) { // 消缺人员
+            var accounts = [];
+            params.current_handler_users.forEach(function (u) {
+                accounts.push(u.account);
+            });
+            params.current_handlers = accounts.join(',');
+        }
         $.notify.progressStart();
         ajax.post({
             url: '/opstasks/' + companyId,
             headers: {
                 'Content-Type': 'application/json;charset=UTF-8'
             },
-            data: JSON.stringify(taskData),
+            data: JSON.stringify(params),
             success: function (data) {
                 $.notify.progressStop();
                 $.notify.info('创建成功');
@@ -242,7 +265,7 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
                 }
                 $timeout(function () {
                     var url = '/templates/task/task-detail.html?id=' + data.id +
-                        '&taskType=' + taskData.task_type_id + '&mother_task_id=' + taskId;
+                        '&taskType=' + params.task_type_id + '&mother_task_id=' + taskId;
                     if ($scope.isInPage) {
                         var record = {
                             device_sn: $scope.device.sn,
