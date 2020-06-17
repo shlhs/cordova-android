@@ -292,8 +292,8 @@ header.mui-bar{
     clear: both;
 }
 .image-list .image-item, .image-list .upload-item{
-    width: 25%;
-    padding-top:25%;
+    width: 20%;
+    padding-top:20%;
     position: relative;
     float:left;
 }
@@ -1402,6 +1402,16 @@ a:hover.slidesjs-stop {
 }
 .btn-status.closed {
     background-color: #8B8B8B;
+}
+.btn-status.success {
+    background-color: #79C679;
+}
+.btn-status.danger {
+    background-color: red;
+}
+.btn-status.unchecked {
+    background-color: #F4F5F6;
+    color: #848898;
 }
 .media-lg{
     width: 60px;

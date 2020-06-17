@@ -15,6 +15,10 @@
                                 <i class="icon icon-ms msg" ng-if="item.action_id == TaskAction.Comment"></i> {{item.handler_name}}
                             </span>
                     {{(item.action_id==TaskAction.Comment ? item.desp : item.action_name) + (item.transfer_user ? '给' : '')}}
+                    <span ng-if="item.action_id == TaskAction.RECHECK">
+                        <span ng-if="item.recheck_pass" class="text-normal">通过</span>
+                        <span ng-if="!item.recheck_pass" class="text-danger">未通过</span>
+                    </span>
                     <span ng-if="item.transfer_user" class="handler">{{item.transfer_user_name}}</span>
                 </div>
                 <div class="timeline-comment" ng-if="item.desp != null && item.desp != '' && item.action_id != TaskAction.Comment">

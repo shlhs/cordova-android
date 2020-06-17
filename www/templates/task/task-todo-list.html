@@ -25,11 +25,15 @@
                             <span class="task-info-label">站点名称：</span><span class="task-info-value">{{task.station_name}}</span>
                         </div>
                         <div ng-if="task.isToStart">
-                            <span class="task-info-label" style="padding-right: 0;color: rgb(70, 190, 138);font-weight: 500;">启动时间：{{task.create_time.substring(0,16)}}</span>
+                            <span class="task-info-label" style="padding-right: 0;color: rgb(70, 190, 138);font-weight: 500;">启动时间：{{task.create_time.substring(0,10)}}</span>
                         </div>
                         <div ng-if="!task.isToStart">
-                            <span class="task-info-label" style="padding-right: 0;">期望完成时间：</span>
-                            <span class="task-info-value" ng-class="{'timeout': task.isTimeout}">{{task.expect_complete_time.substring(0,16)}}</span>
+                            <span class="task-info-label" style="padding-right: 0;">计划解决时间：</span>
+                            <span class="task-info-value" ng-class="{'timeout': task.isTimeout}">{{task.expect_complete_time.substring(0,10)}}</span>
+                        </div>
+                        <div ng-if="task.next_recheck_time">
+                            <span class="task-info-label" style="padding-right: 0;">下一次复测时间：</span>
+                            <span class="task-info-value">{{task.next_recheck_time.substring(0,10)}}</span>
                         </div>
                     </div>
                     <div class="task-status">

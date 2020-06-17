@@ -9,6 +9,11 @@
             </div>
         </div>
         <div class="mui-input-row">
+            <label class="label">缺陷类型</label>
+            <input type="text" name="defectType" ng-model="selectedDefectType.name" placeholder="选择选择或输入缺陷类型" style="width: calc(100% - 150px);">
+            <button id="defectTypePicker" class="mui-btn mui-btn-block" type="button" style="float: right;width: auto;">选择</button>
+        </div>
+        <div class="mui-input-row">
             <label class="label">缺陷等级<span style="color:red">*</span></label>
             <input type="text" name="taskTypeName" ng-model="taskTypeName" placeholder="选择缺陷等级" required>
             <button id="taskTypePicker" class="mui-btn mui-btn-block" type="button">&nbsp; </button>
@@ -17,12 +22,15 @@
             </label>
         </div>
         <div class="mui-input-row">
-            <label class="label">消缺时间</label>
-            <input type="text" name="expect_complete_time" ng-model="taskData.expect_complete_time" placeholder="请选择消缺时间">
+            <label class="label">消缺时间<span style="color:red" ng-if="needResign">*</span></label>
+            <input type="text" name="expectCompleteTime" ng-model="taskData.expect_complete_time" placeholder="请选择消缺时间" ng-required="needResign">
             <button type="button" id='expectedTime' class="btn mui-btn mui-btn-block">&nbsp;</button>
+            <label class="error" ng-show="myForm.expectCompleteTime.$invalid && (myForm.expectCompleteTime.$dirty || myForm.$submitted)">
+                <span ng-show="myForm.expectCompleteTime.$error.required">请选择消缺时间</span>
+            </label>
         </div>
         <div class="mui-input-row" ng-if="needResign">
-            <label class="label">消缺人员</label>
+            <label class="label">消缺人员<span style="color:red">*</span></label>
             <!--<textarea name="handlerName" ng-model="handlerName" placeholder="请选择消缺班组和人员" rows="{{handlerRowSpan}}"></textarea>-->
             <div class="right-text" ng-if="taskData.current_handler_users.length">
                 <div ng-repeat="h in taskData.current_handler_users">{{h.name}}</div>
@@ -31,7 +39,7 @@
                 请选择消缺班组和人员
             </div>
             <button type="button" data-options='{}' class="btn mui-btn mui-btn-block" ng-click="toggleHandlerSelector()" style="position: absolute;top: 0;left: 115px;bottom: 0;">&nbsp;</button>
-            <!--<div class="error" style="color: #9c9c9c;font-size: 11px;" ng-if="!handlerName">不指定维修工则为抢单任务</div>-->
+            <div class="error" style="font-size: 11px;" ng-if="currentHandlerError">请指定消缺人员</div>
         </div>
         <div class="mui-input-row" ng-if="needResign">
             <label class="label">复测人员</label>
@@ -39,13 +47,13 @@
                 <div ng-repeat="h in taskData.recheck_users">{{h.name}}</div>
             </div>
             <div class="right-placeholder" ng-if="!taskData.recheck_users.length">
-                请选择复测班组和人员
+                不指定复测人员则无复测流程
             </div>
             <button type="button" data-options='{}' class="btn mui-btn mui-btn-block" ng-click="toggleRecheckSelector()" style="position: absolute;top: 0;left: 115px;bottom: 0;">&nbsp;</button>
             <!--<div class="error" style="color: #9c9c9c;font-size: 11px;" ng-if="!handlerName">不指定维修工则为抢单任务</div>-->
         </div>
         <div class="task-result">
-            <div class="label" style="color: #333;font-size: 14px;margin: 4px;">缺陷描述</div>
+            <div class="label" style="color: #333;font-size: 14px;margin: 8px 4px 4px 4px;font-weight: bold;">缺陷描述</div>
             <div style="background-color: #F9F9F9;">
                 <textarea rows="2" placeholder="请添加缺陷描述..." name="name" ng-model="taskData.name" required></textarea>
                 <label class="error" ng-show="myForm.name.$invalid && (myForm.name.$dirty || myForm.$submitted)" style="margin-left: 16px;">
@@ -66,7 +74,7 @@
             </div>
             <image-uploader images="images"></image-uploader>
         </div>
-        <div class="mui-button-row" style="padding: 8px 16px;">
+        <div class="mui-button-row">
             <button type="submit" class="mui-btn mui-btn-primary mui-btn-block"
                     style="background-color: rgba(88,107,243,0.88);border-color: rgba(88,107,243,0.88);height: 42px;">确认提交</button>
         </div>

@@ -137,6 +137,7 @@ app.directive('operatorTeamSelector',[function(){
         restrict: 'E',
         templateUrl: '/templates/task/selector/team-selector.html',
         scope: {
+            defaultTeam: '=',
             teams: '=',
             callback: '=',
             visible: '=',
@@ -146,6 +147,10 @@ app.directive('operatorTeamSelector',[function(){
         controller:['$scope', '$attrs', function($scope, $attrs){
 
             var selected = null;           // 当点击了"确定"后，所选项就是最终选择的
+
+            if ($scope.defaultTeam) {
+                selected = $scope.defaultTeam;
+            }
 
             $scope.hide = function () {
                 if ($scope.onHide) {
