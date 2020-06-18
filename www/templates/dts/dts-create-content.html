@@ -3,10 +3,13 @@
     <form class="mui-input-group task-create-rows dts-create-rows create-form no-border" name="myForm" novalidate style="padding: 0 12px;">
         <div class="mui-input-row" style="padding-bottom: 8px;">
             <label class="label" style="padding-bottom: 0">设备<span style="color:red">*</span></label>
-            <button class="mui-btn mui-btn-block" type="button" ng-click="openDeviceSelector()" ng-if="!isForDevice" style="font-size: 14px;text-align: right;padding-bottom: 0;min-height: 36px;">点击选择</button>
+            <button class="mui-btn mui-btn-block" type="button" ng-click="openDeviceSelector()" ng-if="!isForDevice" style="font-size: 14px;text-align: left;padding-left: 0;padding-bottom: 0;min-height: 36px;">点击选择</button>
             <div class="devices">
                 <a ng-repeat="d in devices" class="device-name" ng-click="showDeviceDetail(d)">{{d.name}};</a>
             </div>
+            <label class="error" ng-show="deviceEmptyError">
+                请选择缺陷设备
+            </label>
         </div>
         <div class="mui-input-row">
             <label class="label">缺陷类型</label>
@@ -53,7 +56,7 @@
             <!--<div class="error" style="color: #9c9c9c;font-size: 11px;" ng-if="!handlerName">不指定维修工则为抢单任务</div>-->
         </div>
         <div class="task-result">
-            <div class="label" style="color: #333;font-size: 14px;margin: 8px 4px 4px 4px;font-weight: bold;">缺陷描述</div>
+            <div class="label" style="color: #333;font-size: 14px;margin: 8px 4px 4px 4px;font-weight: bold;">缺陷描述<span style="color:red">*</span></div>
             <div style="background-color: #F9F9F9;">
                 <textarea rows="2" placeholder="请添加缺陷描述..." name="name" ng-model="taskData.name" required></textarea>
                 <label class="error" ng-show="myForm.name.$invalid && (myForm.name.$dirty || myForm.$submitted)" style="margin-left: 16px;">
@@ -63,7 +66,7 @@
             <div class="mui-input-row" ng-if="needResign">
                 <label class="label">语音描述</label>
                 <div class="right-placeholder" ng-click="startRecordVoice()" ng-if="!taskData.voice_src" style="float: right;display: flex;align-items: center;cursor: pointer;">
-                    <i class="icon icon-16 icon-voice-record" /> 点击录音
+                    <i class="icon icon-16 icon-voice-record"></i> 点击录音
                 </div>
                 <div class="right-placeholder" ng-click="clearVoice()" ng-if="taskData.voice_src">
                     <div class="voice-record">
@@ -84,4 +87,5 @@
     <!--<handlers-selector users="teamUsers" multiple visible="handlerVisible" callback="onSelectedUsers"></handlers-selector>-->
     <team-and-handler-selector visible="handlerVisible" teams="teams" callback="onSelectedUsers" first-title="'请先选择负责消缺的班组'" second-title="'请选择消缺的人员'"></team-and-handler-selector>
     <team-and-handler-selector visible="recheckSelectorVisible" teams="teams" callback="onSelectedRecheckHandlers" first-title="'请先选择复测的班组'" second-title="'请选择复测人员'"></team-and-handler-selector>
+    <div ng-include="'/templates/dts/dts-defect-conflict-devices-warning.html'" ng-if="warningModalVisible"></div>
 </div>

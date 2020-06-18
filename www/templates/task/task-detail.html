@@ -54,18 +54,6 @@
             box-shadow: none;
             /*background-color: transparent;*/
         }
-        .mui-bar-tab>a{
-            padding: 0px 2px 4px 2px;
-        }
-        .mui-bar-tab>a:first-child {
-            padding-left: 4px;
-        }
-        .mui-bar-tab>a:last-child {
-            padding-right: 4px;
-        }
-        .mui-bar-tab>a>button{
-            margin-bottom: 6px !important;
-        }
         .device-list{
             margin-left: 60px;
         }
@@ -151,11 +139,11 @@
                             <label class="title">报修时间</label><span class="value">{{taskData.create_time}}</span>
                         </li>
                         <li ng-if="taskData.expect_complete_time">
-                            <label class="title">截止时间</label><span class="value">{{taskData.expect_complete_time}}</span>
+                            <label class="title">计划解决时间</label><span class="value">{{taskData.expect_complete_time.substring(0, 16)}}</span>
                         </li>
                         <li ng-if="taskData.current_handler">
                             <label class="title">当前处理人</label>
-                            <div class="value">
+                            <div class="value" style="padding-left: 80px;">
                                 <div ng-repeat="user in taskData.current_handler_users">{{getUserNameAndPhone(user)}}</div>
                             </div>
                         </li>
@@ -184,7 +172,7 @@
                             <label class="title">启动时间</label><span class="value">{{taskData.create_time.substring(0,16)}}</span>
                         </li>
                         <li ng-if="taskData.expect_complete_time">
-                            <label class="title">截止时间</label><span class="value">{{taskData.expect_complete_time}}</span>
+                            <label class="title">截止时间</label><span class="value">{{taskData.expect_complete_time.substring(0, 16)}}</span>
                         </li>
                         <li>
                             <label class="title">站点</label>
@@ -194,14 +182,14 @@
                         </li>
                         <li>
                             <label class="title">负责人</label>
-                            <span class="value">{{getUserNameAndPhone(taskData.creater_user)}}</span>
+                            <span class="value" style="padding-left: 80px;">{{getUserNameAndPhone(taskData.creater_user)}}</span>
                         </li>
                         <li>
                             <label class="title">巡检班组</label><span class="value">{{taskData.operator_team_name}}</span>
                         </li>
                         <li ng-if="taskData.operator">
                             <label class="title">巡检人员</label>
-                            <span class="value">
+                            <span class="value" style="padding-left: 80px;">
                                 <div ng-repeat="user in taskData.operator_users">{{getUserNameAndPhone(user)}}</div>
                             </span>
                         </li>
@@ -338,8 +326,8 @@
         <div class="card" ng-show="taskData.stage_id === TaskStatus.Competition && taskData.station_longitude">
             <div id="map" style="height: 300px;width: 100%;"></div>
         </div>
-        <nav class="mui-bar mui-bar-tab bg-transparent" ng-if="actions.length">
-            <a class="mui-tab-item mui-active mui-segmented-control-vertical" href="#" ng-repeat="action in actions">
+        <nav class="mui-bar mui-bar-tab bg-transparent task-btn-bottom" ng-if="actions.length">
+            <a href="#" ng-repeat="action in actions">
                 <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-btn-outlined mui-control-item task-btn"
                         ng-click="taskHandler.execute(action.id)" style="background-color: {{action.color}}">{{action.name}}</button>
             </a>

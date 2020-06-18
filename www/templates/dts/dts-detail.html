@@ -54,18 +54,6 @@
             box-shadow: none;
             /*background-color: transparent;*/
         }
-        .mui-bar-tab>a{
-            padding: 0px 2px 4px 2px;
-        }
-        .mui-bar-tab>a:first-child {
-            padding-left: 4px;
-        }
-        .mui-bar-tab>a:last-child {
-            padding-right: 4px;
-        }
-        .mui-bar-tab>a>button{
-            margin-bottom: 6px !important;
-        }
         .device-list{
             margin-left: 60px;
         }
@@ -176,7 +164,7 @@
                         <div>缺陷说明：</div>
                         <ul class="task-detail-info-group">
                             <li ng-if="taskData.defect_type">
-                                <label class="title" style="width: 50px;">类型</label>
+                                <label class="title" style="width: 70px;">缺陷类型</label>
                                 <span class="value">{{taskData.defect_type_name}}</span>
                             </li>
                             <li>
@@ -264,10 +252,14 @@
                 </div>
             </div>
             <div ng-include="'/templates/task/task-update-history.html'"></div>
-            <div class="task-btn-bottom" ng-if="actions.length">
-                <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-btn-outlined mui-control-item task-btn" ng-repeat="action in actions"
-                        ng-click="taskHandler.execute(action.id)" style="background-color: {{action.color}}">{{action.id === TaskAction.Update ? '上传消缺结果' : action.name}}</button>
-            </div>
+            <nav class="mui-bar mui-bar-tab bg-transparent task-btn-bottom" ng-if="actions.length">
+                <a href="#" ng-repeat="action in actions">
+                    <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-btn-outlined mui-control-item task-btn"
+                            ng-click="taskHandler.execute(action.id)" style="background-color: {{action.color}}">
+                        {{action.id === TaskAction.Update ? '上传消缺结果' : action.name}}
+                    </button>
+                </a>
+            </nav>
             <team-and-handler-selector ng-if="taskData.stage_id === TaskStatus.ToAssign" on-hide="taskHandler.assignHandlers"
                                        visible="assignPickerVisible" teams="teams" callback="onAssignHandlers"></team-and-handler-selector>
             <handlers-selector ng-if="taskData.stage_id === TaskStatus.ToAccept" on-hide="taskHandler.acceptTaskAssign"
