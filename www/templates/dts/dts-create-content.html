@@ -71,18 +71,18 @@
                     <span ng-show="myForm.name.$error.required">缺陷描述不能为空</span>
                 </label>
             </div>
-            <div class="mui-input-row" ng-if="needResign">
-                <label class="label">语音描述</label>
-                <div class="right-placeholder" ng-click="startRecordVoice()" ng-if="!taskData.voice_src" style="float: right;display: flex;align-items: center;cursor: pointer;">
-                    <i class="icon icon-16 icon-voice-record"></i> 点击录音
-                </div>
-                <div class="right-placeholder" ng-click="clearVoice()" ng-if="taskData.voice_src">
-                    <div class="voice-record">
-                        <div class="voice" ng-style="{width: (taskData.voice_duration*2) + 'px'}">5"</div>
-                        <div class="clear"></div>
-                    </div>
-                </div>
-            </div>
+            <!--<div class="mui-input-row" ng-if="needResign">-->
+                <!--<label class="label">语音描述</label>-->
+                <!--<div class="right-placeholder" ng-click="startRecordVoice()" ng-if="!taskData.voice_src" style="float: right;display: flex;align-items: center;cursor: pointer;">-->
+                    <!--<i class="icon icon-16 icon-voice-record"></i> 点击录音-->
+                <!--</div>-->
+                <!--<div class="right-placeholder" ng-click="clearVoice()" ng-if="taskData.voice_src">-->
+                    <!--<div class="voice-record">-->
+                        <!--<div class="voice" ng-style="{width: (taskData.voice_duration*2) + 'px'}">5"</div>-->
+                        <!--<div class="clear"></div>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
             <image-uploader images="images"></image-uploader>
         </div>
         <div class="mui-button-row">

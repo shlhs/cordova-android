@@ -19,6 +19,11 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
     var taskId = GetQueryString("task_id") || $scope.task_id || '';
     var deviceSns = GetQueryString('device_sns');
     var stationSn = GetQueryString('station_sn');
+    var siteStr = localStorage.getItem("currentSite");
+    var defaultStationSn = null; // 用户默认选择的站点
+    if (siteStr) {
+        defaultStationSn = JSON.parse(siteStr).sn;
+    }
     $scope.userStations = [];
     $scope.devices = [];
     $scope.role = userService.getUserRole();
@@ -52,10 +57,11 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
         if ($scope.isForDevice) { // 如果只有设备sn，那么需要读取设备详情
             getDeviceDetail(deviceSns);
         }
+        if (defaultStationSn) {
+            getStaticDevicesOfStation(defaultStationSn);
+        }
         if (!stationSn) {
             initStations();
-        } else {
-            getStaticDevicesOfStation();
         }
         getDefectTypes();
         initTaskTypeList();
@@ -69,6 +75,7 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
             success: function (data) {
                 var stations = [];
                 var pickerData = [];
+                var defaultSelectedIndex = null;
                 data.forEach(function (s) {
                     if (!s.is_group) {
                         stations.push(s);
@@ -76,6 +83,12 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
                             value: s.sn,
                             text: s.name
                         });
+                        if (s.sn === defaultStationSn) {
+                            $scope.taskData.station_sn = s.sn;
+                            $scope.stationName = s.name;
+                            stationSn = s.sn;
+                            defaultSelectedIndex = pickerData.length-1;
+                        }
                     }
                 });
                 $scope.userStations = stations;
@@ -83,13 +96,15 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
                 if (stations.length <= 1) {
                     if (stations.length === 1) { // 只有一个站点时，默认选中该站点
                         stationSn = stations[0].sn;
-                        getStaticDevicesOfStation();
                     }
                     return;
                 }
                 // 初始化picker
                 var stationPicker = new mui.PopPicker();
                 stationPicker.setData(pickerData);
+                if (defaultSelectedIndex !== null) {
+                    stationPicker.pickers[0].setSelectedIndex(defaultSelectedIndex);
+                }
                 var showUserPickerButton = document.getElementById('stationPicker');
                 showUserPickerButton.addEventListener('click', function(event) {
                     stationPicker.show(function(items) {
@@ -97,7 +112,7 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
                             $scope.stationName = items[0].text;
                             stationSn = items[0].value;
                             $scope.devices = []; // 切换了站点后，清除所选设备
-                            getStaticDevicesOfStation();
+                            getStaticDevicesOfStation(stationSn);
                             $scope.$apply();
                         }
                     });
@@ -135,7 +150,7 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
         });
     }
 
-    function getStaticDevicesOfStation() {
+    function getStaticDevicesOfStation(stationSn) {
         ajax.get({
             url: '/stations/' + stationSn + '/staticdevices',
             success: function (data) {
@@ -170,10 +185,10 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
             value: 10,
             text: '致命缺陷'
         }];
-        var taskTypePicker = new mui.PopPicker();
-        taskTypePicker.setData(taskTypes);
         var taskTypeButton = document.getElementById('taskTypePicker');
         if (taskTypeButton) {
+            var taskTypePicker = new mui.PopPicker();
+            taskTypePicker.setData(taskTypes);
             taskTypeButton.addEventListener('click', function(event) {
                 taskTypePicker.show(function(items) {
                     $scope.taskTypeName = items[0].text;
@@ -722,6 +737,7 @@ app.controller('DtsEditCtrl', ['$scope', '$timeout', 'ajax', function ($scope, $
         var taskTypePicker = new mui.PopPicker();
         taskTypePicker.setData(taskTypes);
         var taskTypeButton = document.getElementById('taskTypePicker');
+        taskTypePicker.pickers[0].setSelectedIndex(task.task_type_id - 8); // 默认选中
 
         taskTypeButton.addEventListener('click', function(event) {
             taskTypePicker.show(function(items) {

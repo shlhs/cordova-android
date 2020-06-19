@@ -2238,10 +2238,11 @@ app.controller('CommonTaskEditAssignCtrl', ['$scope', '$timeout', 'ajax', functi
             value: 10,
             text: '致命缺陷'
         }];
-        var taskTypePicker = new mui.PopPicker();
-        taskTypePicker.setData(taskTypes);
         var taskTypeButton = document.getElementById('taskTypePicker');
         if (taskTypeButton) {
+            var taskTypePicker = new mui.PopPicker();
+            taskTypePicker.setData(taskTypes);
+            taskTypePicker.pickers[0].setSelectedIndex(task.task_type_id - 8); // 默认选中
             taskTypeButton.addEventListener('click', function(event) {
                 taskTypePicker.show(function(items) {
                     $scope.taskType = {

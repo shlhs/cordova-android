@@ -1,6 +1,6 @@
 <a href="javascript:void(0);" ng-click="warpCallback(item, $event);"
    ng-class="{'is_leaf': !item.is_group, 'selected': item.sn === selectedSn}" >
-    <i class="node-group" ng-if="item.is_group" ng-class="{virtual: !item.product_type_id}"></i>
+    <i class="node-group" ng-if="item.is_group" ng-class="{device: item.product_type_id}"></i>
     <input type="checkbox" ng-if="checkbox && !isGroup(item)" ng-click="checkDevice($event, item)" ng-checked="isChecked(item.sn)">{{item.name}}
     <label class="text-status warning" ng-if="showStatus && item.hasTask">运维</label>
     <label class="text-status danger" ng-if="showStatus && item.hasDts">缺陷</label>
