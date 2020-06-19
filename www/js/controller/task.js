@@ -479,8 +479,12 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
 }]);
 
 function isTodoTask(task, username, userRole) {
-    if (task.stage_id !== TaskStatus.Closed && task.current_handler){
-        if (task.current_handler.split(',').indexOf(username) >= 0) {
+    if (task.stage_id !== TaskStatus.Closed ){
+        if (task.current_handler && task.current_handler.split(',').indexOf(username) >= 0) {
+            return true;
+        }
+        // 复测只有在提交审核之前才能算作是待办
+        if (task.stage_id !== TaskStatus.ToClose && task.recheck_handlers && task.recheck_handlers.split(',').indexOf(username) >= 0) {
             return true;
         }
     } else if (task.stage_id === TaskStatus.Closed && task.finish_time && !task.has_comment && userRole === 'USER') {
@@ -607,6 +611,12 @@ app.controller('TaskBaseCtrl', ['$scope', 'ajax', 'userService', 'appStoreProvid
         return map.getDistance(startPosint, end);
     };
 
+    $scope.callPhone = function (phone) {
+        if (phone && window.android && window.android.callPhone) {
+            window.android.callPhone(phone);
+        }
+    };
+
     $scope.checkActuallyArrived = function (taskId, siteLongitude, siteLatitude, cb) {
         // 不检查，直接返回
         cb && cb(taskId, TaskAction.Arrive);
@@ -658,7 +668,7 @@ app.controller('TaskBaseCtrl', ['$scope', 'ajax', 'userService', 'appStoreProvid
         if (!user) {
             return '';
         }
-        return user.name + (user.phone ? '/' + user.phone : '');
+        return user.name;
     };
 }]);
 
@@ -906,6 +916,14 @@ app.controller('TaskTodoListCtrl', ['$scope', '$rootScope', 'scrollerService', '
                     task.sortTime = sortTime;
                 }
                 allTasks.sort(function (t1, t2) {
+                    // 如果工单处于待指派状态，则优先级比较高
+                    if (t1.stage_id === TaskStatus.ToAssign && t2.stage_id !== TaskStatus.ToAssign) {
+                        return -1;
+                    } else if (t1.stage_id !== TaskStatus.ToAssign && t2.stage_id === TaskStatus.ToAssign) {
+                        return 1;
+                    } else if (t1.stage_id === TaskStatus.ToAssign && t2.stage_id === TaskStatus.ToAssign) { // 如果两个都处于待指派状态，则先提交的在前
+                        return t1.create_time < t2.create_time;
+                    }
                     if (t1.sortTime && t2.sortTime) {
                         if (t1.sortTime < t2.sortTime) {
                             return -1;
@@ -1383,9 +1401,9 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
                 updateTaskInfo(data);
                 taskCanEdit(data);
                 // 如果是抢单任务，需要读取同组内其他人的信息，以便接单时选择其他人协助
-                if (data.operator_team) {
+                if (data.operator_team && !data.current_handler) {
                     ajax.get({
-                        url: '/OpsTeams/' + data.operator_team + '?with_user=true',
+                        url: '/OpsTeams/' + data.operator_team + '?with_user=true&with_permission=false',
                         success: function (res) {
                             $scope.toAcceptUsers = [];
                             res.users.forEach(function (user) {
@@ -1396,10 +1414,6 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
                         }
                     });
                 }
-                // mother_task_id不为空，说明该任务是由巡检任务创建的缺陷，需要通知巡检任务更新设备状态
-                // if (GetQueryString('mother_task_id')) {
-                //     window.android && window.android.onJsCallbackForPrevPage('onAndroidCb_updateDeviceRecord', JSON.stringify(task.device_record[0]));
-                // }
                 getTaskHistory();
                 getAvailableActions(data);
                 if (data.stage_id === TaskStatus.Closed) {
@@ -1460,7 +1474,7 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
 
     function taskCanEdit(taskData) {
         // 未关闭跌缺陷单，管理员有权限编辑
-        if (userRole === UserRole.OpsAdmin && taskData.is_defect && (taskData.stage_id !== TaskStatus.ToClose && taskData.state_id !== TaskStatus.Closed)) {
+        if (userRole === UserRole.OpsAdmin && taskData.is_defect && (taskData.stage_id !== TaskStatus.ToClose && taskData.stage_id !== TaskStatus.Closed)) {
             $scope.canEdit = true;
         } else {
             $scope.canEdit = false;
@@ -1477,7 +1491,7 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
         $scope.taskData = formatTaskStatusName(data);
         $scope.taskData.expect_complete_time = data.expect_complete_time ? data.expect_complete_time.substring(0, 16) : '';
         $scope.taskData.isToStart = $scope.taskData.create_time.substring(0, 16) > new Date().Format('yyyy-MM-dd HH:mm');      // 任务待开始
-
+        data.is_closed = data.stage_id === TaskStatus.ToClose || data.stage_id === TaskStatus.Closed;
         // 如果是待接单状态，则需要设置接单时需要选择的其他运维工的账号
         if ($scope.taskData.stage_id === TaskStatus.ToAccept) {
             $scope.toAcceptUsers = [];
@@ -1987,7 +2001,7 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
     function initMembers() {
 
         ajax.get({
-            url: '/OpsTeams?company_id=' + opsCompanyId + '&with_user=true',
+            url: '/OpsTeams?company_id=' + opsCompanyId + '&with_user=true&with_permission=false',
             success: function (data) {
                 $scope.teams = data;
                 if ($scope.taskData.stage_id === TaskStatus.ToAccept) {
@@ -2240,26 +2254,33 @@ app.controller('CommonTaskEditAssignCtrl', ['$scope', '$timeout', 'ajax', functi
         }
     }
 
-    $scope.showTeamSelector = function () {
-        $scope.teamVisible = true;
+    $scope.toggleTeamSelector = function () {
+        $scope.teamVisible = !$scope.teamVisible;
     };
 
-    $scope.showHandlerSelector = function () {
-        $scope.handlerVisible = true;
+    $scope.toggleHandlerSelector = function () {
+        $scope.handlerVisible = !$scope.handlerVisible;
     };
 
     $scope.onSelectedTeam = function (team) {
-        $scope.selectedTeam = team;
         if (team) {
+            if ($scope.selectedTeam && $scope.selectedTeam.id !== team.id) {
+                $scope.selectedUsers = [];
+            }
+            $scope.selectedTeam = team;
             $scope.selectedTeamUsers = team.users;
+        } else {
+            $scope.selectedTeam = null;
+            $scope.selectedTeamUsers = [];
+            $scope.selectedUsers = [];
         }
-        $scope.teamVisible = false;
+        // $scope.toggleTeamSelector();
         $scope.error.team = false;
     };
 
     $scope.onSelectedUsers = function (users) {
         $scope.selectedUsers = users;
-        $scope.handlerVisible = false;
+        // $scope.toggleHandlerSelector();
         $scope.error.handler = false;
     };
 
@@ -2273,17 +2294,24 @@ app.controller('CommonTaskEditAssignCtrl', ['$scope', '$timeout', 'ajax', functi
     };
 
     $scope.onSelectedRecheckTeam = function (team) {
-        $scope.selectedRecheckTeam = team;
         if (team) {
+            if ($scope.selectedRecheckTeam && $scope.selectedRecheckTeam.id !== team.id) {
+                $scope.selectedRecheckUsers = []; // 清除原来的选择
+            }
+            $scope.selectedRecheckTeam = team;
             $scope.selectedRecheckTeamUsers = team.users;
+        } else {
+            $scope.selectedRecheckTeam = null;
+            $scope.selectedRecheckTeamUsers = [];
+            $scope.selectedRecheckUsers = []; // 清楚原来的选择
         }
-        $scope.toggleRecheckTeamSelector();
+        // $scope.toggleRecheckTeamSelector();
         $scope.error.recheckTeam = false;
     };
 
     $scope.onSelectedRecheckUsers = function (users) {
         $scope.selectedRecheckUsers = users;
-        $scope.toggleRecheckHandlerSelector();
+        // $scope.toggleRecheckHandlerSelector();
         $scope.error.recheckHandler = false;
     };
 
@@ -2540,26 +2568,40 @@ app.controller('TaskCreateCtrl', ['$scope', '$timeout', 'userService', 'routerSe
                         stations.push(d);
                     }
                 });
+                if (stations.length === 1) { // 用户只有一个站点，则无需让用户选择站点
+                    $scope.taskData.station_sn = stations[0].sn;
+                    $scope.stationName = stations[0].name;
+                    document.getElementById('stationFormItem').remove();
+                    getDevices({sn: stations[0].sn}); // 获取报修设备
+                    return;
+                }
                 _format(stations, 'sn');
                 // 初始化picker
                 var stationPicker = new mui.PopPicker();
                 stationPicker.setData(stations);
                 var showUserPickerButton = document.getElementById('stationPicker');
                 showUserPickerButton.addEventListener('click', function(event) {
+                    if (!stations.length) {
+                        $.notify.toast('您未配置任何站点，请联系管理员');
+                        return;
+                    }
                     stationPicker.show(function(items) {
-                        $scope.taskData.station_sn = items[0].value;
-                        $scope.stationName = items[0].text;
-                        getDevices(items[0]);
-                        $scope.$apply();
-                        // 切换站点后，如果运维公诉不一样，需要重新刷新责任人列表
-                        for (var i=0; i<stations.length; i++) {
-                            if (stations[i].sn === items[0].value) {
-                                currentStation = stations[i];
-                                if (opsCompanyId !== currentStation.ops_company_id) {
-                                    opsCompanyId = currentStation.ops_company_id;
-                                    initMembers(opsCompanyId);
+                        if ($scope.taskData.station_sn !== items[0].value) { // 站点切换后，才重新获取信息
+                            $scope.taskData.station_sn = items[0].value;
+                            $scope.stationName = items[0].text;
+                            getDevices(items[0]);
+                            $scope.$apply();
+
+                            // 切换站点后，如果运维公诉不一样，需要重新刷新责任人列表
+                            for (var i=0; i<stations.length; i++) {
+                                if (stations[i].sn === items[0].value) {
+                                    currentStation = stations[i];
+                                    if (opsCompanyId !== currentStation.ops_company_id) {
+                                        opsCompanyId = currentStation.ops_company_id;
+                                        initMembers(opsCompanyId);
+                                    }
+                                    break;
                                 }
-                                break;
                             }
                         }
                     });
@@ -2586,6 +2628,10 @@ app.controller('TaskCreateCtrl', ['$scope', '$timeout', 'userService', 'routerSe
     }
 
     $scope.openDeviceSelector = function () {
+        if (!$scope.taskData.station_sn) {
+            $.notify.toast('请先选择站点');
+            return;
+        }
         // 打开设备选择页面
         routerService.openPage($scope, '/templates/site/device-tree/device-select-page.html', {
             deviceDatas: staticDevices,

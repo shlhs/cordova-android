@@ -120,15 +120,19 @@
                                 </span>
                             </li>
                             <li ng-if="taskData.current_handler">
-                                <label class="title">消缺人</label>
+                                <label class="title">当前处理人</label>
                                 <div class="value">
-                                    <span ng-repeat="user in taskData.current_handler_users" style="margin-right: 12px;word-break: keep-all;">{{user.name}}</span>
+                                    <span ng-repeat="user in taskData.current_handler_users" style="margin-right: 12px;word-break: keep-all;">
+                                        <a ng-click="callPhone(user.phone)">{{user.name}}</a>
+                                    </span>
                                 </div>
                             </li>
                             <li ng-if="taskData.recheck_handlers">
                                 <label class="title">复测人</label>
                                 <div class="value">
-                                    <span ng-repeat="user in taskData.recheck_users" style="margin-right: 12px;word-break: keep-all;">{{user.name}}</span>
+                                    <span ng-repeat="user in taskData.recheck_users" style="margin-right: 12px;word-break: keep-all;">
+                                        <a ng-click="callPhone(user.phone)">{{user.name}}</a>
+                                    </span>
                                 </div>
                             </li>
                             <!--<li>-->
@@ -188,7 +192,7 @@
                     <div class="mui-card-content-inner" style="padding: 0;">
                         <div>
                             <div>消缺记录：</div>
-                            <div style="color: #F28150;margin-top: 6px;" ng-if="taskData.expect_complete_time && !handleResult">
+                            <div style="color: #F28150;margin-top: 6px;" ng-if="!taskData.is_closed && taskData.expect_complete_time && !handleResult">
                                 计划消缺时间：{{taskData.expect_complete_time.substring(0, 11)}}
                             </div>
                             <div style="padding: 0 12px;" ng-if="handleResult">
@@ -219,7 +223,7 @@
                         <div ng-if="!recheckResult">
                             <div>复测结果： <span style="color: #666;margin-left: 12px;">无复测记录</span></div>
                         </div>
-                        <div style="color: #F28150;margin-top: 6px;" ng-if="!taskData.finish_time">
+                        <div style="color: #F28150;margin-top: 6px;" ng-if="!taskData.is_closed">
                             下一次复测时间：{{taskData.next_recheck_time.substring(0, 10)}}
                         </div>
                     </div>

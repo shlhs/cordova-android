@@ -60,12 +60,12 @@
         <div class="mui-input-row">
             <label class="label">期望解决时间</label>
             <input type="text" name="expect_complete_time" ng-model="taskData.expect_complete_time" placeholder="选择期望解决时间">
-            <button type="button" id='expectedTime' data-options='{}' class="btn mui-btn mui-btn-block">&nbsp;</button>
+            <button type="button" id='expectedTime' class="btn mui-btn mui-btn-block">&nbsp;</button>
         </div>
-        <div class="mui-input-row">
+        <div class="mui-input-row" id="stationFormItem">
             <label class="label">站点<span style="color:red">*</span></label>
             <input type="text" style="position: absolute;" name="stationName" ng-model="stationName" placeholder="选择报修站点" required>
-            <button type="button" id='stationPicker' data-options='{}' class="btn mui-btn mui-btn-block">&nbsp;</button>
+            <button type="button" id='stationPicker' class="btn mui-btn mui-btn-block">&nbsp;</button>
             <label class="error" ng-show="myForm.stationName.$invalid && (myForm.stationName.$dirty || myForm.$submitted)">
                 <span ng-show="myForm.stationName.$error.required">请选择报修的站点</span>
             </label>

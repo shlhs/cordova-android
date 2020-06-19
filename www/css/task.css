@@ -502,10 +502,11 @@
     color:#fff;
 }
 .task-btn-bottom .task-btn.mui-btn {
-    padding: 10px 0 8px 0;
+    /*padding: 10px 0 8px 0;*/
     font-size: 14px;
     margin: 0;
     border-radius: 0;
+    line-height: 30px;
 }
 .task-btn-bottom>a {
     border-right: 1px solid rgba(255, 255, 255, 0.2);
@@ -594,6 +595,7 @@
     /*color: #586BF3;*/
     cursor: pointer;
     margin-right: 8px;
+    word-break: keep-all;
 }
 .dts-create-rows .mui-input-row .right-text {
     font-size: 14px;

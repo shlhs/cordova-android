@@ -1,13 +1,21 @@
 
 <div class="mui-content bg-white" ng-cloak="" ng-submit="submitForm()" id="dtsCreatePage" ng-controller="DtsCreateCtrl" style="padding-bottom: 15px;">
     <form class="mui-input-group task-create-rows dts-create-rows create-form no-border" name="myForm" novalidate style="padding: 0 12px;">
+        <div class="mui-input-row" ng-if="userStations.length > 1">
+            <label class="label">站点<span style="color:red">*</span></label>
+            <input type="text" style="position: absolute;" name="stationName" ng-model="stationName" placeholder="选择报修站点" required>
+            <button type="button" id='stationPicker' class="btn mui-btn mui-btn-block">&nbsp;</button>
+            <label class="error" ng-show="myForm.stationName.$invalid && (myForm.stationName.$dirty || myForm.$submitted)">
+                <span ng-show="myForm.stationName.$error.required">请选择站点</span>
+            </label>
+        </div>
         <div class="mui-input-row" style="padding-bottom: 8px;">
             <label class="label" style="padding-bottom: 0">设备<span style="color:red">*</span></label>
             <button class="mui-btn mui-btn-block" type="button" ng-click="openDeviceSelector()" ng-if="!isForDevice" style="font-size: 14px;text-align: left;padding-left: 0;padding-bottom: 0;min-height: 36px;">点击选择</button>
             <div class="devices">
                 <a ng-repeat="d in devices" class="device-name" ng-click="showDeviceDetail(d)">{{d.name}};</a>
             </div>
-            <label class="error" ng-show="deviceEmptyError">
+            <label class="error" ng-show="deviceEmptyError" style="margin-top: 0;">
                 请选择缺陷设备
             </label>
         </div>
@@ -36,7 +44,7 @@
             <label class="label">消缺人员<span style="color:red">*</span></label>
             <!--<textarea name="handlerName" ng-model="handlerName" placeholder="请选择消缺班组和人员" rows="{{handlerRowSpan}}"></textarea>-->
             <div class="right-text" ng-if="taskData.current_handler_users.length">
-                <div ng-repeat="h in taskData.current_handler_users">{{h.name}}</div>
+                <div ng-repeat="h in taskData.current_handler_users"><a ng-click="callPhone(h.phone)">{{h.name}}</a></div>
             </div>
             <div class="right-placeholder" ng-if="!taskData.current_handler_users.length">
                 请选择消缺班组和人员
@@ -47,7 +55,7 @@
         <div class="mui-input-row" ng-if="needResign">
             <label class="label">复测人员</label>
             <div class="right-text" ng-if="taskData.recheck_users.length">
-                <div ng-repeat="h in taskData.recheck_users">{{h.name}}</div>
+                <div ng-repeat="h in taskData.recheck_users"><a ng-click="callPhone(h.phone)">{{h.name}}</a></div>
             </div>
             <div class="right-placeholder" ng-if="!taskData.recheck_users.length">
                 不指定复测人员则无复测流程

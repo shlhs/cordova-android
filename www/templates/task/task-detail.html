@@ -144,7 +144,9 @@
                         <li ng-if="taskData.current_handler">
                             <label class="title">当前处理人</label>
                             <div class="value" style="padding-left: 80px;">
-                                <div ng-repeat="user in taskData.current_handler_users">{{getUserNameAndPhone(user)}}</div>
+                                <div ng-repeat="user in taskData.current_handler_users">
+                                    <a ng-click="callPhone(user.phone)">{{user.name}}</a>
+                                </div>
                             </div>
                         </li>
                         <li>
@@ -153,7 +155,9 @@
                         <li ng-if="taskData.operator">
                             <label class="title">维修人员</label>
                             <span class="value">
-                                <div ng-repeat="user in taskData.operator_users">{{getUserNameAndPhone(user)}}</div>
+                                <div ng-repeat="user in taskData.operator_users">
+                                    <a ng-click="callPhone(user.phone)">{{user.name}}</a>
+                                </div>
                             </span>
                         </li>
                         <li ng-if="taskData.finish_time">
@@ -182,7 +186,9 @@
                         </li>
                         <li>
                             <label class="title">负责人</label>
-                            <span class="value" style="padding-left: 80px;">{{getUserNameAndPhone(taskData.creater_user)}}</span>
+                            <span class="value" style="padding-left: 80px;">
+                                <a ng-click="callPhone(taskData.creater_user.phone)">{{user.name}}</a>
+                            </span>
                         </li>
                         <li>
                             <label class="title">巡检班组</label><span class="value">{{taskData.operator_team_name}}</span>
@@ -190,7 +196,9 @@
                         <li ng-if="taskData.operator">
                             <label class="title">巡检人员</label>
                             <span class="value" style="padding-left: 80px;">
-                                <div ng-repeat="user in taskData.operator_users">{{getUserNameAndPhone(user)}}</div>
+                                <div ng-repeat="user in taskData.operator_users">
+                                    <a ng-click="callPhone(user.phone)">{{user.name}}</a>
+                                </div>
                             </span>
                         </li>
                     </ul>

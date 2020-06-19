@@ -180,6 +180,9 @@ app.controller('StaticDeviceDetailCtrl', ['$scope', 'ajax', 'routerService', 'pl
                 if (data.qr_photo_src_link) {
                     data.qr_photo_src_link = platformService.getCloudHost() + data.qr_photo_src_link;
                 }
+                if (data.map_pos && JSON.parse(data.map_pos).type === 'point') {
+                    data.showMap = true;
+                }
                 $scope.device = data;
                 $scope.$apply();
             }
@@ -251,6 +254,11 @@ app.controller('StaticDeviceDetailCtrl', ['$scope', 'ajax', 'routerService', 'pl
 
     $scope.gotoOpsList = function () {
         window.location.href = '/templates/site/static-devices/device-ops-history.html?device_sn=' + $scope.device.sn;
+    };
+
+    $scope.openDeviceMap = function () {
+        var mapPos = JSON.parse($scope.device.map_pos).detail;
+        window.location.href = '/templates/site/static-devices/map.html?lng=' + mapPos.lng + "&lat=" + mapPos.lat;
     };
 
     init();

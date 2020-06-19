@@ -1,12 +1,14 @@
-<div class="page page-fade">
+<div class="page page-fade" ng-controller="DeviceSelectPageCtrl">
     <header class="mui-bar bg-header">
         <!--<a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="history.back()"></a>-->
         <a class="mui-icon mui-pull-left text-white" onclick="history.back()" style="color: #fff;font-size: 16px;top:6px;padding: 10px;margin-left: -6px;">取消</a>
         <h1 class="mui-title">所有设备</h1>
+        <a ng-click="confirm()"
+           class="mui-action-menu mui-icon mui-pull-right" style="color: #fff;font-size: 14px;line-height: 24px;" ng-if="multiple">确定</a>
     </header>
     <div class="mui-content" ng-cloak style="padding-left: 8px;background-color: #fff;">
         <div>
-            <device-tree-view device-list="deviceDatas" click-callback="onSelect"></device-tree-view>
+            <device-tree-view device-list="deviceDatas" click-callback="selectItem" checkbox="multiple" default-checked-devices="defaultDevices"></device-tree-view>
         </div>
         <div ng-if="!deviceList || !deviceList.length" style="padding: 10px; color: #666;">
             站点下无设备

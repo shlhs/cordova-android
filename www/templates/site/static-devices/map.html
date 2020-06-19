@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>设备位置</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <!--标准mui.css-->
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        .icon{
+            display: inline-block;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: 50%;
+        }
+        .icon-20{
+            height: 20px;
+            width: 20px;
+        }
+        .icon-navigate{
+            background-image: url("../../../img/light/64X64/navigator.png");
+        }
+        .btn {
+            width: 50%;
+            background: #007aff;
+            color: #fff;
+            box-shadow: none;
+            border: none;
+            line-height: 32px;
+            margin-bottom: 10px;
+        }
+
+    </style>
+</head>
+
+<body>
+<div style="position: fixed;left: 10px;top: 10px;z-index: 1;">
+    <div style="background-color: #FFF;padding: 2px 8px;" onclick="pageBack()">返回</div>
+</div>
+<div id="map" style="width: 100%;height: 100%;"></div>
+<div style="position: fixed;bottom: 0;width: 100%;text-align: center;display: none;" id="thirdMapBtn">
+    <button type="button" class="btn" style="width: 50%;" onclick="openThirdMap()">
+        <span style="display: inline-block"><i class="icon icon-20 icon-navigate" style="float: left;margin-top: 4px;"></i>导航</span>
+    </button>
+</div>
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=ITbaaCqA7nMWRjEIycEpddoUW1AvZvRq"></script>
+<script type="text/javascript" src="../../../components/baidu/map/MarkerManager-1.2.min.js"></script>
+<script src="../../../components/fastclick-master/lib/fastclick.js"></script>
+<script>
+
+    function pageBack() {
+        if (window.android){
+            location.href = '/app/home';
+        }else{
+            history.back();
+        }
+    }
+
+    function GetQueryString(name, url)
+    {
+        var search = window.location.search;
+        if (url) {
+            search = url.substring(url.indexOf('?'));
+        }
+        var search = search.substring(1), params = search.split('&');
+        var index, param;
+        for (var i=0; i<params.length; i++){
+            param = params[i];
+            index = param.indexOf('=');
+            if (index > 0 && param.substring(0, index) == name){
+                return decodeURIComponent(param.substring(index+1));
+            }
+        }
+        return null;
+    }
+
+    var lng = GetQueryString('lng');
+    var lat = GetQueryString('lat');
+    drawMap(lng, lat);
+    function drawMap(lng, lat) {
+        var map = new BMap.Map("map");          // 创建地图实例
+        if (!map){ return; }
+
+        var end = new BMap.Point(lng, lat);
+        // 添加标注
+        map.centerAndZoom(end, 13);
+        map.enableScrollWheelZoom();
+        var marker = new BMap.Marker(end);
+        var mgr = new BMapLib.MarkerManager(map,{
+            maxZoom: 15,
+            trackMarkers: true
+        });
+        mgr.addMarker(marker,1, 15);
+        mgr.showMarkers();
+        if (window.android && window.android.gotoThirdMap) {
+            document.getElementById('thirdMapBtn').style.display = 'block';
+        }
+    }
+
+    // 打开第三方地图
+    function openThirdMap () {
+        if (window.android && window.android.gotoThirdMap){
+            var sitePoint = new BMap.Point(lng, lat);
+            var convertor = new BMap.Convertor();
+            var pointArr = [sitePoint];
+            convertor.translate(pointArr, 5, 3, function (data) {   //3: gcj02坐标，5：百度坐标
+                window.android.gotoThirdMap(lng, lat, data.points[0].lat, data.points[0].lng);
+            });
+        }
+    }
+
+
+</script>
+</body>
+
+</html>

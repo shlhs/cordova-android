@@ -27,7 +27,7 @@
                 <div class="right-placeholder" ng-if="!selectedTeam">
                     请选择运维组
                 </div>
-                <button type="button" class="btn mui-btn mui-btn-block" ng-click="showTeamSelector()" style="position: absolute;top: 0;left: 130px;bottom: 0;">&nbsp;</button>
+                <button type="button" class="btn mui-btn mui-btn-block" ng-click="toggleTeamSelector()" style="position: absolute;top: 0;left: 130px;bottom: 0;">&nbsp;</button>
                 <div class="error" ng-if="error.team">
                     请选择维修班组
                 </div>
@@ -40,7 +40,7 @@
                 <div class="right-placeholder" ng-if="!selectedUsers.length">
                     请选择维修人员
                 </div>
-                <button type="button" class="btn mui-btn mui-btn-block" ng-click="showHandlerSelector()" style="position: absolute;top: 0;left: 130px;bottom: 0;">&nbsp;</button>
+                <button type="button" class="btn mui-btn mui-btn-block" ng-click="toggleHandlerSelector()" style="position: absolute;top: 0;left: 130px;bottom: 0;">&nbsp;</button>
                 <div class="error" ng-if="error.handler">
                     请选择维修人员
                 </div>
@@ -71,9 +71,9 @@
         </div>
     </div>
     <div ng-if="teamInited">
-        <operator-team-selector default-team="selectedTeam" teams="teams" visible="teamVisible" callback="onSelectedTeam"></operator-team-selector>
-        <handlers-selector default-users="selectedUsers" users="selectedTeamUsers" multiple visible="handlerVisible" callback="onSelectedUsers"></handlers-selector>
-        <operator-team-selector default-team="selectedRecheckTeam" teams="teams" visible="recheckTeamVisible" callback="onSelectedRecheckTeam"></operator-team-selector>
-        <handlers-selector default-users="selectedRecheckUsers" users="selectedRecheckTeamUsers" multiple visible="recheckHandlerVisible" callback="onSelectedRecheckUsers"></handlers-selector>
+        <operator-team-selector default-team="selectedTeam" teams="teams" visible="teamVisible" callback="onSelectedTeam" on-hide="toggleTeamSelector"></operator-team-selector>
+        <handlers-selector default-users="selectedUsers" users="selectedTeamUsers" multiple visible="handlerVisible" callback="onSelectedUsers" on-hide="toggleHandlerSelector"></handlers-selector>
+        <operator-team-selector default-team="selectedRecheckTeam" teams="teams" visible="recheckTeamVisible" callback="onSelectedRecheckTeam" on-hide="toggleRecheckTeamSelector"></operator-team-selector>
+        <handlers-selector default-users="selectedRecheckUsers" users="selectedRecheckTeamUsers" multiple visible="recheckHandlerVisible" callback="onSelectedRecheckUsers" on-hide="toggleRecheckHandlerSelector"></handlers-selector>
     </div>
 </div>

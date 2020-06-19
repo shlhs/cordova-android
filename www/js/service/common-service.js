@@ -23,6 +23,21 @@ app.service('scrollerService', function () {
 
 });
 
+app.controller('DeviceSelectPageCtrl', ['$scope', function ($scope) { // 创建工单、缺陷单时，选择设备的controller
+    var devices = null; // 单选时为单个设备，多选时为多个设备
+    $scope.selectItem = function(device) {
+        if ($scope.multiple) {
+            devices = device;
+        } else { // 单选时，点击某个设备，直接选择并返回
+            $scope.onSelect(device);
+        }
+    };
+
+    $scope.confirm = function () {
+        $scope.onSelect(devices);
+    }
+}]);
+
 app.directive('deviceTreeView',[function(){
     return {
         restrict: 'E',
@@ -32,6 +47,7 @@ app.directive('deviceTreeView',[function(){
             clickCallback: '=',
             showStatus: '=',        // 是否显示 运维/缺陷 状态
             checkbox: '=',        // 是否能多选
+            defaultCheckedDevices: '=',  // 默认选中的设备
             // textField: '@',
             itemClicked: '&',
             itemCheckedChanged: '&',
@@ -41,6 +57,22 @@ app.directive('deviceTreeView',[function(){
             var formatted = formatToTreeData($scope.deviceList);
             $scope.treeData = formatted.length ? formatToTreeData($scope.deviceList)[0].children : [];
             var lastSelected = null;
+            var checkedSns = []; // checkbox选中的设备sn
+            var checkedDevices = []; // checkbox选中的设备
+
+            $scope.isGroup = function (item) {
+                if (item.is_group && !item.product_type_id) {
+                    return true;
+                }
+                return false;
+            };
+
+            if ($scope.defaultCheckedDevices && $scope.defaultCheckedDevices.length) {
+                $scope.defaultCheckedDevices.forEach(function (d) {
+                    checkedSns.push(d.sn);
+                    checkedDevices.push(d);
+                });
+            }
 
             function calcDeviceStatus() {
                 function _calcItem(item) {
@@ -89,14 +121,43 @@ app.directive('deviceTreeView',[function(){
             $scope.warpCallback = function(item, $event){
                 item.$$isExpend = !item.$$isExpend;
                 if (!item.is_group) {
-                    if (lastSelected) {
-                        lastSelected.$$selected = false;
+                    if ($scope.checkbox) { // 多选情况下，点击等于勾选checkbox
+                        $scope.checkDevice($event, item);
+                    } else {
+                        if (lastSelected) {
+                            lastSelected.$$selected = false;
+                        }
+                        item.$$selected = true;
+                        lastSelected = item;
+                        if ($scope.clickCallback) {
+                            $scope.clickCallback(item);
+                        }
                     }
-                    item.$$selected = true;
-                    lastSelected = item;
-                    if ($scope.clickCallback) {
-                        $scope.clickCallback(item);
-                    }
+                }
+            };
+
+            $scope.checkDevice = function ($event, device) {
+                $event.stopPropagation();
+                var index = checkedSns.indexOf(device.sn);
+                if (index >= 0) {
+                    checkedSns.splice(index, 1);
+                    checkedDevices.splice(index, 1);
+                } else {
+                    checkedSns.push(device.sn);
+                    checkedDevices.push(device);
+                }
+                if ($scope.clickCallback) {
+                    $scope.clickCallback(checkedDevices);
+                }
+            };
+
+            $scope.isChecked = function (sn) {
+                return checkedSns.indexOf(sn) >= 0;
+            };
+
+            $scope.confirm = function () { // 多选时，点击"确定"才返回
+                if ($scope.clickCallback) {
+                    $scope.clickCallback(checkedDevices);
                 }
             };
 
@@ -234,6 +295,7 @@ app.directive('handlersSelector',[function(){
                     }
                 });
                 $scope.callback(users);
+                $scope.hide();
             };
 
             $scope.onToggleCheck = function(account) {

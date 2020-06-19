@@ -2524,12 +2524,18 @@ color: #a7a7a7;
     height: 18px;
     display: inline-block;
     float: left;
-    background: url("/img/station/tree-node-group.png") 50% no-repeat;
+    background: url("/img/station/tree-device-group.png") 50% no-repeat;
     background-size: contain;
     margin-right: 8px;
 }
+.site-tree .mui-icon {
+    float: right;
+    font-size: 14px;
+    margin-right: 10px;
+    margin-top: 4px;
+}
 .site-tree .node-group.virtual {
-    background-image: url("/img/station/tree-node-group-virtual.png");
+    background-image: url("/img/station/tree-node-group.png");
 }
 .tree-cell .tree-group {
     padding-left: 24px;
