@@ -2216,7 +2216,7 @@ app.controller('CommonTaskEditAssignCtrl', ['$scope', '$timeout', 'ajax', functi
                     $scope.$apply();
                 });
             } else {
-                var options = {type: 'date'};
+                var options = {type: 'date', beginDate: new Date()};
                 _self.picker = new mui.DtPicker(options);
                 _self.picker.show(function(rs) {
                     $scope.expectTime = rs.text;

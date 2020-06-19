@@ -286,7 +286,7 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
                 });
             } else {
                 // var optionsJson = this.getAttribute('data-options') || '{}';
-                var options = {type: 'date'};
+                var options = {type: 'date', beginDate: new Date()};
                 var id = this.getAttribute('id');
                 /*
                  * 首次显示时实例化组件
@@ -713,7 +713,13 @@ app.controller('DtsEditCtrl', ['$scope', '$timeout', 'ajax', function ($scope, $
                     $scope.$apply();
                 });
             } else {
-                var options = {type: 'date'};
+                // 可选的开始时间为今天和expect_complete_time中较早的那一个
+                var today = new Date().toString('YYYY-MM-DD');
+                var startDate = new Date();
+                if ($scope.expectTime && $scope.expectTime < today) {
+                    startDate = new Date($scope.expectTime);
+                }
+                var options = {type: 'date', beginDate: startDate};
                 _self.picker = new mui.DtPicker(options);
                 _self.picker.show(function(rs) {
                     $scope.expectTime = rs.text;

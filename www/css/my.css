@@ -2649,13 +2649,15 @@ color: #a7a7a7;
     font-family: iconfont;
     content: '\a601';
     display: inline-block;
-    color: #D0D4D8;
+    color: #b9b9b9;
+    font-style: normal;
 }
 .mui-checkbox .checkbox.checked:before {
     font-family: iconfont;
     content: '\a600';
     display: inline-block;
     color: #03a9f4;
+    font-style: normal;
 }
 .checkbox-tree .mui-checkbox .checkbox:before {
     font-size: 16px;
