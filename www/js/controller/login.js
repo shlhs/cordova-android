@@ -32,6 +32,9 @@ app.controller('LoginCtrl', ['$scope', '$timeout', 'platformService', 'userServi
     $scope.inputChange();
 
     $scope.login = function () {
+        if (!$scope.enable) {
+            return;
+        }
         $scope.enable = false;
         if (defaultPlatIpAddr) {
             login();
@@ -42,6 +45,7 @@ app.controller('LoginCtrl', ['$scope', '$timeout', 'platformService', 'userServi
 
     $scope.setAutoLogin = function(isAutoLogin){
         $scope.isAutoLogin = isAutoLogin;
+        $scope.enable = true;
     };
 
     function toast(message) {

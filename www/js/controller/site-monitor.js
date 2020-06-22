@@ -333,7 +333,9 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', function ($scope, ajax
                 type: 'value'
             };
             var dateTime = item.time_keys[0]; // 用于电价marker取得年、月、日信息
-            createPfvSettingMark(pfvSetting, dateTime, arr);
+            if (dateTime) {
+                createPfvSettingMark(pfvSetting, dateTime, arr);
+            }
         }
         $.extend(chartOption, {
             yAxis: yAxis,
@@ -467,16 +469,16 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', function ($scope, ajax
         var xlm = "";
         var xType = "time";
         if (timety === "DAY") {
-            mintime = new Date(nian, yue, ri, 00, 00, 00);
-            maxtime = new Date(nian, yue, ri, 24, 00, 00);
+            mintime = new Date(nian, yue, ri, 0, 0, 0);
+            maxtime = new Date(nian, yue, ri, 24, 0, 0);
         }
         if (timety === "MONTH") {
-            mintime = new Date(nian, yue, 01, 00, 00, 00);
+            mintime = new Date(nian, yue, 1, 0, 0, 0);
             maxtime = getCurrentMonthLast(dataday.slice(0, 10));
         }
         if (timety === "YEAR") {
-            mintime = new Date(nian, 00, 01, 00, 00, 00);
-            maxtime = new Date(nian, 11, 11, 00, 00, 00);
+            mintime = new Date(nian, 0, 1, 0, 0, 0);
+            maxtime = new Date(nian, 11, 11, 0, 0, 0);
         }
         var echartsDiv = $('#chart' + groupId);
         if (echartsDiv.length) {

@@ -6,6 +6,7 @@ function formatEnergyItems(category, labelName, energyItems) { // 对能源配�
     var tree = formatEnergyTree(category, labelName, energyItems);
     var items = [];
 
+    // 如果节点是is_virtual，则设置deviceVarSns为子节点的并集
     function _getChildren(parent) {
         if (parent) {
             var children = parent.children;
@@ -82,7 +83,34 @@ function formatEnergyTree(category, labelName, allEnergyItems) { //
         });
     }
 
-    return JSON.parse(JSON.stringify(treeObj));
+    var treeData = JSON.parse(JSON.stringify(treeObj));
+    // 如果是虚拟节点的，设置虚拟节点的deviceVarSns为子节点的deviceVarSns的并集，并设置isVirtual=false
+    function _setDeviceVarSns(parent) {
+        if (parent) {
+            var children = parent.children;
+            if (children) {
+                children.forEach(function (c) {
+                    _setDeviceVarSns(c);
+                });
+            }
+            if (parent.isVirtual) {
+                const deviceVars = [];
+                children.forEach(child => {
+                    child.deviceVarSns.forEach(sn => {
+                        if (deviceVars.indexOf(sn) < 0) {
+                            deviceVars.push(sn);
+                        }
+                    });
+                });
+                parent.deviceVarSns = deviceVars;
+                parent.isVirtual = false;
+            }
+        }
+    }
+    treeData.forEach(function (item) {
+        _setDeviceVarSns(item);
+    });
+    return treeData;
 }
 
 function expandAll(datas) {

@@ -85,7 +85,7 @@ EnergyFuncApi.prototype.fetchAndCalcCharges = function (stationSn, electricConfi
             return;
         }
         // 获取电度电费统计值
-        varDataApi.getDegreeSummary(varMap.EPf.sn, month, function (degreeData) {
+        varDataApi.getDegreeSummary(varMap.EPf.sn, month, 'MONTH', function (degreeData) {
             if (degreeData && degreeData.allCharge !== null) {
                 Object.assign(returnObj, {
                     degreeDetail: degreeData,
@@ -880,9 +880,12 @@ app.controller('EnergyOverviewCtrl', ['$scope', 'ajax', 'platformService', 'varD
         });
         varDataService.getVarsOfDevice(device.sn, ['EPf', 'P', 'EQf'], function (varMap) {
             var degreeVar = varMap.EPf;
-            varDataService.getDegreeChargeTrend(degreeVar.sn, $scope.selectedDate, function (degreeList) {
-                energyApi.paintAvgPriceTrend('price_chart', degreeList);
-                paintPfvChargeTrend(degreeList);
+            varDataService.getDegreeChargeTrend(degreeVar.sn, $scope.selectedDate, function (res) {
+                if (res && res.length) {
+                    var degreeList = res[0].datas;
+                    energyApi.paintAvgPriceTrend('price_chart', degreeList);
+                    paintPfvChargeTrend(degreeList);
+                }
                 // if (degreeList.length) {
                 //     var statistics = energyApi.statisticMonthFromChargeTrend(degreeList);
                 //     Object.assign($scope.statisticsObj, statistics);
@@ -1054,7 +1057,7 @@ app.controller('EnergyCostAnalysisCtrl', ['$scope', 'ajax', 'platformService', '
                 $scope.degreeVarSn = degreeVar.sn;
                 $scope.chargeTexts = [];
                 $scope.degreeTexts = [];
-                varDataService.getDegreeSummary(degreeVar.sn, $scope.selectedDate, function (data) {
+                varDataService.getDegreeSummary(degreeVar.sn, $scope.selectedDate, 'MONTH', function (data) {
                     if (data) {
                         var keys = ['s', 'p', 'v', 'f'];
                         var degreeMap = {};

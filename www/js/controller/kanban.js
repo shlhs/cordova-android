@@ -847,6 +847,7 @@ app.controller('KanbanCtrl', ['$scope', '$stateParams', 'ajax', '$timeout', func
                     fontSize: 9,
                     lineHeight: 10
                 },
+                type: 'scroll',
                 pageIconSize: 10,
                 itemWidth: 15,
                 itemHeight: 10
@@ -936,4 +937,330 @@ app.controller('KanbanCtrl', ['$scope', '$stateParams', 'ajax', '$timeout', func
         getKanbanData();
     }, 500);
 
+}]);
+
+app.controller('SiteOverviewCtrl', ['$scope', 'ajax', 'varDataService', function ($scope, ajax, varDataService) {
+    $scope.sn = GetQueryString('sn');
+    $scope.stationName = GetQueryString('name');
+    var stationData = null;
+    $scope.fuheLoading = true; // 负荷数据获取
+    $scope.fuheError = null; // 负荷变量错误
+    $scope.electricLoading = true; // 电量获取
+    $scope.electricError = null; // 用电量错误
+    $scope.monthDegree = '-'; // 本月用电量
+    $scope.todayDegree = '-'; // 今日用电
+    $scope.realtimeLoad = '-'; // 实时负荷
+    var realtimeLoadInterval = null;
+
+    ajax.get({
+        url: '/stations/' + $scope.sn,
+        success: function (data) {
+            stationData = data;
+            getLoadTrend(data.realtime_load_var);
+            getLoadRealtime(data.realtime_load_var);
+            getElectricData(data.sum_epf_var);
+        }
+    });
+
+    function getLoadRealtime(varSn) {
+        if (!varSn) {
+            return;
+        }
+
+        function fetchFunc() {
+            varDataService.getRealtimeValue([varSn], function (data) {
+                if (data && data.length) {
+                    $scope.realtimeLoad = data[0].data;
+                    $scope.$apply();
+                }
+            });
+        }
+        if (!realtimeLoadInterval) {
+            realtimeLoadInterval = setInterval(function () {
+                fetchFunc();
+            }, 3000);
+        }
+        fetchFunc();
+    }
+
+    function getLoadTrend(varSn) { // 获取昨日、今日负荷趋势
+        if (!varSn) {
+            $scope.fuheLoading = false;
+            $scope.fuheError = '站点未配置实时负荷属性';
+            return;
+        }
+        // 获取昨日、今日变量趋势
+        var startTime = moment().subtract(1, 'days').format('YYYY-MM-DD 00:00:00.000');
+        var endTime = moment().format('YYYY-MM-DD 23:59:59.000');
+        varDataService.getHistoryTrend([varSn], startTime, endTime, 'HOUR', 'AVG', function (data) {
+            $scope.fuheLoading = false;
+            $scope.$apply();
+            if (data && data.length) {
+                var result = fillTrendDataVacancy(startTime, endTime, 'HOUR', data[0].time_keys, data[0].datas, 'YYYY-MM-DD HH:mm:ss.000');
+                // 拆分出昨天和今天的数据
+                var yesterdayData = result.datas.slice(0, 24);
+                var todayData = result.datas.slice(24, 48);
+                paintLoadTrendChart(yesterdayData, todayData);
+            }
+        }, function () {
+            $scope.fuheLoading = false;
+            $scope.fuheError = "获取数据失败";
+            $scope.$apply();
+        });
+    }
+
+    function getElectricData(varSn) {
+        if (!varSn) {
+            $scope.electricLoading = false;
+            $scope.electricError = '站点未配置总用电量属性';
+            return;
+        }
+        // 获取今日用电
+        varDataService.getDegreeSummary(varSn, 'DAY', moment(), moment(), function (res) {
+           if (res && res.length) {
+               var data = res[0];
+               $scope.todayDegree = data.all_degree;
+               $scope.$apply();
+           }
+        });
+        // 获取月度电量
+        varDataService.getDegreeSummary(varSn, 'MONTH', moment(), moment(), function (res) {
+            if (res && res.length) {
+                var data = res[0];
+                $scope.monthDegree = data.all_degree;
+                $scope.$apply();
+            }
+        });
+        // 获取本月用电趋势
+        varDataService.getDegreeChargeTrend(varSn, 'DAY', moment().startOf('month'), moment().endOf('month'), function (res) {
+            $scope.electricLoading = false;
+            $scope.$apply();
+            if (res && res.length) {
+                var dataList = res[0].datas;
+                if (!dataList) {
+                    $scope.electricError = '获取用电数据失败';
+                    return;
+                }
+                var degrees = {
+                    p: [],
+                    s: [],
+                    v: [],
+                    f: []
+                };
+                var times = [];
+                dataList.forEach(function (item) {
+                    var d = Number.parseInt(item.time.substring(8, 10), 10);
+                    times.push(d + '日');
+                    degrees.p.push(item.p_degree);
+                    degrees.f.push(item.f_degree);
+                    degrees.v.push(item.v_degree);
+                    degrees.s.push(item.s_degree);
+                });
+                paintElectricDegreeTrend(times, degrees);
+                paintElectricDegreeBar(degrees);
+            }
+
+        });
+    }
+
+    function paintLoadTrendChart(yesterdayData, todayData) {
+        var times = [];
+        for (var i=0; i<24; i++) {
+            times.push(i + '时');
+        }
+        var option = {
+            tooltip: {
+                trigger: 'axis',
+                confine: true,
+                formatter: function (params) {
+                    if (!params.length) {
+                        return null;
+                    }
+                    var p0 = params[0];
+                    var lines = [p0.axisValue];
+                    params.forEach(function (p) {
+                        lines.push('<br />');
+                        lines.push(p.marker + p.seriesName + '：' + (p.data === null ? '-' : (p.data + ' kW')));
+                    });
+                    return lines.join('');
+                }
+            },
+            legend: {
+                bottom: -5,
+                textStyle: {
+                    fontSize: 9,
+                    lineHeight: 10
+                },
+                itemWidth: 15,
+                itemHeight: 10
+            },
+            grid: {
+                top: 15,
+                left: 4,
+                right: 2,
+                bottom: 20,
+                containLabel: true
+            },
+            toolbox: {
+                feature: {
+                    saveAsImage: false
+                }
+            },
+            xAxis: {
+                type: 'category',
+                data: times
+            },
+            yAxis: {
+                name: 'kW'
+            },
+            color: ['#F9CC13', '#369FFF'],
+            series: [{
+                type: 'line',
+                data: yesterdayData,
+                name: '昨日'
+            }, {
+                type: 'line',
+                data: todayData,
+                name: '今日'
+            }]
+        };
+        echarts.init(document.getElementById('loadChart')).setOption(option);
+    }
+    var g_pvf_label = {
+        p: '峰',
+        f: '平',
+        v: '谷',
+        s: '尖'
+    };
+    var g_pvf_colors = {
+        'p': 'rgba(239, 150, 166, 1)',
+        'v': 'rgba(138, 212, 199, 1)',
+        'f': 'rgba(136, 169, 248, 1)',
+        's': 'rgba(254,139,106, 1)',
+    };
+
+    function paintElectricDegreeTrend(times, data) {
+        var series = [];
+        ['s', 'p', 'f', 'v'].forEach(function (key) {
+            series.push({
+                type: 'bar',
+                name: g_pvf_label[key],
+                data: data[key],
+                stack: 'one',
+                color: g_pvf_colors[key]
+            });
+        });
+        var option = {
+            tooltip: {
+                trigger: 'axis',
+                confine: true,
+                formatter: function (params) {
+                    if (!params.length) {
+                        return null;
+                    }
+                    var p0 = params[0];
+                    var lines = [p0.axisValue];
+                    params.forEach(function (p) {
+                        lines.push('<br />');
+                        lines.push(p.marker + p.seriesName + '：' + (p.data === null ? '-' : (p.data + ' kWh')));
+                    });
+                    return lines.join('');
+                }
+            },
+            legend: {
+                bottom: -5,
+                textStyle: {
+                    fontSize: 9,
+                    lineHeight: 10
+                },
+                itemWidth: 15,
+                itemHeight: 10
+            },
+            grid: {
+                top: 15,
+                left: 4,
+                right: 2,
+                bottom: 20,
+                containLabel: true
+            },
+            toolbox: {
+                feature: {
+                    saveAsImage: false
+                }
+            },
+            xAxis: {
+                type: 'category',
+                data: times
+            },
+            yAxis: {
+                name: 'kWh'
+            },
+            series: series
+        };
+        echarts.init(document.getElementById('electricChart')).setOption(option);
+    }
+
+    function sum(datalist) {
+        var total = 0;
+        datalist.forEach(function (d) {
+            if (d) {
+                total += d;
+            }
+        });
+        return Number.parseFloat(total.toFixed(2));
+    }
+    function paintElectricDegreeBar(data) { // 峰谷平占比
+        var series = [];
+        ['s', 'p', 'f', 'v'].forEach(function (key) {
+            var value = sum(data[key]);
+            series.push({
+                name: g_pvf_label[key],
+                value: value,
+                itemStyle: {
+                    color: g_pvf_colors[key],
+                },
+                label: {
+                    normal: {
+                        formatter: '{b}：{c}kWh\n{d}%',
+                    },
+                },
+                labelLine: {
+                    length: 5,
+                    length2: 10
+                }
+            });
+        });
+        var option = {
+            legend: {
+                bottom: -5,
+                textStyle: {
+                    fontSize: 9,
+                    lineHeight: 10
+                },
+                itemWidth: 15,
+                itemHeight: 10
+            },
+            grid: {
+                top: 15,
+                left: 4,
+                right: 2,
+                bottom: 20,
+                containLabel: true
+            },
+            toolbox: {
+                feature: {
+                    saveAsImage: false
+                }
+            },
+            series: [
+                {
+                    type:'pie',
+                    radius : ['0%', '65%'],
+                    center : ['50%', '45%'],
+                    data: series,
+                },
+            ],
+        };
+        echarts.init(document.getElementById('electricPie')).setOption(option);
+    }
 }]);
