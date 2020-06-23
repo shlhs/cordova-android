@@ -472,6 +472,16 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
         }
     }
 
+    $scope.openTaskCreate = function () {
+        mui('#taskPopover').popover('hide', document.getElementById('taskAddBtn'));
+        window.location.href = "/templates/task/add-task.html";
+    };
+
+    $scope.openDtsCreate = function () {
+        mui('#taskPopover').popover('hide', document.getElementById('taskAddBtn'));
+        window.location.href = "/templates/dts/dts-create.html";
+    };
+
     $scope.$on('$onMenuUpdate', function (event, opsEnabled, menuSns) {
         updateMenus(opsEnabled);
     });
