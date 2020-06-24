@@ -15,35 +15,34 @@
   </style>
 </head>
 <body>
-  <!--<video id="myPlayer" poster="" controls playsInline webkit-playsinline autoplay width="100%" height="100%">-->
-    <!--<source type="application/x-mpegURL" id="source" />-->
-  <!--</video>-->
-  <video id="myPlayer" controls playsInline webkit-playsinline autoplay>
-    <source type="application/x-mpegURL" id="source" />
-  </video>
+<!--<video id="myPlayer" controls playsInline webkit-playsinline autoplay>-->
+<!--<source type="application/x-mpegURL" id="source" />-->
+<!--</video>-->
+<video id="myPlayer" controls autoplay>
+</video>
 <script>
 
     var url = GetQueryString("url");
-  if (location.search.indexOf('autoplay') > 0) {
-    document.getElementById('myPlayer').setAttribute('autoplay', '');
-  }
-  var ipcId = GetQueryString("ipcId");
-  document.getElementById('source').src = url;
-  var playerDom = document.getElementById('myPlayer');
-  playerDom.setAttribute('width', document.body.clientWidth + 'px');
-  playerDom.setAttribute('height', document.body.clientHeight + 'px');
+    if (location.search.indexOf('autoplay') > 0) {
+        document.getElementById('myPlayer').setAttribute('autoplay', '');
+    }
+    var ipcId = GetQueryString("ipcId");
+    var playerDom = document.getElementById('myPlayer');
+    playerDom.src = url;
+    playerDom.setAttribute('width', document.body.clientWidth + 'px');
+    playerDom.setAttribute('height', document.body.clientHeight + 'px');
 
-  var player = new EZUIPlayer('myPlayer');
-  player.on('error', function(){
-      console.log('error');
-  });
-  player.on('play', function(){
-      console.log('play');
-  });
-  player.on('pause', function(){
-      console.log('pause');
-      window.parent && window.parent.onVideoPause && window.parent.onVideoPause(ipcId);
-  });
+    var player = new EZUIPlayer('myPlayer');
+    player.on('error', function(){
+        console.log('error');
+    });
+    player.on('play', function(){
+        console.log('play');
+    });
+    player.on('pause', function(){
+        console.log('pause');
+        window.parent && window.parent.onVideoPause && window.parent.onVideoPause(ipcId);
+    });
 </script>
 </body>
 </html>
