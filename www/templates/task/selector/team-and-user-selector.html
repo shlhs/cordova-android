@@ -1,0 +1,31 @@
+<div class="mui-poppicker my-picker" ng-class="{'mui-active': visible}">
+    <div class="mui-poppicker-header">
+        <button class="mui-btn mui-poppicker-btn-cancel" ng-click="hide()">取消</button>
+        <button class="mui-btn mui-btn-blue mui-poppicker-btn-ok" ng-click="confirm()" ng-disabled="!selectedAccounts.length">确定</button>
+        <div class="mui-poppicker-clear"></div>
+    </div>
+    <div class="mui-poppicker-body">
+        <div ng-if="isTeamSelector">
+            <div style="font-size: 13px;text-align: center;padding-top: 10px;">请选择运维班组</div>
+            <div class="teams-selector">
+                <div ng-repeat="team in teams" ng-click="onToggleCheckTeam(team)">
+                    <label ng-class="{'selected': isTeamSelected(team.id)}">{{team.name}}</label>
+                </div>
+            </div>
+        </div>
+        <div ng-if="!isTeamSelector">
+            <div class="team-selector-title" style="text-align: right;font-size: 12px;padding: 10px;border-bottom: #eee 1px solid">
+                <div style="width: calc(100% - 70px);font-size: 13px;float: left;text-align: left;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;">所属班组：{{selectedTeam.name}}</div>
+                <!--<label class="team-name">{{selectedTeam.name}}</label>-->
+                <a ng-click="reSelectTeam()">重新选择</a>
+            </div>
+            <div style="font-size: 13px;text-align: center;padding-top: 10px;">请选择运维工</div>
+            <div class="teams-selector" style="height: 198px;">
+                <div ng-repeat="user in selectedTeam.users" ng-click="onToggleCheckUser(user.account)">
+                    <label ng-class="{'selected': isUserSelected(user.account)}">{{getNameAndPhone(user)}}</label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="mui-backdrop" style="opacity:1;" ng-click="hide()" ng-if="visible"></div>
