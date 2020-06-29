@@ -23,6 +23,100 @@ app.service('scrollerService', function () {
 
 });
 
+var gMediaCbFunc = null;
+
+function mediaCommonCallback(param) {
+    if (gMediaCbFunc) {
+        try {
+            var json = JSON.parse(param);
+            gMediaCbFunc(json);
+        } catch (e) {
+            gMediaCbFunc(param);
+        }
+    }
+}
+
+var gAudioPlayerCallbacks = {};
+function audioPlayCompleteCallback(path) {
+    var cb = gAudioPlayerCallbacks[path];  // 当前一个语音未播放完成就开始下一个语音时，用path判断应该停止哪一个语音
+    if (cb) {
+        delete gAudioPlayerCallbacks[path];
+        cb();
+    }
+}
+
+app.service('mediaService', ['platformService', function (platformService) {
+    this.canCaptureVideo = function () { // 是否支持录制视频
+        return window.android && window.android.captureVideo;
+    };
+
+    this.canCaptureAudio = function () { // 是否支持录制音频
+        return window.android && window.android.captureAudio;
+    };
+
+    /**
+     * @param callback function(path)
+     */
+    this.captureVideo = function (callback) { // 录制视频
+        gMediaCbFunc = callback;
+        window.android.captureVideo('mediaCommonCallback');
+    };
+
+    this.playVideo = function (path) { // 播放本地或远程视频
+        window.android.playVideo(path);
+    };
+
+    /**
+     * @param path 视频地址，可能是远程地址（http）或手机本地地址（content://）
+     * @param callback function({code: 200/400/500, data: 音频链接, duration: 音频时长ms，message: 错误信息})
+     */
+    this.uploadVideo = function (path, callback) { // 上传视频
+        if (path.indexOf('http') === 0) {
+            return path;
+        }
+        gMediaCbFunc = callback;
+        window.android.uploadVideo(platformService.getMediaHost(), path, 'mediaCommonCallback');
+    };
+
+    /**
+     * @param callback function(path)
+     */
+    this.captureAudio = function (callback) { // 录制音频
+        gMediaCbFunc = callback;
+        window.android.captureAudio('mediaCommonCallback');
+    };
+
+    this.stopRecordAudio = function (callback) {
+        gMediaCbFunc = callback;
+        window.android.stopRecordAudio('mediaCommonCallback');
+    };
+
+    this.playAudio = function (path, callback) { // 播放本地或远程音频，callback：播放完成的回调
+        gAudioPlayerCallbacks[path] = callback;
+        window.android.playAudio(path, 'audioPlayCompleteCallback');
+    };
+
+    this.stopPlayAudio = function () {
+        window.android.stopPlayAudio();
+    };
+
+    /**
+     * @param path 视频地址，可能是远程地址（http）或手机本地地址（content://）
+     * @param callback function({code: 200/400/500, data: 音频链接, duration: 音频时长msm，essage: 错误信息})
+     */
+    this.uploadAudio = function (path, callback) {  // 上传音频
+        if (path.indexOf('http') === 0) {
+            return path;
+        }
+        gMediaCbFunc = callback;
+        window.android.uploadAudio(platformService.getMediaHost(), path, 'mediaCommonCallback');
+    };
+
+    this.removeFile = function (path) {
+        window.android.removeFile(path);
+    };
+}]);
+
 app.controller('DeviceSelectPageCtrl', ['$scope', function ($scope) { // 创建工单、缺陷单时，选择设备的controller
     var devices = null; // 单选时为单个设备，多选时为多个设备
     $scope.selectItem = function(device) {
@@ -564,6 +658,123 @@ app.directive('imageUploader', ['platformService', function (platformService) {
     };
 }]);
 
+app.directive('videoUploader', function () {
+   return {
+       replace: true,
+       restrict: 'E',
+       templateUrl: '/templates/video-uploader.html',
+       scope: {
+           onUpdate: '=',
+           video: '=',
+           canEdit: '=',
+       },
+       controller: ['$scope', '$attrs', 'routerService', 'mediaService', function ($scope, $attrs, routerService, mediaService) {
+           var canCapture = window.android && window.android.captureVideo;
+           // $scope.video = "http://127.0.0.1:8093/v2/files/demo-admin/dianguanjia/20200623/media-1592892077016.mp4";
+            $scope.startCapture = function () {
+                if (canCapture) {
+                    mediaService.captureVideo(function (path) {
+                        $scope.onUpdate(path);
+                        $scope.$apply();
+                    })
+                }
+            };
+
+            $scope.startPlay = function () {
+                // if ($scope.video.indexOf('http') !== 0) { // 非http开头的，表示编辑时选择的手机本地视频
+                //     mediaService.playVideo($scope.video);
+                // } else {
+                //     routerService.openPage($scope, '/templates/video-player.html', {
+                //         url: $scope.video
+                //     })
+                // }
+                mediaService.playVideo($scope.video);
+
+            };
+
+            $scope.remove = function ($event) {
+                $event.stopPropagation();
+                if (canCapture) {
+                    mediaService.removeFile($scope.video);
+                }
+                $scope.onUpdate(null);
+                return false;
+            }
+       }]
+   };
+});
+
+app.directive('audioRecorder', function () {
+    return {
+        replace: true,
+        restrict: 'E',
+        templateUrl: '/templates/media/voice-record.html',
+        scope: {
+            onUpdate: '=',
+            audio: '=',
+            duration: '=',
+            canEdit: '=',
+        },
+        controller: ['$scope', '$attrs', 'routerService', 'mediaService', function ($scope, $attrs, routerService, mediaService) {
+            var canCapture = window.android && window.android.captureAudio;
+            $scope.playing = false;
+            $scope.recording = false;
+            $scope.startCapture = function () {
+                if (canCapture) {
+                    mediaService.captureAudio(function (res) {
+                        $scope.recording = false;
+                        if (!res.code) { // code=403表示没有权限
+                            $scope.onUpdate(res.path, res.duration);
+                        }
+                        $scope.$apply();
+                    });
+                }
+                $scope.recording = true;
+            };
+
+            $scope.startPlay = function () {
+                if ($scope.playing) {
+                    $scope.playing = false;
+                    mediaService.stopPlayAudio();
+                } else {
+                    $scope.playing = true;
+                    mediaService.playAudio($scope.audio, function () {
+                        $scope.playing = false;
+                        $scope.$apply();
+                    });
+                }
+            };
+
+            $scope.remove = function () {
+                if (canCapture) {
+                    mediaService.removeFile($scope.audio);
+                }
+                $scope.onUpdate(null, null);
+                return false;
+            };
+
+            $scope.getDuration = function () {
+                return Math.ceil($scope.duration/1000);
+            };
+
+            $scope.stopRecording = function () { // 停止录音
+                mediaService.stopRecordAudio(function (res) {
+                    $scope.recording = false;
+                    $scope.onUpdate(res.path, res.duration);
+                    $scope.$apply();
+                });
+            };
+
+            $scope.cancelRecording = function () { // 取消录音
+                mediaService.stopRecordAudio(function (path, duration) {
+                    $scope.recording = false;
+                    $scope.$apply();
+                });
+            }
+        }]
+    };
+});
+
 // 图片相册，不可编辑时使用
 app.directive('imageGridList', [function () {
     return {
@@ -571,9 +782,17 @@ app.directive('imageGridList', [function () {
         restrict: 'E',
         templateUrl: '/templates/image-grid-list.html',
         scope: {
+            video: '=',
             images: '='        // 图片列表，默认[]
         },
-        controller: ['$scope', '$attrs', 'routerService', 'platformService', function ($scope, $attrs, routerService, platformService) {
+        controller: ['$scope', '$attrs', 'routerService', 'platformService', 'mediaService', function ($scope, $attrs, routerService, platformService, mediaService) {
+            $scope.isVisible = function () {
+                if (($scope.images && $scope.images.length) || $scope.video) {
+                    return true;
+                }
+                return false;
+            };
+
             $scope.imageList = [];
             if (!$scope.images) {
                 $scope.imageList = [];
@@ -596,6 +815,11 @@ app.directive('imageGridList', [function () {
                 }, {
                     hidePrev: false
                 });
+            };
+
+            $scope.startPlay = function () {
+                mediaService.playVideo($scope.video);
+
             };
         }]
     };

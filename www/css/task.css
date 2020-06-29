@@ -425,6 +425,11 @@
     border-bottom: #f1f1f1 1px solid;
     padding-bottom: 10px;
 }
+.timeline-vertical .timeline-one .timeline-body:after{
+    content: '';
+    display: block;
+    clear: both;
+}
 .timeline-vertical .timeline-one.end{
     padding-top: 0;
 }
@@ -1065,32 +1070,11 @@
     display: block;
     clear: both;
 }
-.voice-record .voice {
-    background-color: rgba(88,107,243,0.88);
-    border-radius: 4px;
-    height: 26px;
-    min-width: 50px;
-    position: relative;
-    padding: 0 8px 0 28px;
-    line-height: 26px;
-    text-align: left;
-}
-.voice-record .voice:before {
-    content: '';
-    width: 20px;
-    height: 20px;
-    background: url(../img/light/32X32/voice.png) 50% no-repeat;
-    background-size: contain;
-    display: block;
-    top: 2px;
-    position: absolute;
-    left: 4px;
-}
 .voice-record .clear {
     width: 17px;
     height: 17px;
     border-radius: 50%;
-    background-color: rgba(88,107,243,0.88);
+    background-color: #5184F7;
     text-align: center;
     cursor: pointer;
     margin-left: 8px;

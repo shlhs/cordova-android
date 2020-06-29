@@ -71,29 +71,24 @@
                     <span ng-show="myForm.name.$error.required">缺陷描述不能为空</span>
                 </label>
             </div>
-            <!--<div class="mui-input-row" ng-if="needResign">-->
-                <!--<label class="label">语音描述</label>-->
-                <!--<div class="right-placeholder" ng-click="startRecordVoice()" ng-if="!taskData.voice_src" style="float: right;display: flex;align-items: center;cursor: pointer;">-->
-                    <!--<i class="icon icon-16 icon-voice-record"></i> 点击录音-->
-                <!--</div>-->
-                <!--<div class="right-placeholder" ng-click="clearVoice()" ng-if="taskData.voice_src">-->
-                    <!--<div class="voice-record">-->
-                        <!--<div class="voice" ng-style="{width: (taskData.voice_duration*2) + 'px'}">5"</div>-->
-                        <!--<div class="clear"></div>-->
-                    <!--</div>-->
-                <!--</div>-->
-            <!--</div>-->
+            <div class="mui-input-row">
+                <label class="label">语音描述</label>
+                <audio-recorder audio="audioUrl" duration="audioDuration" on-update="onUpdateVoice" can-edit="true" class="right-placeholder"></audio-recorder>
+            </div>
+            <div class="label" style="color: #333;font-size: 14px;margin: 0 4px 4px 4px;">缺陷照片</div>
             <image-uploader images="images"></image-uploader>
+            <div class="label" style="color: #333;font-size: 14px;margin: 0 4px 4px 4px;">缺陷视频</div>
+            <video-uploader video="videoUrl" on-update="onUpdateVideo" can-edit="true"></video-uploader>
         </div>
         <div class="mui-button-row">
             <button type="submit" class="mui-btn mui-btn-primary mui-btn-block"
                     style="background-color: rgba(88,107,243,0.88);border-color: rgba(88,107,243,0.88);height: 42px;">确认提交</button>
         </div>
     </form>
-
     <operator-team-selector teams="teams" visible="teamVisible" callback="onSelectedTeam"></operator-team-selector>
     <!--<handlers-selector users="teamUsers" multiple visible="handlerVisible" callback="onSelectedUsers"></handlers-selector>-->
     <team-and-handler-selector visible="handlerVisible" teams="teams" callback="onSelectedUsers" first-title="'请先选择负责消缺的班组'" second-title="'请选择消缺的人员'"></team-and-handler-selector>
     <team-and-handler-selector visible="recheckSelectorVisible" teams="teams" callback="onSelectedRecheckHandlers" first-title="'请先选择复测的班组'" second-title="'请选择复测人员'"></team-and-handler-selector>
     <div ng-include="'/templates/dts/dts-defect-conflict-devices-warning.html'" ng-if="warningModalVisible"></div>
+    ﻿
 </div>

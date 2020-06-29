@@ -261,7 +261,7 @@ app.service('platformService', function () {
     this.getImageUrl = function (width, height, imageUrl) {
         // When using gifsicle engine, filters will be skipped. Thumbor will not do smart cropping as well
         var urlLength = imageUrl.length;
-        if(urlLength > 4 && imageUrl.toLocaleLowerCase().lastIndexOf('.gif') === (urlLength -4)) {
+        if(urlLength > 4 && imageUrl.toLocaleLowerCase().lastIndexOf('.gif') === (urlLength - 4)) {
             return imageUrl;
         }
 
@@ -270,6 +270,10 @@ app.service('platformService', function () {
 
     this.getIpcServiceHost = function () {
         return this.host + ':8095/v1';
+    };
+
+    this.getMediaHost = function () {
+        return this.host + ':8093/v2';
     };
 
     this.setUiMode = function (mode) {

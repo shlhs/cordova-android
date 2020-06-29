@@ -1366,6 +1366,7 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
     $scope.host = platformService.getCloudHost();
     $scope.updateRecordsVisible = false;    // 是否显示操作历史
     $scope.requestPictures = null;        // 报修前图片
+    $scope.createRecord = null;
     $scope.handleResult = null;           // 维修结果，{desp: '', picture_list: []}
     $scope.inspectUploadImages = [];        // 巡检签到的照片
     var userRole = userService.getUserRole();
@@ -1641,8 +1642,9 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
                 handleResult = record;
                 $scope.handleResult = record;
             }
-            if (!$scope.requestPictures && record.action_id === TaskAction.Create && record.picture_list && record.picture_list.length) {
+            if (!$scope.requestPictures && record.action_id === TaskAction.Create) {
                 $scope.requestPictures = record.picture_list;
+                $scope.createRecord = record;
             }
             if (!recheckResult && record.action_id === TaskAction.RECHECK) {
                 recheckResult = record;
@@ -2378,21 +2380,91 @@ app.controller('TaskAssignCtrl', ['$scope', '$timeout', function ($scope, $timeo
     };
 }]);
 
-app.controller('TaskHandlerUpload', ['$scope', '$timeout', function ($scope, $timeout) {
+app.controller('TaskHandlerUpload', ['$scope', '$timeout', 'mediaService', function ($scope, $timeout, mediaService) {
     $scope.images = [];
     $scope.description = '';
+    $scope.audioUrl = null;
+    $scope.audioDuration = null;
+    $scope.videoUrl = null;
+
+    function checkAndUploadVideoAndAudio(outputParam) { // 如果检测到有视频或语音，先上传得到链接后，写入outputParam，再调用callback进行提交
+        function uploadFinish() {
+            $scope.postActionWithParams(TaskAction.Update, outputParam, function () {
+                $timeout(function () {
+                    $scope.cancel();
+                }, 500);
+            });
+        }
+        $.notify.progressStart();
+        function uploadVideo() {
+            if ($scope.videoUrl) {
+                if ($scope.videoUrl.indexOf("http") !== 0) {
+                    mediaService.uploadVideo($scope.videoUrl, function (res) {
+                        if (res.code === 0) {
+                            $scope.videoUrl = res.data;
+                            outputParam.video_src = res.data;
+                            $scope.$apply();
+                            uploadFinish();
+                        } else {
+                            $.notify.progressStop();
+                            $.notify.error('上传视频失败');
+                        }
+                    });
+                } else {
+                    outputParam.video_src = $scope.videoUrl;
+                    uploadFinish();
+                }
+            } else {
+                uploadFinish();
+            }
+        }
+
+        if ($scope.audioUrl) {
+            if ($scope.audioUrl.indexOf('http') !== 0) {
+                mediaService.uploadAudio($scope.audioUrl, function (res) {
+                    if (res.code === 0) {
+                        $scope.audioUrl = res.data;
+                        outputParam.voice_src = $scope.audioUrl;
+                        outputParam.voice_duration = $scope.audioDuration;
+                        $scope.$apply();
+                        uploadVideo();
+                    } else {
+                        $.notify.progressStop();
+                        $.notify.error('上传语音失败');
+                    }
+                });
+            } else {
+                outputParam.voice_src = $scope.audioUrl;
+                outputParam.voice_duration = $scope.audioDuration;
+                uploadVideo();
+            }
+        } else {
+            uploadVideo();
+        }
+    }
+
+    $scope.onUpdateVoice = function (url, duration) {
+        $scope.audioUrl = url;
+        $scope.audioDuration = duration;
+    };
+
+    $scope.onUpdateVideo = function(url) {
+        $scope.videoUrl = url;
+    };
 
     $scope.submitAndBack = function() {   //上传描述和图片
-        if (!$scope.description && !$scope.images.length){
-            mui.alert('评论与图片不能同时为空', '无法提交', function() {
-            });
+        if (!$scope.description && !$scope.audioUrl) {
+            mui.alert('请用文字或语音进行说明', '无法提交', function() {});
             return;
         }
-        $scope.postAction(TaskAction.Update, $scope.description, $scope.images, function () {       // 上传成功，清空本次信息
-            $timeout(function () {
-                $scope.cancel();
-            }, 500);
-        });
+        var postParam = {};
+        if ($scope.description){
+            postParam.description = $scope.description;
+        }
+        if ($scope.images && $scope.images.length){
+            postParam['pictures'] = $scope.images;
+        }
+        checkAndUploadVideoAndAudio(postParam);
     };
 
    $scope.cancel = function () {
@@ -2400,16 +2472,88 @@ app.controller('TaskHandlerUpload', ['$scope', '$timeout', function ($scope, $ti
    };
 }]);
 
-app.controller('TaskRecheckCtrl', ['$scope', '$timeout', function ($scope, $timeout) {
+app.controller('TaskRecheckCtrl', ['$scope', '$timeout', 'mediaService', function ($scope, $timeout, mediaService) {
     $scope.recheckPass = true;
     $scope.images = [];
     $scope.description = '';
+    $scope.audioUrl = null;
+    $scope.audioDuration = null;
+    $scope.videoUrl = null;
+
+    $scope.onUpdateVoice = function (url, duration) {
+        $scope.audioUrl = url;
+        $scope.audioDuration = duration;
+    };
+
+    $scope.onUpdateVideo = function(url) {
+        $scope.videoUrl = url;
+    };
 
     $scope.setRecheckPass = function (pass) {
         $scope.recheckPass = pass;
     };
 
+    function checkAndUploadVideoAndAudio(outputParam) { // 如果检测到有视频或语音，先上传得到链接后，写入outputParam，再调用callback进行提交
+        function uploadFinish() {
+            $scope.postActionWithParams(TaskAction.RECHECK, outputParam, function () {
+                $timeout(function () {
+                    $scope.cancel();
+                }, 500);
+            });
+        }
+        $.notify.progressStart();
+        function uploadVideo() {
+            if ($scope.videoUrl) {
+                if ($scope.videoUrl.indexOf("http") !== 0) {
+                    mediaService.uploadVideo($scope.videoUrl, function (res) {
+                        if (res.code === 0) {
+                            $scope.videoUrl = res.data;
+                            outputParam.video_src = res.data;
+                            $scope.$apply();
+                            uploadFinish();
+                        } else {
+                            $.notify.progressStop();
+                            $.notify.error('上传视频失败');
+                        }
+                    });
+                } else {
+                    outputParam.video_src = $scope.videoUrl;
+                    uploadFinish();
+                }
+            } else {
+                uploadFinish();
+            }
+        }
+
+        if ($scope.audioUrl) {
+            if ($scope.audioUrl.indexOf('http') !== 0) {
+                mediaService.uploadAudio($scope.audioUrl, function (res) {
+                    if (res.code === 0) {
+                        $scope.audioUrl = res.data;
+                        outputParam.voice_src = $scope.audioUrl;
+                        outputParam.voice_duration = $scope.audioDuration;
+                        $scope.$apply();
+                        uploadVideo();
+                    } else {
+                        $.notify.progressStop();
+                        $.notify.error('上传语音失败');
+                    }
+                });
+            } else {
+                outputParam.voice_src = $scope.audioUrl;
+                outputParam.voice_duration = $scope.audioDuration;
+                uploadVideo();
+            }
+        } else {
+            uploadVideo();
+        }
+    }
+
     $scope.submitAndBack = function() {   //上传描述和图片
+        if (!$scope.recheckPass && !$scope.description && !$scope.audioUrl) {
+            mui.alert('请用文字或语音说明未通过原因', '无法提交', function() {});
+            return;
+        }
         var data = {};
         if ($scope.description){
             data.description = $scope.description;
@@ -2418,11 +2562,7 @@ app.controller('TaskRecheckCtrl', ['$scope', '$timeout', function ($scope, $time
             data['pictures'] = $scope.images;
         }
         data.recheck_pass = $scope.recheckPass;
-        $scope.postActionWithParams(TaskAction.RECHECK, data, function () {
-            $timeout(function () {
-                $scope.cancel();
-            }, 500);
-        });
+        checkAndUploadVideoAndAudio(data);
     };
 
     $scope.cancel = function () {

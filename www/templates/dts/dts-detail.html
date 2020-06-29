@@ -179,9 +179,10 @@
                                 <label class="title" style="width: 50px;">备注</label>
                                 <span class="value" style="padding-left: 50px;">{{taskData.desp}}</span>
                             </li>
-                            <div ng-if="requestPictures" style="font-size: 13px;color: #333;">
+                            <audio-recorder audio="createRecord.voice_src" ng-if="createRecord.voice_src" duration="createRecord.voice_duration"></audio-recorder>
+                            <div ng-if="createRecord.picture_list || createRecord.video_src" style="font-size: 13px;color: #333;">
                                 <div>缺陷视频/图片</div>
-                                <image-grid-list images="requestPictures" ng-if="requestPictures"></image-grid-list>
+                                <image-grid-list images="createRecord.picture_list" video="createRecord.video_src"></image-grid-list>
                             </div>
                         </ul>
                     </div>
@@ -197,7 +198,9 @@
                             </div>
                             <div style="padding: 0 12px;" ng-if="handleResult">
                                 <div style="font-size: 13px;color: #666;">{{handleResult.desp}}</div>
-                                <image-grid-list images="handleResult.picture_list" ng-if="handleResult.picture_list"></image-grid-list>
+                                <!--<image-grid-list images="handleResult.picture_list" ng-if="handleResult.picture_list"></image-grid-list>-->
+                                <audio-recorder audio="handleResult.voice_src" ng-if="handleResult.voice_src" duration="handleResult.voice_duration"></audio-recorder>
+                                <image-grid-list images="handleResult.picture_list" video="handleResult.video_src"></image-grid-list>
                             </div>
                         </div>
                     </div>
@@ -213,11 +216,12 @@
                                 </label>
                                 <span style="color: #666;font-size: 14px;margin-left: 12px;">{{recheckResult.update_time.substring(0, 16)}}</span>
                             </div>
-                            <ul class="task-detail-info-group" ng-if="recheckResult">
+                            <ul class="task-detail-info-group" ng-if="recheckResult" style="padding: 4px 12px;">
                                 <li ng-if="recheckResult.desp">
                                     <span class="value" style="padding-left: 0;">{{recheckResult.desp}}</span>
                                 </li>
-                                <image-grid-list images="recheckResult.picture_list" ng-if="recheckResult.picture_list"></image-grid-list>
+                                <audio-recorder audio="recheckResult.voice_src" ng-if="recheckResult.voice_src" duration="recheckResult.voice_duration"></audio-recorder>
+                                <image-grid-list images="recheckResult.picture_list" video="recheckResult.video_src"></image-grid-list>
                             </ul>
                         </div>
                         <div ng-if="!recheckResult">

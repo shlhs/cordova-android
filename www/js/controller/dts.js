@@ -15,7 +15,7 @@ function onAndroid_dtsImageDelete (filename) {       // Android手机上删除�
 }
 
 var TaskSource = {Repaire: 1, Event: 2, Inspect: 3};
-app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'routerService', function ($scope, $timeout, ajax, userService, routerService) {
+app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'routerService', 'mediaService', function ($scope, $timeout, ajax, userService, routerService, mediaService) {
     var taskId = GetQueryString("task_id") || $scope.task_id || '';
     var deviceSns = GetQueryString('device_sns');
     var stationSn = GetQueryString('station_sn');
@@ -29,7 +29,9 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
     $scope.role = userService.getUserRole();
     $scope.needResign = $scope.role === 'OPS_ADMIN';      // 是否需要指派维修工
     $scope.isForDevice = deviceSns && deviceSns.length > 0;
-    $scope.taskData = {};
+    $scope.taskData = {
+        voice_src: 'http://'
+    };
 
     $scope.images = [];
     $scope.description = '';
@@ -45,6 +47,9 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
     $scope.defectConflictDevices = []; // 已存在相同缺陷类型的设备
     $scope.warningModalVisible = false; // 缺陷类型重复设备告警对话框显示
     $scope.conflictSubmitError = null;
+    $scope.videoUrl = null; // 视频本地或远程链接
+    $scope.audioUrl = null;  // 语音本地或远程链接
+    $scope.audioDuration = null; // 语音时长
     var staticDevices = [];
     var opsCompanyId = null;
     var companyId = userService.getTaskCompanyId();
@@ -212,19 +217,6 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
         $scope.recheckSelectorVisible = !$scope.recheckSelectorVisible;
     };
 
-    $scope.startRecordVoice = function () { // 开始录音
-
-    }; // 启动语音
-
-    $scope.clearVoice = function () { // 删除录音
-        $scope.taskData.voice_src = null;
-        $scope.taskData.voice_duration = null;
-    };
-
-    $scope.removeVideo = function () {
-        $scope.taskData.video_src = null; // 删除视频
-    };
-
     function initMembers() {
         if (!$scope.needResign) {
             return;
@@ -333,6 +325,15 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
         routerService.openPage($scope, '/templates/site/static-devices/device-detail.html', {device_sn: device.sn, disableEdit: true});
     };
 
+    $scope.onUpdateVideo = function (url) {
+        $scope.videoUrl = url;
+    };
+
+    $scope.onUpdateVoice = function (url, duration) {
+        $scope.audioUrl = url;
+        $scope.audioDuration = duration;
+    };
+
     $scope.submitForm = function() {
         var myFormInvalid = $scope.myForm.$invalid;
         $scope.currentHandlerError = $scope.needResign && !$scope.taskData.current_handler;
@@ -340,7 +341,10 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
         if(myFormInvalid || $scope.currentHandlerError || $scope.deviceEmptyError){
             console.log('form invalid');
         } else {
-            var params = Object.assign({}, $scope.taskData);
+            var params = Object.assign({}, $scope.taskData, {
+                current_handler_users: null,
+                recheck_users: null,
+            });
             params.devices = [];
             $scope.devices.forEach(function (d) {
                 params.devices.push({
@@ -373,14 +377,68 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
                 }
             }
             params.dts_device_defect_check = true;
-            createTask(params);
+            // createTask(params);
+            checkAndUploadVideoAndAudio(params);
         }
     };
+    
+    function checkAndUploadVideoAndAudio(outputParam) { // 如果检测到有视频或语音，先上传得到链接后，写入outputParam，再调用callback进行提交
+        $.notify.progressStart();
+
+        function uploadFinish() {
+            createTask(outputParam);
+        }
+
+        function uploadVideo() {
+            if ($scope.videoUrl) {
+                if ($scope.videoUrl.indexOf("http") !== 0) {
+                    mediaService.uploadVideo($scope.videoUrl, function (res) {
+                        if (res.code === 0) {
+                            $scope.videoUrl = res.data;
+                            outputParam.video_src = res.data;
+                            $scope.$apply();
+                            uploadFinish();
+                        } else {
+                            $.notify.progressStop();
+                            $.notify.error('上传视频失败');
+                        }
+                    });
+                } else {
+                    outputParam.video_src = $scope.videoUrl;
+                    uploadFinish();
+                }
+            } else {
+                uploadFinish();
+            }
+        }
+
+        if ($scope.audioUrl) {
+            if ($scope.audioUrl.indexOf('http') !== 0) {
+                mediaService.uploadAudio($scope.audioUrl, function (res) {
+                    if (res.code === 0) {
+                        $scope.audioUrl = res.data;
+                        outputParam.voice_src = $scope.audioUrl;
+                        outputParam.voice_duration = $scope.audioDuration;
+                        $scope.$apply();
+                        uploadVideo();
+                    } else {
+                        $.notify.progressStop();
+                        $.notify.error('上传语音失败');
+                    }
+                });
+            } else {
+                outputParam.voice_src = $scope.audioUrl;
+                outputParam.voice_duration = $scope.audioDuration;
+                uploadVideo();
+            }
+        } else {
+            uploadVideo();
+        }
+    }
 
     var requestParams = null; // 记录请求的参数
 
     function createTask (params) {
-        $.notify.progressStart();
         ajax.post({
             url: '/opstasks/' + companyId,
             headers: {

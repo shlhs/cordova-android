@@ -24,14 +24,10 @@
                 <div class="timeline-comment" ng-if="item.desp != null && item.desp != '' && item.action_id != TaskAction.Comment">
                     {{ item.desp }}
                 </div>
-                <ul class="image-list" style="padding: 0;" ng-if="item.pictures">
-                    <li class="image-item" ng-repeat="url in item.picture_list" ng-click="showImageGallery(item.picture_list, $index+1)">
-                        <div class="content">
-                            <img src="{{url}}" alt="">
-                        </div>
-                    </li>
-                </ul>
+                <audio-recorder audio="item.voice_src" ng-if="item.voice_src" duration="item.voice_duration"></audio-recorder>
+                <image-grid-list images="item.picture_list" video="item.video_src"></image-grid-list>
             </div>
         </li>
     </ul>
+
 </div>
