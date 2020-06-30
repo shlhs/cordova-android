@@ -71,14 +71,14 @@
                     <span ng-show="myForm.name.$error.required">缺陷描述不能为空</span>
                 </label>
             </div>
-            <div class="mui-input-row">
+            <div class="mui-input-row" ng-if="audioVideoEnabled">
                 <label class="label">语音描述</label>
                 <audio-recorder audio="audioUrl" duration="audioDuration" on-update="onUpdateVoice" can-edit="true" class="right-placeholder"></audio-recorder>
             </div>
             <div class="label" style="color: #333;font-size: 14px;margin: 0 4px 4px 4px;">缺陷照片</div>
             <image-uploader images="images"></image-uploader>
-            <div class="label" style="color: #333;font-size: 14px;margin: 0 4px 4px 4px;">缺陷视频</div>
-            <video-uploader video="videoUrl" on-update="onUpdateVideo" can-edit="true"></video-uploader>
+            <div class="label" style="color: #333;font-size: 14px;margin: 0 4px 4px 4px;" ng-if="audioVideoEnabled">缺陷视频</div>
+            <video-uploader video="videoUrl" on-update="onUpdateVideo" can-edit="true" ng-if="audioVideoEnabled"></video-uploader>
         </div>
         <div class="mui-button-row">
             <button type="submit" class="mui-btn mui-btn-primary mui-btn-block"

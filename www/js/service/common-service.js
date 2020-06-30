@@ -46,24 +46,24 @@ function audioPlayCompleteCallback(path) {
 }
 
 app.service('mediaService', ['platformService', function (platformService) {
-    this.canCaptureVideo = function () { // 是否支持录制视频
-        return window.android && window.android.captureVideo;
-    };
-
-    this.canCaptureAudio = function () { // 是否支持录制音频
-        return window.android && window.android.captureAudio;
-    };
+    var audioVideoEnabled = window.android && window.android.captureVideo;
 
     /**
      * @param callback function(path)
      */
     this.captureVideo = function (callback) { // 录制视频
         gMediaCbFunc = callback;
-        window.android.captureVideo('mediaCommonCallback');
+        if (audioVideoEnabled) {
+            window.android.captureVideo('mediaCommonCallback');
+        }
     };
 
     this.playVideo = function (path) { // 播放本地或远程视频
-        window.android.playVideo(path);
+        if (audioVideoEnabled) {
+            window.android.playVideo(path);
+        } else {
+            $.notify.toast('无法播放视频，请升级app版本');
+        }
     };
 
     /**
@@ -93,11 +93,19 @@ app.service('mediaService', ['platformService', function (platformService) {
 
     this.playAudio = function (path, callback) { // 播放本地或远程音频，callback：播放完成的回调
         gAudioPlayerCallbacks[path] = callback;
-        window.android.playAudio(path, 'audioPlayCompleteCallback');
+        if (audioVideoEnabled) {
+            window.android.playAudio(path, 'audioPlayCompleteCallback');
+        } else {
+            $.notify.toast('无法播放视频，请升级app版本');
+        }
     };
 
     this.stopPlayAudio = function () {
-        window.android.stopPlayAudio();
+        if (audioVideoEnabled) {
+            window.android.stopPlayAudio();
+        } else {
+            $.notify.toast('无法播放视频，请升级app版本');
+        }
     };
 
     /**
@@ -669,34 +677,20 @@ app.directive('videoUploader', function () {
            canEdit: '=',
        },
        controller: ['$scope', '$attrs', 'routerService', 'mediaService', function ($scope, $attrs, routerService, mediaService) {
-           var canCapture = window.android && window.android.captureVideo;
-           // $scope.video = "http://127.0.0.1:8093/v2/files/demo-admin/dianguanjia/20200623/media-1592892077016.mp4";
             $scope.startCapture = function () {
-                if (canCapture) {
-                    mediaService.captureVideo(function (path) {
-                        $scope.onUpdate(path);
-                        $scope.$apply();
-                    })
-                }
+                mediaService.captureVideo(function (path) {
+                    $scope.onUpdate(path);
+                    $scope.$apply();
+                });
             };
 
             $scope.startPlay = function () {
-                // if ($scope.video.indexOf('http') !== 0) { // 非http开头的，表示编辑时选择的手机本地视频
-                //     mediaService.playVideo($scope.video);
-                // } else {
-                //     routerService.openPage($scope, '/templates/video-player.html', {
-                //         url: $scope.video
-                //     })
-                // }
                 mediaService.playVideo($scope.video);
-
             };
 
             $scope.remove = function ($event) {
                 $event.stopPropagation();
-                if (canCapture) {
-                    mediaService.removeFile($scope.video);
-                }
+                mediaService.removeFile($scope.video);
                 $scope.onUpdate(null);
                 return false;
             }
@@ -716,19 +710,17 @@ app.directive('audioRecorder', function () {
             canEdit: '=',
         },
         controller: ['$scope', '$attrs', 'routerService', 'mediaService', function ($scope, $attrs, routerService, mediaService) {
-            var canCapture = window.android && window.android.captureAudio;
             $scope.playing = false;
             $scope.recording = false;
+
             $scope.startCapture = function () {
-                if (canCapture) {
-                    mediaService.captureAudio(function (res) {
-                        $scope.recording = false;
-                        if (!res.code) { // code=403表示没有权限
-                            $scope.onUpdate(res.path, res.duration);
-                        }
-                        $scope.$apply();
-                    });
-                }
+                mediaService.captureAudio(function (res) {
+                    $scope.recording = false;
+                    if (!res.code) { // code=403表示没有权限
+                        $scope.onUpdate(res.path, res.duration);
+                    }
+                    $scope.$apply();
+                });
                 $scope.recording = true;
             };
 
@@ -746,9 +738,7 @@ app.directive('audioRecorder', function () {
             };
 
             $scope.remove = function () {
-                if (canCapture) {
-                    mediaService.removeFile($scope.audio);
-                }
+                mediaService.removeFile($scope.audio);
                 $scope.onUpdate(null, null);
                 return false;
             };

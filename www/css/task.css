@@ -1064,6 +1064,7 @@
     color: #FFF;
     display: inline-flex;
     align-items: center;
+    min-width: 95px;
 }
 .voice-record:after {
     content: '';

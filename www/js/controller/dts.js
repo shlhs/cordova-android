@@ -50,6 +50,7 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
     $scope.videoUrl = null; // 视频本地或远程链接
     $scope.audioUrl = null;  // 语音本地或远程链接
     $scope.audioDuration = null; // 语音时长
+    $scope.audioVideoEnabled = window.android && window.android.captureVideo;
     var staticDevices = [];
     var opsCompanyId = null;
     var companyId = userService.getTaskCompanyId();
