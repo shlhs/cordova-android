@@ -2,10 +2,10 @@
     <div ng-click="startCapture()" ng-if="!audio && canEdit" style="display: flex;align-items: center;cursor: pointer;">
         <i class="icon icon-16 icon-voice-record"></i> 点击录音
     </div>
-    <div class="voice-record" ng-if="audio" style="width: {{getDuration()*1.667}}%">
+    <div class="voice-record" ng-if="audio" style="width: {{iconWidth}}px">
         <div class="bubble voice" ng-class="playing ? 'play': ''" ng-click="startPlay()">
             <div class="icon icon-16 icon-voice"></div>
-            <div class="length">{{getDuration()}}''</div>
+            <div class="length">{{tmpDuration}}''</div>
         </div>
         <div class="clear" ng-click="remove()" ng-if="canEdit"></div>
     </div>

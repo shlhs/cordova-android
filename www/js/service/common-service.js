@@ -712,16 +712,20 @@ app.directive('audioRecorder', function () {
         controller: ['$scope', '$attrs', 'routerService', 'mediaService', function ($scope, $attrs, routerService, mediaService) {
             $scope.playing = false;
             $scope.recording = false;
+            $scope.tmpDuration = null;  // 以秒显示跌间隔时间
+            $scope.iconWidth = '0';   // 语音条的宽度
+            setIntDuration($scope.duration);
 
             $scope.startCapture = function () {
                 mediaService.captureAudio(function (res) {
                     $scope.recording = false;
                     if (!res.code) { // code=403表示没有权限
                         $scope.onUpdate(res.path, res.duration);
+                        setIntDuration(res.duration);
                     }
                     $scope.$apply();
                 });
-                $scope.recording = true;
+                // $scope.recording = true;
             };
 
             $scope.startPlay = function () {
@@ -743,9 +747,19 @@ app.directive('audioRecorder', function () {
                 return false;
             };
 
-            $scope.getDuration = function () {
-                return Math.ceil($scope.duration/1000);
-            };
+            function setIntDuration(duration) {
+                if (duration) {
+                    $scope.tmpDuration = Math.ceil(duration/1000);
+                    if ($scope.canEdit) {
+                        $scope.iconWidth = $scope.tmpDuration*2 + 80;
+                    } else {
+                        $scope.iconWidth = $scope.tmpDuration * 2 + 60;
+                    }
+                } else {
+                    $scope.tmpDuration = null;
+                    $scope.iconWidth = '0';
+                }
+            }
 
             $scope.stopRecording = function () { // 停止录音
                 mediaService.stopRecordAudio(function (res) {

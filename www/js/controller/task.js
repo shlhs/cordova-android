@@ -1638,7 +1638,7 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
                 record.picture_list = pictures;
             }
             // 记录工单的报修图片和维修结果
-            if (!handleResult && record.action_id === TaskAction.Update && (record.desp || record.picture_list.length)) {
+            if (!handleResult && record.action_id === TaskAction.Update) {
                 handleResult = record;
                 $scope.handleResult = record;
             }
@@ -2386,7 +2386,7 @@ app.controller('TaskHandlerUpload', ['$scope', '$timeout', 'mediaService', funct
     $scope.audioUrl = null;
     $scope.audioDuration = null;
     $scope.videoUrl = null;
-    $scope.audioVideoEnabled = window.android && window.android.captureVideo;
+    $scope.audioVideoEnabled = true; //window.android && window.android.captureVideo;
 
     function checkAndUploadVideoAndAudio(outputParam) { // 如果检测到有视频或语音，先上传得到链接后，写入outputParam，再调用callback进行提交
         function uploadFinish() {
@@ -2480,7 +2480,7 @@ app.controller('TaskRecheckCtrl', ['$scope', '$timeout', 'mediaService', functio
     $scope.audioUrl = null;
     $scope.audioDuration = null;
     $scope.videoUrl = null;
-    $scope.audioVideoEnabled = window.android && window.android.captureVideo;
+    $scope.audioVideoEnabled = true; // window.android && window.android.captureVideo;
 
     $scope.onUpdateVoice = function (url, duration) {
         $scope.audioUrl = url;
