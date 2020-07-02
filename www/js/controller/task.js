@@ -185,17 +185,18 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
     $scope.popup_visible = false;
     $scope.searchSiteResult = [];
     $scope.role = userService.getUserRole();
-    if ($scope.role === 'OPS_ADMIN' || $scope.role === 'OPS_OPERATOR') {
-        $scope.navMenus = [_getDefaultHomeMenu(), _getGrabTasksMenu(), _getTaskTodoMenu()];
-    } else if ($scope.role === 'USER') {
-        // 普通用户或平台管理员，不能看到抢单页
-        $scope.navMenus = [_getDefaultHomeMenu(), _getTaskTodoMenu()];
-    } else {
-        // 平台管理员，看不到运维页面
-        $scope.navMenus = [_getDefaultHomeMenu()];
-    }
+    $scope.navMenus = [_getDefaultHomeMenu()];
     if (gShowEnergyPage) {
-        $scope.navMenus.splice(1, 0, _getEnergyMenu());
+        $scope.navMenus.push(_getEnergyMenu());
+    }
+    if (platformService.platHasOpsFunc()) {
+        if ($scope.role === 'OPS_ADMIN' || $scope.role === 'OPS_OPERATOR') {
+            $scope.navMenus.push(_getGrabTasksMenu());
+            $scope.navMenus.push(_getTaskTodoMenu());
+        } else if ($scope.role === 'USER') {
+            // 普通用户或平台管理员，不能看到抢单页
+            $scope.navMenus.push(_getTaskTodoMenu());
+        }
     }
     var menuInited = false;     // 导航栏菜单是否初始化
 
