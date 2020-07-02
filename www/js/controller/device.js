@@ -571,6 +571,7 @@ app.controller('DeviceMonitorListCtrl', ['$scope', 'ajax', 'platformService', fu
     var stationSn = GetQueryString('sn');
     $scope.deviceDatas = [];
     $scope.treeData = [];
+    $scope.hasDevice = false; // 是否有设备
     var devices = [];       // 设备
     $scope.isLoading = false;
     $scope.loadingFailed = false;
@@ -619,6 +620,8 @@ app.controller('DeviceMonitorListCtrl', ['$scope', 'ajax', 'platformService', fu
                     }
                 });
                 $scope.deviceDatas = data;
+
+                $scope.hasDevice = data.length > 1; // 大于一个就说明有设备或分组
                 $scope.$apply();
                 getDeviceVars(data, function (newDataList) {
                     $scope.isLoading = false;

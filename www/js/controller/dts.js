@@ -15,22 +15,23 @@ function onAndroid_dtsImageDelete (filename) {       // Android手机上删除�
 }
 
 var TaskSource = {Repaire: 1, Event: 2, Inspect: 3};
-app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'routerService', function ($scope, $timeout, ajax, userService, routerService) {
+app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'routerService', 'mediaService', function ($scope, $timeout, ajax, userService, routerService, mediaService) {
     var taskId = GetQueryString("task_id") || $scope.task_id || '';
-    $scope.device = {
-        sn: GetQueryString('device_sn') || $scope.device_sn,
-        station_sn: GetQueryString('station_sn') || $scope.station_sn,
-        name: GetQueryString('name') || $scope.name,
-        path: GetQueryString('path') || $scope.path
-    };
-    // if ($scope.device.name) {
-    //     $scope.myForm = {name: $scope.device.name};
-    // }
+    var deviceSns = GetQueryString('device_sns');
+    var stationSn = GetQueryString('station_sn');
+    var siteStr = localStorage.getItem("currentSite");
+    var defaultStationSn = null; // 用户默认选择的站点
+    if (siteStr) {
+        defaultStationSn = JSON.parse(siteStr).sn;
+    }
+    $scope.userStations = [];
+    $scope.devices = [];
     $scope.role = userService.getUserRole();
     $scope.needResign = $scope.role === 'OPS_ADMIN';      // 是否需要指派维修工
-    $scope.isForDevice = $scope.device.sn ? true : false;
-    $scope.taskData = {};
-    $scope.name = $scope.device.path ? $scope.device.path + '/' + $scope.device.name : $scope.device.name;
+    $scope.isForDevice = deviceSns && deviceSns.length > 0;
+    $scope.taskData = {
+        voice_src: 'http://'
+    };
 
     $scope.images = [];
     $scope.description = '';
@@ -39,30 +40,125 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
     $scope.teamVisible = false;         // 是否显示运维班组选择窗口
     $scope.teamUsers = [];
     $scope.handlerVisible = false;      // 是否显示维修工选择窗口
-    $scope.handlerRowSpan = 1;       // 默认为一行
+    $scope.recheckSelectorVisible = false; // 是否显示复测人员的选择窗口
+    $scope.currentHandlerError = false;
+    $scope.defectTypes = [];
+    $scope.selectedDefectType = null;
+    $scope.defectConflictDevices = []; // 已存在相同缺陷类型的设备
+    $scope.warningModalVisible = false; // 缺陷类型重复设备告警对话框显示
+    $scope.conflictSubmitError = null;
+    $scope.videoUrl = null; // 视频本地或远程链接
+    $scope.audioUrl = null;  // 语音本地或远程链接
+    $scope.audioDuration = null; // 语音时长
+    $scope.audioVideoEnabled = window.android && window.android.captureVideo;
     var staticDevices = [];
     var opsCompanyId = null;
     var companyId = userService.getTaskCompanyId();
     if ($scope.needResign) {
         opsCompanyId = companyId;
     }
+    var defectTypePicker = null;
 
     function init() {
-        if (!$scope.device.sn && $scope.device.station_sn) {
-            // 如果设备sn为空的话，则需要用户选择设备
-            getStaticDevicesOfStation();
-        } else if ($scope.device.sn && !$scope.device.name) {
-            // 如果只有设备sn，那么需要读取设备详情
-            getDeviceDetail();
+        if ($scope.isForDevice) { // 如果只有设备sn，那么需要读取设备详情
+            getDeviceDetail(deviceSns);
         }
+        if (defaultStationSn) {
+            getStaticDevicesOfStation(defaultStationSn);
+        }
+        if (!stationSn) {
+            initStations();
+        }
+        getDefectTypes();
         initTaskTypeList();
         initDatePicker();
         initMembers();
     }
 
-    function getStaticDevicesOfStation() {
+    function initStations() {
         ajax.get({
-            url: '/stations/' + $scope.device.station_sn + '/staticdevices',
+            url: '/stations',
+            success: function (data) {
+                var stations = [];
+                var pickerData = [];
+                var defaultSelectedIndex = null;
+                data.forEach(function (s) {
+                    if (!s.is_group) {
+                        stations.push(s);
+                        pickerData.push({
+                            value: s.sn,
+                            text: s.name
+                        });
+                        if (s.sn === defaultStationSn) {
+                            $scope.taskData.station_sn = s.sn;
+                            $scope.stationName = s.name;
+                            stationSn = s.sn;
+                            defaultSelectedIndex = pickerData.length-1;
+                        }
+                    }
+                });
+                $scope.userStations = stations;
+                $scope.$apply();
+                if (stations.length <= 1) {
+                    if (stations.length === 1) { // 只有一个站点时，默认选中该站点
+                        stationSn = stations[0].sn;
+                    }
+                    return;
+                }
+                // 初始化picker
+                var stationPicker = new mui.PopPicker();
+                stationPicker.setData(pickerData);
+                if (defaultSelectedIndex !== null) {
+                    stationPicker.pickers[0].setSelectedIndex(defaultSelectedIndex);
+                }
+                var showUserPickerButton = document.getElementById('stationPicker');
+                showUserPickerButton.addEventListener('click', function(event) {
+                    stationPicker.show(function(items) {
+                        if (items[0].text !== stationSn) {
+                            $scope.stationName = items[0].text;
+                            stationSn = items[0].value;
+                            $scope.devices = []; // 切换了站点后，清除所选设备
+                            getStaticDevicesOfStation(stationSn);
+                            $scope.$apply();
+                        }
+                    });
+                }, false);
+            },
+            error: function(){
+                console.log('获取站点列表失败');
+            }
+        });
+    }
+
+    function getDefectTypes() {
+        ajax.get({
+            url: '/defect_types?companyId=' + opsCompanyId,
+            success: function (data) {
+                $scope.defectTypes = data;
+                defectTypePicker = new mui.PopPicker();
+                var pickerData = [];
+                data.forEach(function (item) {
+                    pickerData.push({value: item.id, text: item.name})
+                });
+                defectTypePicker.setData(pickerData);
+                var defectTypeBtn = document.getElementById('defectTypePicker');
+                defectTypeBtn.addEventListener('click', function(event) {
+                    defectTypePicker.show(function(items) {
+                        $scope.selectedDefectType = {
+                            id: items[0].value,
+                            name: items[0].text.substring(items[0].text.indexOf(' ') + 1)
+                        };
+                        $scope.$apply();
+                    });
+                }, false);
+                $scope.$apply();
+            }
+        });
+    }
+
+    function getStaticDevicesOfStation(stationSn) {
+        ajax.get({
+            url: '/stations/' + stationSn + '/staticdevices',
             success: function (data) {
                 staticDevices = data;
             }, error: function () {
@@ -71,47 +167,17 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
         });
     }
 
-    function getDeviceDetail() {
+    function getDeviceDetail(sns) {
         ajax.get({
-            url: '/staticdevices',
+            url: '/stations/' + stationSn + '/staticdevices',
             data: {
-                sn: $scope.device.sn
+                sns: sns
             },
             success: function (data) {
-                $scope.device = data;
-                getDevicePath(data.sn);
+                $scope.devices = data;
                 $scope.$apply();
             }
         });
-    }
-
-    function getDevicePath(sn) {
-        ajax.get({
-            url: '/staticdevices/path',
-            data: {
-                station_sn: $scope.device.station_sn,
-                device_sns: sn
-            },
-            success: function (data) {
-                $scope.device.path = data[sn];
-                $scope.$apply();
-            }
-        });
-    }
-
-    function _format(data, idKey, nameKey) {
-        var d = null;
-        if (typeof (idKey) === 'undefined'){
-            idKey = 'id';
-        }
-        if (typeof (nameKey) === 'undefined'){
-            nameKey = 'name'
-        }
-        for(var i=0; i<data.length; i++){
-            d = data[i];
-            d['value'] = d[idKey];
-            d['text'] = d[nameKey];
-        }
     }
 
     function initTaskTypeList() {
@@ -125,30 +191,31 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
             value: 10,
             text: '致命缺陷'
         }];
-        var taskTypePicker = new mui.PopPicker();
-        taskTypePicker.setData(taskTypes);
         var taskTypeButton = document.getElementById('taskTypePicker');
-
-        taskTypeButton.addEventListener('click', function(event) {
-            taskTypePicker.show(function(items) {
-                $scope.taskTypeName = items[0].text;
-                $scope.taskData.task_type_id = items[0].value;
-                $scope.$apply();
-            });
-        }, false);
-        // 默认使用一般缺陷
+        if (taskTypeButton) {
+            var taskTypePicker = new mui.PopPicker();
+            taskTypePicker.setData(taskTypes);
+            taskTypeButton.addEventListener('click', function(event) {
+                taskTypePicker.show(function(items) {
+                    $scope.taskTypeName = items[0].text;
+                    $scope.taskData.task_type_id = items[0].value;
+                    $scope.$apply();
+                });
+            }, false);
+            // 默认使用一般缺陷
+        }
     }
 
     $scope.showTeamSelector = function () {     // 显示维修班组选择框
         $scope.teamVisible = !$scope.teamVisible;
     };
 
-    $scope.showHandlerSelector = function () {    // 显示维修工选择框
-        if (!$scope.operatorTeam) {
-            $.notify.toast('请先选择维修班组');
-        } else {
-            $scope.handlerVisible = !$scope.handlerVisible;
-        }
+    $scope.toggleHandlerSelector = function () {    // 显示维修工选择框
+        $scope.handlerVisible = !$scope.handlerVisible;
+    };
+
+    $scope.toggleRecheckSelector = function () {    // 显示维修工选择框
+        $scope.recheckSelectorVisible = !$scope.recheckSelectorVisible;
     };
 
     function initMembers() {
@@ -168,28 +235,35 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
         });
     }
 
-    $scope.onSelectedTeam = function (team) {
-        // 先判断维修组是否改变了，改变了维修班组，需要情况维修工信息
-        if (!team || team.id !== $scope.taskData.operator_team) {
-            $scope.onSelectedUsers([]);
-        }
-        $scope.operatorTeam = team ? team.name : null;
+    $scope.onSelectedUsers = function (team, users) {
         $scope.taskData.operator_team = team ? team.id : null;
-        $scope.teamUsers = team ? team.users : [];
-        $scope.teamVisible = false;
+        $scope.taskData.current_handler_users = users;
+        if (users && users.length) { // 消缺人员
+            var accounts = [];
+            users.forEach(function (u) {
+                accounts.push(u.account);
+            });
+            $scope.taskData.current_handler = accounts.join(',');
+        } else {
+            $scope.taskData.current_handler = null;
+        }
+        $scope.currentHandlerError = false;
+        $scope.toggleHandlerSelector();
     };
 
-    $scope.onSelectedUsers = function (users) {
-        var accounts = [];
-        var handlerNames = '';
-        users.forEach(function (user) {
-            accounts.push(user.account);
-            handlerNames+= user.name + (user.phone ? '/' + user.phone : '') + '\n';
-        });
-        $scope.taskData.current_handler = accounts.join(',');
-        $scope.handlerVisible = false;
-        $scope.handlerName = handlerNames;
-        $scope.handlerRowSpan = users.length || 1;
+    $scope.onSelectedRecheckHandlers = function (team, users) {
+        $scope.taskData.recheck_team = team ? team.id : null;
+        $scope.taskData.recheck_users = users;
+        if (users && users.length) { // 消缺人员
+            var accounts = [];
+            users.forEach(function (u) {
+                accounts.push(u.account);
+            });
+            $scope.taskData.recheck_handlers = accounts.join(',');
+        } else {
+            $scope.taskData.recheck_handlers = null;
+        }
+        $scope.toggleRecheckSelector();
     };
 
     function initDatePicker() {
@@ -204,8 +278,8 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
                     $scope.$apply();
                 });
             } else {
-                var optionsJson = this.getAttribute('data-options') || '{}';
-                var options = JSON.parse(optionsJson);
+                // var optionsJson = this.getAttribute('data-options') || '{}';
+                var options = {type: 'date', beginDate: new Date()};
                 var id = this.getAttribute('id');
                 /*
                  * 首次显示时实例化组件
@@ -214,7 +288,7 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
                  */
                 _self.picker = new mui.DtPicker(options);
                 _self.picker.show(function(rs) {
-                    $scope.taskData.expect_complete_time = rs.text + ":00";
+                    $scope.taskData.expect_complete_time = rs.text;
                     _self.picker.dispose();
                     _self.picker = null;
                     $scope.$apply();
@@ -224,73 +298,230 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
     }
 
     $scope.openDeviceSelector = function () {
+        if (!stationSn) {
+            // 当前未选中站点，则提示先选择站点
+            if ($scope.userStations.length > 1) {
+                $.notify.toast('请选选择站点')
+            } else {
+                $.notify.toast('您没有配置任何站点，请联系管理员')
+            }
+            return;
+        }
         // 打开设备选择页面
         routerService.openPage($scope, '/templates/site/device-tree/device-select-page.html', {
             deviceDatas: staticDevices,
-            onSelect: function (device) {
-                $scope.device.sn = device.sn;
-                $scope.device.path = device.path;
-                $scope.device.name = device.name;
+            multiple: true,
+            defaultDevices: $scope.devices,
+            onSelect: function (devices) {
+                $scope.devices = devices;
+                if (devices.length) {
+                    $scope.deviceEmptyError = false;
+                }
                 history.back();
             }
         })
     };
 
-    $scope.submitForm = function() {
-        if($scope.myForm.$invalid){
-            console.log('form invalid');
-        }else {
-            $scope.createTask();
-        }
+    $scope.showDeviceDetail = function (device) { // 打开设备详情页
+        routerService.openPage($scope, '/templates/site/static-devices/device-detail.html', {device_sn: device.sn, disableEdit: true});
     };
 
-    $scope.createTask = function () {
-        var taskData = $scope.taskData;
-        taskData.devices = [{
-            sn: $scope.device.sn,
-            name: $scope.device.name
-        }];
-        // 增加图片信息
-        if ($scope.images.length) {
-            taskData.pictures = $scope.images;
+    $scope.onUpdateVideo = function (url) {
+        $scope.videoUrl = url;
+    };
+
+    $scope.onUpdateVoice = function (url, duration) {
+        $scope.audioUrl = url;
+        $scope.audioDuration = duration;
+    };
+
+    $scope.submitForm = function() {
+        var myFormInvalid = $scope.myForm.$invalid;
+        $scope.currentHandlerError = $scope.needResign && !$scope.taskData.current_handler;
+        $scope.deviceEmptyError = $scope.devices.length === 0;
+        if(myFormInvalid || $scope.currentHandlerError || $scope.deviceEmptyError){
+            console.log('form invalid');
+        } else {
+            var params = Object.assign({}, $scope.taskData, {
+                current_handler_users: null,
+                recheck_users: null,
+            });
+            params.devices = [];
+            $scope.devices.forEach(function (d) {
+                params.devices.push({
+                    sn: d.sn,
+                    name: d.name
+                });
+            });
+            // 增加图片信息
+            if ($scope.images.length) {
+                params.pictures = $scope.images;
+            }
+            params.events = [];
+            params.station_sn = stationSn;
+            params.mother_task_id = taskId;
+            params.source = taskId ? TaskSource.Inspect : TaskSource.Repaire;     // 如果是从其他任务创建，即mother_task_id不为空，则来源为巡检，否则为报修
+            if (params.expect_complete_time) {
+                params.expect_complete_time = params.expect_complete_time + " 20:00:00";
+            }
+            if ($scope.selectedDefectType) {
+                // 如果缺陷类型被修改过，则不传入id
+                var name = $scope.selectedDefectType.name;
+                params.defect_type_name = name;
+                for (var i=0; i<$scope.defectTypes.length; i++) {
+                    if ($scope.defectTypes[i].id === $scope.selectedDefectType.id) {
+                        if ($scope.defectTypes[i].name === name) {
+                            params.defect_type = $scope.selectedDefectType.id;
+                        }
+                        break;
+                    }
+                }
+            }
+            params.dts_device_defect_check = true;
+            // createTask(params);
+            checkAndUploadVideoAndAudio(params);
         }
-        taskData.events = [];
-        taskData.station_sn = $scope.device.station_sn;
-        taskData.mother_task_id = taskId;
-        taskData.source = taskId ? TaskSource.Inspect : TaskSource.Repaire;     // 如果是从其他任务创建，即mother_task_id不为空，则来源为巡检，否则为报修
+    };
+    
+    function checkAndUploadVideoAndAudio(outputParam) { // 如果检测到有视频或语音，先上传得到链接后，写入outputParam，再调用callback进行提交
         $.notify.progressStart();
+
+        function uploadFinish() {
+            createTask(outputParam);
+        }
+
+        function uploadVideo() {
+            if ($scope.videoUrl) {
+                if ($scope.videoUrl.indexOf("http") !== 0) {
+                    mediaService.uploadVideo($scope.videoUrl, function (res) {
+                        if (res.code === 0) {
+                            $scope.videoUrl = res.data;
+                            outputParam.video_src = res.data;
+                            $scope.$apply();
+                            uploadFinish();
+                        } else {
+                            $.notify.progressStop();
+                            $.notify.error('上传视频失败');
+                        }
+                    });
+                } else {
+                    outputParam.video_src = $scope.videoUrl;
+                    uploadFinish();
+                }
+            } else {
+                uploadFinish();
+            }
+        }
+
+        if ($scope.audioUrl) {
+            if ($scope.audioUrl.indexOf('http') !== 0) {
+                mediaService.uploadAudio($scope.audioUrl, function (res) {
+                    if (res.code === 0) {
+                        $scope.audioUrl = res.data;
+                        outputParam.voice_src = $scope.audioUrl;
+                        outputParam.voice_duration = $scope.audioDuration;
+                        $scope.$apply();
+                        uploadVideo();
+                    } else {
+                        $.notify.progressStop();
+                        $.notify.error('上传语音失败');
+                    }
+                });
+            } else {
+                outputParam.voice_src = $scope.audioUrl;
+                outputParam.voice_duration = $scope.audioDuration;
+                uploadVideo();
+            }
+        } else {
+            uploadVideo();
+        }
+    }
+
+    var requestParams = null; // 记录请求的参数
+
+    function createTask (params) {
         ajax.post({
             url: '/opstasks/' + companyId,
             headers: {
                 'Content-Type': 'application/json;charset=UTF-8'
             },
-            data: JSON.stringify(taskData),
-            success: function (data) {
+            data: JSON.stringify(params),
+            success: function (res) {
                 $.notify.progressStop();
-                $.notify.info('创建成功');
-                if ($scope.isInPage) {
-                    history.back();
-                }
-                $timeout(function () {
-                    var url = '/templates/task/task-detail.html?id=' + data.id +
-                        '&taskType=' + taskData.task_type_id + '&mother_task_id=' + taskId;
+                if (res.code === 201) {
+                    $.notify.info('创建成功');
                     if ($scope.isInPage) {
-                        var record = {
-                            device_sn: $scope.device.sn,
-                            status: '有故障'
-                        };
-                        onAndroidCb_updateDeviceRecord(JSON.stringify(record));     // 调用任务页更新设备状态
-                    } else {
-                        url += '&finishPage=1';
+                        history.back();
                     }
-                    window.location.href = url;       // 设置finish=1，这样在Android端在打开新页面时，会将当前页finish掉
-                }, 300);
+                    $timeout(function () {
+                        var url = '/templates/dts/dts-detail.html?id=' + res.id +
+                            '&taskType=' + params.task_type_id + '&mother_task_id=' + taskId;
+                        if ($scope.isInPage) {
+                            var record = {
+                                device_sn: $scope.device.sn,
+                                status: '有故障'
+                            };
+                            onAndroidCb_updateDeviceRecord(JSON.stringify(record));     // 调用任务页更新设备状态
+                        } else {
+                            url += '&finishPage=1';
+                        }
+                        window.location.href = url;       // 设置finish=1，这样在Android端在打开新页面时，会将当前页finish掉
+                    }, 300);
+                } else if (res.code === 400) {
+                    $.notify.error(res.message);
+                } else if (res.code === 409) { // 部分设备存在相同缺陷类型的缺陷单
+                    var conflictDeviceSns = res.data;
+                    var tmpDevices = [];
+                    params.devices.forEach(function (d) {
+                        if (conflictDeviceSns.indexOf(d.sn) >= 0) {
+                            tmpDevices.push(Object.assign({}, d));
+                        }
+                    });
+                    $scope.defectConflictDevices = tmpDevices;
+                    requestParams = Object.assign({}, params);
+                    $scope.conflictSubmitError = null;
+                    $scope.toggleWarningModal();
+                    $scope.$apply();
+                }
+
             },error: function () {
                 $.notify.progressStop();
                 $.notify.error('创建失败');
                 console.log('error');
             }
         });
+    }
+
+    $scope.toggleWarningModal = function () {
+        $scope.warningModalVisible = !$scope.warningModalVisible;
+    };
+
+    $scope.checkConflictDevice = function (d) {
+        // 选中重复的设备
+        d.checked = !d.checked;
+    };
+
+    $scope.submitIgnoreConflictCheck = function () { // 不检查重复
+        requestParams.dts_device_defect_check = false;
+        // 将未勾选的设备去除
+        var toRemoveSns = [];
+        $scope.defectConflictDevices.forEach(function (d) {
+            if (!d.checked) {
+                toRemoveSns.push(d.sn);
+            }
+        });
+        var devices = [];
+        requestParams.devices.forEach(function (d) {
+            if (toRemoveSns.indexOf(d.sn) < 0) {
+                devices.push(d);
+            }
+        });
+        if (!devices.length) {
+            $scope.conflictSubmitError = '忽略后该缺陷单没有需要提交的设备，无需创建';
+            return;
+        }
+        var tmpParams = Object.assign({}, requestParams, {devices: devices});
+        createTask(tmpParams);
     };
 
     init();
@@ -512,4 +743,106 @@ app.controller('StationDtsListCtrl', ['$scope', '$rootScope', 'scrollerService',
     };
 
     $scope.getDataList();
+}]);
+
+app.controller('DtsEditCtrl', ['$scope', '$timeout', 'ajax', function ($scope, $timeout, ajax) {
+    var task = $scope.task;
+    $scope.expectTime = task.expect_complete_time ? task.expect_complete_time.substring(0, 10) : null;
+    $scope.taskType = {
+        id: task.task_type_id,
+        name: task.task_type_name
+    };
+
+    function init() {
+        $timeout(function () {
+            initDatePicker();
+            initTaskTypeList();
+        }, 500);
+    }
+
+    init();
+
+    function initDatePicker() {
+        document.getElementById('expectedTime1').addEventListener('tap', function() {
+            var _self = this;
+            if(_self.picker) {
+                _self.picker.show(function (rs) {
+                    // 如果所选日期为今天，且已经是晚上18:00以后，则时间设置为23:59:59
+                    $scope.expectTime = rs.text;
+                    $scope.$apply();
+                });
+            } else {
+                // 可选的开始时间为今天和expect_complete_time中较早的那一个
+                var today = new Date().toString('YYYY-MM-DD');
+                var startDate = new Date();
+                if ($scope.expectTime && $scope.expectTime < today) {
+                    startDate = new Date($scope.expectTime);
+                }
+                var options = {type: 'date', beginDate: startDate};
+                _self.picker = new mui.DtPicker(options);
+                _self.picker.show(function(rs) {
+                    $scope.expectTime = rs.text;
+                    $scope.$apply();
+                });
+            }
+        }, false);
+    }
+
+    function initTaskTypeList() {
+        var taskTypes = [{
+            value: 8,
+            text: '一般缺陷'
+        }, {
+            value: 9,
+            text: '严重缺陷'
+        }, {
+            value: 10,
+            text: '致命缺陷'
+        }];
+        var taskTypePicker = new mui.PopPicker();
+        taskTypePicker.setData(taskTypes);
+        var taskTypeButton = document.getElementById('taskTypePicker');
+        taskTypePicker.pickers[0].setSelectedIndex(task.task_type_id - 8); // 默认选中
+
+        taskTypeButton.addEventListener('click', function(event) {
+            taskTypePicker.show(function(items) {
+                $scope.taskType = {
+                    id: items[0].value,
+                    name: items[0].text
+                };
+                $scope.$apply();
+            });
+        }, false);
+        // 默认使用一般缺陷
+    }
+
+    $scope.submitAndBack = function() {   // 缺陷修改
+        var params = Object.assign({}, task, {
+            expect_complete_time: $scope.expectTime + ' 20:00:00',
+            task_type_id: $scope.taskType.id
+        });
+        ajax.put({
+            url: '/opstasks/' + task.id,
+            data: JSON.stringify(params),
+            contentType:"application/json",
+            headers: {
+                Accept: "application/json"
+            },
+            success: function (data) {
+                Object.assign($scope.task, data);
+                $scope.$apply();
+                $.notify.info('修改成功');
+                $timeout(function () {
+                    $scope.cancel();
+                }, 500);
+            },
+            error: function () {
+                $.notify.error('缺陷修改发生异常');
+            }
+        })
+    };
+
+    $scope.cancel = function () {
+        window.history.back();
+    }
 }]);
