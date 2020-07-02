@@ -23,15 +23,16 @@ var defaultEnergyMenus = [
         name: '质量报告',
         icon: 'icon-dashboard-energy-quality-report',
         templateUrl: '/templates/energy/quality-report.html'
-    }, {
-        name: '设备监控',
-        icon: 'icon-device-monitor-new',
-        templateUrl: '/templates/site/device-monitor-list.html'
-    }, {
-        name: '设备档案',
-        icon: 'icon-archives-new',
-        templateUrl: '/templates/site/static-devices/device-home.html'
-    }
+    },
+    // {
+    //     name: '设备监控',
+    //     icon: 'icon-device-monitor-new',
+    //     templateUrl: '/templates/site/device-monitor-list.html'
+    // }, {
+    //     name: '设备档案',
+    //     icon: 'icon-archives-new',
+    //     templateUrl: '/templates/site/static-devices/device-home.html'
+    // }
 ];
 
 app.provider('appStoreProvider', function () {
