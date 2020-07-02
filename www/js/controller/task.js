@@ -2386,7 +2386,7 @@ app.controller('TaskHandlerUpload', ['$scope', '$timeout', 'mediaService', funct
     $scope.audioUrl = null;
     $scope.audioDuration = null;
     $scope.videoUrl = null;
-    $scope.audioVideoEnabled = true; //window.android && window.android.captureVideo;
+    $scope.audioVideoEnabled = window.android && window.android.captureVideo;
 
     function checkAndUploadVideoAndAudio(outputParam) { // 如果检测到有视频或语音，先上传得到链接后，写入outputParam，再调用callback进行提交
         function uploadFinish() {
@@ -2480,7 +2480,7 @@ app.controller('TaskRecheckCtrl', ['$scope', '$timeout', 'mediaService', functio
     $scope.audioUrl = null;
     $scope.audioDuration = null;
     $scope.videoUrl = null;
-    $scope.audioVideoEnabled = true; // window.android && window.android.captureVideo;
+    $scope.audioVideoEnabled = window.android && window.android.captureVideo;
 
     $scope.onUpdateVoice = function (url, duration) {
         $scope.audioUrl = url;
