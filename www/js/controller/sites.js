@@ -140,7 +140,7 @@ function findFirstLeafOfTree(data) {
 app.controller('SiteListCtrl', ['$scope', 'ajax', 'userService', 'appStoreProvider', function ($scope, ajax, userService, appStoreProvider) {
     $scope.role = userService.getUserRole();
     $scope.selectedApps = [];
-
+    $scope.isEnergyPlatform = gIsEnergyPlatform;
     $scope.openMap = function () {
         location.href='/templates/map.html?name=' + $scope.currentSite.name + '&stationSn=' + $scope.currentSite.sn;
     };
@@ -407,7 +407,9 @@ app.controller('EventListCtrl', ['$scope', 'scrollerService', 'userService', 'aj
             page_start:0,
             page_len: 500,
             secho: 1,
-            status: checked
+            status: checked,
+            starttime: moment().subtract(3, 'months').format('YYYY-MM-DDTHH:mm:ss.000') + 'Z',
+            endtime: moment().format('YYYY-MM-DDTHH:mm:ss.000') + 'Z'
         };
         if ($scope.isDevice){
             params.deviceSn = $scope.sn;
@@ -574,7 +576,7 @@ app.controller('SiteDocsCtrl', ['$scope', 'ajax', 'platformService', function ($
             case 'png':
             case 'jpg':
             case 'bmp':
-                icon = null;
+                icon = 'icon-doc-picture';
                 doc['isImage'] = true;
                 break;
         }

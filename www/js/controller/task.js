@@ -40,7 +40,7 @@ var TaskActionName = {
     8: '评论',
     9: {
         name: '抢单',
-        color: '#f0ad4e'
+        color: '#00BFA5'
     },
     10: '已到达，开始处理',
     11: '提交处理结果',
@@ -185,13 +185,18 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
     $scope.popup_visible = false;
     $scope.searchSiteResult = [];
     $scope.role = userService.getUserRole();
+    $scope.navMenus = [_getDefaultHomeMenu()];
     if (gShowEnergyPage) {
-        $scope.navMenus = [_getDefaultHomeMenu(), _getEnergyMenu(), _getTaskTodoMenu()];
-    } else if ($scope.role === 'OPS_ADMIN' || $scope.role === 'OPS_OPERATOR') {
-        $scope.navMenus = [_getDefaultHomeMenu(), _getGrabTasksMenu(), _getTaskTodoMenu()];
-    } else {
-        // 普通用户或平台管理员，不能看到抢单页
-        $scope.navMenus = [_getDefaultHomeMenu(), _getTaskTodoMenu()];
+        $scope.navMenus.push(_getEnergyMenu());
+    }
+    if (platformService.platHasOpsFunc()) {
+        if ($scope.role === 'OPS_ADMIN' || $scope.role === 'OPS_OPERATOR') {
+            $scope.navMenus.push(_getGrabTasksMenu());
+            $scope.navMenus.push(_getTaskTodoMenu());
+        } else if ($scope.role === 'USER') {
+            // 普通用户或平台管理员，不能看到抢单页
+            $scope.navMenus.push(_getTaskTodoMenu());
+        }
     }
     var menuInited = false;     // 导航栏菜单是否初始化
 
@@ -215,6 +220,7 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
                         s.search_key = s.name.toLowerCase() + ' ' + s.sn.toLowerCase();
                         stationSns.push(s.sn);
                     }
+                    s.urlName = encodeURIComponent(s.name);
                     s.full_address = (s.address_province || '') + (s.address_city || '') + (s.address_district || '') + (s.address || '');
                     sites.push(s);
                 });
@@ -759,7 +765,7 @@ app.controller('CompetitionTaskListCtrl', ['$scope', '$rootScope', 'scrollerServ
             return;
         }
         ajax.get({
-            url: "/opstasks/" + companyId,
+            url: "/opstasks/competition",
             data: {
                 stage: TaskStatus.Competition
             },
@@ -781,7 +787,7 @@ app.controller('CompetitionTaskListCtrl', ['$scope', '$rootScope', 'scrollerServ
             error: function (a, b, c) {
                 $scope.isLoading = false;
                 $scope.$apply();
-                $.notify.error('读取待办失败');
+                $.notify.error('读取抢单任务失败');
             }
         });
     };
@@ -1900,7 +1906,7 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
         var param = {
             transfer_user: accounts.join(',')
         };
-        $scope.commonPostActionWithParams($scope.taskData.id, TaskAction.Transfer, param, function (data) {
+        $scope.commonPostActionWithParams($scope.taskData.id, TaskAction.Grab, param, function (data) {
             refreshAfterPostAction(data);
             $scope.acceptPickerVisible = false;
             $scope.$apply();

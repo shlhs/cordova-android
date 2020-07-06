@@ -34,6 +34,9 @@ app.controller('LoginCtrl', ['$scope', '$timeout', 'platformService', 'userServi
     $scope.inputChange();
 
     $scope.login = function () {
+        if (!$scope.enable) {
+            return;
+        }
         $scope.enable = false;
         if (defaultPlatIpAddr) {
             login();
@@ -44,6 +47,7 @@ app.controller('LoginCtrl', ['$scope', '$timeout', 'platformService', 'userServi
 
     $scope.setAutoLogin = function(isAutoLogin){
         $scope.isAutoLogin = isAutoLogin;
+        $scope.enable = true;
     };
 
     function toast(message) {
@@ -56,7 +60,7 @@ app.controller('LoginCtrl', ['$scope', '$timeout', 'platformService', 'userServi
     function login() {
         $scope.error = '';
         var data = {
-            username: $scope.username,
+            username: $scope.username.trim(),
             password: $scope.password
         };
         var loginUrl = platformService.getAuthHost();
@@ -81,7 +85,7 @@ app.controller('LoginCtrl', ['$scope', '$timeout', 'platformService', 'userServi
                 var result = KJUR.jws.JWS.verify(data.token, 'zjlhstest');
                 if (result) {
                     if (!getStorageItem('latestPlatform')) {
-                        platformService.setLatestPlatform({url: defaultPlatIpAddr + ":8099/v1"})
+                        platformService.setLatestPlatform({url: defaultPlatIpAddr + ":8099/v1"});
                     }
                     userService.setAccountToken(data.token);
                     getUserInfo();
@@ -108,8 +112,16 @@ app.controller('LoginCtrl', ['$scope', '$timeout', 'platformService', 'userServi
     }
 
     function getUserInfo() {
+        // 获取平台开关配置
         ajax.get({
-            url: '/user/' + $scope.username,
+            url: '/plat-function-switch',
+            async: false,
+            success: function (data) {
+                platformService.setPlatFuncSwitch(data);
+            }
+        });
+        ajax.get({
+            url: '/user/' + $scope.username.trim(),
             ignoreAuthExpire: true,
             success: function (data) {
                 userService.saveLoginUser(data, $scope.password);
