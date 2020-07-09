@@ -3,7 +3,7 @@
  * Created by liucaiyun on 2017/5/4.
  */
 var app = angular.module('myApp', ['ngAnimate', 'ui.router', 'ui.router.state.events']);
-var defaultPlatIpAddr = "http://118.190.51.135";     // 平台默认ip，格式为：http://118.190.51.135
+var defaultPlatIpAddr = "http://106.14.60.253";     // 平台默认ip，格式为：http://118.190.51.135
 var defaultThumborHost = "";        // 缩放图的host，空则使用defaultPlatIpAddr
 var gShowEnergyPage = false;     // 是否显示能效页面，不显示能效页面时运维人员会看到抢单页面
 
