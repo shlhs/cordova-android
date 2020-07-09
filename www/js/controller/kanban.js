@@ -959,6 +959,7 @@ app.controller('SiteOverviewCtrl', function ($scope, ajax, varDataService) {
             getLoadTrend(data.realtime_load_var);
             getLoadRealtime(data.realtime_load_var);
             getElectricData(data.sum_epf_var);
+            $scope.$apply();
         }
     });
 
