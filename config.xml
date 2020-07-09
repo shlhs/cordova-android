@@ -27,6 +27,7 @@
         <icon height="120" src="res/icon/ios/icon-60@2x.png" width="120" />
         <icon height="76" src="res/icon/ios/icon-76.png" width="76" />
         <icon height="152" src="res/icon/ios/icon-76@2x.png" width="152" />
+        <icon height="20" src="res/icon/ios/icon-20.png" width="20" />
         <icon height="40" src="res/icon/ios/icon-40.png" width="40" />
         <icon height="80" src="res/icon/ios/icon-40@2x.png" width="80" />
         <icon height="57" src="res/icon/ios/icon.png" width="57" />
@@ -35,8 +36,10 @@
         <icon height="144" src="res/icon/ios/icon-72@2x.png" width="144" />
         <icon height="29" src="res/icon/ios/icon-small.png" width="29" />
         <icon height="58" src="res/icon/ios/icon-small@2x.png" width="58" />
+        <icon height="87" src="res/icon/ios/icon-small@3x.png" width="87" />
         <icon height="50" src="res/icon/ios/icon-50.png" width="50" />
         <icon height="100" src="res/icon/ios/icon-50@2x.png" width="100" />
+        <icon height="1024" src="res/icon/ios/icon-1024.png" width="1024" />
         <splash src="res/screen/ios/Default@2x~universal~anyany.png" />
         <chcp>
             <auto-download enabled="false" />
@@ -64,6 +67,7 @@
     <preference name="AutoHideSplashScreen" value="true" />
     <preference name="SplashScreenDelay" value="1" />
     <preference name="FadeSplashScreenDuration" value="0" />
+    <plugin name="cordova-plugin-media-capture" spec="^3.0.3" />
     <engine name="android" spec="^5.2.2" />
     <engine name="ios" spec="^4.5.5" />
 </widget>
