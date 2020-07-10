@@ -224,14 +224,15 @@ app.config(['appStoreProviderProvider', function (appStoreServiceProvider) {
                     sn: 'station-monitor/video-monitor',
                     defaultChecked: true
                 },
+                // {
+                //     name: '设备档案',
+                //     icon: 'icon-archives',
+                //     templateUrl: '/templates/site/static-devices/device-home.html',
+                //     url: 'static-devices',
+                //     sn: 'station-monitor/device-documents',
+                //     defaultChecked: true && !gIsEnergyPlatform
+                // },
                 {
-                    name: '设备档案',
-                    icon: 'icon-archives',
-                    templateUrl: '/templates/site/static-devices/device-home.html',
-                    url: 'static-devices',
-                    sn: 'station-monitor/device-documents',
-                    defaultChecked: true && !gIsEnergyPlatform
-                }, {
                     name: '月度报告',
                     icon: 'icon-reports',
                     templateUrl: '/templates/site/reports.html',
@@ -298,33 +299,34 @@ app.config(['appStoreProviderProvider', function (appStoreServiceProvider) {
                     role: ['OPS_OPERATOR', 'OPS_ADMIN']
                 }
             ]
-        }, {
-            name: '能源管理',
-            children: [
-                {
-                    name: '用能统计',
-                    icon: 'icon-energy-statistics',
-                    templateUrl: '/templates/energy/statistics.html',
-                    url: 'energy-overview',
-                    sn: 'energy/overview',
-                    defaultChecked: true
-                }, {
-                    name: '用能报表',
-                    icon: 'icon-energy-history',
-                    templateUrl: '/templates/energy/energy-report.html',
-                    url: 'energy-report',
-                    sn: 'energy/report',
-                    defaultChecked: true
-                }, {
-                    name: '抄表',
-                    icon: 'icon-energy-reading',
-                    templateUrl: '/templates/energy/meter-reading.html',
-                    sn: 'energy/meter-reading',
-                    url: 'energy-meter-reading',
-                    defaultChecked: true
-                }
-            ]
-        }
+        },
+        // {
+        //     name: '能源管理',
+        //     children: [
+        //         {
+        //             name: '用能统计',
+        //             icon: 'icon-energy-statistics',
+        //             templateUrl: '/templates/energy/statistics.html',
+        //             url: 'energy-overview',
+        //             sn: 'energy/overview',
+        //             defaultChecked: true
+        //         }, {
+        //             name: '用能报表',
+        //             icon: 'icon-energy-history',
+        //             templateUrl: '/templates/energy/energy-report.html',
+        //             url: 'energy-report',
+        //             sn: 'energy/report',
+        //             defaultChecked: true
+        //         }, {
+        //             name: '抄表',
+        //             icon: 'icon-energy-reading',
+        //             templateUrl: '/templates/energy/meter-reading.html',
+        //             sn: 'energy/meter-reading',
+        //             url: 'energy-meter-reading',
+        //             defaultChecked: true
+        //         }
+        //     ]
+        // }
     ]);
 }]);
 
