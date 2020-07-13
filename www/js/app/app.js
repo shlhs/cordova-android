@@ -5,7 +5,7 @@
 var app = angular.module('myApp', ['ngAnimate', 'ui.router', 'ui.router.state.events']);
 var loginExpireCheckEnable = false;       // 是否检查鉴权过期
 var defaultPlatIpAddr = "";     // 平台默认ip，格式为：http://118.190.51.135
-var defaultImgThumbHost = "";     // 如果为空则与 host一样
+var defaultImgThumbHost = "http://114.215.90.83";     // 114环境的图片压缩host
 // var gQrDownloadUrl = defaultPlatIpAddr + ':8123/version/qr.png'; // 二维码下载链接
 var gQrDownloadUrl = '/version/qr.png'; // 二维码下载链接
 var gShowEnergyPage = false;     // 是否显示能效页面，不显示能效页面时运维人员会看到抢单页面
