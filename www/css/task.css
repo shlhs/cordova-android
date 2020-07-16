@@ -87,6 +87,10 @@
     /* border-radius: 0 0 4px 4px;
     background-color: rgb(70,167,248); */
 }
+.task-status .recheck {
+    color: #ffa500;
+    border: #ffa500 1px solid;
+}
 .task-progress .task-deadline{
     color: #8f8f94;
     position: relative;

@@ -30,7 +30,7 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
     $scope.needResign = $scope.role === 'OPS_ADMIN';      // 是否需要指派维修工
     $scope.isForDevice = deviceSns && deviceSns.length > 0;
     $scope.taskData = {
-        voice_src: 'http://'
+        voice_src: null
     };
 
     $scope.images = [];

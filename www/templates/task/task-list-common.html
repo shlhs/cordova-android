@@ -52,8 +52,9 @@
                     </div>
                     <div class="task-status">
                         <!--<span style="color: #6f6f6f;margin: 0 2px;">{{task.current_handler_name}}</span>{{task.stage_name}}-->
+                        <span class="recheck" ng-if="task.recheck_stage_name">{{task.recheck_stage_name}}</span>
                         <span ng-if="!task.isMyself" style="color: #6f6f6f;">{{task.stage_name}}</span>
-                        <span ng-if="task.isMyself" style="color: #586bf3;">{{task.stage_name}}</span>
+                        <span ng-if="task.isMyself" style="color: #586bf3; margin-left: 2px;">{{task.stage_name}}</span>
                     </div>
                 </div>
             </li>
