@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.luohusi.kuaikong" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>MingYang</name>
+<widget id="com.cloud.acxion" version="1.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>aikexin</name>
     <description>
         电力物联云平台.
     </description>
@@ -58,5 +58,5 @@
     <plugin name="cordova-plugin-inappbrowser" spec="^4.0.0" />
     <plugin name="cordova-plugin-wkwebview-file-xhr" spec="^2.1.4" />
     <engine name="android" spec="^5.2.2" />
-    <engine name="ios" spec="5.1.1" />
+    <engine name="ios" spec="^5.1.1" />
 </widget>
