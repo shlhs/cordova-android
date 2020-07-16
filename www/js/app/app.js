@@ -4,7 +4,7 @@
  */
 var app = angular.module('myApp', ['ngAnimate', 'ui.router', 'ui.router.state.events']);
 var loginExpireCheckEnable = false;       // 是否检查鉴权过期
-var defaultPlatIpAddr = "";     // 平台默认ip，格式为：http://118.190.51.135
+var defaultPlatIpAddr = "http://47.107.249.131";     // 平台默认ip，格式为：http://118.190.51.135
 var defaultImgThumbHost = "";     // 如果为空则与 host一样
 // var gQrDownloadUrl = defaultPlatIpAddr + ':8123/version/qr.png'; // 二维码下载链接
 var gQrDownloadUrl = '/version/qr.png'; // 二维码下载链接
