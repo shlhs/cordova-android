@@ -46,7 +46,8 @@
                         </div>
                     </div>
                     <div class="task-status">
-                        {{task.stage_name}}
+                        <span class="recheck" ng-if="task.recheck_stage_name">{{task.recheck_stage_name}}</span>
+                        <span style="margin-left: 2px;">{{task.stage_name}}</span>
                     </div>
                 </li>
             </ul>

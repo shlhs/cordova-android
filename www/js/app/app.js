@@ -42,6 +42,7 @@ app.controller('LoginExpireCtrl', ['$scope', 'userService', function ($scope, us
 
 var UserRole = {SuperUser: 'SUPERUSER', OpsAdmin: 'OPS_ADMIN', OpsOperator: 'OPS_OPERATOR', Normal: 'USER'};
 
+var gUserAccount = null;
 app.service('userService', ['$rootScope', function ($rootScope) {
 
     this.setAccountToken = function (token) {
@@ -73,7 +74,9 @@ app.service('userService', ['$rootScope', function ($rootScope) {
         var userStr = getStorageItem('user');
         if (userStr)
         {
-            return JSON.parse(userStr);
+            var user = JSON.parse(userStr);
+            gUserAccount = user.account;
+            return user;
         } else {
             return null;
         }

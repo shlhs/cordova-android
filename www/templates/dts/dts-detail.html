@@ -103,7 +103,7 @@
                             <span class="task-type" ng-class="{'ergent': taskData.task_type_id===3}">{{taskData.task_type_name}}:</span>
                             <span style="font-size: 14px;">{{taskData.no}}</span>
                             <label class="btn-status" style="float: right;" ng-class="{running: taskData.stage_id!=='已完成', closed: taskData.stage_name==='已完成'}">
-                                {{taskData.isToStart ? '任务未开始' : taskData.stage_name}}
+                                {{taskData.isToStart ? '任务未开始' : (taskData.stage_name || taskData.recheck_stage_name)}}
                             </label>
                         </div>
                         <ul class="task-detail-info-group" ng-if="taskDetailVisible">
@@ -180,7 +180,7 @@
                                 <span class="value" style="padding-left: 50px;">{{taskData.desp}}</span>
                             </li>
                             <audio-recorder audio="createRecord.voice_src" ng-if="createRecord.voice_src" duration="createRecord.voice_duration"></audio-recorder>
-                            <div ng-if="createRecord.picture_list || createRecord.video_src" style="font-size: 13px;color: #333;">
+                            <div ng-if="createRecord.picture_list.length || createRecord.video_src" style="font-size: 13px;color: #333;">
                                 <div>缺陷视频/图片</div>
                                 <image-grid-list images="createRecord.picture_list" video="createRecord.video_src"></image-grid-list>
                             </div>

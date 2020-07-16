@@ -78,6 +78,7 @@ function formatTaskHistoryDesp(taskHistory) {     // 根据任务的action_id处
 }
 
 function formatTaskStatusName(task) {   // 根据任务状态转换任务描述
+    var userAccount = gUserAccount;
     var stage = task.stage, status = '';
     switch (task.stage_id){
         case TaskStatus.Closed:
@@ -109,6 +110,15 @@ function formatTaskStatusName(task) {   // 根据任务状态转换任务描述
             } else {
                 stage = '待处理';
             }
+    }
+    var userIsCurrentHandler = accountInHandlers(userAccount, task.current_handler);
+    var userIsRechecker = accountInHandlers(userAccount, task.recheck_handlers);
+    task.recheck_stage_name = '';
+    if (task.stage_id !== TaskStatus.Closed && userIsRechecker) {
+        if (!userIsCurrentHandler || task.stage_id === TaskStatus.ToClose) { // 如果用户是复测人，但不是处理人，且任务不处于待审批状态，则只显示 复测 状态
+            stage = '';
+        }
+        task.recheck_stage_name = '待复测';
     }
     task.stage_name = stage;
     task.status = status;
@@ -159,6 +169,12 @@ function formatUpdateTime(t) {      // 格式化更新时间，有日期和时�
     return t.substring(5, 16);
 }
 
+function accountInHandlers(account, handlers) {
+    if (!handlers) {
+        return false;
+    }
+    return handlers.split(',').indexOf(account) >= 0;
+}
 app.constant('TaskAction', TaskAction);
 app.constant('TaskStatus', TaskStatus);
 app.constant('UserRole', UserRole);
@@ -494,7 +510,7 @@ function isTodoTask(task, username, userRole) {
             return true;
         }
         // 复测只有在提交审核之前才能算作是待办
-        if (task.stage_id !== TaskStatus.ToClose && task.recheck_handlers && task.recheck_handlers.split(',').indexOf(username) >= 0) {
+        if (task.stage_id !== TaskStatus.Closed && task.recheck_handlers && task.recheck_handlers.split(',').indexOf(username) >= 0) {
             return true;
         }
     } else if (task.stage_id === TaskStatus.Closed && task.finish_time && !task.has_comment && userRole === 'USER') {
