@@ -1,4 +1,39 @@
-
+var defaultEnergyMenus = [
+    {
+        name: '用电概况',
+        icon: 'icon-dashboard-energy-overview',
+        templateUrl: '/templates/energy/overview.html'
+    }, {
+        name: '电费分析',
+        icon: 'icon-dashboard-energy-cost-analysis',
+        templateUrl: '/templates/energy/cost-analysis.html'
+    }, {
+        name: '用电负荷',
+        icon: 'icon-dashboard-energy-charge',
+        templateUrl: '/templates/energy/load-analysis.html'
+    }, {
+        name: '最大需量',
+        icon: 'icon-dashboard-energy-max-demand',
+        templateUrl: '/templates/energy/max-demand.html'
+    }, {
+        name: '电能质量',
+        icon: 'icon-dashboard-energy-monitor',
+        templateUrl: '/templates/energy/quality-monitor.html'
+    }, {
+        name: '质量报告',
+        icon: 'icon-dashboard-energy-quality-report',
+        templateUrl: '/templates/energy/quality-report.html'
+    },
+    // {
+    //     name: '设备监控',
+    //     icon: 'icon-device-monitor-new',
+    //     templateUrl: '/templates/site/device-monitor-list.html'
+    // }, {
+    //     name: '设备档案',
+    //     icon: 'icon-archives-new',
+    //     templateUrl: '/templates/site/static-devices/device-home.html'
+    // }
+];
 
 app.provider('appStoreProvider', function () {
     var defaultApps = [];
@@ -31,7 +66,7 @@ app.provider('appStoreProvider', function () {
         return JSON.parse(getStorageItem("allApps"));
     }
 
-    function setMenuSns(snsObj, platFuncs) {
+    function setMenuSns(userRole, snsObj, platFuncs) {
         var platFormHasOpsAuth = platFuncs ? platFuncs.opsManagement : true;
 
         // 再判断菜单是否配置了运维权限
@@ -67,7 +102,10 @@ app.provider('appStoreProvider', function () {
                    // 如果没有保存过该菜单的配置，则根据平台功能权限显示菜单
                    if (sn.indexOf('ops-management') >= 0) {
                        if (hasOpsAuth) {
-                           children.push(child);
+                           // 根据是用户还是运维人员，判断增加哪个菜单
+                           if (child.role && child.role.indexOf(userRole) >= 0) {
+                               children.push(child);
+                           }
                        }
                        return;
                    }
@@ -150,11 +188,18 @@ app.config(['appStoreProviderProvider', function (appStoreServiceProvider) {
         {
             name: '站点监控',
             children: [
+                // {
+                //     name: '站点看板',
+                //     icon: 'icon-kanban',
+                //     templateUrl: '/templates/site/kanban.html',
+                //     url: 'site-kanban',
+                //     defaultChecked: true
+                // },
                 {
-                    name: '站点看板',
+                    name: '站点总览',
                     icon: 'icon-kanban',
-                    templateUrl: '/templates/site/kanban.html',
-                    url: 'site-kanban',
+                    templateUrl: '/templates/site/overview.html',
+                    url: 'site-overview',
                     defaultChecked: true
                 }, {
                     name: '画面',
@@ -185,61 +230,72 @@ app.config(['appStoreProviderProvider', function (appStoreServiceProvider) {
                     templateUrl: '/templates/site/static-devices/device-home.html',
                     url: 'static-devices',
                     sn: 'station-monitor/device-documents',
-                    defaultChecked: true
+                    defaultChecked: true && !gIsEnergyPlatform
                 }, {
                     name: '月度报告',
                     icon: 'icon-reports',
                     templateUrl: '/templates/site/reports.html',
                     url: 'monthly-report',
                     sn: 'station-monitor/month-report',
-                    defaultChecked: true
+                    defaultChecked: true && !gIsEnergyPlatform
                 }, {
                     name: '电子档案',
                     icon: 'icon-docs',
                     templateUrl: '/templates/site/docs.html',
                     url: 'site-documents',
                     sn: 'station-monitor/e-file',
-                    defaultChecked: true
+                    defaultChecked: true && !gIsEnergyPlatform
                 }, {
                     name: '历史曲线',
                     icon: 'icon-history-line',
                     templateUrl: '/templates/site-monitor/data-line.html',
                     url: 'data-line',
                     sn: 'station-monitor/data-line',
-                    defaultChecked: true
+                    defaultChecked: true && !gIsEnergyPlatform
                 }, {
                     name: '历史报表',
                     icon: 'icon-history-report',
                     templateUrl: '/templates/site-monitor/data-history.html',
                     url: 'data-history',
                     sn: 'station-monitor/data-report-v2',
-                    defaultChecked: true
+                    defaultChecked: true && !gIsEnergyPlatform
                 }
             ]
         }, {
             name: '运维中心',
             children: [
                 {
+                    name: '服务申请',
+                    icon: 'icon-add-task',
+                    templateUrl: '/templates/task/add-task.html',
+                    url: 'add-task',
+                    sn: 'ops-management/add-task',
+                    defaultChecked: true,
+                    role: ['USER']
+                }, {
                     name: '缺陷记录',
                     icon: 'icon-dashboard-dts',
                     templateUrl: '/templates/dts/dts-list.html',
                     url: 'dts-list',
                     sn: 'ops-management/defect-tasks',
-                    defaultChecked: true
+                    defaultChecked: true,
+                    role: ['OPS_OPERATOR', 'OPS_ADMIN']
                 }, {
                     name: '安全评测',
                     icon: 'icon-security',
                     templateUrl: '/templates/evaluate/evaluate-history.html',
                     sn: 'ops-management',
                     url: 'evaluate-security',
-                    defaultChecked: true
+                    defaultChecked: true,
+                    role: ['OPS_OPERATOR', 'OPS_ADMIN']
                 }, {
                     name: '停电维护',
                     icon: 'icon-poweroff',
                     templateUrl: '/templates/maintenance-check/check-history.html',
                     sn: 'ops-management',
                     url: 'poweroff-maintenance',
-                    defaultChecked: true
+                    defaultChecked: true,
+                    role: ['OPS_OPERATOR', 'OPS_ADMIN']
                 }
             ]
         }, {
@@ -248,7 +304,7 @@ app.config(['appStoreProviderProvider', function (appStoreServiceProvider) {
                 {
                     name: '用能统计',
                     icon: 'icon-energy-statistics',
-                    templateUrl: '/templates/energy/overview.html',
+                    templateUrl: '/templates/energy/statistics.html',
                     url: 'energy-overview',
                     sn: 'energy/overview',
                     defaultChecked: true
@@ -272,7 +328,7 @@ app.config(['appStoreProviderProvider', function (appStoreServiceProvider) {
     ]);
 }]);
 
-app.controller('AppStoreCtrl', function ($scope, appStoreProvider) {
+app.controller('AppStoreCtrl', ['$scope', 'appStoreProvider', function ($scope, appStoreProvider) {
     $scope.allApps = appStoreProvider.getAllApps();
     $scope.selectedApps = appStoreProvider.getSelectedApps();
     $scope.isEditing = false;
@@ -331,4 +387,4 @@ app.controller('AppStoreCtrl', function ($scope, appStoreProvider) {
         $scope.$emit('onNotifyAppUpdate');
     };
     setSelectedState();
-});
+}]);

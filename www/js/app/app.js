@@ -3,7 +3,13 @@
  * Created by liucaiyun on 2017/5/4.
  */
 var app = angular.module('myApp', ['ngAnimate', 'ui.router', 'ui.router.state.events']);
-const loginExpireCheckEnable = false;       // 是否检查鉴权过期
+var loginExpireCheckEnable = false;       // 是否检查鉴权过期
+var defaultPlatIpAddr = "http://47.111.182.35";     // 平台默认ip，格式为：http://118.190.51.135
+var defaultImgThumbHost = "";     // 如果为空则与 host一样
+// var gQrDownloadUrl = defaultPlatIpAddr + ':8123/version/qr.png'; // 二维码下载链接
+var gQrDownloadUrl = '/version/qr.png'; // 二维码下载链接
+var gShowEnergyPage = false;     // 是否显示能效页面，不显示能效页面时运维人员会看到抢单页面
+var gIsEnergyPlatform = false; // 是否是能源管理平台，是的话部分菜单默认不显示
 
 app.run(function ($animate) {
     $animate.enabled(true);
@@ -25,21 +31,20 @@ app.filter(
     }]
 );
 
-app.controller('MainCtrl', function ($scope, $rootScope, userService) {
+app.controller('MainCtrl', ['$scope', '$rootScope', 'userService', function ($scope, $rootScope, userService) {
+}]);
 
-});
-
-app.controller('LoginExpireCtrl', function ($scope, userService) {
+app.controller('LoginExpireCtrl', ['$scope', 'userService', function ($scope, userService) {
     $scope.gotoLogin = function () {
         // 先清空密码
         userService.setPassword('');
         window.location.href = '/templates/login.html';
     };
-});
+}]);
 
 var UserRole = {SuperUser: 'SUPERUSER', OpsAdmin: 'OPS_ADMIN', OpsOperator: 'OPS_OPERATOR', Normal: 'USER'};
 
-app.service('userService', function ($rootScope) {
+app.service('userService', ['$rootScope', function ($rootScope) {
 
     this.setAccountToken = function (token) {
         setStorageItem('accountToken', token);
@@ -53,6 +58,13 @@ app.service('userService', function ($rootScope) {
         setStorageItem('user', JSON.stringify(user));
         setStorageItem('username', user.account);
         setStorageItem('password', password);
+        if (user.permissions) {
+            const permissions = [];
+            user.permissions.forEach(function (perm) {
+                permissions.push(perm.authrity_name);
+            });
+            setStorageItem('permissions', permissions.join(','));
+        }
         setStorageItem('company', '');
         this.username = user.account;
         this.password = password;
@@ -67,6 +79,24 @@ app.service('userService', function ($rootScope) {
         } else {
             return null;
         }
+    };
+
+    this.getCompanyId = function () {
+        if (!getStorageItem("permissions")) {
+            return null;
+        }
+        var roles = getStorageItem("permissions").split(',');
+        for (var i=0; i<roles.length; i++) {
+            var role = roles[i];
+            if (role.indexOf("COMPANY_OPS_COMPANY_VIEWCOMPANY") === 0) {
+                return role.substring("COMPANY_OPS_COMPANY_VIEWCOMPANY".length);
+            }
+            //用户公司
+            if (role.indexOf("USER_COMPANY_USERUSER_COMPANY") === 0) {
+                return 'user' + role.substring("USER_COMPANY_USERUSER_COMPANY".length);
+            }
+        }
+        return null;
     };
 
     /* 获取用户角色：
@@ -143,7 +173,7 @@ app.service('userService', function ($rootScope) {
     this.company = this.getCompany();
 
     $rootScope.permission = {canEditTask: this.getUserRole() != UserRole.Normal && this.getUserRole() != UserRole.OpsOperator};
-});
+}]);
 
 app.service('platformService', function () {
     this.addPlatform = function (username, platform) {
@@ -169,8 +199,7 @@ app.service('platformService', function () {
 
     this.setLatestPlatform = function (platform) {
         setStorageItem('latestPlatform', JSON.stringify(platform));
-        this.host = platform.url;
-        this.ipAddress = this.host.substring(0, this.host.indexOf(':', 5));
+        this.host = platform.url.substring(0, platform.url.indexOf(':', platform.url.indexOf(':')+1));
         this.thumbHost = this.getImageThumbHost();
     };
 
@@ -183,59 +212,98 @@ app.service('platformService', function () {
         return null;
     };
 
+    this.setPlatFuncSwitch = function (data) {
+        if (data) {
+            setStorageItem('global-plat-fun-switch', JSON.stringify(data));
+        } else {
+            setStorageItem('global-plat-fun-switch', null);
+        }
+    };
+
+    this.platHasOpsFunc = function () { // 平台是否有运维功能
+        var str = getStorageItem('global-plat-fun-switch');
+        if (!str) {
+            return true;
+        }
+        var data = JSON.parse(str);
+        if (data.opsManagement === undefined) {
+            return true;
+        }
+        return data.opsManagement;
+    };
+
     this.getHost = function () {
         // 格式为： http://ip:port/v1
+        if (defaultPlatIpAddr) {
+            return defaultPlatIpAddr;
+        }
         var platform = this.getLatestPlatform();
-        return platform ? platform.url : null;
+        return platform ? platform.url.substring(0, platform.url.indexOf(':', platform.url.indexOf(':')+1)) : null;
+    };
+
+    this.getCloudHost = function () {
+        return this.host + ':8099/v1';
+        // return 'http://127.0.0.1:8099/v1';
     };
 
     this.getAuthHost = function () {
-        return this.ipAddress + ":8096/v1"
+        return this.host + ":8096/v1"
     };
 
     this.getImageThumbHost = function () {      // 获取图片压缩服务的地址
         // 格式为： http://ip:8888/unsafe
-        if (this.ipAddress)
+        if (defaultImgThumbHost) {
+            return defaultImgThumbHost + ":8888/unsafe";
+        }
+        if (this.host)
         {
-            return this.ipAddress + ":8888/unsafe"
+            return this.host + ":8888/unsafe"
         }
         return null;
     };
 
     this.getGraphHost = function () {
-        return this.ipAddress + ':8920/v1';
+        return this.host + ':8920/v1';
     };
 
     this.getGraphScreenUrl = function (graphSn) {
         // 新的监控画面服务
-        return this.ipAddress + ':8921/monitor.html?sn=' + graphSn;
+        return this.host + ':8921/monitor.html?sn=' + graphSn;
     };
 
     this.getDeviceMgmtHost = function () {
-        return this.ipAddress + ':8097';
+        return this.host + ':8097';
     };
 
     this.getOldMonitorScreenUrl = function (screenSn) {
         // 老的监控画面服务
-        return this.ipAddress + ':8098/monitor_screen?sn=' + screenSn;
+        return this.host + ':8098/monitor_screen?sn=' + screenSn;
     };
 
     this.getImageUrl = function (width, height, imageUrl) {
+        // When using gifsicle engine, filters will be skipped. Thumbor will not do smart cropping as well
+        var urlLength = imageUrl.length;
+        if(urlLength > 4 && imageUrl.toLocaleLowerCase().lastIndexOf('.gif') === (urlLength -4)) {
+            return imageUrl;
+        }
+
         return this.thumbHost + '/' + width + 'x' + height + '/' + imageUrl;
     };
 
     this.getIpcServiceHost = function () {
-        return this.ipAddress + ':8095/v1';
+        return this.host + ':8095/v1';
+    };
+
+    this.setUiMode = function (mode) {
+        setStorageItem('globalUiMode', mode);
     };
 
     this.host = this.getHost();
-    // this.host = 'http://127.0.0.1:8099/v1';
-    this.ipAddress = this.host ? this.host.substring(0, this.host.indexOf(':', 5)) : '';
     this.thumbHost = this.getImageThumbHost();
 });
 
 // routerService
-app.service('routerService', function ($timeout, $compile) {
+app.service('routerService', ['$timeout', '$compile', function ($timeout, $compile) {
     var pages = [], pageLength=0, currentIndex=0;
     var nextPage = {};      // 保存下一个页面的数据
     window.addEventListener('popstate', function () {
@@ -331,7 +399,7 @@ app.service('routerService', function ($timeout, $compile) {
             return false;
         }
     };
-});
+}]);
 
 app.directive('routePage', ['$log', 'routerService', function($log, routerService){
     return {
@@ -393,7 +461,7 @@ app.directive('rootPage', ['$log', 'routerService', function($log, routerService
 }]);
 // routerService end
 
-app.service('ajax', function ($rootScope, platformService, userService, routerService) {
+app.service('ajax', ['$rootScope', 'platformService', 'userService', 'routerService', function ($rootScope, platformService, userService, routerService) {
     var host = platformService.host;
     $rootScope.host = host;
     var username = userService.getUsername(), password = userService.getPassword();
@@ -404,7 +472,7 @@ app.service('ajax', function ($rootScope, platformService, userService, routerSe
 
     $rootScope.getCompany = function(callback) {
         $.ajax({
-            url: platformService.host + '/user/' + username + '/opscompany',
+            url: platformService.getCloudHost() + '/user/' + username + '/opscompany',
             xhrFields: {
                 withCredentials: true
             },
@@ -443,9 +511,8 @@ app.service('ajax', function ($rootScope, platformService, userService, routerSe
     };
 
     function request(option) {
-        if (option.url.indexOf("http://") !== 0){
-            option.url = platformService.host + option.url;
-            // option.url = 'http://127.0.0.1:8099/v1' + option.url;
+        if (option.url.indexOf("http://") !== 0 && option.url.indexOf("https://") !== 0){
+            option.url = platformService.getCloudHost() + option.url;
         }
         var headers = $.extend({
             Authorization: userService.getAccountToken(),
@@ -509,7 +576,7 @@ app.service('ajax', function ($rootScope, platformService, userService, routerSe
        option.type = 'patch';
        return request(option);
    }
-});
+}]);
 
 
 Date.prototype.format = function(fmt) {
@@ -740,7 +807,7 @@ app.controller('ImageZoomCtrl', function ($scope, $timeout) {
 
 });
 
-app.controller('BaseGalleryCtrl', function ($scope, $stateParams, $timeout) {
+app.controller('BaseGalleryCtrl', ['$scope', '$stateParams', '$timeout', function ($scope, $stateParams, $timeout) {
     // $scope.canDelete = false;
     // $scope.index = $stateParams.index;
     // $scope.images = $stateParams.images;
@@ -780,7 +847,7 @@ app.controller('BaseGalleryCtrl', function ($scope, $stateParams, $timeout) {
     $scope.hide = function () {
         history.back();
     };
-});
+}]);
 
 app.directive('dropDownMenu', function () {
     return {

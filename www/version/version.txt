@@ -1,0 +1,11 @@
+{
+	"versionCode": 230,
+	"versionName": "2.3.0",
+	"description": "",
+	"downloadUrl": "http://47.111.182.35:8123/version/xidianyun-2.3.0.apk",
+	"isLaunched": true,
+	"isGatedLaunch": true,
+	"forceUpdate": false,
+	"whiteList": ["zoujian"],
+	"webVersion": "20200720 18:00"
+}
