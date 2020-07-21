@@ -172,7 +172,7 @@ app.service('Permission', ['userService', 'UserRole', function (userService, Use
     };
 }]);
 
-app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvider', 'platformService', 'ajax', 'routerService', function ($scope, $timeout, userService, appStoreProvider, platformService, ajax, routerService) {
+app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvider', 'platformService', 'ajax', 'routerService', '$translate', function ($scope, $timeout, userService, appStoreProvider, platformService, ajax, routerService, $translate) {
     var role = userService.getUserRole();
     $scope.viewName = '';
     $scope.tabName = '';
@@ -398,7 +398,7 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
     function _getDefaultHomeMenu() {
         return {
             id: 'sites',
-            name: '首页',
+            name: $translate.instant('tab.home'),
             templateUrl: '/templates/site/site-home.html',
             icon: 'nav-sites'
         };
@@ -406,7 +406,7 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
     function _getEnergyMenu() {
         return {
             id: 'energy_mgmt',
-            name: '能效管理',
+            name: $translate.instant('tab.energy'),
             templateUrl: '/templates/energy/energy-home.html',
             icon: 'nav-energy'
         };
@@ -414,7 +414,7 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
     function _getGrabTasksMenu() {
         return {
             id: 'grab_tasks',
-            name: '抢单',
+            name: $translate.instant('tab.competition'),
             templateUrl: '/templates/task/task-competition-list.html',
             icon: 'nav-task-grab'
         };
@@ -424,14 +424,14 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
         if (role === 'OPS_ADMIN' || role === 'OPS_OPERATOR') {
             return {
                 id: 'my_tasks',
-                name: '我的待办',
+                name: $translate.instant('tab.todo'),
                 templateUrl: '/templates/task/task-todo-list.html',
                 icon: 'nav-all-tasks'
             };
         } else if (role === 'USER') {
             return {
                 id: 'my_tasks',
-                name: '我的服务',
+                name: $translate.instant('tab.service'),
                 templateUrl: '/templates/task/user-task-list.html',
                 icon: 'nav-service'
             };

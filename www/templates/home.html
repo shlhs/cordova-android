@@ -16,6 +16,8 @@
     <script type="text/javascript" src="../components/angular-ui-router/release/angular-ui-router.min.js"></script>
     <script type="text/javascript" src="../components/angular-animate/angular-animate.js"></script>
     <script type="text/javascript" src="../components/angular-ui-router/release/stateEvents.min.js"></script>
+    <script type="text/javascript" src="/js/lib/angular-translate.min.js"></script>
+    <!--<script type="text/javascript" src="/js/lib/angular-translate-loader-static-files.min.js"></script>-->
     <script type="text/javascript" src="../js/app/utils.js"></script>
     <script type="text/javascript" src="../js/app/app.js"></script>
     <script type="text/javascript" src="../js/service/appstore.js"></script>
@@ -83,7 +85,7 @@
     </label>
     <label class="tab-item" ng-click="chooseNav($event, 'setting')" ng-class="{'mui-active': tabName==='setting'}">
         <span class="mui-icon nav-icon nav-setting"></span>
-        <span class="mui-tab-label">我的</span>
+        <span class="mui-tab-label">{{ 'tab.me' | translate }}</span>
     </label>
 </nav>
 <div ui-view></div>

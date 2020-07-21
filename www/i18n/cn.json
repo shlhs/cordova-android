@@ -1,0 +1,17 @@
+{
+  "login": "登录",
+  "login.code": "平台",
+  "login.account": "用户名",
+  "login.account.placeholder": "请输入用户名",
+  "login.pwd": "密码",
+  "login.pwd.placeholder": "请输入密码",
+  "login.submitting": "正在登录",
+  "login.error": "用户名或密码错误",
+
+  "tab.home": "首页",
+  "tab.competition": "抢单",
+  "tab.todo": "待办",
+  "tab.me": "我的",
+  "tab.energy": "能效管理",
+  "tab.service": "我的服务"
+}

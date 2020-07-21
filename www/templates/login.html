@@ -13,6 +13,8 @@
     <script type="text/javascript" src="../components/angular/angular.min.js"></script>
     <script type="text/javascript" src="../components/angular-ui-router/release/angular-ui-router.min.js"></script>
     <script type="text/javascript" src="../components/angular-animate/angular-animate.js"></script>
+    <script type="text/javascript" src="/js/lib/angular-translate.min.js"></script>
+    <!--<script type="text/javascript" src="/js/lib/angular-translate-loader-static-files.min.js"></script>-->
     <script type="text/javascript" src="../components/angular-ui-router/release/stateEvents.min.js"></script>
     <script type="text/javascript" src="../js/app/utils.js"></script>
     <script type="text/javascript" src="../js/lib/jwt/jsrsasign-all-min.js"></script>
@@ -173,22 +175,22 @@
     <div class="login-area" ng-controller="LoginCtrl">
         <div class="login-form">
             <div class="form-item" ng-show="platformCodeVisible">
-                <label for="platform">平台</label>
-                <input type="text" id="platform" placeholder="请输入平台编号" ng-model="platformCode" ng-change="inputChange('platformCode')"></div>
+                <label for="platform">{{ 'login.code' | translate}}</label>
+                <input type="text" id="platform" placeholder="{{'login.code.placeholder' | translate}}" ng-model="platformCode" ng-change="inputChange('platformCode')"></div>
             <div class="form-item">
-                <label for="username">用户名</label>
-                <input type="text" id="username" ng-model="username" ng-change="inputChange('username')" placeholder="请输入账号">
+                <label for="username">{{ 'login.account' | translate }}</label>
+                <input type="text" id="username" ng-model="username" ng-change="inputChange('username')" placeholder="{{ 'login.account.placeholder' | translate }}">
             </div>
             <div class="form-item">
-                <label for="password">密码</label>
-                <input type="password" id="password" ng-model="password" ng-change="inputChange('password')" placeholder="请输入密码" ng-show="!passwordVisible">
+                <label for="password">{{ 'login.pwd' | translate }}</label>
+                <input type="password" id="password" ng-model="password" ng-change="inputChange('password')" placeholder="{{ 'login.pwd.placeholder' | translate }}" ng-show="!passwordVisible">
                 <i class="password-not-seen" ng-if="!passwordVisible" ng-click="togglePasswordVisible()"></i>
-                <input type="text" ng-model="password" ng-change="inputChange('password')" placeholder="请输入密码" ng-show="passwordVisible">
+                <input type="text" ng-model="password" ng-change="inputChange('password')" placeholder="{{ 'login.pwd.placeholder' | translate }}" ng-show="passwordVisible">
                 <i class="password-can-seen" ng-if="passwordVisible" ng-click="togglePasswordVisible()"></i>
             </div>
             <div class="login-btn" ng-class="{'enable': enable}" ng-click="login()">
-                <span ng-if="!isLogin">登录</span>
-                <span ng-if="isLogin">正在登录...</span>
+                <span ng-if="!isLogin">{{ 'login' | translate}}</span>
+                <span ng-if="isLogin">{{'login.submitting' | translate }}...</span>
             </div>
         </div>
     </div>

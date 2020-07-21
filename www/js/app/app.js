@@ -2,7 +2,7 @@
 /**
  * Created by liucaiyun on 2017/5/4.
  */
-var app = angular.module('myApp', ['ngAnimate', 'ui.router', 'ui.router.state.events']);
+var app = angular.module('myApp', ['ngAnimate', 'ui.router', 'ui.router.state.events', 'pascalprecht.translate']);
 var loginExpireCheckEnable = false;       // 是否检查鉴权过期
 var defaultPlatIpAddr = "";     // 平台默认ip，格式为：http://118.190.51.135
 var defaultImgThumbHost = "";     // 如果为空则与 host一样
@@ -10,6 +10,7 @@ var defaultImgThumbHost = "";     // 如果为空则与 host一样
 var gQrDownloadUrl = '/version/qr.png'; // 二维码下载链接
 var gShowEnergyPage = false;     // 是否显示能效页面，不显示能效页面时运维人员会看到抢单页面
 var gIsEnergyPlatform = false; // 是否是能源管理平台，是的话部分菜单默认不显示
+var LANGUAGE = "en";
 
 app.run(function ($animate) {
     $animate.enabled(true);
@@ -22,6 +23,27 @@ app.run(function ($animate) {
 //         requireBase: false//必须配置为false，否则<base href=''>这种格式带base链接的地址才能解析
 //     });
 // }]);
+
+app.config(function ($translateProvider) {
+
+    // 使用ajax同步加载，避免js的translate先调用，但是json文件未加载，导致无法显示翻译文本的问题
+    var lanJson = {};
+    $.ajax({
+        url: '../../i18n/' + LANGUAGE + '.json',
+        async: false,
+        success: function (data) {
+            lanJson = data;
+        }
+    });
+    //// 不用static-file-loader，因为是json文件是异步加载的，会导致controller里的js的translate不生效的情况
+    // $translateProvider.useStaticFilesLoader({
+    //     prefix: '../../i18n/',
+    //     suffix: '.json'
+    // });
+    $translateProvider.translations(LANGUAGE, lanJson);
+    $translateProvider.preferredLanguage(LANGUAGE);
+
+});
 
 app.filter(
     'to_trusted', ['$sce', function ($sce) {

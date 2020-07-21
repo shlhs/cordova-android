@@ -1,0 +1,18 @@
+{
+  "login": "Login",
+  "login.code": "Code",
+  "login.code.placeholder": "Please input platform code",
+  "login.account": "Account",
+  "login.account.placeholder": "Please input your account",
+  "login.pwd": "Password",
+  "login.pwd.placeholder": "Please input password",
+  "login.submitting": "Login",
+  "login.error": "Incorrect account or password",
+
+  "tab.home": "Home",
+  "tab.competition": "Order Grab",
+  "tab.todo": "Todo",
+  "tab.me": "My",
+  "tab.energy": "Energy",
+  "tab.service": "Service"
+}
