@@ -1,6 +1,7 @@
 {
   "login": "登录",
   "login.code": "平台",
+  "login.code.placeholder": "请输入平台编码",
   "login.account": "用户名",
   "login.account.placeholder": "请输入用户名",
   "login.pwd": "密码",

@@ -187,6 +187,8 @@ app.controller('LoginCtrl', ['$scope', '$timeout', 'platformService', 'userServi
 
 app.controller('AutoLoginCtrl', ['$scope', '$timeout', function ($scope, $timeout) {
 
+    loadTranslateFiles(LANGUAGE, true);
+
     $scope.autoLogin = function () {
         //先等1.5s
         // 先判断是否可以自动登录
