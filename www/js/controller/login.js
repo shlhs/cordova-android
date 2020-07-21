@@ -85,7 +85,7 @@ app.controller('LoginCtrl', ['$scope', '$timeout', 'platformService', 'userServi
                 var result = KJUR.jws.JWS.verify(data.token, 'zjlhstest');
                 if (result) {
                     if (!getStorageItem('latestPlatform')) {
-                        platformService.setLatestPlatform({url: defaultPlatIpAddr + ":8099/v1"})
+                        platformService.setLatestPlatform({url: defaultPlatIpAddr + ":8099/v1"});
                     }
                     userService.setAccountToken(data.token);
                     getUserInfo();
@@ -112,6 +112,14 @@ app.controller('LoginCtrl', ['$scope', '$timeout', 'platformService', 'userServi
     }
 
     function getUserInfo() {
+        // 获取平台开关配置
+        ajax.get({
+            url: '/plat-function-switch',
+            async: false,
+            success: function (data) {
+                platformService.setPlatFuncSwitch(data);
+            }
+        });
         ajax.get({
             url: '/user/' + $scope.username.trim(),
             ignoreAuthExpire: true,

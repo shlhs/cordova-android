@@ -140,7 +140,7 @@ function findFirstLeafOfTree(data) {
 app.controller('SiteListCtrl', ['$scope', 'ajax', 'userService', 'appStoreProvider', function ($scope, ajax, userService, appStoreProvider) {
     $scope.role = userService.getUserRole();
     $scope.selectedApps = [];
-
+    $scope.isEnergyPlatform = gIsEnergyPlatform;
     $scope.openMap = function () {
         location.href='/templates/map.html?name=' + $scope.currentSite.name + '&stationSn=' + $scope.currentSite.sn;
     };
