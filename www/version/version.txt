@@ -7,5 +7,5 @@
 	"isGatedLaunch": true,
 	"forceUpdate": false,
 	"whiteList": ["zoujian"],
-	"webVersion": "20200427 11:21"
+	"webVersion": "20200721 15:21"
 }
