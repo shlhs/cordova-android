@@ -433,8 +433,8 @@ app.controller('SiteHistoryTrendCtrl', function ($scope, ajax) {
     function getPfvSetting(varInfo) { // 获取变量对应的电价设置，如果不是有功电度或电价未配置，则返回null
         if (varInfo.var_code === 'EPr') { // 反向有功功率，使用发电
             return _getPfvOfDevice(varInfo, stationPfvSettingR, deviceChargeSettingR);
-        } else if (varInfo.unit.toLowerCase().indexOf('kw') === 0 || varInfo.unit.toLowerCase().indexOf('mw') === 0 ||
-            varInfo.var_code === 'EPf') { // 有功电度或以kw/mw为单位的变量
+        } else if (varInfo.unit && (varInfo.unit.toLowerCase().indexOf('kw') === 0 || varInfo.unit.toLowerCase().indexOf('mw') === 0 ||
+            varInfo.var_code === 'EPf')) { // 有功电度或以kw/mw为单位的变量
             return _getPfvOfDevice(varInfo, stationPfvSettingF, deviceChargeSettingF);
         }
         return null;
