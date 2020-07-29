@@ -406,7 +406,7 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
     function _getEnergyMenu() {
         return {
             id: 'energy_mgmt',
-            name: '能效管理',
+            name: '能效',
             templateUrl: '/templates/energy/energy-home.html',
             icon: 'nav-energy'
         };
@@ -424,14 +424,14 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
         if (role === 'OPS_ADMIN' || role === 'OPS_OPERATOR') {
             return {
                 id: 'my_tasks',
-                name: '我的待办',
+                name: '运维',
                 templateUrl: '/templates/task/task-todo-list.html',
                 icon: 'nav-all-tasks'
             };
         } else if (role === 'USER') {
             return {
                 id: 'my_tasks',
-                name: '我的服务',
+                name: '运维',
                 templateUrl: '/templates/task/user-task-list.html',
                 icon: 'nav-service'
             };
@@ -885,12 +885,18 @@ app.controller('CompetitionTaskListCtrl', ['$scope', '$rootScope', 'scrollerServ
 app.controller('TaskTodoListCtrl', ['$scope', '$rootScope', 'scrollerService', 'userService', 'ajax', 'TaskStatus', function ($scope, $rootScope, scrollerService, userService, ajax, TaskStatus) {
     var allTasks = [];
     var username = userService.user.account;
+    var userRole = userService.getUserRole();
     $scope.TaskStatus = TaskStatus;
     $scope.tasks = [];
     $scope.showType = 'todo';    // all, open, closed, todo
     $scope.isLoading = true;
     $scope.loadingFailed = false;
     $scope.todoCount = 0;
+    $scope.title = "我的待办";
+
+    if (userRole !== 'OPS_OPERATOR' && userRole !== 'OPS_ADMIN' ) {
+        $scope.title = "运维";
+    }
 
     $scope.getDataList = function() {
         scrollerService.initScroll("#taskList", $scope.getDataList);
