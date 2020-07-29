@@ -888,6 +888,13 @@
 .task-detail-info-group .icon{
     margin-right: 4px;
 }
+.english .task-detail-info-group .title {
+    width: auto;
+}
+.english .task-detail-info-group .value {
+    padding-left: 0;
+    float: right;
+}
 
 .teams-selector {
     overflow-y: auto;

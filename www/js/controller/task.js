@@ -78,38 +78,38 @@ function formatTaskHistoryDesp(taskHistory) {     // 根据任务的action_id处
 
 function formatTaskStatusName(task) {   // 根据任务状态转换任务描述
     var stage = task.stage, status = '';
-    switch (task.stage_id){
-        case TaskStatus.Closed:
-            if (task.finish_time) {
-                if (task.has_comment) {
-                    stage = '已完成';
-                } else {
-                    stage = '待评价';
-                }
-            } else {
-                stage = '已撤单';
-            }
-            break;
-        case TaskStatus.ToClose:
-            stage = '待审批';
-            break;
-        case TaskStatus.ToAccept:
-            stage = '待接单';
-            break;
-        case TaskStatus.ToAssign:
-            stage = '待指派';
-            break;
-        case TaskStatus.Competition:
-            stage = '待抢单';
-            break;
-        default:
-            if (task.task_type_id === TaskTypes.Xunjian) {
-                stage = '待巡检';
-            } else {
-                stage = '待处理';
-            }
-    }
-    task.stage_name = stage;
+    // switch (task.stage_id){
+    //     case TaskStatus.Closed:
+    //         if (task.finish_time) {
+    //             if (task.has_comment) {
+    //                 stage = '已完成';
+    //             } else {
+    //                 stage = '待评价';
+    //             }
+    //         } else {
+    //             stage = '已撤单';
+    //         }
+    //         break;
+    //     case TaskStatus.ToClose:
+    //         stage = '待审批';
+    //         break;
+    //     case TaskStatus.ToAccept:
+    //         stage = '待接单';
+    //         break;
+    //     case TaskStatus.ToAssign:
+    //         stage = '待指派';
+    //         break;
+    //     case TaskStatus.Competition:
+    //         stage = '待抢单';
+    //         break;
+    //     default:
+    //         if (task.task_type_id === TaskTypes.Xunjian) {
+    //             stage = '待巡检';
+    //         } else {
+    //             stage = '待处理';
+    //         }
+    // }
+    task.stage_name = task.stage;
     task.status = status;
     task.isToStart = task.create_time.substring(0, 16) > new Date().Format('yyyy-MM-dd HH:mm');      // 任务待开始
     return task;
@@ -172,7 +172,7 @@ app.service('Permission', ['userService', 'UserRole', function (userService, Use
     };
 }]);
 
-app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvider', 'platformService', 'ajax', 'routerService', '$translate', function ($scope, $timeout, userService, appStoreProvider, platformService, ajax, routerService, $translate) {
+app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvider', 'platformService', 'ajax', 'routerService', '$myTranslate', function ($scope, $timeout, userService, appStoreProvider, platformService, ajax, routerService, $myTranslate) {
     var role = userService.getUserRole();
     $scope.viewName = '';
     $scope.tabName = '';
@@ -398,7 +398,7 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
     function _getDefaultHomeMenu() {
         return {
             id: 'sites',
-            name: $translate.instant('tab.home'),
+            name: $myTranslate.instant('tab.home'),
             templateUrl: '/templates/site/site-home.html',
             icon: 'nav-sites'
         };
@@ -406,7 +406,7 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
     function _getEnergyMenu() {
         return {
             id: 'energy_mgmt',
-            name: $translate.instant('tab.energy'),
+            name: $myTranslate.instant('tab.energy'),
             templateUrl: '/templates/energy/energy-home.html',
             icon: 'nav-energy'
         };
@@ -414,7 +414,7 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
     function _getGrabTasksMenu() {
         return {
             id: 'grab_tasks',
-            name: $translate.instant('tab.competition'),
+            name: $myTranslate.instant('tab.competition'),
             templateUrl: '/templates/task/task-competition-list.html',
             icon: 'nav-task-grab'
         };
@@ -424,14 +424,14 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
         if (role === 'OPS_ADMIN' || role === 'OPS_OPERATOR') {
             return {
                 id: 'my_tasks',
-                name: $translate.instant('tab.todo'),
+                name: $myTranslate.instant('tab.todo'),
                 templateUrl: '/templates/task/task-todo-list.html',
                 icon: 'nav-all-tasks'
             };
         } else if (role === 'USER') {
             return {
                 id: 'my_tasks',
-                name: $translate.instant('tab.service'),
+                name: $myTranslate.instant('tab.service'),
                 templateUrl: '/templates/task/user-task-list.html',
                 icon: 'nav-service'
             };
@@ -494,7 +494,7 @@ function isTodoTask(task, username, userRole) {
     return false;
 }
 
-app.controller('TaskBaseCtrl', ['$scope', 'ajax', 'userService', 'appStoreProvider', function ($scope, ajax, userService, appStoreProvider) {
+app.controller('TaskBaseCtrl', ['$scope', 'ajax', 'userService', 'appStoreProvider', '$myTranslate', function ($scope, ajax, userService, appStoreProvider, $myTranslate) {
     var stationSn = GetQueryString("sn");
     var deviceSn = GetQueryString("device_sn");     // 如果设备sn不为空，则获取的是设备的运维记录
     $scope.pageTitle = deviceSn ? '运维记录' : '所有任务';
@@ -544,13 +544,13 @@ app.controller('TaskBaseCtrl', ['$scope', 'ajax', 'userService', 'appStoreProvid
             timeout: 30000,
             success: function (data) {
                 $.notify.progressStop();
-                $.notify.info('操作成功');
+                $.notify.info();
                 cb && cb(data);
             },
             error: function (data) {
                 $.notify.progressStop();
                 console.log('post action fail');
-                $.notify.error('操作失败');
+                $.notify.error($myTranslate.instant('submit failed'));
             }
         });
     };
@@ -567,13 +567,13 @@ app.controller('TaskBaseCtrl', ['$scope', 'ajax', 'userService', 'appStoreProvid
             timeout: 30000,
             success: function (data) {
                 $.notify.progressStop();
-                $.notify.info('操作成功');
+                $.notify.info($myTranslate.instant('submit successful'));
                 cb && cb(data);
             },
             error: function (data) {
                 $.notify.progressStop();
                 console.log('post action fail');
-                $.notify.error('操作失败');
+                $.notify.error($myTranslate.instant('submit failed'));
             }
         });
     };
@@ -662,6 +662,10 @@ app.controller('TaskBaseCtrl', ['$scope', 'ajax', 'userService', 'appStoreProvid
         }
         return user.name + (user.phone ? '/' + user.phone : '');
     };
+
+    $scope.isEnglish = function () {
+        return LANGUAGE === 'en-US';
+    }
 }]);
 
 app.controller('CompetitionTaskListCtrl', ['$scope', '$rootScope', 'scrollerService', 'userService', 'ajax', function ($scope, $rootScope, scrollerService, userService, ajax) {
@@ -1318,7 +1322,7 @@ function onAndroidCb_updateDeviceRecord(strRecord) {
     }
 }
 
-app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformService', '$window', 'ajax', 'routerService', function ($scope, $state, userService, platformService, $window, ajax, routerService) {
+app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformService', '$window', 'ajax', 'routerService', '$myTranslate', function ($scope, $state, userService, platformService, $window, ajax, routerService, $myTranslate) {
     $scope.TaskAction = TaskAction;
     $scope.TaskStatus = TaskStatus;
     $scope.TaskSource = TaskSource;
@@ -1422,10 +1426,11 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
                     TaskAction.Go, TaskAction.Arrive, TaskAction.Update, TaskAction.Apply, TaskAction.Close, TaskAction.Cancel];
                 res.forEach(function (action, i) {
                     var obj = TaskActionName[action.id];
-                    var name = obj.name || obj;
+                    // var name = obj.name || obj;
+                    var name = action.name;
                     var color = obj.color || '#03a9f4';
                     if (action.id === TaskAction.Update && task.task_type_id === TaskTypes.Xunjian) {
-                        name = '去检查';
+                        name = $myTranslate.instant('task.action.checkdevice');
                     }
                     $scope.actions.push({
                         id: action.id,
@@ -1472,13 +1477,14 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
             drawMap($scope.taskData);
         }
         formatTaskStatus();
-        if (DtsTaskType.indexOf(data.task_type_id) >= 0) {
-            $scope.taskName = '缺陷';
-        } else if (data.source === TaskSource.Inspect) {
-            $scope.taskName = '巡检';
-        } else {
-            $scope.taskName = '报修';
-        }
+        // if (DtsTaskType.indexOf(data.task_type_id) >= 0) {
+        //     $scope.taskName = '缺陷';
+        // } else if (data.source === TaskSource.Inspect) {
+        //     $scope.taskName = '巡检';
+        // } else {
+        //     $scope.taskName = '报修';
+        // }
+        $scope.taskName = data.source_name;
     }
 
     function drawMap(taskData) {
@@ -1580,7 +1586,7 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
         var handleResult = null;
         for (var i=0; i<historyList.length; i++){
             record = historyList[i];
-            formatTaskHistoryDesp(record);
+            // formatTaskHistoryDesp(record);
             formattedList.push(record);
             if (record.picture_list && record.picture_list.length) {
                 var pictures = [];
@@ -1742,8 +1748,8 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
             $scope.acceptPickerVisible = !$scope.acceptPickerVisible;
         },
         cancelTask: function () {       // 撤单
-            var btnArray = ['取消', '确定'];
-            mui.prompt('请输入撤单原因：', '', '撤销该工单', btnArray, function(e) {
+            var btnArray = [$myTranslate.instant('cancel'), $myTranslate.instant('confirm')];
+            mui.prompt($myTranslate.instant('task.tip.reason.revoke'), '', $myTranslate.instant('revoke thisorder'), btnArray, function(e) {
                 if (e.index === 1) {     // 是
                     $scope.postAction(TaskAction.Cancel, e.value);
                 }
@@ -1761,8 +1767,8 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
                 $scope.acceptPickerVisible = !$scope.acceptPickerVisible;
             } else {
                 // 如果只有一个，则直接确认
-                var btnArray = ['取消', '是'];
-                mui.confirm('是否接受该任务？', '接受该任务', btnArray, function(e) {
+                var btnArray = [$myTranslate.instant('cancel'), $myTranslate.instant('confirm')];
+                mui.confirm($myTranslate.instant('task.tip.desp.accept'), $myTranslate.instant("accept thisorder"), btnArray, function(e) {
                     if (e.index === 1) {     // 是
                         $scope.onAccept([]);
                     }
@@ -1770,8 +1776,8 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
             }
         },
         refuseTaskAssign: function () {     // 拒绝任务分配
-            var btnArray = ['取消', '确定'];
-            mui.prompt('请输入拒绝原因：', '', '拒绝该任务', btnArray, function(e) {
+            var btnArray = [$myTranslate.instant('cancel'), $myTranslate.instant('refuse')];
+            mui.prompt($myTranslate.instant('task.tip.reason.refuse'), '', $myTranslate.instant('refuse thisorder') + "?", btnArray, function(e) {
                 if (e.index === 1) {     // 是
                     $scope.postAction(TaskAction.Refuse, e.value);
                 }
@@ -1780,7 +1786,7 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
         gotoSpot: function () {     // 去现场
             if ($scope.taskData.isToStart) {
                 // 任务待开始，无法操作
-                $.notify.toast('任务还未开始，无法操作');
+                $.notify.toast($myTranslate.instant('task.action.setoff.nostart'));
             } else {
                 $scope.postAction(TaskAction.Go);
             }
@@ -1797,40 +1803,40 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
             innerPageQuery = query;
         },
         requestTaskComplete: function () {     // 请求关闭任务
-            var btnArray = ['取消', '确定'];
+            var btnArray = [$myTranslate.instant('cancel'), $myTranslate.instant('confirm')];
             // 如果是巡检任务，检查设备检查情况，如果设备检查没有完成，提示用户
-            var description = '确认任务已完成吗？';
-            var title = "提交给负责人审核";
+            var description = $myTranslate.instant('task.action.report.desp2');
+            var title = $myTranslate.instant('task.action.report.desp');
             if ($scope.taskData.task_type_id === TaskTypes.Xunjian && $scope.checkedDeviceCount < $scope.taskData.device_record.length) {
-                description = '设备检查未完成，确认提交吗？';
+                description = $myTranslate.instant('inspect.tip.report.notcomplete');
             }
             mui.confirm(description, title, btnArray, function(e) {
                 if (e.index === 1) {     // 是
                     // 如果用户提交了签到照片，则需要先提交一次更新记录，再提交审核
                     if ($scope.inspectUploadImages && $scope.inspectUploadImages.length) {
                         $scope.postAction(TaskAction.Update, null, $scope.inspectUploadImages, function () {
-                            $scope.postAction(TaskAction.Apply, "提交任务审核");
+                            $scope.postAction(TaskAction.Apply, $myTranslate.instant('task.action.report.desp'));
                         });
                     } else {
-                        $scope.postAction(TaskAction.Apply, "提交任务审核");
+                        $scope.postAction(TaskAction.Apply, $myTranslate.instant('task.action.report.desp'));
                     }
 
                 }
             });
         },
         rejectApply: function () {
-            var btnArray = ['取消', '驳回'];
-            mui.prompt('请输入驳回原因：', '', '驳回关闭请求', btnArray, function(e) {
+            var btnArray = [$myTranslate.instant('cancel'), $myTranslate.instant('reject')];
+            mui.prompt($myTranslate.instant('task.tip.reason.reject'), '', $myTranslate.instant('task.tip.desp.reject'), btnArray, function(e) {
                 if (e.index === 1) {     // 是
                     $scope.postAction(TaskAction.Reject, e.value);
                 }
             });
         },
         closeTask: function () {        // 关闭任务
-            var btnArray = ['取消', '关闭'];
-            mui.confirm('即将关闭任务', '关闭任务', btnArray, function(e) {
+            var btnArray = [$myTranslate.instant('cancel'), $myTranslate.instant('close task.order')];
+            mui.confirm($myTranslate.instant('task.action.close.desp'), $myTranslate.instant('close thisorder'), btnArray, function(e) {
                 if (e.index === 1) {     // 是
-                    $scope.postAction(TaskAction.Close, "关闭任务");
+                    $scope.postAction(TaskAction.Close, $myTranslate.instant('close thisorder'));
                 }
             });
         },
@@ -1856,15 +1862,16 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
     $scope.getScoreDesp = function () {
         switch ($scope.taskComment.score) {
             case 1:
-                return '很差';
+                return $myTranslate.instant("terrible");
             case 2:
-                return '差';
+                return $myTranslate.instant('bad');
             case 3:
-                return '一般';
+                return $myTranslate.instant('normal');
             case 4:
-                return '很好';
+                return $myTranslate.instant('good');
             case 5:
-                return '非常好';
+                return $myTranslate.instant('excellent');
+            default:
                 return '';
         }
     };
@@ -2445,7 +2452,7 @@ app.controller('TaskCreateCtrl', ['$scope', '$timeout', 'userService', 'routerSe
 }]);
 
 // 巡检所有设备处理页面
-app.controller('TaskDevicesHandlerCtrl',['$scope', 'routerService', 'ajax',  function ($scope, routerService, ajax) {
+app.controller('TaskDevicesHandlerCtrl',['$scope', 'routerService', 'ajax', '$myTranslate', function ($scope, routerService, ajax, $myTranslate) {
     var taskId = $scope.task.id;
     $scope.device_record = $scope.task.device_record;
     $scope.checkedSns = [];
@@ -2520,7 +2527,7 @@ app.controller('TaskDevicesHandlerCtrl',['$scope', 'routerService', 'ajax',  fun
 
     $scope.addRecord = function () {
         if ($scope.checkedSns.length === 0) {
-            $.notify.toast('请至少选择一个设备', 1000);
+            $.notify.toast($myTranslate.instant('atleastone'), 1000);
             return;
         }
 
@@ -2528,7 +2535,7 @@ app.controller('TaskDevicesHandlerCtrl',['$scope', 'routerService', 'ajax',  fun
 
     $scope.setStatusOk = function () {
         if ($scope.checkedSns.length === 0) {
-            $.notify.toast('请至少选择一个设备', 1000);
+            $.notify.toast($myTranslate.instant('atleastone'), 1000);
             return;
         }
         $scope.isSubmitting = true;
@@ -2540,11 +2547,11 @@ app.controller('TaskDevicesHandlerCtrl',['$scope', 'routerService', 'ajax',  fun
             },
             success: function (response) {
                 $scope.isSubmitting = false;
-                $.notify.toast('设置成功', 1000);
+                $.notify.toast($myTranslate.instant('submit successful'), 1000);
                 $scope.device_record.forEach(function (r) {
                     if (r.checked) {
                         r.status = '1';
-                        r.status_name = '正常';
+                        r.status_name = $myTranslate.instant('inspect.result.normal');
                         r.className = "normal";
                         $scope.checkDevice(null, r.device_sn);
                     }
@@ -2599,7 +2606,7 @@ app.controller('TaskDevicesHandlerCtrl',['$scope', 'routerService', 'ajax',  fun
                 r.status = deviceRecord.status;
                 r.desp = deviceRecord.desp;
                 r.photo_links = deviceRecord.photo_links;
-                r.status_name = '有缺陷';
+                r.status_name = $myTranslate.instant('inspect.result.uncheck');
                 r.className = "danger";
                 $scope.checkDevice(null, deviceRecord.device_sn);
                 return false;

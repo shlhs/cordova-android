@@ -10,7 +10,7 @@ var defaultImgThumbHost = "";     // 如果为空则与 host一样
 var gQrDownloadUrl = '/version/qr.png'; // 二维码下载链接
 var gShowEnergyPage = false;     // 是否显示能效页面，不显示能效页面时运维人员会看到抢单页面
 var gIsEnergyPlatform = false; // 是否是能源管理平台，是的话部分菜单默认不显示
-var LANGUAGE = "cn";
+var LANGUAGE = "en-US"; // zh-CN, en-US
 
 app.run(function ($animate) {
     $animate.enabled(true);
@@ -26,15 +26,15 @@ app.run(function ($animate) {
 
 function loadTranslateFiles(language, forceLoad) { // 加载翻译文件，forceLoad：重新加载，否则从localStorage中读取
     var jsonData = {};
-    if (!forceLoad) {
-        var data = localStorage.getItem(language + "_source");
-        if (data) {
-            try {
-                jsonData = JSON.parse(data);
-                return jsonData;
-            } catch (err) {}
-        }
-    }
+    // if (!forceLoad) {
+    //     var data = localStorage.getItem(language + "_source");
+    //     if (data) {
+    //         try {
+    //             jsonData = JSON.parse(data);
+    //             return jsonData;
+    //         } catch (err) {}
+    //     }
+    // }
     $.ajax({
         url: '../../i18n/' + language + '.json',
         async: false,
@@ -67,6 +67,26 @@ app.filter(
         }
     }]
 );
+
+app.service("$myTranslate", ['$translate', function ($translate) {
+    this.instant = function (keys) {
+        var tmpKeys = keys.split(' ');
+        var words = [];
+        tmpKeys.forEach(function (key) {
+            words.push($translate.instant(key));
+        });
+        if (LANGUAGE === 'en-US') {
+            return words.join(' ');
+        }
+        return words.join('');
+    };
+}]);
+
+app.filter('myTranslate', ['$myTranslate', function($myTranslate) { //可以注入依赖
+    return function(keys) {
+        return $myTranslate.instant(keys);
+    };
+}]);
 
 app.controller('MainCtrl', ['$scope', '$rootScope', 'userService', function ($scope, $rootScope, userService) {
 }]);
@@ -554,7 +574,8 @@ app.service('ajax', ['$rootScope', 'platformService', 'userService', 'routerServ
         var headers = $.extend({
             Authorization: userService.getAccountToken(),
             credentials: 'include',
-            mode: 'cors'
+            mode: 'cors',
+            'Accept-LANGUAGE': LANGUAGE,
         }, option.headers);
         option = $.extend({}, {timeout: 30000}, option);
         const errorFunc = option.error;
