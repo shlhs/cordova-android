@@ -62,15 +62,15 @@ app.controller('UiModeSwitchCtrl', ['$scope', 'platformService', function ($scop
     };
 }]);
 
-app.controller('PasswordCtrl', ['$scope', 'userService', '$timeout', 'ajax', function ($scope, userService, $timeout, ajax) {
+app.controller('PasswordCtrl', ['$scope', 'userService', '$timeout', 'ajax', '$myTranslate', function ($scope, userService, $timeout, ajax, $myTranslate) {
 
     function check() {
         if (!$scope.pwd1 && !$scope.pwd2){
-            $scope.pwdError = '密码不能为空';
+            $scope.pwdError = $myTranslate.instant('setting.pwd.tip.required');
             return false;
         }
         if ($scope.pwd1 !== $scope.pwd2){
-            $scope.pwdError = '两次输入的密码不一致';
+            $scope.pwdError = $myTranslate.instant('setting.pwd.error.notmatch');
             return false;
         }
         return true;
@@ -86,7 +86,7 @@ app.controller('PasswordCtrl', ['$scope', 'userService', '$timeout', 'ajax', fun
             cache: false,
             success: function (data) {
                 $.notify.progressStop();
-                $.notify.info('密码修改成功');
+                $.notify.info($myTranslate.instant('setting.pwd.set.success'));
                 userService.setPassword($scope.pwd1);
                 window.android && window.android.changePassword($scope.pw1);
                 // 自动返回上一页
@@ -96,10 +96,17 @@ app.controller('PasswordCtrl', ['$scope', 'userService', '$timeout', 'ajax', fun
             },
             error: function (xhr, status, error) {
                 $.notify.progressStop();
-                $.notify.error('密码修改失败');
-                console.log('修改密码发生异常');
+                $.notify.error($myTranslate.instant('setting.pwd.set.failed'));
             }
         });
+    };
+
+    $scope.onBlur = function () {
+        if ($scope.pwd1 && $scope.pwd2 && $scope.pwd1 !== $scope.pwd2) {
+            $scope.pwdError = $myTranslate.instant('setting.pwd.error.notmatch');
+        } else {
+            $scope.pwdError = '';
+        }
     };
 }]);
 

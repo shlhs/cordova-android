@@ -55,7 +55,7 @@
         }
     </style>
 
-<body class="box-vertical-center timeType-MONTH" ng-app="myApp" ng-controller="HomeCtrl">
+<body class="box-vertical-center timeType-MONTH" ng-app="myApp" ng-controller="HomeCtrl" ng-class="{english: isEnglish()}">
 <div ng-include="'/templates/top-menu.html'"></div>
     <div class="mui-content no-padding" style="height: auto;top: 0;">
         <div style="height: 100%;overflow-y: hidden;" ng-controller="TaskBaseCtrl">

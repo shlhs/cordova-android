@@ -2,13 +2,13 @@
     <div class="mui-popup property-editor-popup" style="display: block;opacity: 1;">
         <div class="mui-popup-inner">
             <div class="form-group">
-                <label>子部件名称</label>
+                <label>{{'staticdevice.param.component name' | myTranslate}}</label>
                 <input ng-model="name">
             </div>
         </div>
         <div class="mui-popup-buttons">
-            <span class="mui-popup-button" onclick="history.back()" style="color: #848484;">取消</span>
-            <span class="mui-popup-button" ng-click="confirm(name)" style="color: #439AF2;">确认</span>
+            <span class="mui-popup-button" onclick="history.back()" style="color: #848484;">{{'cancel' | translate}}</span>
+            <span class="mui-popup-button" ng-click="confirm(name)" style="color: #439AF2;">{{'confirm' | translate}}</span>
         </div>
     </div>
     <div class="mui-popup-backdrop mui-active" style="display: block;"></div>

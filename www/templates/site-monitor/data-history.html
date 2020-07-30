@@ -18,6 +18,7 @@
     <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
     <script type="text/javascript" src="../../components/angular-animate/angular-animate.js"></script>
     <script type="text/javascript" src="../../components/angular-ui-router/release/stateEvents.min.js"></script>
+    <script type="text/javascript" src="/js/lib/angular-translate.min.js"></script>
     <script type="text/javascript" src="../../js/app/app.js"></script>
     <script type="text/javascript" src="../../js/app/utils.js"></script>
     <script type="text/javascript" src="../../js/controller/site-monitor.js"></script>
@@ -79,7 +80,7 @@
         <label ng-if="currentReport !== null" class="dropdown-arrow">
             {{currentReport.name}}
         </label>
-        <label ng-if="currentReport === null">历史报表</label>
+        <label ng-if="currentReport === null">{{'menu.station.history' | translate}}</label>
         <button style="position: absolute;top: 10px;width: 100%;bottom: -8px;left: 8px;background-color: transparent;border: none;"
                 id="reportPicker"></button>
     </h1>
@@ -124,20 +125,20 @@
     <div class="page-alert-wrapper" ng-if="currentReport === null && !isLoading">
         <div class="page-alert">
             <i class="alert-icon no-task"></i>
-            <div class="alert-text info">未添加任何报表</div>
+            <div class="alert-text info">{{'no report' | myTranslate}}</div>
         </div>
     </div>
     <div class="page-alert-wrapper" ng-if="isLoading">
         <div class="page-alert">
             <img src="../../img/page-loading.gif" class="loading-img">
-            <div class="alert-text info">正在加载...</div>
+            <div class="alert-text info">{{'loading' | translate}}...</div>
         </div>
     </div>
     <div class="page-alert-wrapper" ng-if="loadingFailed">
         <div class="page-alert">
             <i class="alert-icon warning"></i>
-            <div class="alert-text info">加载失败，请检查网络</div>
-            <div class="alert-reload" ng-click="getDataList()">重新加载</div>
+            <div class="alert-text info">{{'tip.load.failed.network' | translate}}</div>
+            <div class="alert-reload" ng-click="getDataList()">{{'reload' | translate}}</div>
         </div>
     </div>
 </div>

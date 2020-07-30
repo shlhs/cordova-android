@@ -4,51 +4,51 @@
             <li class="img device-img"
                 style="background-image: url({{device.device_photo_src_link}});background-position: center;background-repeat: no-repeat; background-size: contain;">
                 <i class="icon icon-no-picture icon-36" ng-if="!device.device_photo_src_link"></i>
-                <div style="color: #999; font-size: 13px;margin-top: -4px;" ng-if="!device.device_photo_src_link">暂无图片</div>
+                <div style="color: #999; font-size: 13px;margin-top: -4px;" ng-if="!device.device_photo_src_link">{{'tip.nopicture' | translate}}</div>
             </li>
             <li class="img qr"
                 style="background-image: url({{device.qr_photo_src_link}});background-position: center;background-repeat: no-repeat; background-size: cover;">
                 <i class="icon icon-no-qr icon-36" ng-if="!device.qr_photo_src_link"></i>
-                <div style="color: #999; font-size: 13px;margin-top: -4px;" ng-if="!device.qr_photo_src_link">暂无二维码</div>
+                <div style="color: #999; font-size: 13px;margin-top: -4px;" ng-if="!device.qr_photo_src_link">{{'staticdevice.noqr' | translate}}</div>
             </li>
         </ul>
     </div>
     <div class="info-group properties-group">
         <li>
-            <label class="title">设备类型</label>
+            <label class="title">{{'staticdevice.param.type' | translate}}</label>
             <span class="value">{{device.product_type}}</span>
         </li>
         <li>
-            <label class="title">设备型号</label>
+            <label class="title">{{'staticdevice.param.model' | translate}}</label>
             <span class="value">{{device.product_model_number}}</span>
         </li>
         <li>
-            <label class="title">设备编号</label>
+            <label class="title">{{'staticdevice.param.number' | translate}}</label>
             <span class="value">{{device.device_number}}</span>
         </li>
         <li>
-            <label class="title">安装位置</label>
+            <label class="title">{{'staticdevice.param.address' | translate}}</label>
             <span class="value">{{device.position_desp}}</span>
         </li>
         <li>
-            <label class="title">安装日期</label>
+            <label class="title">{{'staticdevice.param.initialtime' | translate}}</label>
             <span class="value">{{device.initial_time ? device.initial_time.substring(0, 10) : ''}}</span>
         </li>
         <li>
-            <label class="title">投运日期</label>
+            <label class="title">{{'staticdevice.param.operatetime' | translate}}</label>
             <span class="value">{{device.operation_time ? device.operation_time.substring(0, 10) : ''}}</span>
         </li>
         <li>
-            <label class="title">生产厂家</label>
+            <label class="title">{{'staticdevice.param.provider' | translate}}</label>
             <span class="value">{{device.provider_name}}</span>
         </li>
         <li>
-            <label class="title">巡检周期</label>
-            <span class="value">{{device.inspection_cycle}}天</span>
+            <label class="title">{{'staticdevice.param.inspectcycle' | translate}}</label>
+            <span class="value">{{device.inspection_cycle}} {{'days' | translate}}</span>
         </li>
         <li>
-            <label class="title">保养周期</label>
-            <span class="value">{{device.maintenance_cycle}}天</span>
+            <label class="title">{{'staticdevice.param.maintenancecycle' | translate}}</label>
+            <span class="value">{{device.maintenance_cycle}} {{'days' | translate}}</span>
         </li>
         <li ng-repeat="p in device.properties" ng-if="device.properties">
             <label class="title">{{p.name}}</label>

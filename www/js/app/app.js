@@ -12,6 +12,10 @@ var gShowEnergyPage = false;     // 是否显示能效页面，不显示能效�
 var gIsEnergyPlatform = false; // 是否是能源管理平台，是的话部分菜单默认不显示
 var LANGUAGE = "en-US"; // zh-CN, en-US
 
+function isEnglish() {
+    return LANGUAGE === 'en-US';
+}
+
 app.run(function ($animate) {
     $animate.enabled(true);
 });
@@ -35,12 +39,16 @@ function loadTranslateFiles(language, forceLoad) { // 加载翻译文件，force
     //         } catch (err) {}
     //     }
     // }
+    var url = '/i18n/' + language + '.json';
     $.ajax({
-        url: '../../i18n/' + language + '.json',
+        url: url,
         async: false,
         success: function (data) {
             localStorage.setItem(language + "_source", JSON.stringify(data));
             jsonData = data;
+        },
+        error: function (err) {
+            console.log(err);
         }
     });
     return jsonData;
@@ -64,7 +72,7 @@ app.filter(
     'to_trusted', ['$sce', function ($sce) {
         return function (text) {
             return $sce.trustAsHtml(text);
-        }
+        };
     }]
 );
 

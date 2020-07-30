@@ -200,6 +200,10 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
     }
     var menuInited = false;     // 导航栏菜单是否初始化
 
+    $scope.isEnglish = function () {
+        return LANGUAGE === 'en-US';
+    };
+
     $scope.getDataList = function () {
         $scope.isLoading = true;
         ajax.get({

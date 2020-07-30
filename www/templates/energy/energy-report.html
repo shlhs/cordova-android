@@ -17,6 +17,7 @@
     <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
     <script type="text/javascript" src="../../components/angular-animate/angular-animate.js"></script>
     <script type="text/javascript" src="../../components/angular-ui-router/release/stateEvents.min.js"></script>
+    <script type="text/javascript" src="/js/lib/angular-translate.min.js"></script>
     <script type="text/javascript" src="../../js/app/utils.js"></script>
     <script type="text/javascript" src="../../js/app/app.js"></script>
     <script type="text/javascript" src="../../js/controller/energy.js"></script>
@@ -71,7 +72,7 @@
 <body ng-app="myApp" ng-cloak ng-controller="EnergyReportCtrl" class="box-vertical-center timeType-{{timeType.id}}">
 <header class="mui-bar bg-header mui-segmented-control-vertical">
     <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
-    <h1 class="mui-title">能源报表</h1>
+    <h1 class="mui-title">{{'menu.energy.dataline' | translate}}</h1>
 </header>
 <div class="mui-content" style="background-color: #fff;">
     <div ng-if="!isLoading && currentLabel">
@@ -113,14 +114,14 @@
     <div class="page-alert-wrapper" ng-if="isLoading">
         <div class="page-alert">
             <img src="../../img/page-loading.gif" class="loading-img">
-            <div class="alert-text info">正在加载...</div>
+            <div class="alert-text info">{{'loading' | translate}}...</div>
         </div>
     </div>
     <div class="page-alert-wrapper" ng-if="loadingFailed">
         <div class="page-alert">
             <i class="alert-icon warning"></i>
-            <div class="alert-text info">加载失败，请检查网络</div>
-            <div class="alert-reload" ng-click="getDataList()">重新加载</div>
+            <div class="alert-text info">{{'tip.load.failed.network' | translate}}</div>
+            <div class="alert-reload" ng-click="getDataList()">{{'reload' | translate}}</div>
         </div>
     </div>
 </div>
