@@ -15,7 +15,7 @@ function onAndroid_dtsImageDelete (filename) {       // Android手机上删除�
 }
 
 var TaskSource = {Repaire: 1, Event: 2, Inspect: 3};
-app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'routerService', function ($scope, $timeout, ajax, userService, routerService) {
+app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'routerService', '$myTranslate', function ($scope, $timeout, ajax, userService, routerService, $myTranslate) {
     var taskId = GetQueryString("task_id") || $scope.task_id || '';
     $scope.device = {
         sn: GetQueryString('device_sn') || $scope.device_sn,
@@ -66,7 +66,7 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
             success: function (data) {
                 staticDevices = data;
             }, error: function () {
-                $.notify.error('获取设备列表失败');
+                $.notify.error($myTranslate.instant('get device list failed'));
             }
         });
     }
@@ -117,13 +117,13 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
     function initTaskTypeList() {
         var taskTypes = [{
             value: 8,
-            text: '一般缺陷'
+            text: $myTranslate.instant('dts.type.general')
         }, {
             value: 9,
-            text: '严重缺陷'
+            text: $myTranslate.instant('dts.type.serious')
         }, {
             value: 10,
-            text: '致命缺陷'
+            text: $myTranslate.instant('dts.type.fatal')
         }];
         var taskTypePicker = new mui.PopPicker();
         taskTypePicker.setData(taskTypes);
@@ -145,7 +145,7 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
 
     $scope.showHandlerSelector = function () {    // 显示维修工选择框
         if (!$scope.operatorTeam) {
-            $.notify.toast('请先选择维修班组');
+            $.notify.toast($myTranslate.instant('task.tip.teamfirst'));
         } else {
             $scope.handlerVisible = !$scope.handlerVisible;
         }
@@ -267,7 +267,7 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
             data: JSON.stringify(taskData),
             success: function (data) {
                 $.notify.progressStop();
-                $.notify.info('创建成功');
+                $.notify.info($myTranslate.instant('submit successful'));
                 if ($scope.isInPage) {
                     history.back();
                 }
@@ -277,7 +277,7 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
                     if ($scope.isInPage) {
                         var record = {
                             device_sn: $scope.device.sn,
-                            status: '有故障'
+                            status: $myTranslate.instant('inspect.result.hasDefect')
                         };
                         onAndroidCb_updateDeviceRecord(JSON.stringify(record));     // 调用任务页更新设备状态
                     } else {
@@ -287,7 +287,7 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
                 }, 300);
             },error: function () {
                 $.notify.progressStop();
-                $.notify.error('创建失败');
+                $.notify.error($myTranslate.instant('submit failed'));
                 console.log('error');
             }
         });

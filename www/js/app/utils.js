@@ -357,7 +357,7 @@ function fillVacancyAndSumTrendData(startTime, endTime, queryPeriod, multiDatas,
 // abbreviation = false： 中文返回：01月，02月。 英文返回： January, February
 // month取值范围： 0 ~ 11
 function getMonth(month, abbreviation) {
-    if (!isEnglish()) {
+    if (!gIsEnglish) {
         return moment().set('month', month).format('M月');
     }
     if (abbreviation) {
@@ -369,7 +369,7 @@ function getMonth(month, abbreviation) {
 // day取值范围： 1 ~ 31
 function getDay(day) {
     var tmp = moment().set('month', 6).set('date', day);
-    if (isEnglish()) {
+    if (gIsEnglish) {
         return tmp.format('Do');
     }
     return tmp.format('D日');
@@ -382,7 +382,7 @@ function getDay(day) {
  * @return {string} 中文返回：周一、周二， 英文根据abbreviation返回全称或简称
  */
 function getWeekday(weekday, abbreviation) {
-    if (isEnglish()) {
+    if (gIsEnglish) {
         return moment().weekday(weekday % 7).format(abbreviation ? 'dd' : 'dddd');
     }
     var cndays = ['一', '二', '三', '四', '五', '六', '日'];
@@ -391,15 +391,15 @@ function getWeekday(weekday, abbreviation) {
 
 // 中文返回： YYYY年M月D日，英文返回： February 1st 2020
 function formatToFullDate(time) {
-    if (isEnglish()) {
+    if (gIsEnglish) {
         return time.format('MMMM Do YYYY');
     }
     return time.format('YYYY年M月D日');
 }
 
 function getHour(hour) {
-    if (isEnglish()) {
-        return hour;
+    if (gIsEnglish) {
+        return hour + ':00';
     }
     return hour + "时";
 }

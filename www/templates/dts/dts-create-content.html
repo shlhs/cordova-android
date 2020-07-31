@@ -2,58 +2,58 @@
 <div class="mui-content bg-white" ng-cloak="" ng-submit="submitForm()" id="dtsCreatePage" ng-controller="DtsCreateCtrl" style="padding-bottom: 15px;">
     <form class="mui-input-group task-create-rows create-form no-border" name="myForm" novalidate >
         <div class="mui-input-row">
-            <label class="label">设备<span style="color:red">*</span></label>
+            <label class="label">{{'device' | translate}}<span style="color:red">*</span></label>
             <!--<label style="line-height: 28px;padding-left: 0;width: calc(100% - 160px)" ng-if="isForDevice">{{device.name}}</label>-->
-            <input type="text" placeholder="请选择设备" name="deviceName" ng-model="device.name" readonly="isForDevice" required>
+            <input type="text" placeholder="{{'please.select device' | myTranslate}}" name="deviceName" ng-model="device.name" readonly="isForDevice" required>
             <button class="mui-btn mui-btn-block" type="button" ng-click="openDeviceSelector()" ng-if="!isForDevice">&nbsp;</button>
             <label class="error" ng-show="myForm.deviceName.$invalid && (myForm.deviceName.$dirty || myForm.$submitted)">
-                <span ng-show="myForm.deviceName.$error.required">请选择缺陷设备</span>
+                <span ng-show="myForm.deviceName.$error.required">"{{'please.select device' | myTranslate}}"</span>
             </label>
         </div>
         <div class="mui-input-row">
-            <label class="label">所在位置</label>
+            <label class="label">{{'device address' | myTranslate}}</label>
             <label style="line-height: 28px;padding-left: 0;width: calc(100% - 160px)">{{device.path}}</label>
         </div>
         <div class="mui-input-row">
-            <label class="label">缺陷等级<span style="color:red">*</span></label>
-            <input type="text" name="taskTypeName" ng-model="taskTypeName" placeholder="选择缺陷等级" required>
+            <label class="label">{{'dts.level' | translate}}<span style="color:red">*</span></label>
+            <input type="text" name="taskTypeName" ng-model="taskTypeName" placeholder="{{'please.select dts.level' | myTranslate}}" required>
             <button id="taskTypePicker" class="mui-btn mui-btn-block" type="button">&nbsp; </button>
             <label class="error" ng-show="myForm.taskTypeName.$invalid && (myForm.taskTypeName.$dirty || myForm.$submitted)">
-                <span ng-show="myForm.taskTypeName.$error.required">缺陷等级不能为空</span>
+                <span ng-show="myForm.taskTypeName.$error.required">{{'please.select dts.level' | myTranslate}}</span>
             </label>
         </div>
         <div class="mui-input-row">
-            <label class="label">期望完成时间</label>
-            <input type="text" name="expect_complete_time" ng-model="taskData.expect_complete_time" placeholder="选择缺陷处理截止时间">
+            <label class="label">{{'task.time.expected' | translate}}</label>
+            <input type="text" name="expect_complete_time" ng-model="taskData.expect_complete_time" placeholder="{{'please.select task.time.expected' | myTranslate}}">
             <button type="button" id='expectedTime' data-options='{}' class="btn mui-btn mui-btn-block">&nbsp;</button>
         </div>
         <div class="mui-input-row" ng-if="needResign">
-            <label class="label">维修班组<span style="color:red">*</span></label>
-            <input type="text" name="operatorTeam" ng-model="operatorTeam" placeholder="请选择维修班组" required>
+            <label class="label">{{'task.team' | translate}}<span style="color:red">*</span></label>
+            <input type="text" name="operatorTeam" ng-model="operatorTeam" placeholder="{{'please.select task.team' | myTranslate}}" required>
             <button type="button" class="btn mui-btn mui-btn-block" ng-click="showTeamSelector()">&nbsp;</button>
             <!--<div id='teamPicker' class="value"></div>-->
             <label class="error" ng-show="myForm.operatorTeam.$invalid && (myForm.operatorTeam.$dirty || myForm.$submitted)">
-                <span ng-show="myForm.operatorTeam.$error.required">请选择维修班组</span>
+                <span ng-show="myForm.operatorTeam.$error.required">{{'please.select task.team' | myTranslate}}</span>
             </label>
         </div>
         <div class="mui-input-row" ng-if="needResign">
-            <label class="label">维修工</label>
-            <textarea name="handlerName" ng-model="handlerName" placeholder="请选择维修工" rows="{{handlerRowSpan}}"></textarea>
+            <label class="label">{{'task.repairer' | translate}}</label>
+            <textarea name="handlerName" ng-model="handlerName" placeholder="{{'please.select task.repairer' | myTranslate}}" rows="{{handlerRowSpan}}"></textarea>
             <button type="button" data-options='{}' class="btn mui-btn mui-btn-block" ng-click="showHandlerSelector()" style="position: absolute;top: 0;left: 115px;bottom: 0;">&nbsp;</button>
-            <div class="error" style="color: #9c9c9c;font-size: 11px;" ng-if="!handlerName">不指定维修工则为抢单任务</div>
+            <div class="error" style="color: #9c9c9c;font-size: 11px;" ng-if="!handlerName">{{'task.tip.tograb' | translate}}</div>
         </div>
         <div class="task-result">
             <div style="padding: 10px 5px;">
-                <textarea rows="2" placeholder="请添加缺陷描述..." name="name" ng-model="taskData.name" required></textarea>
+                <textarea rows="2" placeholder="{{'dts.name' | translate}}..." name="name" ng-model="taskData.name" required></textarea>
                 <label class="error" ng-show="myForm.name.$invalid && (myForm.name.$dirty || myForm.$submitted)" style="margin-left: 16px;">
-                    <span ng-show="myForm.name.$error.required">缺陷描述不能为空</span>
+                    <span ng-show="myForm.name.$error.required">{{'dts.name cannotempty' | myTranslate}}</span>
                 </label>
             </div>
             <image-uploader images="images"></image-uploader>
         </div>
         <div class="mui-button-row" style="padding: 8px 16px;">
             <button type="submit" class="mui-btn mui-btn-primary mui-btn-block"
-                    style="background-color: rgba(88,107,243,0.88);border-color: rgba(88,107,243,0.88);height: 42px;">确认提交</button>
+                    style="background-color: rgba(88,107,243,0.88);border-color: rgba(88,107,243,0.88);height: 42px;">{{'submit' | translate}}</button>
         </div>
     </form>
 

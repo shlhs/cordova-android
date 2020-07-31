@@ -85,7 +85,7 @@
                 <button style="position: absolute;top:0;width: 100%;height: 100%;left: 0;background-color: transparent;border: none;height: 25px;"
                         id="startDatePicker"></button>
             </li>
-            <li class="selector-tab" style="width: 0;padding: 4px;">至</li>
+            <li class="selector-tab" style="width: 0;padding: 4px;">{{'to' | translate}}</li>
             <li class="selector-tab" style="background-color: #F2F2F2;padding: 4px 20px 4px 0;height: 28px;">
                 <label>{{endDate.substring(0, 16)}}</label>
                 <button style="position: absolute;top:0;width: 100%;height: 100%;left: 0;background-color: transparent;border: none;"
@@ -110,7 +110,7 @@
             <div class="page-alert-wrapper" ng-if="!selectedItems.length">
                 <div class="page-alert">
                     <i class="alert-icon no-task"></i>
-                    <div class="alert-text info">未选择任何{{currentLabel.name}}</div>
+                    <div class="alert-text info">{{'atleastone' | translate}} {{currentLabel.name}}</div>
                 </div>
             </div>
         </div>
@@ -119,7 +119,7 @@
     <div class="page-alert-wrapper" ng-if="!isLoading && !categories.length">
         <div class="page-alert">
             <i class="alert-icon no-task"></i>
-            <div class="alert-text info">当前站点未配置抄表项</div>
+            <div class="alert-text info">{{'energy.meterreading.nosetting' | translate}}</div>
         </div>
     </div>
     <div class="page-alert-wrapper" ng-if="isLoading">

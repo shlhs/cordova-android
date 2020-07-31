@@ -13,7 +13,13 @@ var TaskTypes = {
     NormalDts: 8,   // 一般缺陷
     SeriousDts: 9,  // 严重缺陷
     FatalDts: 10,   // 致命缺陷
-    Xunjian: 11
+    Xunjian: 11,    // 巡检
+    Xunshi: 12,     // 巡视
+    Baodian: 13,    // 保电
+    YufangTest: 14, // 预防试验
+    Xiaoque: 15,    // 消缺
+    Tingsong: 16,   // 停送操作,
+    Install: 17,    // 安装调试
 };
 var OpsTaskType = [2, 3, 4, 5, 7];
 var DtsTaskType = [8, 9, 10];
@@ -200,9 +206,7 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
     }
     var menuInited = false;     // 导航栏菜单是否初始化
 
-    $scope.isEnglish = function () {
-        return LANGUAGE === 'en-US';
-    };
+    $scope.isEnglish = gIsEnglish;
 
     $scope.getDataList = function () {
         $scope.isLoading = true;
@@ -501,7 +505,7 @@ function isTodoTask(task, username, userRole) {
 app.controller('TaskBaseCtrl', ['$scope', 'ajax', 'userService', 'appStoreProvider', '$myTranslate', function ($scope, ajax, userService, appStoreProvider, $myTranslate) {
     var stationSn = GetQueryString("sn");
     var deviceSn = GetQueryString("device_sn");     // 如果设备sn不为空，则获取的是设备的运维记录
-    $scope.pageTitle = deviceSn ? '运维记录' : '所有任务';
+    $scope.pageTitle = deviceSn ? $myTranslate.instant('task.ops.services') : $myTranslate.instant('task.history');
     $scope.hasOpsAuth = appStoreProvider.hasOpsAuth();
     var map = null;
     $scope.openTask = function (task) {
@@ -667,9 +671,7 @@ app.controller('TaskBaseCtrl', ['$scope', 'ajax', 'userService', 'appStoreProvid
         return user.name + (user.phone ? '/' + user.phone : '');
     };
 
-    $scope.isEnglish = function () {
-        return LANGUAGE === 'en-US';
-    }
+    $scope.isEnglish = gIsEnglish;
 }]);
 
 app.controller('CompetitionTaskListCtrl', ['$scope', '$rootScope', 'scrollerService', 'userService', 'ajax', function ($scope, $rootScope, scrollerService, userService, ajax) {
@@ -1005,7 +1007,7 @@ app.controller('TaskTodoListCtrl', ['$scope', '$rootScope', 'scrollerService', '
     };
 }]);
 
-app.controller('TaskListCtrl', ['$scope', '$rootScope', 'scrollerService', 'userService', 'ajax', 'UserRole', function ($scope, $rootScope, scrollerService, userService, ajax, UserRole) {
+app.controller('TaskListCtrl', ['$scope', '$rootScope', 'scrollerService', 'userService', 'ajax', 'UserRole', '$myTranslate', function ($scope, $rootScope, scrollerService, userService, ajax, UserRole, $myTranslate) {
     $scope.TaskStatus = TaskStatus;
     $scope.TaskTypes = TaskTypes;
     $scope.tasks = [];
@@ -1015,7 +1017,7 @@ app.controller('TaskListCtrl', ['$scope', '$rootScope', 'scrollerService', 'user
     $scope.todoCount = 0;
     var deviceSn = GetQueryString("device_sn");     // 如果设备sn不为空，则获取的是设备的运维记录
     $scope.isDeviceOps = deviceSn ? true : false;
-    $scope.pageTitle = deviceSn ? '运维记录' : '所有任务';
+    $scope.pageTitle = deviceSn ? $myTranslate.instant('task.ops.services') : $myTranslate.instant('task.history');
     var role = userService.getUserRole();
     var userAccount = userService.getUser().account;
     var requestFilterParams = null;
@@ -1025,74 +1027,74 @@ app.controller('TaskListCtrl', ['$scope', '$rootScope', 'scrollerService', 'user
           key: 'creater',
           items: [{
               id: 'creater_my',
-              name: '我报修的',
+              name: $myTranslate.instant('task.mycreate'),
               value: userAccount
           }],
           userRole: [UserRole.Normal]
         },
         {
-            title: '状态',
+            title: $myTranslate.instant('status'),
             key: 'stage',
             items: [{
                 id: 'stage_finished',
-                name: '已完成',
+                name: $myTranslate.instant('finished'),
                 value: [TaskStatus.Closed]
             }, {
                 id: 'stage_unfinished',
-                name: '未完成',
+                name: $myTranslate.instant('unfinished'),
                 value: [TaskStatus.ToAssign, TaskStatus.ToAccept, TaskStatus.Accepted, TaskStatus.Coming, TaskStatus.Arrived]
             }]
         }, {
-            title: '来源',
+            title: $myTranslate.instant('task.source'),
             key: 'source',
             items: [{
                 id: 'source_repair',
-                name: '报修',
+                name: $myTranslate.instant('task.new'),
                 value: TaskSource.Repaire
             }, {
                 id: 'source_inspect',
-                name: '巡检',
+                name: $myTranslate.instant('inspection'),
                 value: TaskSource.Inspect
             }, {
                 id: 'source_event',
-                name: '告警',
+                name: $myTranslate.instant('alarm'),
                 value: TaskSource.Event
             }]
         }, {
-            title: '类型',
+            title: $myTranslate.instant('type'),
             key: 'task_type',
             items: [{
                 id: 'type_xunjian',
-                name: '巡检',
+                name: $myTranslate.instant('巡检'),
                 value: TaskTypes.Xunjian
             }, {
                 id: 'type_qiangxiu',
-                name: '抢修',
+                name: $myTranslate.instant('抢修'),
                 value: TaskTypes.Qiangxiu
             }, {
                 id: 'type_jianxiu',
-                name: '检修',
+                name: $myTranslate.instant('检修'),
                 value: TaskTypes.Jianxiu
             }, {
                 id: 'type_dts',
-                name: '缺陷',
+                name: $myTranslate.instant('缺陷'),
                 value: [TaskTypes.NormalDts, TaskTypes.SeriousDts, TaskTypes.FatalDts]
             }, {
                 id: 'type_baoyang',
-                name: '保养',
+                name: $myTranslate.instant('保养'),
                 value: TaskTypes.Baoyang
             }, {
+                id: 'type_other',
+                name: $myTranslate.instant('其他'),
+                value: [TaskTypes.Other, 12, 13, 14, 15, 16, 17]
+            }, {
                 id: 'type_security',
-                name: '安全评测',
+                name: $myTranslate.instant('安全评测'),
                 value: TaskTypes.Security
             }, {
                 id: 'type_poweroff',
-                name: '停电维护',
+                name: $myTranslate.instant('停电维护'),
                 value: TaskTypes.Poweroff
-            }, {
-                id: 'type_other',
-                name: '其他',
-                value: TaskTypes.Other
             }]
         }
     ];
@@ -2122,7 +2124,7 @@ app.controller('TaskCloseRejectCtrl', ['$scope', function ($scope) {      //驳�
     };
 }]);
 
-app.controller('TaskCreateCtrl', ['$scope', '$timeout', 'userService', 'routerService', 'ajax', function ($scope, $timeout, userService, routerService, ajax) {
+app.controller('TaskCreateCtrl', ['$scope', '$timeout', 'userService', 'routerService', 'ajax', '$myTranslate', function ($scope, $timeout, userService, routerService, ajax, $myTranslate) {
     $scope.stationName = null;
     $scope.taskTypeName = null;
     $scope.operatorTeam = null;
@@ -2316,7 +2318,7 @@ app.controller('TaskCreateCtrl', ['$scope', '$timeout', 'userService', 'routerSe
 
     $scope.showHandlerSelector = function () {    // 显示维修工选择框
         if (!$scope.operatorTeam) {
-            $.notify.toast('请先选择维修班组');
+            $.notify.toast($myTranslate.instant('task.tip.teamfirst'));
         } else {
             $scope.handlerVisible = !$scope.handlerVisible;
         }
@@ -2423,13 +2425,13 @@ app.controller('TaskCreateCtrl', ['$scope', '$timeout', 'userService', 'routerSe
             data: JSON.stringify(taskData),
             success: function (data) {
                 $.notify.progressStop();
-                $.notify.info('创建成功');
+                $.notify.info($myTranslate.instant('submit successful'));
                 $timeout(function () {
                     window.location.href = 'task-detail.html?finishPage=1&id=' + data.id;       // 设置finish=1，这样在Android端在打开新页面时，会将当前页finish掉
                 }, 800);
             }, error: function () {
                 $.notify.progressStop();
-                $.notify.error('创建失败');
+                $.notify.error($myTranslate.instant('submit failed'));
                 console.log('error');
             }
         });

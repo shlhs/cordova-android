@@ -56,7 +56,9 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', '$myTranslate', functi
         initDatePicker();
     };
 
-    $scope.onSelect = function (key, value, name) {
+    $scope.onSelect = function (key, item) {
+        var value = item.id;
+        var name = item.name;
         if (key === 'timeType') {
             if (value === 'DAY') {
                 $scope.calcMethodList = [{
@@ -808,7 +810,9 @@ app.controller('SiteHistoryReportCtrl', ['$scope', '$compile', 'ajax', '$myTrans
         $scope.$apply();
     }
 
-    $scope.onSelect = function (key, value, name) {
+    $scope.onSelect = function (key, item) {
+        var value = item.id;
+        var name = item.name;
         if (key === 'timeType') {
             if (value === 'DAY') {
                 $scope.calcMethodList = [{

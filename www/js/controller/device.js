@@ -955,7 +955,7 @@ app.controller('DeviceRemoteControlConfirmCtrl', ['$scope', 'ajax', '$myTranslat
     var pwd = '';
     $scope.analogDesp = "设置变量【" + $scope.controlObj.name + "】的值为：";
     $scope.digitalDesp = "将对变量【" + $scope.controlObj.name + "】进行以下操作：";
-    if (isEnglish()) {
+    if (gIsEnglish) {
         $scope.analogDesp = "It will set new value to [" + $scope.controlObj.name + "]:";
         $scope.digitalDesp = "It will set new value to [" + $scope.controlObj.name + "]:";
     }

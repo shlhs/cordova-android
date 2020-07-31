@@ -11,10 +11,8 @@ var gQrDownloadUrl = '/version/qr.png'; // 二维码下载链接
 var gShowEnergyPage = false;     // 是否显示能效页面，不显示能效页面时运维人员会看到抢单页面
 var gIsEnergyPlatform = false; // 是否是能源管理平台，是的话部分菜单默认不显示
 var LANGUAGE = "en-US"; // zh-CN, en-US
+var gIsEnglish = LANGUAGE === 'en-US';
 
-function isEnglish() {
-    return LANGUAGE === 'en-US';
-}
 
 app.run(function ($animate) {
     $animate.enabled(true);
@@ -30,15 +28,15 @@ app.run(function ($animate) {
 
 function loadTranslateFiles(language, forceLoad) { // 加载翻译文件，forceLoad：重新加载，否则从localStorage中读取
     var jsonData = {};
-    // if (!forceLoad) {
-    //     var data = localStorage.getItem(language + "_source");
-    //     if (data) {
-    //         try {
-    //             jsonData = JSON.parse(data);
-    //             return jsonData;
-    //         } catch (err) {}
-    //     }
-    // }
+    if (!forceLoad) {
+        var data = localStorage.getItem(language + "_source");
+        if (data) {
+            try {
+                jsonData = JSON.parse(data);
+                return jsonData;
+            } catch (err) {}
+        }
+    }
     var url = '/i18n/' + language + '.json';
     $.ajax({
         url: url,
@@ -83,7 +81,7 @@ app.service("$myTranslate", ['$translate', function ($translate) {
         tmpKeys.forEach(function (key) {
             words.push($translate.instant(key));
         });
-        if (LANGUAGE === 'en-US') {
+        if (gIsEnglish) {
             return words.join(' ');
         }
         return words.join('');
@@ -241,6 +239,11 @@ app.service('userService', ['$rootScope', function ($rootScope) {
 }]);
 
 app.service('platformService', function () {
+
+    this.setLanguage = function () {
+        setStorageItem('LANGUAGE', LANGUAGE);
+    };
+
     this.addPlatform = function (username, platform) {
         if (!platform){
             return;
@@ -954,7 +957,8 @@ app.directive('dropDownMenu', function () {
                     if ($scope.options[i].id === id) {
                         $scope.selected = $scope.options[i];
                         $scope.toggle();
-                        $scope.onSelect($scope.modelName, $scope.selected.id, $scope.selected.name);
+                        // $scope.onSelect($scope.modelName, $scope.selected.id, $scope.selected.name);
+                        $scope.onSelect($scope.modelName, $scope.options[i]);
                         return false;
                     }
                 }

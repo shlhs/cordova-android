@@ -80,7 +80,7 @@
 <body class="mui-android mui-android-5 mui-android-5-1 mui-android-5-1-1 mui-segmented-control-vertical" ng-app="myApp" ng-controller="TaskBaseCtrl" ng-cloak>
 <header class="mui-bar bg-header">
     <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
-    <h1 class="mui-title">缺陷记录</h1>
+    <h1 class="mui-title">{{'menu.ops.defect' | translate}}</h1>
     <a ng-click="openDtsCreatePage()" class="mui-action-menu mui-icon mui-pull-right"><i class="header-icon white icon-add"></i></a>
 </header>
 <div style="top:61px;" class="mui-content" ng-controller="StationDtsListCtrl" id="taskListWrapper">
@@ -101,21 +101,21 @@
                             {{task.name}}
                         </p>
                         <div ng-if="task.station_name && !isDeviceOps">
-                            <span class="task-info-label">站点名称：</span>
+                            <span class="task-info-label">{{'station' | translate}}：</span>
                             <span class="task-info-value">{{task.station_name}}</span>
                         </div>
                         <div ng-if="!task.finish_time">
-                            <span class="task-info-label">{{task.riplan_create_time ? '启动时间：' : '创建时间：'}}</span>
+                            <span class="task-info-label">{{task.riplan_create_time ? ('start time' | myTranslate) + "：" : ('create time' | myTranslate) + "："}}</span>
                             <span class="task-info-value" ng-if="!task.isToStart">{{task.create_time}}</span>
                             <span class="task-info-value" ng-if="task.isToStart" style="color: rgb(70, 190, 138);">{{task.create_time}}</span>
                         </div>
                         <div ng-if="task.stage_id !== TaskStatus.Closed">
-                            <span class="task-info-label">当前处理人：</span>
+                            <span class="task-info-label">{{'task.person.current' | translate}}：</span>
                             <span class="task-info-value">{{task.current_handler_name}}</span>
                         </div>
                         <div ng-if="task.finish_time">
-                            <span class="task-info-label">完成时间：</span>
-                            <span class="task-info-value" ng-class="{'timeout': task.isTimeout}">{{task.finish_time}}</span>
+                            <span class="task-info-label">{{'task.time.finished' | myTranslate}}：</span>
+                            <span class="task-info-value" ng-class="{'timeout': task.isTimeout}">{{task.finish_time.substring(0, 16)}}</span>
                         </div>
                     </div>
                     <div class="task-status">
@@ -127,7 +127,7 @@
             <div class="page-alert-wrapper" ng-if="tasks.length==0 && !isLoading && !loadingFailed">
                 <div class="page-alert">
                     <i class="alert-icon no-task"></i>
-                    <div class="alert-text info">无记录</div>
+                    <div class="alert-text info">{{'none defect' | myTranslate}}</div>
                 </div>
             </div>
         </div>

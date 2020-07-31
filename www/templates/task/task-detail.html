@@ -104,7 +104,7 @@
     <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
     <h1 class="mui-title">{{'task.order' | translate}} {{'detail' | translate}}</h1>
 </header>
-<div style="margin-top: 62px;" ng-class="{english: isEnglish()}">
+<div style="margin-top: 62px;" ng-class="{english: isEnglish}">
     <!-- 正在处理的任务单 -->
     <div class="mui-content" style="background-color: transparent; top: 62px;" ng-class="{'page-bottom': canHandle}" ng-style="{'padding-bottom': actions.length>0 ? '50px' : ''}" >
         <div class="xunjian-devices-area horizontal" ng-if="xunjianStage === 'toStart'">

@@ -108,7 +108,7 @@
     <div class="page-alert-wrapper" ng-if="!isLoading && !selectedItems.length">
         <div class="page-alert">
             <i class="alert-icon no-task"></i>
-            <div class="alert-text info">{{currentLabel ? '未选择任何' + currentLabel.name : '当前未配置报表'}}</div>
+            <div class="alert-text info">{{currentLabel ? ('atleastone' | myTranslate) + ' ' + currentLabel.name : ('tip.thereisno report' | myTranslate)}}</div>
         </div>
     </div>
     <div class="page-alert-wrapper" ng-if="isLoading">

@@ -84,6 +84,7 @@ app.controller('LoginCtrl', ['$scope', '$timeout', 'platformService', 'userServi
             success: function (data) {
                 var result = KJUR.jws.JWS.verify(data.token, 'zjlhstest');
                 if (result) {
+                    platformService.setLanguage();
                     if (!getStorageItem('latestPlatform')) {
                         platformService.setLatestPlatform({url: defaultPlatIpAddr + ":8099/v1"});
                     }
