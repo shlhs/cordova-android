@@ -179,6 +179,27 @@
   "staticdevice.count.defects.resolved": "已解决缺陷",
   "staticdevice.param.component": "子部件",
 
+  "ops.security.header": "设备安全技术评测记录",
+  "ops.security": "设备安全技术评测",
+  "ops.security.level.urgent": "紧急",
+  "ops.security.level.serious": "重大",
+  "ops.security.item.type": "缺陷类型",
+  "ops.security.item.harm": "缺陷危害",
+  "ops.security.item.solution": "处理建议",
+  "ops.security.unit": "项",
+  "ops.security.items": "检查项",
+  "ops.security.handler": "检查人",
+  "ops.security.time": "检查时间",
+  "ops.security.type": "分类",
+
+  "ops.poweroff.title": "停电维护记录",
+  "ops.poweroff.report.name": "电房及设备停电维护作业表",
+  "ops.poweroff.handler": "维护人",
+  "ops.poweroff.time": "维护日期",
+  "ops.poweroff.capacity": "配变容量",
+  "ops.poweroff.picture.before": "维护前照片",
+  "ops.poweroff.picture.between": "维护过程照片",
+  "ops.poweroff.picture.after": "维护后照片",
 
   "tip.nostation": "未配置站点",
   "tip.station.search.text": "支持名称和站点编号搜索",
@@ -257,6 +278,7 @@
   "占比": "占比",
   "本期": "本期",
   "上期": "上期",
+  "紧急": "紧急",
 
   "station": "站点",
   "stations": "站点",
@@ -336,9 +358,11 @@
   "unit": "单位",
   "type": "类型",
   "status": "状态",
+  "supplyline": "供电线路",
 
 
   "edit": "编辑",
+  "new": "新增",
   "add": "添加",
   "create": "创建",
   "expand": "展开",
@@ -370,6 +394,7 @@
   "query": "查询",
   "filter": "筛选",
   "navigate": "导航",
+  "view": "查看",
 
   "terrible": "非常差",
   "bad": "差",
