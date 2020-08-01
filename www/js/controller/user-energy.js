@@ -234,7 +234,7 @@ EnergyFuncApi.prototype.paintAvgPriceTrend = function (chartId, data) {
         series: [{
             data: yAxis,
             type: 'line',
-            symbolSize: 0,
+            symbolSize: 4,
             itemStyle: {
                 color: '#8D6ADD'
             }
