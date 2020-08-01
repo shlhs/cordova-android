@@ -406,7 +406,7 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
     function _getEnergyMenu() {
         return {
             id: 'energy_mgmt',
-            name: '能效管理',
+            name: '能效',
             templateUrl: '/templates/energy/energy-home.html',
             icon: 'nav-energy'
         };
@@ -424,14 +424,14 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
         if (role === 'OPS_ADMIN' || role === 'OPS_OPERATOR') {
             return {
                 id: 'my_tasks',
-                name: '我的待办',
+                name: '运维',
                 templateUrl: '/templates/task/task-todo-list.html',
                 icon: 'nav-all-tasks'
             };
         } else if (role === 'USER') {
             return {
                 id: 'my_tasks',
-                name: '我的服务',
+                name: '运维',
                 templateUrl: '/templates/task/user-task-list.html',
                 icon: 'nav-service'
             };
@@ -668,7 +668,7 @@ app.controller('CompetitionTaskListCtrl', ['$scope', '$rootScope', 'scrollerServ
     $scope.tasks = [];
     var opsTeams = [];
     $scope.toAcceptUsers = [];      // 抢单时能选的其他运维工
-    $scope.isLoading = true;
+    $scope.isLoading = false;
     $scope.userPickerVisible = false;
     var userAccount = userService.getUser().account;
     var companyId = userService.getCompanyId();
@@ -698,10 +698,37 @@ app.controller('CompetitionTaskListCtrl', ['$scope', '$rootScope', 'scrollerServ
     }
 
     function getTeamAndUsers() {
+        $scope.isLoading = true;
         ajax.get({
             url: '/OpsTeams?company_id=' + companyId + '&with_user=true',
             success: function (teams) {
                 opsTeams = teams;
+                // 如果当前用户存在运维班组中，则请求数据列表
+                var inTeam = false;
+                for (var i=0; i<teams.length; i++) {
+                    var team = teams[i];
+                    if (team.users) {
+                        for (var j=0; j<team.users.length; j++) {
+                            if (team.users[j].account === userAccount) {
+                                inTeam = true;
+                                break;
+                            }
+                        }
+                        if (inTeam) {
+                            break;
+                        }
+                    }
+                }
+                if (inTeam) {
+                    $scope.getTaskDatas();
+                } else {
+                    $scope.isLoading = false;
+                }
+                $scope.$apply();
+            },
+            error: function () {
+                $scope.isLoading = false;
+                $scope.$apply();
             }
         });
     }
@@ -759,11 +786,12 @@ app.controller('CompetitionTaskListCtrl', ['$scope', '$rootScope', 'scrollerServ
             });
         });
     }
-    $scope.getDataList = function() {
+    $scope.getTaskDatas = function() {
         scrollerService.initScroll('#competition_tasks_scroller', $scope.getDataList);
         if (!companyId) {
             return;
         }
+        $scope.isLoading = true;
         ajax.get({
             url: "/opstasks/competition",
             data: {
@@ -790,6 +818,9 @@ app.controller('CompetitionTaskListCtrl', ['$scope', '$rootScope', 'scrollerServ
                 $.notify.error('读取抢单任务失败');
             }
         });
+    };
+    $scope.getDataList = function () {
+        getTeamAndUsers();
     };
 
     $scope.afterGrabTask = function (taskData) {
@@ -846,20 +877,26 @@ app.controller('CompetitionTaskListCtrl', ['$scope', '$rootScope', 'scrollerServ
         });
     };
 
-    setTimeout(function () {
-        getTeamAndUsers();
-    }, 1000);
+    // setTimeout(function () {
+    //     getTeamAndUsers();
+    // }, 1000);
 }]);
 
 app.controller('TaskTodoListCtrl', ['$scope', '$rootScope', 'scrollerService', 'userService', 'ajax', 'TaskStatus', function ($scope, $rootScope, scrollerService, userService, ajax, TaskStatus) {
     var allTasks = [];
     var username = userService.user.account;
+    var userRole = userService.getUserRole();
     $scope.TaskStatus = TaskStatus;
     $scope.tasks = [];
     $scope.showType = 'todo';    // all, open, closed, todo
     $scope.isLoading = true;
     $scope.loadingFailed = false;
     $scope.todoCount = 0;
+    $scope.title = "我的待办";
+
+    if (userRole !== 'OPS_OPERATOR' && userRole !== 'OPS_ADMIN' ) {
+        $scope.title = "运维";
+    }
 
     $scope.getDataList = function() {
         scrollerService.initScroll("#taskList", $scope.getDataList);
