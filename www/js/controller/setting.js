@@ -1,6 +1,6 @@
 "use strict";
 
-app.controller('SettingCtrl', ['$scope', 'ajax', 'userService', 'routerService', function ($scope,ajax, userService, routerService) {
+app.controller('SettingCtrl', ['$scope', 'ajax', 'userService', 'routerService', '$myTranslate', function ($scope,ajax, userService, routerService, $myTranslate) {
     $scope.pwd1 = '';
     $scope.pwd2 = '';
     $scope.pwdError = '';
@@ -10,12 +10,18 @@ app.controller('SettingCtrl', ['$scope', 'ajax', 'userService', 'routerService',
     $scope.company = null;
 
     $scope.logout = function () {
-        userService.setPassword('');
-        userService.saveCompany('');
-        if (window.android){
-            window.android.logout();
-        }
-        location.href = '/templates/login.html?finishPage=1';
+        var btnArray = [$myTranslate.instant('cancel'), $myTranslate.instant('logout')];
+        mui.confirm("", $myTranslate.instant('logout.confirm'), btnArray, function(e) {
+            if (e.index === 1) {     // 是
+                userService.setPassword('');
+                userService.saveCompany('');
+                if (window.android){
+                    window.android.logout();
+                }
+                location.href = '/templates/login.html?finishPage=1';
+            }
+        });
+
     };
 
     $scope.openUiSwitchModal = function () {

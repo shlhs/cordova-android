@@ -15,40 +15,44 @@
     </div>
     <div class="info-group properties-group">
         <li>
-            <label class="title">{{'staticdevice.param.type' | translate}}</label>
+            <label class="title">{{'设备类型' | translate}}</label>
             <span class="value">{{device.product_type}}</span>
         </li>
         <li>
-            <label class="title">{{'staticdevice.param.model' | translate}}</label>
+            <label class="title">{{'设备型号' | translate}}</label>
             <span class="value">{{device.product_model_number}}</span>
         </li>
         <li>
-            <label class="title">{{'staticdevice.param.number' | translate}}</label>
+            <label class="title">{{'设备编号' | translate}}</label>
             <span class="value">{{device.device_number}}</span>
         </li>
         <li>
-            <label class="title">{{'staticdevice.param.address' | translate}}</label>
+            <label class="title">{{'安装地址' | translate}}</label>
             <span class="value">{{device.position_desp}}</span>
         </li>
         <li>
-            <label class="title">{{'staticdevice.param.initialtime' | translate}}</label>
+            <label class="title">{{'安装日期' | translate}}</label>
             <span class="value">{{device.initial_time ? device.initial_time.substring(0, 10) : ''}}</span>
         </li>
         <li>
-            <label class="title">{{'staticdevice.param.operatetime' | translate}}</label>
+            <label class="title">{{'投运日期' | translate}}</label>
             <span class="value">{{device.operation_time ? device.operation_time.substring(0, 10) : ''}}</span>
         </li>
         <li>
-            <label class="title">{{'staticdevice.param.provider' | translate}}</label>
+            <label class="title">{{'生产厂家' | translate}}</label>
             <span class="value">{{device.provider_name}}</span>
         </li>
         <li>
-            <label class="title">{{'staticdevice.param.inspectcycle' | translate}}</label>
+            <label class="title">{{'巡检周期' | translate}}</label>
             <span class="value">{{device.inspection_cycle}} {{'days' | translate}}</span>
         </li>
         <li>
-            <label class="title">{{'staticdevice.param.maintenancecycle' | translate}}</label>
+            <label class="title">{{'保养周期' | translate}}</label>
             <span class="value">{{device.maintenance_cycle}} {{'days' | translate}}</span>
+        </li>
+        <li>
+            <label class="title">{{'额定容量' | translate}}</label>
+            <span class="value">{{device.capacity}} kVA</span>
         </li>
         <li ng-repeat="p in device.properties" ng-if="device.properties">
             <label class="title">{{p.name}}</label>

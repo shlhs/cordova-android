@@ -46,6 +46,7 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
     if ($scope.needResign) {
         opsCompanyId = companyId;
     }
+    $scope.isEnglish = gIsEnglish;
 
     function init() {
         if (!$scope.device.sn && $scope.device.station_sn) {
@@ -58,6 +59,7 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
         initTaskTypeList();
         initDatePicker();
         initMembers();
+        pickerI18n();
     }
 
     function getStaticDevicesOfStation() {
@@ -194,33 +196,36 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
 
     function initDatePicker() {
 
-        document.getElementById('expectedTime').addEventListener('tap', function() {
-            var _self = this;
-            if(_self.picker) {
-                _self.picker.show(function (rs) {
-                    $scope.taskData.expect_complete_time = rs.text;
-                    _self.picker.dispose();
-                    _self.picker = null;
-                    $scope.$apply();
-                });
-            } else {
-                var optionsJson = this.getAttribute('data-options') || '{}';
-                var options = JSON.parse(optionsJson);
-                var id = this.getAttribute('id');
-                /*
-                 * 首次显示时实例化组件
-                 * 示例为了简洁，将 options 放在了按钮的 dom 上
-                 * 也可以直接通过代码声明 optinos 用于实例化 DtPicker
-                 */
-                _self.picker = new mui.DtPicker(options);
-                _self.picker.show(function(rs) {
-                    $scope.taskData.expect_complete_time = rs.text + ":00";
-                    _self.picker.dispose();
-                    _self.picker = null;
-                    $scope.$apply();
-                });
-            }
-        }, false);
+        var timeBtn = document.getElementById('expectedTime');
+        if (timeBtn) {
+            timeBtn.addEventListener('tap', function() {
+                var _self = this;
+                if(_self.picker) {
+                    _self.picker.show(function (rs) {
+                        $scope.taskData.expect_complete_time = rs.text;
+                        _self.picker.dispose();
+                        _self.picker = null;
+                        $scope.$apply();
+                    });
+                } else {
+                    var optionsJson = this.getAttribute('data-options') || '{}';
+                    var options = JSON.parse(optionsJson);
+                    /*
+                     * 首次显示时实例化组件
+                     * 示例为了简洁，将 options 放在了按钮的 dom 上
+                     * 也可以直接通过代码声明 optinos 用于实例化 DtPicker
+                     */
+                    _self.picker = new mui.DtPicker(options);
+                    _self.picker.show(function(rs) {
+                        $scope.taskData.expect_complete_time = rs.text + ":00";
+                        _self.picker.dispose();
+                        _self.picker = null;
+                        $scope.$apply();
+                    });
+                    datePickerI18n();
+                }
+            }, false);
+        }
     }
 
     $scope.openDeviceSelector = function () {

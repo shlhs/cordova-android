@@ -22,7 +22,7 @@
                 <span ng-show="myForm.taskTypeName.$error.required">{{'please.select dts.level' | myTranslate}}</span>
             </label>
         </div>
-        <div class="mui-input-row">
+        <div class="mui-input-row" ng-if="!isEnglish">
             <label class="label">{{'task.time.expected' | translate}}</label>
             <input type="text" name="expect_complete_time" ng-model="taskData.expect_complete_time" placeholder="{{'please.select task.time.expected' | myTranslate}}">
             <button type="button" id='expectedTime' data-options='{}' class="btn mui-btn mui-btn-block">&nbsp;</button>

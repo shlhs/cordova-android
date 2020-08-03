@@ -403,3 +403,23 @@ function getHour(hour) {
     }
     return hour + "时";
 }
+
+// mui picker插件国际化
+function pickerI18n() {
+    if (!gIsEnglish) {
+        return;
+    }
+    $('.mui-poppicker-btn-cancel').html('Cancel');
+    $('.mui-poppicker-btn-ok').html('Confirm');
+}
+
+function datePickerI18n() {
+    var $parent = $(".mui-dtpicker");
+    $parent.find('[data-id="btn-cancel"]').html('Cancel');
+    $parent.find('[data-id="btn-ok"]').html('Confirm');
+    $parent.find('[data-id="title-y"]').html('YEAR');
+    $parent.find('[data-id="title-m"]').html('MONTH');
+    $parent.find('[data-id="title-d"]').html('DAY');
+    $parent.find('[data-id="title-h"]').html('HOUR');
+    $parent.find('[data-id="title-i"]').html('MINUTE');
+}

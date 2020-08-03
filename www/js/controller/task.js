@@ -507,6 +507,7 @@ app.controller('TaskBaseCtrl', ['$scope', 'ajax', 'userService', 'appStoreProvid
     var deviceSn = GetQueryString("device_sn");     // 如果设备sn不为空，则获取的是设备的运维记录
     $scope.pageTitle = deviceSn ? $myTranslate.instant('task.ops.services') : $myTranslate.instant('task.history');
     $scope.hasOpsAuth = appStoreProvider.hasOpsAuth();
+    $scope.isEnglish = gIsEnglish;
     var map = null;
     $scope.openTask = function (task) {
         if (deviceSn && task.task_type_id === TaskTypes.Xunjian) {
@@ -2145,6 +2146,7 @@ app.controller('TaskCreateCtrl', ['$scope', '$timeout', 'userService', 'routerSe
     var staticDevices = [];
     var stations = [];
     var currentStation = null;
+    $scope.isEnglish = gIsEnglish;
 
     $scope.taskData = {
         events: [],
@@ -2164,7 +2166,7 @@ app.controller('TaskCreateCtrl', ['$scope', '$timeout', 'userService', 'routerSe
                     $scope.stationName = data.name;
                     $scope.$apply();
                 }
-            })
+            });
         } else {
             initStations();
         }   
@@ -2245,6 +2247,7 @@ app.controller('TaskCreateCtrl', ['$scope', '$timeout', 'userService', 'routerSe
                         }
                     });
                 }, false);
+                pickerI18n();
             },
             error: function(){
                 console.log('获取站点列表失败');
@@ -2305,6 +2308,7 @@ app.controller('TaskCreateCtrl', ['$scope', '$timeout', 'userService', 'routerSe
                         //return false;
                     });
                 }, false);
+                pickerI18n();
             },
             error: function () {
                 console.log('获取任务类型失败');
@@ -2367,31 +2371,35 @@ app.controller('TaskCreateCtrl', ['$scope', '$timeout', 'userService', 'routerSe
 
     function initDatePicker() {
 
-        document.getElementById('expectedTime').addEventListener('tap', function() {
-            var _self = this;
-            if(_self.picker) {
-                _self.picker.show(function (rs) {
-                    $scope.taskData.expect_complete_time = rs.text + ':00';
-                    $scope.$apply();
-                });
-            } else {
-                var optionsJson = this.getAttribute('data-options') || '{}';
-                var options = JSON.parse(optionsJson);
-                var id = this.getAttribute('id');
-                /*
-                 * 首次显示时实例化组件
-                 * 示例为了简洁，将 options 放在了按钮的 dom 上
-                 * 也可以直接通过代码声明 optinos 用于实例化 DtPicker
-                 */
-                _self.picker = new mui.DtPicker(options);
-                _self.picker.show(function(rs) {
-                    $scope.taskData.expect_complete_time = rs.text + ":00";
-                    // _self.picker.dispose();
-                    // _self.picker = null;
-                    $scope.$apply();
-                });
-            }
-        }, false);
+        var timeBtn = document.getElementById('expectedTime');
+        if (timeBtn) {
+            timeBtn.addEventListener('tap', function() {
+                var _self = this;
+                if(_self.picker) {
+                    _self.picker.show(function (rs) {
+                        $scope.taskData.expect_complete_time = rs.text + ':00';
+                        $scope.$apply();
+                    });
+                } else {
+                    var optionsJson = this.getAttribute('data-options') || '{}';
+                    var options = JSON.parse(optionsJson);
+                    var id = this.getAttribute('id');
+                    /*
+                     * 首次显示时实例化组件
+                     * 示例为了简洁，将 options 放在了按钮的 dom 上
+                     * 也可以直接通过代码声明 optinos 用于实例化 DtPicker
+                     */
+                    _self.picker = new mui.DtPicker(options);
+                    _self.picker.show(function(rs) {
+                        $scope.taskData.expect_complete_time = rs.text + ":00";
+                        // _self.picker.dispose();
+                        // _self.picker = null;
+                        $scope.$apply();
+                    });
+                    datePickerI18n();
+                }
+            }, false);
+        }
     }
 
     // $scope.handlerIsInvalid = function (form) {

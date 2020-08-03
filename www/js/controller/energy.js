@@ -587,6 +587,7 @@ app.controller('EnergyMeterReadingCtrl', ['$scope', 'ajax', '$compile', 'platfor
                     refreshData();
                     $scope.$apply();
                 });
+                datePickerI18n();
             }
         }, false);
         document.getElementById('endDatePicker').addEventListener('tap', function() {
@@ -605,6 +606,7 @@ app.controller('EnergyMeterReadingCtrl', ['$scope', 'ajax', '$compile', 'platfor
                     refreshData();
                     $scope.$apply();
                 });
+                datePickerI18n();
             }
         }, false);
     }
@@ -921,6 +923,7 @@ app.controller('EnergyReportCtrl', ['$scope', 'ajax', '$compile', 'platformServi
                     // _self.picker = null;
                     $scope.$apply();
                 });
+                datePickerI18n();
             }
         }, false);
     }
@@ -1302,6 +1305,7 @@ app.controller('EnergyStatisticsCtrl', ['$scope', 'ajax', 'platformService', '$c
                     // _self.picker = null;
                     $scope.$apply();
                 });
+                datePickerI18n();
             }
         }, false);
     }

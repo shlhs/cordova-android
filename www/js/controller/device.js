@@ -1205,7 +1205,7 @@ app.controller('HistoryVarCtrl', ['$scope', 'ajax', '$myTranslate', function ($s
             for (var i=0; i<data.length; i++) {
                 if (data[i].name === n.name) {
                     exist = true;
-                    series.push({name: n.name, data: data[i].datas, symbolSize: 0, type: 'line'});
+                    series.push({name: $myTranslate.instant(n.name), data: data[i].datas, symbolSize: 0, type: 'line'});
                     break;
                 }
             }
@@ -1214,7 +1214,7 @@ app.controller('HistoryVarCtrl', ['$scope', 'ajax', '$myTranslate', function ($s
                 xAxis.forEach(function (n) {
                     tmpData.push(null);
                 });
-                series.push({name: n.name, data: tmpData, symbolSize: 0, type: 'line'});
+                series.push({name: $myTranslate.instant(n.name), data: tmpData, symbolSize: 0, type: 'line'});
             }
         });
         var chartTitle = currentGroup.name + ' ' + $myTranslate.instant('trend') + (currentGroup.unit ? ('(' + currentGroup.unit + ')') : '');
@@ -1240,6 +1240,18 @@ app.controller('HistoryVarCtrl', ['$scope', 'ajax', '$myTranslate', function ($s
                 trigger: 'axis',
                 alwaysShowContent: false,
                 confine: true,
+                formatter: function (params) {
+                    if (!params.length) {
+                        return null;
+                    }
+                    var p0 = params[0];
+                    var lines = [p0.axisValue];
+                    params.forEach(function (p) {
+                        lines.push('<br />');
+                        lines.push(p.marker + p.seriesName + '：' + (p.data === null ? '-' : p.data + ' ' + currentGroup.unit));
+                    });
+                    return lines.join('');
+                }
             },
             xAxis: {
                 type: 'category',

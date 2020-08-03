@@ -10,51 +10,55 @@
         </div>
         <div class="is-edit" style="padding: 4px 30px 0px 12px;font-size: 14px;margin: 4px 0 -6px;">
             <label style="background-color: #E0FCED;padding: 4px 6px;color: #989898;font-size: 12px;width: calc(100% - 120px);display: inline-block;">
-                点击对应属性进行编辑
+                {{'staticdevice.param.click.tip' | translate}}
             </label>
             <a class="add-property-btn" style="margin-top: 4px;" ng-click="onClickAddProperty(device.properties)">{{'add property' | myTranslate}}</a>
         </div>
         <div ng-if="device.properties">
             <div class="info-group properties-group is-edit">
                 <li ng-click="onClickEditDevice('设备名称', 'name')">
-                    <label class="title">{{'device name' | myTranslate}}</label>
+                    <label class="title">{{'设备名称' | myTranslate}}</label>
                     <span class="value">{{device.name}}</span>
                 </li>
                 <li ng-click="onClickEditDevice('设备类型', 'product_type')">
-                    <label class="title">{{'staticdevice.param.type' | translate}}</label>
+                    <label class="title">{{'设备类型' | translate}}</label>
                     <span class="value">{{device.product_type}}</span>
                 </li>
                 <li ng-click="onClickEditDevice('设备型号', 'product_model_number')">
-                    <label class="title">{{'staticdevice.param.model' | translate}}</label>
+                    <label class="title">{{'设备型号' | translate}}</label>
                     <span class="value">{{device.product_model_number}}</span>
                 </li>
                 <li ng-click="onClickEditDevice('设备编号', 'device_number')">
-                    <label class="title">{{'staticdevice.param.number' | translate}}</label>
+                    <label class="title">{{'设备编号' | translate}}</label>
                     <span class="value">{{device.device_number}}</span>
                 </li>
                 <li ng-click="onClickEditDevice('安装位置', 'position_desp')">
-                    <label class="title">{{'staticdevice.param.address' | translate}}</label>
+                    <label class="title">{{'安装位置' | translate}}</label>
                     <span class="value">{{device.position_desp}}</span>
                 </li>
                 <li ng-click="onClickEditDevice('安装日期', 'initial_time')">
-                    <label class="title">{{'staticdevice.param.initialtime' | translate}}</label>
+                    <label class="title">{{'安装日期' | translate}}</label>
                     <span class="value">{{device.initial_time ? device.initial_time.substring(0, 10) : ''}}</span>
                 </li>
                 <li ng-click="onClickEditDevice('投运日期', 'operation_time')">
-                    <label class="title">{{'staticdevice.param.operatetime' | translate}}</label>
+                    <label class="title">{{'投运日期' | translate}}</label>
                     <span class="value">{{device.operation_time ? device.operation_time.substring(0, 10) : ''}}</span>
                 </li>
                 <li ng-click="onClickEditDevice('生产厂家', 'provider_name')">
-                    <label class="title">{{'staticdevice.param.provider' | translate}}</label>
+                    <label class="title">{{'生产厂家' | translate}}</label>
                     <span class="value">{{device.provider_name}}</span>
                 </li>
                 <li ng-click="onClickEditDevice('巡检周期', 'inspection_cycle')">
-                    <label class="title">{{'staticdevice.param.inspectcycle' | translate}}</label>
+                    <label class="title">{{'巡检周期' | translate}}</label>
                     <span class="value">{{device.inspection_cycle}} {{'days' | translate}}</span>
                 </li>
                 <li ng-click="onClickEditDevice('保养周期', 'maintenance_cycle')">
-                    <label class="title">{{'staticdevice.param.maintenancecycle' | translate}}</label>
+                    <label class="title">{{'保养周期' | translate}}</label>
                     <span class="value">{{device.maintenance_cycle}} {{'days' | translate}}</span>
+                </li>
+                <li ng-click="onClickEditDevice('额定容量', 'capacity')">
+                    <label class="title">{{'额定容量' | translate}}</label>
+                    <span class="value">{{device.capacity}} kVA</span>
                 </li>
                 <li ng-repeat="p in device.properties" ng-click="onClickEditProperty(device.properties, $index)">
                     <label class="title">{{p.name}}</label>

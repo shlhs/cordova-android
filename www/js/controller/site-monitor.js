@@ -135,6 +135,7 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', '$myTranslate', functi
                     }, 50);
                     // refreshData();
                 });
+                datePickerI18n();
             }
         }, false);
     }
@@ -700,6 +701,7 @@ app.controller('SiteHistoryReportCtrl', ['$scope', '$compile', 'ajax', '$myTrans
                     getDataInfoOfReport();
                     $scope.$apply();
                 });
+                datePickerI18n();
             }
         }, false);
     }
@@ -753,6 +755,7 @@ app.controller('SiteHistoryReportCtrl', ['$scope', '$compile', 'ajax', '$myTrans
                             }
                         });
                     }, false);
+                    pickerI18n();
                     // 默认选择第一个报告
                     onSelectReport(report);
                 }

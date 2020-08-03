@@ -26,6 +26,7 @@
     <script type="text/javascript" src="../../components/angular-animate/angular-animate.js"></script>
     <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
     <script type="text/javascript" src="../../components/angular-ui-router/release/stateEvents.min.js"></script>
+    <script type="text/javascript" src="/js/lib/angular-translate.min.js"></script>
     <script type="text/javascript" src="../../js/app/utils.js"></script>
     <script type="text/javascript" src="../../js/app/app.js"></script>
     <script type="text/javascript" src="../../js/controller/task.js"></script>
@@ -82,10 +83,10 @@
 </head>
 
 <body class="mui-android mui-android-5 mui-android-5-1 mui-android-5-1-1 mui-segmented-control-vertical" ng-app="myApp" ng-controller="TaskBaseCtrl" ng-cloak>
-<div ng-controller="DeviceXunjianTaskDetailCtrl" ng-cloak id="taskDetail">
+<div ng-controller="DeviceXunjianTaskDetailCtrl" ng-cloak id="taskDetail" ng-class="{english: isEnglish}">
     <header class="mui-bar bg-header">
         <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
-        <h1 class="mui-title" id="head_title">巡检结果</h1>
+        <h1 class="mui-title" id="head_title">{{'inspection result' | myTranslate}}</h1>
     </header>
     <div>
         <!-- 正在处理的任务单 -->
@@ -94,27 +95,27 @@
                 <div class="mui-card-content">
                     <div class="mui-card-content-inner" style="padding: 0;">
                         <div class="task-desp mui-ellipsis">
-                            <span class="task-type" ng-class="{'ergent': taskData.task_type_id===3}">{{taskData.task_type_name}}：</span> {{taskData.name}}
+                            {{taskData.name}}
                         </div>
                         <ul class="task-detail-info-group">
                             <li>
-                                <label class="title">工单单号</label><span class="value">{{taskData.no}}</span>
+                                <label class="title">{{'task.sn' | translate}}</label><span class="value">{{taskData.no}}</span>
                             </li>
                             <li>
-                                <label class="title">创建时间</label><span class="value">{{taskData.create_time}}</span>
+                                <label class="title">{{'create time' | myTranslate}}</label><span class="value">{{taskData.create_time}}</span>
+                            </li>
+                            <li ng-if="taskData.expect_complete_time">
+                                <label class="title">{{'task.time.expected' | translate}}</label><span class="value">{{taskData.expect_complete_time.substring(0, 16)}}</span>
                             </li>
                             <li>
-                                <label class="title">截止时间</label><span class="value">{{taskData.expect_complete_time}}</span>
-                            </li>
-                            <li>
-                                <label class="title">负责人</label>
+                                <label class="title">{{'owner' | translate}}</label>
                                 <span class="value">{{getUserNameAndPhone(taskData.creater_user)}}</span>
                             </li>
                             <li>
-                                <label class="title">巡检班组</label><span class="value">{{taskData.operator_team_name}}</span>
+                                <label class="title">{{'inspect.team' | translate}}</label><span class="value">{{taskData.operator_team_name}}</span>
                             </li>
                             <li ng-if="taskData.operator">
-                                <label class="title">巡检人员</label>
+                                <label class="title">{{'inspect.repairer' | translate}}</label>
                                 <span class="value" style="text-align: right">
                                     <div ng-repeat="user in taskData.operator_users">{{getUserNameAndPhone(user)}}</div>
                                 </span>
