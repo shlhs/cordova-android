@@ -763,7 +763,7 @@ app.controller('DeviceMonitorCtrl', ['$scope', 'ajax', 'appStoreProvider', 'user
                 data.forEach(function (n) {
                     if (n.type === 'Analog') {
                         analogs.push(n.sn);
-                    } else {
+                    } else if (n.type === 'Digital') {
                         digitals.push(n.sn);
                     }
                 });
@@ -827,13 +827,13 @@ app.controller('DeviceRemoteControlCtrl', ['$scope', '$interval', 'routerService
     function getWriteVarList() {
         $scope.isLoading = true;
         ajax.get({
-            url: platformService.getDeviceMgmtHost() + '/management/devices/' + $scope.device_sn + '/variables',
+            url: platformService.getDeviceMgmtHost() + '/management/devices/' + $scope.device_sn + '/variables?rw=2,3',
             success: function (response) {
                 $scope.isLoading = false;
                 // 状态量在前，模拟量在后
                 $scope.varList = [];
                 response.data.forEach(function (v) {
-                    if (v.rw === 2 || v.rw === 3) {
+                    if (v.type === 'Analog' || v.type === 'Digital') {
                         $scope.varList.push(v);
                     }
                 });

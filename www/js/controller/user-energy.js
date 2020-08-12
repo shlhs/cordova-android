@@ -85,7 +85,14 @@ EnergyFuncApi.prototype.fetchAndCalcCharges = function (stationSn, electricConfi
             return;
         }
         // 获取电度电费统计值
-        varDataApi.getDegreeSummary(varMap.EPf.sn, month, 'MONTH', function (degreeData) {
+        varDataApi.getDegreeSummary(varMap.EPf.sn, 'MONTH', month, month, function (res) {
+            if (!res || !res.length) {
+                return;
+            }
+            var degreeData = {
+                allDegree: res[0].all_degree,
+                allCharge: res[0].all_charge
+            };
             if (degreeData && degreeData.allCharge !== null) {
                 Object.assign(returnObj, {
                     degreeDetail: degreeData,
@@ -170,20 +177,14 @@ EnergyFuncApi.prototype.paintAvgPriceTrend = function (chartId, data) {
     var yAxis = [];
     var dataIndex = 0;
     var lastDay = moment().endOf('month');
-    for (var i=1; i<=lastDay.date(); i++) {
-        times.push(i + '日');
-        if (dataIndex < data.length) {
-            var dataItem = data[dataIndex];
-            var dataDay = parseInt(dataItem.time.substring(8, 10));
-            if (dataDay === i) {
-                dataIndex += 1;
-                var avgPrice = dataItem.allDegree ? parseFloat((dataItem.allCharge/dataItem.allDegree).toFixed(2)) : '-';
-                yAxis.push(avgPrice);
-                continue;
-            }
+    data.forEach(function (n, i) {
+        times.push(parseInt(n.time.substring(8, 10)) + '日');
+        if (n.all_charge) {
+            yAxis.push(parseFloat((n.all_charge/n.all_degree).toFixed(2)));
+        } else {
+            yAxis.push('-');
         }
-        yAxis.push('-');
-    }
+    });
     var option = {
         grid: {
             top: 20,
@@ -233,7 +234,7 @@ EnergyFuncApi.prototype.paintAvgPriceTrend = function (chartId, data) {
         series: [{
             data: yAxis,
             type: 'line',
-            symbolSize: 0,
+            symbolSize: 4,
             itemStyle: {
                 color: '#8D6ADD'
             }
@@ -798,19 +799,23 @@ app.controller('EnergyHomeCtrl', ['$scope', 'ajax', 'platformService', 'varDataS
             if (varMap.EPf) {
                 $scope.degreeVarSn = varMap.EPf.sn;
                 // 获取每日电度数据
-                varDataService.getDegreeChargeTrend($scope.degreeVarSn, moment(), function (degreeList) {
-                    energyApi.paintAvgPriceTrend('main_chart', degreeList);
-                    if (degreeList.length) {
-                        // $scope.currentMonthData = energyApi.statisticMonthFromChargeTrend(degreeList);
-                        // 获取今日电度电费
-                        var lastData = degreeList[degreeList.length-1];
-                        if (lastData.time.substring(8, 10) === moment().format('DD')) {
+                varDataService.getDegreeChargeTrend($scope.degreeVarSn, 'DAY', moment().set('date', 1), moment().endOf('month'), function (res) {
+                    if (!res || !res.length) {
+                        return;
+                    }
+                    var todayDay = moment().format('DD');
+                    var dataList = res[0].datas;
+                    for (var i=0; i<dataList.length; i++) {
+                        var n = dataList[i];
+                        if (n.time.substring(8, 10) === todayDay) { // 设置今日用电量和电费
                             Object.assign($scope.currentMonthData, {
-                                todayDegree: lastData.allDegree,
-                                todayCharge: lastData.allCharge
+                                todayDegree: n.all_degree,
+                                todayCharge: n.all_charge
                             });
+                            break;
                         }
                     }
+                    energyApi.paintAvgPriceTrend('main_chart', dataList);
                     $scope.$apply();
                 });
                 getLastMonthDegree($scope.degreeVarSn);
@@ -823,21 +828,18 @@ app.controller('EnergyHomeCtrl', ['$scope', 'ajax', 'platformService', 'varDataS
     }
 
     function getLastMonthDegree(sn) {       // 获取上月的电费统计信息
-        ajax.get({
-            url: '/devicevars/getelectricaldegreeandcharge',
-            data: {
-                sns: sn,
-                type: 'MONTH',
-                querytime: moment().subtract(1, 'M').format('YYYY-MM-DDTHH:mm:ss.SSS') + 'Z'
-            },
-            success: function (data) {
-                if (data && data.length) {
-                    $scope.lastMonthPrice = data[0].allCharge/data[0].allDegree;
-                    calcAvgPriceChange();
-                    $scope.$apply();
+        var lastMonth = moment().subtract(1, 'M');
+        varDataService.getDegreeSummary(sn, 'MONTH', lastMonth, lastMonth, function (res) {
+            if (res && res.length) {
+                var degree = res[0].all_degree;
+                var charge = res[0].all_charge;
+                if (degree) {
+                    $scope.lastMonthPrice = parseFloat((charge/degree).toFixed(2));
                 }
+                calcAvgPriceChange();
+                $scope.$apply();
             }
-        })
+        });
     }
 
     function calcAvgPriceChange() {
@@ -880,7 +882,9 @@ app.controller('EnergyOverviewCtrl', ['$scope', 'ajax', 'platformService', 'varD
         });
         varDataService.getVarsOfDevice(device.sn, ['EPf', 'P', 'EQf'], function (varMap) {
             var degreeVar = varMap.EPf;
-            varDataService.getDegreeChargeTrend(degreeVar.sn, $scope.selectedDate, function (res) {
+            var start = moment($scope.selectedDate.format('YYYY-MM-01'));
+            var end = $scope.selectedDate.endOf('month');
+            varDataService.getDegreeChargeTrend(degreeVar.sn, 'DAY', start, end, function (res) {
                 if (res && res.length) {
                     var degreeList = res[0].datas;
                     energyApi.paintAvgPriceTrend('price_chart', degreeList);
@@ -912,7 +916,7 @@ app.controller('EnergyOverviewCtrl', ['$scope', 'ajax', 'platformService', 'varD
                 if (dataDay === i) {
                     dataIndex += 1;
                     Object.keys(chargeMap).forEach(function (key) {
-                        chargeMap[key].push(dataItem[key+'Charge']);
+                        chargeMap[key].push(dataItem[key+'_charge']);
                     });
                     continue;
                 }
@@ -1057,24 +1061,28 @@ app.controller('EnergyCostAnalysisCtrl', ['$scope', 'ajax', 'platformService', '
                 $scope.degreeVarSn = degreeVar.sn;
                 $scope.chargeTexts = [];
                 $scope.degreeTexts = [];
-                varDataService.getDegreeSummary(degreeVar.sn, $scope.selectedDate, 'MONTH', function (data) {
+                varDataService.getDegreeSummary(degreeVar.sn, 'MONTH', $scope.selectedDate, $scope.selectedDate, function (res) {
+                    if (!res || !res.length) {
+                        return;
+                    }
+                    var data = res[0];
                     if (data) {
                         var keys = ['s', 'p', 'v', 'f'];
                         var degreeMap = {};
                         var chargeMap = {};
                         var degreeTexts = [];
                         var chargeTexts = [];
-                        if (data.allCharge) {
+                        if (data.all_charge) {
                             keys.forEach(function (key) {
-                                var degree = data[key+'Degree'];
-                                var charge = data[key+'Charge'];
+                                var degree = data[key+'_degree'];
+                                var charge = data[key+'_charge'];
                                 degreeMap[key] = degree;
                                 chargeMap[key] = charge;
                                 if (degree) {
                                     degreeTexts.push({
                                         label: g_pvf_label[key],
                                         value: degree,
-                                        ratio: (degree/data.allDegree*100).toFixed(2),
+                                        ratio: (degree/data.all_degree*100).toFixed(2),
                                         color: g_pvf_colors[key]
                                     });
                                 }
@@ -1082,7 +1090,7 @@ app.controller('EnergyCostAnalysisCtrl', ['$scope', 'ajax', 'platformService', '
                                     chargeTexts.push({
                                         label: g_pvf_label[key],
                                         value: charge,
-                                        ratio: (charge/data.allCharge*100).toFixed(2),
+                                        ratio: (charge/data.all_charge*100).toFixed(2),
                                         color: g_pvf_colors[key]
                                     });
                                 }
