@@ -23,15 +23,16 @@ var defaultEnergyMenus = [
         name: '质量报告',
         icon: 'icon-dashboard-energy-quality-report',
         templateUrl: '/templates/energy/quality-report.html'
-    }, {
-        name: '设备监控',
-        icon: 'icon-device-monitor-new',
-        templateUrl: '/templates/site/device-monitor-list.html'
-    }, {
-        name: '设备档案',
-        icon: 'icon-archives-new',
-        templateUrl: '/templates/site/static-devices/device-home.html'
-    }
+    },
+    // {
+    //     name: '设备监控',
+    //     icon: 'icon-device-monitor-new',
+    //     templateUrl: '/templates/site/device-monitor-list.html'
+    // }, {
+    //     name: '设备档案',
+    //     icon: 'icon-archives-new',
+    //     templateUrl: '/templates/site/static-devices/device-home.html'
+    // }
 ];
 
 app.provider('appStoreProvider', function () {
@@ -229,35 +230,35 @@ app.config(['appStoreProviderProvider', function (appStoreServiceProvider) {
                     templateUrl: '/templates/site/static-devices/device-home.html',
                     url: 'static-devices',
                     sn: 'station-monitor/device-documents',
-                    defaultChecked: true
+                    defaultChecked: true && !gIsEnergyPlatform
                 }, {
                     name: '月度报告',
                     icon: 'icon-reports',
                     templateUrl: '/templates/site/reports.html',
                     url: 'monthly-report',
                     sn: 'station-monitor/month-report',
-                    defaultChecked: true
+                    defaultChecked: true && !gIsEnergyPlatform
                 }, {
                     name: '电子档案',
                     icon: 'icon-docs',
                     templateUrl: '/templates/site/docs.html',
                     url: 'site-documents',
                     sn: 'station-monitor/e-file',
-                    defaultChecked: true
+                    defaultChecked: true && !gIsEnergyPlatform
                 }, {
                     name: '历史曲线',
                     icon: 'icon-history-line',
                     templateUrl: '/templates/site-monitor/data-line.html',
                     url: 'data-line',
                     sn: 'station-monitor/data-line',
-                    defaultChecked: true
+                    defaultChecked: true && !gIsEnergyPlatform
                 }, {
                     name: '历史报表',
                     icon: 'icon-history-report',
                     templateUrl: '/templates/site-monitor/data-history.html',
                     url: 'data-history',
                     sn: 'station-monitor/data-report-v2',
-                    defaultChecked: true
+                    defaultChecked: true && !gIsEnergyPlatform
                 }
             ]
         }, {

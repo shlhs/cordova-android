@@ -33,7 +33,7 @@
                     <div class="mui-media-body">{{app.name}}</div>
                 </a>
             </li>
-            <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border">
+            <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border" ng-if="!isEnergyPlatform">
                 <a href="/templates/app-store/app-store.html" style="padding: 6px 0 0 0;">
                     <span class="mui-icon icon icon-32 icon-app-store"></span>
                     <div class="mui-media-body">更多</div>
@@ -87,22 +87,4 @@
             <div class="alert-text info">正在加载...</div>
         </div>
     </div>
-</div>
-<!-- 站点选择对话框 -->
-<div class="popover-mask" ng-if="popup_visible" ng-click="closePopover()"></div>
-<div class="mui-popover dark-popover mui-active" ng-if="popup_visible"
-     style="display: block; top: 57px; left: 16px;width: calc(100% - 32px);background-color: #323234;padding-bottom: 8px;">
-    <div class="mui-popover-arrow" style="left:10px"></div>
-    <div class="site-search-comp">
-        <div class="search-wrapper">
-            <i class="icon icon-search"></i>
-            <input placeholder="支持名称和站点编号搜索" oninput="angular.element(this).scope().searchInputChange(this)">
-        </div>
-    </div>
-    <ul class="mui-table-view">
-        <li class="mui-table-view-cell" ng-repeat="site in searchSiteResult" ng-click="chooseSite(site)">
-            <i class="site-status {{site.status}}"></i>{{site.name}}
-            <label ng-if="site.unclosed_envet_amount" class="site-event">{{site.unclosed_envet_amount}}</label>
-        </li>
-    </ul>
 </div>

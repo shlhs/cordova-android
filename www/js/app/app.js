@@ -6,8 +6,10 @@ var app = angular.module('myApp', ['ngAnimate', 'ui.router', 'ui.router.state.ev
 var loginExpireCheckEnable = false;       // 是否检查鉴权过期
 var defaultPlatIpAddr = "http://47.102.97.113";     // 纪年
 var defaultImgThumbHost = "";     // 如果为空则与 host一样
-var gQrDownloadUrl = defaultPlatIpAddr + ':8123/version/qr.png'; // 二维码下载链接
+// var gQrDownloadUrl = defaultPlatIpAddr + ':8123/version/qr.png'; // 二维码下载链接
+var gQrDownloadUrl = '/version/qr.png'; // 二维码下载链接
 var gShowEnergyPage = false;     // 是否显示能效页面，不显示能效页面时运维人员会看到抢单页面
+var gIsEnergyPlatform = false; // 是否是能源管理平台，是的话部分菜单默认不显示
 
 app.run(function ($animate) {
     $animate.enabled(true);
@@ -213,6 +215,26 @@ app.service('platformService', function () {
         return null;
     };
 
+    this.setPlatFuncSwitch = function (data) {
+        if (data) {
+            setStorageItem('global-plat-fun-switch', JSON.stringify(data));
+        } else {
+            setStorageItem('global-plat-fun-switch', null);
+        }
+    };
+
+    this.platHasOpsFunc = function () { // 平台是否有运维功能
+        var str = getStorageItem('global-plat-fun-switch');
+        if (!str) {
+            return true;
+        }
+        var data = JSON.parse(str);
+        if (data.opsManagement === undefined) {
+            return true;
+        }
+        return data.opsManagement;
+    };
+
     this.getHost = function () {
         // 格式为： http://ip:port/v1
         if (defaultPlatIpAddr) {
@@ -295,11 +317,17 @@ app.service('routerService', ['$timeout', '$compile', function ($timeout, $compi
         if (!pageLength){
             return;
         }
-        // 显示前一个页面
+        // 如果前一个页面被隐藏了，则显示前一个页面
         if (pageLength>1){
-            pages[pageLength - 2].ele.show();
-        }else{
-            pages[0].ele.prevAll().show();
+            if (pages[pageLength - 2]) {
+                if (pages[pageLength - 2].config.hidePrev) {
+                    pages[pageLength - 2].ele.show();
+                }
+            }
+        } else if (pages.length > 0){
+            if (pages[0].config.hidePrev) {
+                pages[0].ele.prevAll().show();
+            }
         }
         var item = pages[currentIndex], element=item.ele;
         element.addClass('ng-leave');
