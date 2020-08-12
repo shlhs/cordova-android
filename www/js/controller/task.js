@@ -371,6 +371,7 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
             $scope.currentSite = site;
             $scope.searchSiteResult = $scope.sites;
             localStorage.setItem("currentSite", JSON.stringify(site));
+            ajax.setTzOffset(site);
             $scope.closePopover();
             $scope.$broadcast('onSiteChange', site);
         }

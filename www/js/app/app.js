@@ -4,7 +4,7 @@
  */
 var app = angular.module('myApp', ['ngAnimate', 'ui.router', 'ui.router.state.events', 'pascalprecht.translate']);
 var loginExpireCheckEnable = false;       // 是否检查鉴权过期
-var defaultPlatIpAddr = "";     // 平台默认ip，格式为：http://118.190.51.135
+var defaultPlatIpAddr = "http://115.28.235.47";     // 平台默认ip，格式为：http://118.190.51.135
 var defaultImgThumbHost = "";     // 如果为空则与 host一样
 // var gQrDownloadUrl = defaultPlatIpAddr + ':8123/version/qr.png'; // 二维码下载链接
 var gQrDownloadUrl = '/version/qr.png'; // 二维码下载链接
@@ -315,7 +315,7 @@ app.service('platformService', function () {
     };
 
     this.getAuthHost = function () {
-        return this.host + ":8096/v1"
+        return this.host + ":8096/v1";
     };
 
     this.getImageThumbHost = function () {      // 获取图片压缩服务的地址
@@ -325,7 +325,7 @@ app.service('platformService', function () {
         }
         if (this.host)
         {
-            return this.host + ":8888/unsafe"
+            return this.host + ":8888/unsafe";
         }
         return null;
     };
@@ -533,10 +533,23 @@ app.service('ajax', ['$rootScope', 'platformService', 'userService', 'routerServ
     var host = platformService.host;
     $rootScope.host = host;
     var username = userService.getUsername(), password = userService.getPassword();
+    var tzOffset = localStorage.getItem('tzOffset');
 
     $rootScope.user = null;
 
     var expireNotified = false;     // 是否已通知用户注册过期
+
+    if (!tzOffset) {
+        tzOffset = new Date().getTimezoneOffset();
+    }
+
+    this.setTzOffset = function (station) {
+        tzOffset = new Date().getTimezoneOffset();
+        if (station.time_zone) {
+            tzOffset = station.time_zone;
+        }
+        setStorageItem('tzOffset', tzOffset);
+    };
 
     $rootScope.getCompany = function(callback) {
         $.ajax({
@@ -587,6 +600,7 @@ app.service('ajax', ['$rootScope', 'platformService', 'userService', 'routerServ
             credentials: 'include',
             mode: 'cors',
             'Accept-LANGUAGE': LANGUAGE,
+            'Tz-Offset': tzOffset,
         }, option.headers);
         option = $.extend({}, {timeout: 30000}, option);
         const errorFunc = option.error;
