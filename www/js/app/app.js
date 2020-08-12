@@ -295,11 +295,17 @@ app.service('routerService', ['$timeout', '$compile', function ($timeout, $compi
         if (!pageLength){
             return;
         }
-        // 显示前一个页面
+        // 如果前一个页面被隐藏了，则显示前一个页面
         if (pageLength>1){
-            pages[pageLength - 2].ele.show();
-        }else{
-            pages[0].ele.prevAll().show();
+            if (pages[pageLength - 2]) {
+                if (pages[pageLength - 2].config.hidePrev) {
+                    pages[pageLength - 2].ele.show();
+                }
+            }
+        } else if (pages.length > 0){
+            if (pages[0].config.hidePrev) {
+                pages[0].ele.prevAll().show();
+            }
         }
         var item = pages[currentIndex], element=item.ele;
         element.addClass('ng-leave');

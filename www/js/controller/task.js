@@ -404,7 +404,8 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
     $scope.openSiteSelectPage = function () {
         $scope.refreshAllSiteStatus();
         routerService.openPage($scope, '/templates/site/site-select-page.html',
-            {treeData: $scope.sitesTree, onSelect: $scope.chooseSite, selectedSn: $scope.currentSite.sn})
+            {treeData: $scope.sitesTree, onSelect: $scope.chooseSite, selectedSn: $scope.currentSite.sn},
+            {hidePrev: false});
     };
 
     function _getDefaultHomeMenu() {

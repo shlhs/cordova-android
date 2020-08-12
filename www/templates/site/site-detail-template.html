@@ -88,21 +88,3 @@
         </div>
     </div>
 </div>
-<!-- 站点选择对话框 -->
-<div class="popover-mask" ng-if="popup_visible" ng-click="closePopover()"></div>
-<div class="mui-popover dark-popover mui-active" ng-if="popup_visible"
-     style="display: block; top: 57px; left: 16px;width: calc(100% - 32px);background-color: #323234;padding-bottom: 8px;">
-    <div class="mui-popover-arrow" style="left:10px"></div>
-    <div class="site-search-comp">
-        <div class="search-wrapper">
-            <i class="icon icon-search"></i>
-            <input placeholder="支持名称和站点编号搜索" oninput="angular.element(this).scope().searchInputChange(this)">
-        </div>
-    </div>
-    <ul class="mui-table-view">
-        <li class="mui-table-view-cell" ng-repeat="site in searchSiteResult" ng-click="chooseSite(site)">
-            <i class="site-status {{site.status}}"></i>{{site.name}}
-            <label ng-if="site.unclosed_envet_amount" class="site-event">{{site.unclosed_envet_amount}}</label>
-        </li>
-    </ul>
-</div>
