@@ -1748,6 +1748,7 @@ app.controller('EnergyStatisticsZhiluCtrl', ['$scope', 'ajax', 'platformService'
             }
             var times = [];
             var currentMoment = moment().format('YYYY-MM-DD HH:mm:ss.000');
+            var month = moment().get('month') + 1;
             data.now.time_keys.forEach(function (t) {
                 // if (t > currentMoment) {
                 //     return false;
@@ -1759,7 +1760,8 @@ app.controller('EnergyStatisticsZhiluCtrl', ['$scope', 'ajax', 'platformService'
                        break;
                    case $myTranslate.instant('月'):
                        // times.push(parseInt(t.substring(8, 10)) + '日');
-                       times.push(getDay(parseInt(t.substring(8, 10))));
+                       // times.push(getDay(parseInt(t.substring(8, 10))));
+                       times.push(month + '-' + parseInt(t.substring(8, 10)));
                        break;
                    case $myTranslate.instant('年'):
                        // times.push(parseInt(t.substring(5, 7)) + '月');
@@ -2448,6 +2450,7 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
         }
         var timeKeys = createTimeList(startTime, endTime, queryPeriod, 'YYYY-MM-DD HH:mm:ss.000');
         var times = [];
+        const month = parseInt(currentDate.substring(5, 7));
         timeKeys.forEach(function (t) {
             switch (timeType) {
                 case 'DAY':
@@ -2456,7 +2459,8 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
                     break;
                 case 'MONTH':
                     // times.push(parseInt(t.substring(8, 10) + '日'));
-                    times.push(getDay(parseInt(t.substring(8, 10))));
+                    // times.push(getDay(parseInt(t.substring(8, 10))));
+                    times.push(month + '-' + parseInt(t.substring(8, 10)));
                     break;
                 case 'YEAR':
                     // times.push(parseInt(t.substring(5, 7)) + '月');
