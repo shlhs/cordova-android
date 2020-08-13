@@ -10,9 +10,16 @@ var defaultImgThumbHost = "";     // 如果为空则与 host一样
 var gQrDownloadUrl = '/version/qr.png'; // 二维码下载链接
 var gShowEnergyPage = false;     // 是否显示能效页面，不显示能效页面时运维人员会看到抢单页面
 var gIsEnergyPlatform = false; // 是否是能源管理平台，是的话部分菜单默认不显示
-var LANGUAGE = "en-US"; // zh-CN, en-US
+var LANGUAGE = getStorageItem('LANGUAGE') || "zh-CN"; // zh-CN, en-US
 var gIsEnglish = LANGUAGE === 'en-US';
 
+function setSystemLanguage(language) {
+    if (language) {
+        LANGUAGE = language;
+        gIsEnglish = LANGUAGE === 'en-US';
+        setStorageItem('LANGUAGE', language);
+    }
+}
 
 app.run(function ($animate) {
     $animate.enabled(true);
@@ -26,10 +33,10 @@ app.run(function ($animate) {
 //     });
 // }]);
 
-function loadTranslateFiles(language, forceLoad) { // 加载翻译文件，forceLoad：重新加载，否则从localStorage中读取
+function loadTranslateFiles(forceLoad) { // 加载翻译文件，forceLoad：重新加载，否则从localStorage中读取
     var jsonData = {};
     if (!forceLoad) {
-        var data = localStorage.getItem(language + "_source");
+        var data = localStorage.getItem(LANGUAGE + "_source");
         if (data) {
             try {
                 jsonData = JSON.parse(data);
@@ -37,12 +44,12 @@ function loadTranslateFiles(language, forceLoad) { // 加载翻译文件，force
             } catch (err) {}
         }
     }
-    var url = '/i18n/' + language + '.json';
+    var url = '/i18n/' + LANGUAGE + '.json';
     $.ajax({
         url: url,
         async: false,
         success: function (data) {
-            localStorage.setItem(language + "_source", JSON.stringify(data));
+            localStorage.setItem(LANGUAGE + "_source", JSON.stringify(data));
             jsonData = data;
         },
         error: function (err) {
@@ -61,7 +68,7 @@ app.config(function ($translateProvider) {
     // });
 
     // 使用ajax同步加载，避免js的translate先调用，但是json文件未加载，导致无法显示翻译文本的问题
-    var json = loadTranslateFiles(LANGUAGE);
+    var json = loadTranslateFiles();
     $translateProvider.translations(LANGUAGE, json);
     $translateProvider.preferredLanguage(LANGUAGE);
 });
