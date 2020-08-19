@@ -2164,6 +2164,7 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
 // 工单指派、缺陷单修改公共页面的控制器
 app.controller('CommonTaskEditAssignCtrl', ['$scope', '$timeout', 'ajax', function ($scope, $timeout, ajax) {
     var task = $scope.task;
+    $scope.showRecheck = gShowRecheck;
     $scope.isDefect = task.is_defect;
     $scope.expectTime = task.expect_complete_time ? task.expect_complete_time.substring(0, 10) : null;
     $scope.taskType = {

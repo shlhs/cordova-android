@@ -7,7 +7,7 @@
     <div class="mui-content" style="background-color: #FFF;">
         <div class="mui-input-group task-create-rows dts-create-rows" style="padding: 0 12px;">
             <div class="mui-input-row" ng-if="task.is_defect">
-                <label class="label">{{'dts.type' | translate}}<span style="color:red">*</span></label>
+                <label class="label">{{'dts.level' | translate}}<span style="color:red">*</span></label>
                 <input type="text" name="taskTypeName" ng-model="taskType.name" placeholder="{{'please.select dts.type' | translate}}" required>
                 <button id="taskTypePicker" class="mui-btn mui-btn-block" type="button">&nbsp; </button>
             </div>
@@ -45,7 +45,7 @@
                     {{'please.select defect.ops.person' | myTranslate}}
                 </div>
             </div>
-            <div class="mui-input-row" ng-if="task.is_defect">
+            <div class="mui-input-row" ng-if="task.is_defect && showRecheck">
                 <label class="label">{{'defect.recheck.team' | translate}}</label>
                 <div class="right-text" ng-if="selectedRecheckTeam">
                     {{selectedRecheckTeam.name}}
@@ -55,7 +55,7 @@
                 </div>
                 <button type="button" class="btn mui-btn mui-btn-block" ng-click="toggleRecheckTeamSelector()" style="position: absolute;top: 0;left: 130px;bottom: 0;">&nbsp;</button>
             </div>
-            <div class="mui-input-row" ng-if="task.is_defect">
+            <div class="mui-input-row" ng-if="task.is_defect && showRecheck">
                 <label class="label">{{'defect.recheck.person' | translate}}</label>
                 <div class="right-text" ng-if="selectedRecheckUsers.length">
                     <div ng-repeat="h in selectedRecheckUsers">{{h.name}}</div>

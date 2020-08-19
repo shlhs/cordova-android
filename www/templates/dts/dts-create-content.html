@@ -52,7 +52,7 @@
             <button type="button" data-options='{}' class="btn mui-btn mui-btn-block" ng-click="toggleHandlerSelector()" style="position: absolute;top: 0;left: 115px;bottom: 0;">&nbsp;</button>
             <div class="error" ng-if="currentHandlerError">{{'defect.ops.person.empty' | translate}}</div>
         </div>
-        <div class="mui-input-row" ng-if="needResign">
+        <div class="mui-input-row" ng-if="needResign && showRecheck">
             <label class="label">{{'defect.recheck.person' | translate}}</label>
             <div class="right-text" ng-if="taskData.recheck_users.length">
                 <div ng-repeat="h in taskData.recheck_users"><a ng-click="callPhone(h.phone)">{{h.name}}</a></div>

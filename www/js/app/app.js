@@ -12,6 +12,7 @@ var gShowEnergyPage = false;     // 是否显示能效页面，不显示能效�
 var gIsEnergyPlatform = false; // 是否是能源管理平台，是的话部分菜单默认不显示
 var LANGUAGE = getStorageItem('LANGUAGE') || "zh-CN"; // zh-CN, en-US
 var gIsEnglish = LANGUAGE === 'en-US';
+var gShowRecheck = true; // 是否显示复测内容
 
 function setSystemLanguage(language) {
     if (language) {

@@ -24,6 +24,7 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
     if (siteStr) {
         defaultStationSn = JSON.parse(siteStr).sn;
     }
+    $scope.showRecheck = gShowRecheck;
     $scope.userStations = [];
     $scope.devices = [];
     $scope.role = userService.getUserRole();
