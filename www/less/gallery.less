@@ -1,7 +1,10 @@
+@import './theme/index.less';
+
+
 .mui-preview-image.mui-fullscreen {
     position: fixed;
     z-index: 20;
-    background-color: #000;
+    background-color: @color-bg-reverse;
 }
 .mui-preview-header,
 .mui-preview-footer {
@@ -21,7 +24,7 @@
 .mui-preview-header .mui-preview-indicator {
     display: block;
     line-height: 25px;
-    color: #fff;
+    color: @color-text-reverse;
     text-align: center;
     margin: 15px auto 4;
     width: 70px;
