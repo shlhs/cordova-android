@@ -1517,38 +1517,38 @@ app.controller('EnergyStatisticsZhiluCtrl', ['$scope', 'ajax', 'platformService'
             monthRate: '-'
         };
         fetchElectricDegree(sns, today[0], today[1], function (data) {
-            $scope.electricData['today'] = data;
+            $scope.electricData.today = data;
             _calcDayRate();
         });
         fetchElectricDegree(sns, yesterday[0], yesterday[1], function (data) {
-            $scope.electricData['yesterday'] = data;
+            $scope.electricData.yesterday = data;
             _calcDayRate();
         });
         fetchElectricDegree(sns, thisMonth[0], thisMonth[1], function (data) {
-            $scope.electricData['month'] = data;
+            $scope.electricData.month = data;
             _calcMonthRate();
         });
         fetchElectricDegree(sns, lastMonth[0], lastMonth[1], function (data) {
-            $scope.electricData['lastMonth'] = data;
+            $scope.electricData.lastMonth = data;
             _calcMonthRate();
         });
 
         function _calcDayRate() {
-            var value1 = $scope.electricData['today'], value2 = $scope.electricData['yesterday'];
+            var value1 = $scope.electricData.today, value2 = $scope.electricData['yesterday'];
             if (value1 !== '-' && value2 !== '-') {
                 if (value2 === 0) {
-                    $scope.electricData['dayRate'] = '-';
+                    $scope.electricData.dayRate = '-';
                 } else {
                     var rate = (value1-value2)/value2 * 100;
-                    $scope.electricData['dayRate'] = (Math.abs(rate)).toFixed(1);
-                    $scope.electricData['dayTrend'] = rate > 0 ? 'up' : 'down';
+                    $scope.electricData.dayRate = (Math.abs(rate)).toFixed(1);
+                    $scope.electricData.dayTrend = rate > 0 ? 'up' : 'down';
                 }
             }
             $scope.$apply();
         }
 
         function _calcMonthRate() {
-            var value1 = $scope.electricData['month'], value2 = $scope.electricData['lastMonth'];
+            var value1 = $scope.electricData.month, value2 = $scope.electricData.lastMonth;
             if (value1 !== '-' && value2 !== '-') {
                 if (value2 === 0) {
                     $scope.electricData['monthRate'] = '-';
@@ -1760,8 +1760,7 @@ app.controller('EnergyStatisticsZhiluCtrl', ['$scope', 'ajax', 'platformService'
                        break;
                    case $myTranslate.instant('月'):
                        // times.push(parseInt(t.substring(8, 10)) + '日');
-                       // times.push(getDay(parseInt(t.substring(8, 10))));
-                       times.push(month + '-' + parseInt(t.substring(8, 10)));
+                       times.push(getDay(parseInt(t.substring(8, 10))));
                        break;
                    case $myTranslate.instant('年'):
                        // times.push(parseInt(t.substring(5, 7)) + '月');

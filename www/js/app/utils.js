@@ -368,6 +368,9 @@ function getMonth(month, abbreviation) {
 
 // day取值范围： 1 ~ 31
 function getDay(day) {
+    if (typeof day === 'string') {
+        day = Number.parseInt(day);
+    }
     var tmp = moment().set('month', 6).set('date', day);
     if (gIsEnglish) {
         return tmp.format('Do');

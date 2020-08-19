@@ -1065,14 +1065,15 @@ app.controller('SiteHistoryReportCtrl', ['$scope', '$compile', 'ajax', '$myTrans
                     // timeKeys.push('24时');
                     timeKeys.push(getHour(24));
                 } else if (t.substring(8, 10) > currentDay.substring(8, 10)) {
-                    timeKeys.push('次日' + t.slice(11, 13) + '时');
+                    timeKeys.push($myTranslate.instant('次日') + ' ' + getHour(t.slice(11, 13)));
                 } else {
                     // timeKeys.push(t.slice(11, 13) + '时');
                     timeKeys.push(getHour(parseInt(t.slice(11, 13))));
                 }
             } else if (timeType === 'MONTH') {
                 // timeKeys.push(parseInt(t.slice(8, 10)) + '日');
-                timeKeys.push(getDay(parseInt(t.slice(8, 10))));
+                // timeKeys.push(getDay(parseInt(t.slice(8, 10))));
+                timeKeys.push(t.slice(5, 10));
             } else if (timeType === 'YEAR') {
                 // timeKeys.push(parseInt(t.slice(5, 7)) + '月');
                 timeKeys.push(getMonth(parseInt(t.slice(5, 7)) - 1, true));
