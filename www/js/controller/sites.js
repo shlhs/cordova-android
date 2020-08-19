@@ -137,7 +137,7 @@ function findFirstLeafOfTree(data) {
     return null;
 }
 
-app.controller('SiteListCtrl', ['$scope', 'ajax', 'userService', 'appStoreProvider', function ($scope, ajax, userService, appStoreProvider) {
+app.controller('SiteListCtrl', ['$scope', 'ajax', 'userService', 'appStoreProvider', '$myTranslate', function ($scope, ajax, userService, appStoreProvider, $myTranslate) {
     $scope.role = userService.getUserRole();
     $scope.selectedApps = [];
     $scope.isEnergyPlatform = gIsEnergyPlatform;
@@ -180,6 +180,9 @@ app.controller('SiteListCtrl', ['$scope', 'ajax', 'userService', 'appStoreProvid
                     appStoreProvider.setMenuSns($scope.role, menuSns, platFuncs);
                     $scope.$emit('$onMenuUpdate', !platFuncs || platFuncs.opsManagement, menuSns);
                     $scope.selectedApps = appStoreProvider.getSelectedApps();
+                    // $scope.selectedApps.forEach(function (app) {
+                    //     app.name = $myTranslate.instant(app.key);
+                    // });
                     $scope.$apply();
                 }
             }
@@ -379,7 +382,7 @@ app.controller('SiteBaseInfoCtrl', ['$scope', 'ajax', 'platformService', functio
 }]);
 
 
-app.controller('EventListCtrl', ['$scope', 'scrollerService', 'userService', 'ajax', 'appStoreProvider', function ($scope, scrollerService, userService, ajax, appStoreProvider) {
+app.controller('EventListCtrl', ['$scope', 'scrollerService', 'userService', 'ajax', 'appStoreProvider', '$myTranslate', function ($scope, scrollerService, userService, ajax, appStoreProvider, $myTranslate) {
     $scope.sn = GetQueryString('sn');
     var checked = GetQueryString('status') === '0' ? 0 : 1;
     $scope.isDevice = false;   // 是设备还是站点
@@ -474,7 +477,7 @@ app.controller('EventListCtrl', ['$scope', 'scrollerService', 'userService', 'aj
             },
             success: function (data) {
                 $.notify.progressStop();
-                $.notify.info("事件已确认", 800);
+                $.notify.info($myTranslate.instant('event.confirmed'), 800);
                 // 将已确认的事件从列表中删除
                 for (var i=0; i<$scope.events.length; i++) {
                     if ($scope.events[i].id === data.id) {
@@ -489,7 +492,7 @@ app.controller('EventListCtrl', ['$scope', 'scrollerService', 'userService', 'aj
             error: function (data) {
                 $.notify.progressStop();
                 console.log('post action fail');
-                $.notify.error('确认时发生异常');
+                $.notify.error($myTranslate.instant('event.confirm.error'));
             }
         });
     };

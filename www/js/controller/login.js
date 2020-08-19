@@ -8,7 +8,7 @@ var gPublicApiHost = 'http://47.105.145.8:8090';        // 新的公有云接口
 // var gPublicApiHost = 'http://47.105.143.250:8090';        // 因泰来接口
 var defaultActiveEnergyMode = false; // 是否默认使用能效管理模式
 
-app.controller('LoginCtrl', ['$scope', '$timeout', 'platformService', 'userService', '$state', '$http', 'ajax', function ($scope, $timeout, platformService, userService, $state, $http, ajax) {
+app.controller('LoginCtrl', ['$scope', '$timeout', 'platformService', 'userService', '$state', '$http', 'ajax', '$translate', function ($scope, $timeout, platformService, userService, $state, $http, ajax, $translate) {
     $scope.error = '';
     var platform = null;
     $scope.enable = false;
@@ -84,13 +84,14 @@ app.controller('LoginCtrl', ['$scope', '$timeout', 'platformService', 'userServi
             success: function (data) {
                 var result = KJUR.jws.JWS.verify(data.token, 'zjlhstest');
                 if (result) {
+                    platformService.setLanguage();
                     if (!getStorageItem('latestPlatform')) {
                         platformService.setLatestPlatform({url: defaultPlatIpAddr + ":8099/v1"});
                     }
                     userService.setAccountToken(data.token);
                     getUserInfo();
                 } else {
-                    toast('用户名或密码错误');
+                    toast($translate.instant('login.error'));
                     if ($scope.isAutoLogin) {
                         userService.setPassword('');
                         location.href = 'login.html';
@@ -101,7 +102,7 @@ app.controller('LoginCtrl', ['$scope', '$timeout', 'platformService', 'userServi
                 $scope.enable = true;
                 $scope.isLogin = false;
                 $scope.$apply();
-                toast('用户名或密码错误');
+                toast($translate.instant('login.error'));
                 if ($scope.isAutoLogin) {
                     userService.setPassword('');
                     location.href = 'login.html';
@@ -135,7 +136,7 @@ app.controller('LoginCtrl', ['$scope', '$timeout', 'platformService', 'userServi
             error: function () {
                 $scope.enable = true;
                 $scope.isLogin = false;
-                toast('用户名或密码错误');
+                toast($translate.instant('login.error'));
                 $scope.$apply();
             }
         })
@@ -186,7 +187,8 @@ app.controller('LoginCtrl', ['$scope', '$timeout', 'platformService', 'userServi
 }]);
 
 app.controller('AutoLoginCtrl', ['$scope', '$timeout', function ($scope, $timeout) {
-
+    setSystemLanguage(GetQueryString('language')); // 设置系统语言。 language参数由手机读取系统参数后上传
+    loadTranslateFiles(true);
     $scope.autoLogin = function () {
         //先等1.5s
         // 先判断是否可以自动登录

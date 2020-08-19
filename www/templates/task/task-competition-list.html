@@ -10,7 +10,7 @@
                     <div class="mui-media-body task-main">
                         <h4 class="mui-ellipsis task-title" style="margin-top: 0">
                             <img class="mui-pull-left task-icon" src="/img/task_type_{{task.task_type_id}}@2x.png">
-                            <strong class="task-type" ng-class="{'ergent': task.task_type_id===3}">{{task.task_type_name}}单</strong>
+                            <strong class="task-type" ng-class="{'ergent': task.task_type_id===3}">{{task.task_type_name}}</strong>
                             <label style="float: right;color: #666;font-size: 13px;" ng-if="task.distance">
                                 {{task.distance}}
                             </label>
@@ -22,10 +22,10 @@
                         {{task.name}}
                     </p>
                     <div ng-if="task.create_time_desp">
-                        <span class="task-info-label">发布时间：</span><span class="task-info-value">{{task.create_time_desp}}</span>
+                        <span class="task-info-label">{{'create time' | myTranslate}}：</span><span class="task-info-value">{{task.create_time_desp}}</span>
                     </div>
                     <div ng-if="task.station_name">
-                        <span class="task-info-label">站点名称：</span><span class="task-info-value">{{task.station_name}}</span>
+                        <span class="task-info-label">{{'station' | translate}}：</span><span class="task-info-value">{{task.station_name}}</span>
                     </div>
                 </div>
                 <!--<div class="task-btn-grab" ng-click="onClickGrab($event, task)"><label>抢单</label></div>-->
@@ -34,7 +34,7 @@
         <div class="page-alert-wrapper" ng-if="tasks.length==0 && !isLoading">
             <div class="page-alert">
                 <i class="alert-icon nodata-info"></i>
-                <div class="alert-text info">无发布任务</div>
+                <div class="alert-text info">{{'no task.orders' | myTranslate}}</div>
             </div>
         </div>
     </div>
@@ -43,7 +43,7 @@
 <div class="page-alert-wrapper" ng-if="isLoading">
     <div class="page-alert">
         <span class="mui-spinner"></span>
-        <div class="alert-text info">正在加载...</div>
+        <div class="alert-text info">{{'loading' | translate}}...</div>
     </div>
 </div>
 </div>

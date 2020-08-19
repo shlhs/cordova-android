@@ -15,7 +15,7 @@ function onAndroid_dtsImageDelete (filename) {       // Android手机上删除�
 }
 
 var TaskSource = {Repaire: 1, Event: 2, Inspect: 3};
-app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'routerService', 'mediaService', function ($scope, $timeout, ajax, userService, routerService, mediaService) {
+app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'routerService', 'mediaService', '$myTranslate', function ($scope, $timeout, ajax, userService, routerService, mediaService, $myTranslate) {
     var taskId = GetQueryString("task_id") || $scope.task_id || '';
     var deviceSns = GetQueryString('device_sns');
     var stationSn = GetQueryString('station_sn');
@@ -58,6 +58,7 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
         opsCompanyId = companyId;
     }
     var defectTypePicker = null;
+    $scope.isEnglish = gIsEnglish;
 
     function init() {
         if ($scope.isForDevice) { // 如果只有设备sn，那么需要读取设备详情
@@ -73,6 +74,7 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
         initTaskTypeList();
         initDatePicker();
         initMembers();
+        pickerI18n();
     }
 
     function initStations() {
@@ -123,9 +125,10 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
                         }
                     });
                 }, false);
-            },
-            error: function(){
-                console.log('获取站点列表失败');
+                staticDevices = data;
+                pickerI18n();
+            }, error: function () {
+                $.notify.error($myTranslate.instant('get device list failed'));
             }
         });
     }
@@ -138,7 +141,7 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
                 defectTypePicker = new mui.PopPicker();
                 var pickerData = [];
                 data.forEach(function (item) {
-                    pickerData.push({value: item.id, text: item.name})
+                    pickerData.push({value: item.id, text: item.name});
                 });
                 defectTypePicker.setData(pickerData);
                 var defectTypeBtn = document.getElementById('defectTypePicker');
@@ -151,6 +154,7 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
                         $scope.$apply();
                     });
                 }, false);
+                pickerI18n();
                 $scope.$apply();
             }
         });
@@ -162,7 +166,7 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
             success: function (data) {
                 staticDevices = data;
             }, error: function () {
-                $.notify.error('获取设备列表失败');
+                $.notify.error($myTranslate.instant('get devices failed'));
             }
         });
     }
@@ -183,13 +187,13 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
     function initTaskTypeList() {
         var taskTypes = [{
             value: 8,
-            text: '一般缺陷'
+            text: $myTranslate.instant('dts.type.general')
         }, {
             value: 9,
-            text: '严重缺陷'
+            text: $myTranslate.instant('dts.type.serious')
         }, {
             value: 10,
-            text: '致命缺陷'
+            text: $myTranslate.instant('dts.type.fatal')
         }];
         var taskTypeButton = document.getElementById('taskTypePicker');
         if (taskTypeButton) {
@@ -267,43 +271,43 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
     };
 
     function initDatePicker() {
-
-        document.getElementById('expectedTime').addEventListener('tap', function() {
-            var _self = this;
-            if(_self.picker) {
-                _self.picker.show(function (rs) {
-                    $scope.taskData.expect_complete_time = rs.text;
-                    _self.picker.dispose();
-                    _self.picker = null;
-                    $scope.$apply();
-                });
-            } else {
-                // var optionsJson = this.getAttribute('data-options') || '{}';
-                var options = {type: 'date', beginDate: new Date()};
-                var id = this.getAttribute('id');
-                /*
-                 * 首次显示时实例化组件
-                 * 示例为了简洁，将 options 放在了按钮的 dom 上
-                 * 也可以直接通过代码声明 optinos 用于实例化 DtPicker
-                 */
-                _self.picker = new mui.DtPicker(options);
-                _self.picker.show(function(rs) {
-                    $scope.taskData.expect_complete_time = rs.text;
-                    _self.picker.dispose();
-                    _self.picker = null;
-                    $scope.$apply();
-                });
-            }
-        }, false);
+        var timeBtn = document.getElementById('expectedTime');
+        if (timeBtn) {
+            timeBtn.addEventListener('tap', function() {
+                var _self = this;
+                if(_self.picker) {
+                    _self.picker.show(function (rs) {
+                        $scope.taskData.expect_complete_time = rs.text;
+                        _self.picker.dispose();
+                        _self.picker = null;
+                        $scope.$apply();
+                    });
+                } else {
+                    /*
+                     * 首次显示时实例化组件
+                     * 示例为了简洁，将 options 放在了按钮的 dom 上
+                     * 也可以直接通过代码声明 optinos 用于实例化 DtPicker
+                     */
+                    _self.picker = new mui.DtPicker({type: 'date'});
+                    _self.picker.show(function(rs) {
+                        $scope.taskData.expect_complete_time = rs.text;
+                        _self.picker.dispose();
+                        _self.picker = null;
+                        $scope.$apply();
+                    });
+                    datePickerI18n();
+                }
+            }, false);
+        }
     }
 
     $scope.openDeviceSelector = function () {
         if (!stationSn) {
             // 当前未选中站点，则提示先选择站点
             if ($scope.userStations.length > 1) {
-                $.notify.toast('请选选择站点')
+                $.notify.toast($myTranslate.instant('please.select station'));
             } else {
-                $.notify.toast('您没有配置任何站点，请联系管理员')
+                $.notify.toast($myTranslate.instant('station.empty'));
             }
             return;
         }
@@ -319,7 +323,7 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
                 }
                 history.back();
             }
-        })
+        });
     };
 
     $scope.showDeviceDetail = function (device) { // 打开设备详情页
@@ -401,7 +405,7 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
                             uploadFinish();
                         } else {
                             $.notify.progressStop();
-                            $.notify.error('上传视频失败');
+                            $.notify.error($myTranslate.instant("upload video failed"));
                         }
                     });
                 } else {
@@ -424,7 +428,7 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
                         uploadVideo();
                     } else {
                         $.notify.progressStop();
-                        $.notify.error('上传语音失败');
+                        $.notify.error($myTranslate.instant('upload voice failed'));
                     }
                 });
             } else {
@@ -449,7 +453,7 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
             success: function (res) {
                 $.notify.progressStop();
                 if (res.code === 201) {
-                    $.notify.info('创建成功');
+                    $.notify.info('submit successful');
                     if ($scope.isInPage) {
                         history.back();
                     }
@@ -459,7 +463,7 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
                         if ($scope.isInPage) {
                             var record = {
                                 device_sn: $scope.device.sn,
-                                status: '有故障'
+                                status: $myTranslate.instant('inspect.result.hasDefect')
                             };
                             onAndroidCb_updateDeviceRecord(JSON.stringify(record));     // 调用任务页更新设备状态
                         } else {
@@ -486,7 +490,7 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
 
             },error: function () {
                 $.notify.progressStop();
-                $.notify.error('创建失败');
+                $.notify.error($myTranslate.instant('submit failed'));
                 console.log('error');
             }
         });
@@ -517,7 +521,7 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
             }
         });
         if (!devices.length) {
-            $scope.conflictSubmitError = '忽略后该缺陷单没有需要提交的设备，无需创建';
+            $scope.conflictSubmitError = $myTranslate.instant('defect.submit.nodevice');
             return;
         }
         var tmpParams = Object.assign({}, requestParams, {devices: devices});
@@ -745,7 +749,7 @@ app.controller('StationDtsListCtrl', ['$scope', '$rootScope', 'scrollerService',
     $scope.getDataList();
 }]);
 
-app.controller('DtsEditCtrl', ['$scope', '$timeout', 'ajax', function ($scope, $timeout, ajax) {
+app.controller('DtsEditCtrl', ['$scope', '$timeout', 'ajax', '$myTranslate', function ($scope, $timeout, ajax, $myTranslate) {
     var task = $scope.task;
     $scope.expectTime = task.expect_complete_time ? task.expect_complete_time.substring(0, 10) : null;
     $scope.taskType = {
@@ -791,13 +795,13 @@ app.controller('DtsEditCtrl', ['$scope', '$timeout', 'ajax', function ($scope, $
     function initTaskTypeList() {
         var taskTypes = [{
             value: 8,
-            text: '一般缺陷'
+            text: $myTranslate.instant('一般缺陷')
         }, {
             value: 9,
-            text: '严重缺陷'
+            text: $myTranslate.instant('严重缺陷')
         }, {
             value: 10,
-            text: '致命缺陷'
+            text: $myTranslate.instant('致命缺陷')
         }];
         var taskTypePicker = new mui.PopPicker();
         taskTypePicker.setData(taskTypes);
@@ -831,18 +835,18 @@ app.controller('DtsEditCtrl', ['$scope', '$timeout', 'ajax', function ($scope, $
             success: function (data) {
                 Object.assign($scope.task, data);
                 $scope.$apply();
-                $.notify.info('修改成功');
+                $.notify.info($myTranslate.instant('update successful'));
                 $timeout(function () {
                     $scope.cancel();
                 }, 500);
             },
             error: function () {
-                $.notify.error('缺陷修改发生异常');
+                $.notify.error($myTranslate.instant('update defect failed'));
             }
-        })
+        });
     };
 
     $scope.cancel = function () {
         window.history.back();
-    }
+    };
 }]);

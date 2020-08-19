@@ -939,7 +939,7 @@ app.controller('KanbanCtrl', ['$scope', '$stateParams', 'ajax', '$timeout', func
 
 }]);
 
-app.controller('SiteOverviewCtrl', ['$scope', 'ajax', 'varDataService', function ($scope, ajax, varDataService) {
+app.controller('SiteOverviewCtrl', ['$scope', 'ajax', 'varDataService', '$myTranslate', function ($scope, ajax, varDataService, $myTranslate) {
     $scope.sn = GetQueryString('sn');
     $scope.stationName = GetQueryString('name');
     var stationData = null;
@@ -986,7 +986,7 @@ app.controller('SiteOverviewCtrl', ['$scope', 'ajax', 'varDataService', function
     function getLoadTrend(varSn) { // 获取昨日、今日负荷趋势
         if (!varSn) {
             $scope.fuheLoading = false;
-            $scope.fuheError = '站点未配置实时负荷属性';
+            $scope.fuheError = $myTranslate.instant('tip.station.noload');
             return;
         }
         // 获取昨日、今日变量趋势
@@ -1004,7 +1004,7 @@ app.controller('SiteOverviewCtrl', ['$scope', 'ajax', 'varDataService', function
             }
         }, function () {
             $scope.fuheLoading = false;
-            $scope.fuheError = "获取数据失败";
+            $scope.fuheError = $myTranslate.instant('tip.failed.getdata');
             $scope.$apply();
         });
     }
@@ -1012,7 +1012,7 @@ app.controller('SiteOverviewCtrl', ['$scope', 'ajax', 'varDataService', function
     function getElectricData(varSn) {
         if (!varSn) {
             $scope.electricLoading = false;
-            $scope.electricError = '站点未配置总用电量属性';
+            $scope.electricError = $myTranslate.instant('tip.station.noepf');
             return;
         }
         // 获取今日用电
@@ -1038,7 +1038,7 @@ app.controller('SiteOverviewCtrl', ['$scope', 'ajax', 'varDataService', function
             if (res && res.length) {
                 var dataList = res[0].datas;
                 if (!dataList) {
-                    $scope.electricError = '获取用电数据失败';
+                    $scope.electricError = $myTranslate.instant('tip.failed.electric.getdata');
                     return;
                 }
                 var degrees = {
@@ -1050,7 +1050,8 @@ app.controller('SiteOverviewCtrl', ['$scope', 'ajax', 'varDataService', function
                 var times = [];
                 dataList.forEach(function (item) {
                     var d = Number.parseInt(item.time.substring(8, 10), 10);
-                    times.push(d + '日');
+                    // times.push(d + $myTranslate.instant('日'));
+                    times.push(getDay(d));
                     degrees.p.push(item.p_degree);
                     degrees.f.push(item.f_degree);
                     degrees.v.push(item.v_degree);
@@ -1066,7 +1067,7 @@ app.controller('SiteOverviewCtrl', ['$scope', 'ajax', 'varDataService', function
     function paintLoadTrendChart(yesterdayData, todayData) {
         var times = [];
         for (var i=0; i<24; i++) {
-            times.push(i + '时');
+            times.push(i + $myTranslate.instant('时'));
         }
         var option = {
             tooltip: {
@@ -1117,20 +1118,20 @@ app.controller('SiteOverviewCtrl', ['$scope', 'ajax', 'varDataService', function
             series: [{
                 type: 'line',
                 data: yesterdayData,
-                name: '昨日'
+                name: $myTranslate.instant('yesterday')
             }, {
                 type: 'line',
                 data: todayData,
-                name: '今日'
+                name: $myTranslate.instant('today')
             }]
         };
         echarts.init(document.getElementById('loadChart')).setOption(option);
     }
     var g_pvf_label = {
-        p: '峰',
-        f: '平',
-        v: '谷',
-        s: '尖'
+        p: $myTranslate.instant('峰'),
+        f: $myTranslate.instant('平'),
+        v: $myTranslate.instant('谷'),
+        s: $myTranslate.instant('尖')
     };
     var g_pvf_colors = {
         'p': 'rgba(239, 150, 166, 1)',

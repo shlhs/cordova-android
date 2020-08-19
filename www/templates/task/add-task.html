@@ -20,6 +20,7 @@
     <!--<script type="text/javascript" src="components/ui-router-extras/release/ct-ui-router-extras.js"></script>-->
     <script type="text/javascript" src="../../components/angular-animate/angular-animate.js"></script>
     <script type="text/javascript" src="../../components/angular-ui-router/release/stateEvents.min.js"></script>
+    <script type="text/javascript" src="/js/lib/angular-translate.min.js"></script>
     <script type="text/javascript" src="../../js/app/utils.js"></script>
     <script type="text/javascript" src="../../js/app/app.js"></script>
     <script type="text/javascript" src="../../js/service/common-service.js"></script>
@@ -38,41 +39,41 @@
 <body class="mui-android mui-android-5 mui-android-5-1 mui-android-5-1-1" ng-app="myApp">
 <header class="mui-bar bg-header mui-segmented-control-vertical">
     <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
-    <h1 class="mui-title">报修</h1>
+    <h1 class="mui-title">{{'task.new' | translate}}</h1>
 </header>
 <div class="mui-content bg-white" ng-controller="TaskCreateCtrl" ng-cloak="" ng-submit="submitForm()" id="main">
     <form class="mui-input-group task-create-rows" name="myForm" novalidate >
         <div class="mui-input-row">
-            <label class="label">报修内容<span style="color:red">*</span></label>
-            <textarea type="text" name="name" ng-model="taskData.name" placeholder="请输入报修内容" required></textarea>
+            <label class="label">{{'task.param.name' | translate}}<span style="color:red">*</span></label>
+            <textarea type="text" name="name" ng-model="taskData.name" placeholder="{{'please.input task.param.name' | myTranslate}}" required></textarea>
             <label class="error" ng-show="myForm.name.$invalid && (myForm.name.$dirty || myForm.$submitted)">
-                <span ng-show="myForm.name.$error.required">报修内容不能为空</span>
+                <span ng-show="myForm.name.$error.required">{{'task.param.name cannotempty' | myTranslate }}</span>
             </label>
         </div>
         <div class="mui-input-row">
-            <label class="label">报修类型<span style="color:red">*</span></label>
-            <input type="text" name="taskTypeName" ng-model="taskTypeName" placeholder="选择报修类型" required>
+            <label class="label">{{'task.param.type' | translate}}<span style="color:red">*</span></label>
+            <input type="text" name="taskTypeName" ng-model="taskTypeName" placeholder="{{'please select task.param.type' | myTranslate}}" required>
             <button id="taskTypePicker" class="mui-btn mui-btn-block" type="button">&nbsp; </button>
             <label class="error" ng-show="myForm.taskTypeName.$invalid && (myForm.taskTypeName.$dirty || myForm.$submitted)">
-                <span ng-show="myForm.taskTypeName.$error.required">请选择报修类型</span>
+                <span ng-show="myForm.taskTypeName.$error.required">{{'please select task.param.type' | myTranslate}}</span>
             </label>
         </div>
-        <div class="mui-input-row">
-            <label class="label">期望解决时间</label>
-            <input type="text" name="expect_complete_time" ng-model="taskData.expect_complete_time" placeholder="选择期望解决时间">
-            <button type="button" id='expectedTime' class="btn mui-btn mui-btn-block">&nbsp;</button>
+        <div class="mui-input-row" ng-if="!isEnglish">
+            <label class="label">{{'task.time.expected' | translate}}</label>
+            <input type="text" name="expect_complete_time" ng-model="taskData.expect_complete_time" placeholder="{{'please.select task.time.expected' | myTranslate}}">
+            <button type="button" id='expectedTime' data-options='{}' class="btn mui-btn mui-btn-block">&nbsp;</button>
         </div>
-        <div class="mui-input-row" id="stationFormItem">
-            <label class="label">站点<span style="color:red">*</span></label>
-            <input type="text" style="position: absolute;" name="stationName" ng-model="stationName" placeholder="选择报修站点" required>
-            <button type="button" id='stationPicker' class="btn mui-btn mui-btn-block">&nbsp;</button>
+        <div class="mui-input-row">
+            <label class="label">{{'station' | translate}}<span style="color:red">*</span></label>
+            <input type="text" style="position: absolute;" name="stationName" ng-model="stationName" placeholder="{{'please.select station' | myTranslate}}" required>
+            <button type="button" id='stationPicker' data-options='{}' class="btn mui-btn mui-btn-block">&nbsp;</button>
             <label class="error" ng-show="myForm.stationName.$invalid && (myForm.stationName.$dirty || myForm.$submitted)">
-                <span ng-show="myForm.stationName.$error.required">请选择报修的站点</span>
+                <span ng-show="myForm.stationName.$error.required">{{'please.select station' | myTranslate}}</span>
             </label>
         </div>
         <div class="mui-input-row">
-            <label class="label">报修设备</label>
-            <input type="text" style="position: absolute;" ng-model="deviceName" placeholder="可不填">
+            <label class="label">{{'device' | translate}}</label>
+            <input type="text" style="position: absolute;" ng-model="deviceName" placeholder="{{'please.select device' | myTranslate}}">
             <button type="button" ng-click="openDeviceSelector()" data-options='{}' class="btn mui-btn mui-btn-block">&nbsp;</button>
         </div>
         <div class="mui-input-row" style="display: none;">
@@ -82,34 +83,34 @@
             </div>
         </div>
         <div class="mui-input-row" ng-if="needResign">
-            <label class="label">维修班组<span style="color:red">*</span></label>
-            <input type="text" name="operatorTeam" ng-model="operatorTeam" placeholder="请选择维修班组" required>
+            <label class="label">{{'task.team' | translate}}<span style="color:red">*</span></label>
+            <input type="text" name="operatorTeam" ng-model="operatorTeam" placeholder="{{'please.select task.team' | myTranslate}}" required>
             <button type="button" class="btn mui-btn mui-btn-block" ng-click="showTeamSelector()">&nbsp;</button>
             <!--<div id='teamPicker' class="value"></div>-->
             <label class="error" ng-show="myForm.operatorTeam.$invalid && (myForm.operatorTeam.$dirty || myForm.$submitted)">
-                <span ng-show="myForm.operatorTeam.$error.required">请选择维修班组</span>
+                <span ng-show="myForm.operatorTeam.$error.required">{{'please.select task.team' | myTranslate}}</span>
             </label>
         </div>
         <div class="mui-input-row" ng-if="needResign">
-            <label class="label">维修工</label>
-            <textarea name="handlerName" ng-model="handlerName" placeholder="请选择维修工" rows="{{handlerRowSpan}}"></textarea>
+            <label class="label">{{'task.repairer' | translate}}</label>
+            <textarea name="handlerName" ng-model="handlerName" placeholder="{{'please.select task.repairer' | myTranslate}}" rows="{{handlerRowSpan}}"></textarea>
             <button type="button" data-options='{}' class="btn mui-btn mui-btn-block" ng-click="showHandlerSelector()" style="position: absolute;top: 0;left: 130px;bottom: 0;">&nbsp;</button>
             <!--<label class="error" ng-show="myForm.handlerName.$invalid && (myForm.handlerName.$dirty || myForm.$submitted)">-->
                 <!--<span ng-show="myForm.handlerName.$error.required">请选择维修工</span>-->
             <!--</label>-->
-            <div class="error" style="color: #9c9c9c;font-size: 11px;" ng-if="!handlerName">不指定维修工则为抢单任务</div>
+            <div class="error" style="color: #9c9c9c;font-size: 11px;" ng-if="!handlerName">{{'task.tip.tograb' | translate}}</div>
         </div>
         <div class="mui-input-row" ng-if="linkEventInfo" style="display: none;">
             <label class="label">关联事件</label>
             <span style="position: absolute;">{{linkEventInfo}}</span>
         </div>
         <div class="mui-input-row" style="margin-bottom: 5px;height: auto;">
-            <textarea rows="2" placeholder="详细描述" name="desp" ng-model="taskData.desp"></textarea>
+            <textarea rows="2" placeholder="{{'task.param.desp' | translate}}" name="desp" ng-model="taskData.desp"></textarea>
         </div>
         <image-uploader images="imageList"></image-uploader>
         <div class="mui-button-row" style="padding: 8px 16px;">
             <button type="submit" class="mui-btn mui-btn-primary mui-btn-block"
-                    style="background-color: rgba(88,107,243,0.88);border-color: rgba(88,107,243,0.88);height: 42px;">提交</button>
+                    style="background-color: rgba(88,107,243,0.88);border-color: rgba(88,107,243,0.88);height: 42px;">{{'submit' | translate}}</button>
         </div>
     </form>
     <operator-team-selector teams="teams" visible="teamVisible" callback="onSelectedTeam"></operator-team-selector>

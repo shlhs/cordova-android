@@ -1,16 +1,16 @@
 <div class="mui-input-group task-create-rows dts-create-rows create-form no-border" style="padding: 12px;">
     <div class="task-result">
-        <div class="label" style="color: #333;font-size: 14px;margin: 8px 4px 4px 4px;">维修过程/结果描述</div>
+        <div class="label" style="color: #333;font-size: 14px;margin: 8px 4px 4px 4px;">{{'task.update.desp.title' | translate}}</div>
         <div style="background-color: #F9F9F9;">
-            <textarea rows="3" placeholder="请对维修过程或结果进行简单说明..." name="description" ng-model="description"></textarea>
+            <textarea rows="3" placeholder="{{'task.update.desp.placeholder' | translate}}..." name="description" ng-model="description"></textarea>
         </div>
         <div class="mui-input-row">
-            <label class="label">语音描述</label>
+            <label class="label">{{'voice' | translate}}</label>
             <audio-recorder audio="audioUrl" duration="audioDuration" on-update="onUpdateVoice" can-edit="true" class="right-placeholder"></audio-recorder>
         </div>
-        <div class="label" style="color: #333;font-size: 14px;margin: 0 4px 4px 4px;">图片说明</div>
+        <div class="label" style="color: #333;font-size: 14px;margin: 0 4px 4px 4px;">{{'photos' | translate}}</div>
         <image-uploader images="images"></image-uploader>
-        <div class="label" style="color: #333;font-size: 14px;margin: 0 4px 4px 4px;">视频说明</div>
+        <div class="label" style="color: #333;font-size: 14px;margin: 0 4px 4px 4px;">{{'video' | translate}}</div>
         <video-uploader video="videoUrl" on-update="onUpdateVideo" can-edit="true"></video-uploader>
     </div>
 </div>

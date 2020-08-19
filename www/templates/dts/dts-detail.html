@@ -24,12 +24,14 @@
     <script type="text/javascript" src="../../components/libs/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
     <script type="text/javascript" src="../../components/angular-animate/angular-animate.js"></script>
+    <script type="text/javascript" src="/js/lib/angular-translate.min.js"></script>
     <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
     <script type="text/javascript" src="../../components/angular-ui-router/release/stateEvents.min.js"></script>
     <script type="text/javascript" src="../../components/me-lazyimg-master/me-lazyimg.js"></script>
     <script type="text/javascript" src="../../js/app/utils.js"></script>
     <script type="text/javascript" src="../../js/app/app.js"></script>
     <script type="text/javascript" src="../../js/controller/task.js"></script>
+    <script src="../../js/controller/dts.js"></script>
     <script type="text/javascript" src="../../js/controller/static-devices.js"></script>
     <script type="text/javascript" src="../../js/service/appstore.js"></script>
     <script type="text/javascript" src="../../js/service/common-service.js"></script>
@@ -89,9 +91,9 @@
 <div ng-controller="TaskDetailCtrl" ng-cloak id="taskDetail">
     <header class="mui-bar bg-header">
         <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
-        <h1 class="mui-title">缺陷详情</h1>
+        <h1 class="mui-title">{{'defect detail' | myTranslate}}</h1>
         <a ng-click="gotoEditPage()"
-           class="mui-action-menu mui-icon mui-pull-right" style="color: #fff;font-size: 14px;line-height: 24px;" ng-if="canEdit">编辑</a>
+           class="mui-action-menu mui-icon mui-pull-right" style="color: #fff;font-size: 14px;line-height: 24px;" ng-if="canEdit">{{'edit' | translate}}</a>
     </header>
     <div style="margin-top: 62px;">
         <!-- 正在处理的任务单 -->
@@ -102,33 +104,33 @@
                         <div class="task-desp mui-ellipsis">
                             <span class="task-type" ng-class="{'ergent': taskData.task_type_id===3}">{{taskData.task_type_name}}:</span>
                             <span style="font-size: 14px;">{{taskData.no}}</span>
-                            <label class="btn-status" style="float: right;" ng-class="{running: taskData.stage_id!=='已完成', closed: taskData.stage_name==='已完成'}">
-                                {{taskData.isToStart ? '任务未开始' : (taskData.stage_name || taskData.recheck_stage_name)}}
+                            <label class="btn-status" style="float: right;" ng-class="{running: taskData.stage_id!==TaskStatus.Closed, closed: taskData.stage_id===TaskStatus.Closed}">
+                                {{taskData.stage_name || taskData.recheck_stage_name}}
                             </label>
                         </div>
                         <ul class="task-detail-info-group" ng-if="taskDetailVisible">
                             <li>
-                                <label class="title">报修人</label><span class="value">{{taskData.creater_name}}</span>
+                                <label class="title">{{ 'task.person.creator' | translate}}</label><span class="value">{{taskData.creater_name}}</span>
                             </li>
                             <li>
-                                <label class="title">报修时间</label><span class="value">{{taskData.create_time}}</span>
+                                <label class="title">{{ 'task.time.created' | translate }}</label><span class="value">{{taskData.create_time}}</span>
                             </li>
                             <li>
-                                <label class="title">站点</label>
+                                <label class="title">{{'station' | translate}}</label>
                                 <span class="value" ng-click="openMap()" style="padding-left: 50px;">
                                     <a>{{taskData.station_name}}<i class="icon icon-location" style="width: 16px;height: 16px;"></i></a>
                                 </span>
                             </li>
                             <li ng-if="taskData.current_handler">
-                                <label class="title">当前处理人</label>
-                                <div class="value">
+                                <label class="title">{{'task.person.current' | translate}}</label>
+                                <div class="value" style="padding-left: 80px;">
                                     <span ng-repeat="user in taskData.current_handler_users" style="margin-right: 12px;word-break: keep-all;">
                                         <a ng-click="callPhone(user.phone)">{{user.name}}</a>
                                     </span>
                                 </div>
                             </li>
                             <li ng-if="taskData.recheck_handlers">
-                                <label class="title">复测人</label>
+                                <label class="title">{{'defect.recheck.person' | translate}}</label>
                                 <div class="value">
                                     <span ng-repeat="user in taskData.recheck_users" style="margin-right: 12px;word-break: keep-all;">
                                         <a ng-click="callPhone(user.phone)">{{user.name}}</a>
@@ -145,19 +147,19 @@
                             <!--</span>-->
                             <!--</li>-->
                             <li ng-if="taskData.finish_time">
-                                <label class="title">完成时间</label>
+                                <label class="title">{{'task.time.finished' | translate}}</label>
                                 <span class="value">{{taskData.finish_time.substring(0, 16)}}</span>
                             </li>
                         </ul>
                         <div ng-click="onToggleTaskDetail()" style="color: rgb(96, 181, 255); text-align: center">
-                            <div ng-if="taskDetailVisible">收起<i class="mui-icon mui-icon-arrowup" style="font-size: 14px;"></i></div>
-                            <div ng-if="!taskDetailVisible">展开<i class="mui-icon mui-icon-arrowdown" style="font-size: 14px;"></i></div>
+                            <div ng-if="taskDetailVisible">{{'collapse' | translate}}<i class="mui-icon mui-icon-arrowup" style="font-size: 14px;"></i></div>
+                            <div ng-if="!taskDetailVisible">{{'expand' | translate}}<i class="mui-icon mui-icon-arrowdown" style="font-size: 14px;"></i></div>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="mui-input-row" style="padding-bottom: 8px;background-color: #FFF;" ng-if="taskData.device_record && taskData.device_record.length">
-                <label class="label" style="font-size: 14px;padding-bottom: 4px;">设备</label>
+                <label class="label" style="font-size: 14px;padding-bottom: 4px;">{{'devices' | translate}}</label>
                 <div class="devices">
                     <a ng-repeat="d in taskData.device_record" class="device-name" ng-click="gotoDevice(d)">{{d.device_name}};</a>
                 </div>
@@ -165,23 +167,23 @@
             <div class="mui-card card" style="box-shadow: none;margin-top: 6px;" ng-if="taskData.task_type_id !== TaskTypes.Xunjian">
                 <div class="mui-card-content">
                     <div class="mui-card-content-inner" style="padding: 0;">
-                        <div>缺陷说明：</div>
+                        <div>{{'defect.description' | translate}}：</div>
                         <ul class="task-detail-info-group">
                             <li ng-if="taskData.defect_type">
-                                <label class="title" style="width: 70px;">缺陷类型</label>
+                                <label class="title" style="width: 70px;">{{'defect.type' | translate}}</label>
                                 <span class="value">{{taskData.defect_type_name}}</span>
                             </li>
                             <li>
-                                <label class="title" style="width: 50px;">描述</label>
+                                <label class="title" style="width: 50px;">{{'description' | translate}}</label>
                                 <span class="value">{{taskData.name}}</span>
                             </li>
                             <li ng-if="taskData.desp">
-                                <label class="title" style="width: 50px;">备注</label>
+                                <label class="title" style="width: 50px;">{{'remark' | translate}}</label>
                                 <span class="value" style="padding-left: 50px;">{{taskData.desp}}</span>
                             </li>
                             <audio-recorder audio="createRecord.voice_src" ng-if="createRecord.voice_src" duration="createRecord.voice_duration"></audio-recorder>
                             <div ng-if="createRecord.picture_list.length || createRecord.video_src" style="font-size: 13px;color: #333;">
-                                <div>缺陷视频/图片</div>
+                                <div>{{'defect.video.and.voice' | translate}}</div>
                                 <image-grid-list images="createRecord.picture_list" video="createRecord.video_src"></image-grid-list>
                             </div>
                         </ul>
@@ -192,9 +194,9 @@
                 <div class="mui-card-content">
                     <div class="mui-card-content-inner" style="padding: 0;">
                         <div>
-                            <div>消缺记录：</div>
+                            <div>{{'defect.resolve.result' | translate}}：</div>
                             <div style="color: #F28150;margin-top: 6px;" ng-if="!taskData.is_closed && taskData.expect_complete_time && !handleResult">
-                                计划消缺时间：{{taskData.expect_complete_time.substring(0, 11)}}
+                                {{'defect.expecttime' | translate}}：{{taskData.expect_complete_time.substring(0, 11)}}
                             </div>
                             <div style="padding: 0 12px;" ng-if="handleResult">
                                 <div style="font-size: 13px;color: #666;">{{handleResult.desp}}</div>
@@ -210,9 +212,9 @@
                 <div class="mui-card-content">
                     <div class="mui-card-content-inner" style="padding: 0;">
                         <div ng-if="recheckResult">
-                            <div>复测结果：
+                            <div>{{'recheck.result' | translate}}：
                                 <label class="btn-status" ng-class="{success: recheckResult.recheck_pass, danger: !recheckResult.recheck_pass}" style="font-size: 12px;">
-                                    {{recheckResult.recheck_pass ? '通过' : '未通过'}}
+                                    {{recheckResult.recheck_pass ? ('recheck.pass' | translate) : ('recheck.nopass' | translate)}}
                                 </label>
                                 <span style="color: #666;font-size: 14px;margin-left: 12px;">{{recheckResult.update_time.substring(0, 16)}}</span>
                             </div>
@@ -225,10 +227,10 @@
                             </ul>
                         </div>
                         <div ng-if="!recheckResult">
-                            <div>复测结果： <span style="color: #666;margin-left: 12px;">无复测记录</span></div>
+                            <div>{{'recheck.result' | translate}}： <span style="color: #666;margin-left: 12px;">{{'recheck.result.norecord' | translate}}</span></div>
                         </div>
                         <div style="color: #F28150;margin-top: 6px;" ng-if="!taskData.is_closed">
-                            下一次复测时间：{{taskData.next_recheck_time.substring(0, 10)}}
+                            {{'recheck.nexttime' | translate}}：{{taskData.next_recheck_time.substring(0, 10)}}
                         </div>
                     </div>
                 </div>
@@ -236,7 +238,7 @@
             <div class="mui-card card" ng-if="taskComment != null">
                 <div class="mui-card-content">
                     <div class="mui-card-content-inner task-comment" style="padding: 0;">
-                        <div class="comment-title">用户评价：
+                        <div class="comment-title">{{ 'task.evaluate' | translate }}：
                             <div class="stars small">
                            <span ng-repeat="i in [1,2,3,4,5]" class="star" ng-class="{'empty': !taskComment.score || score < i, 'full': taskComment.score >= i}">
                             </span>
@@ -264,18 +266,18 @@
                 <a href="#" ng-repeat="action in actions">
                     <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-btn-outlined mui-control-item task-btn"
                             ng-click="taskHandler.execute(action.id)" style="background-color: {{action.color}}">
-                        {{action.id === TaskAction.Update ? '上传消缺结果' : action.name}}
+                        {{action.id === TaskAction.Update ? ('defect.action.update' | translate) : action.name}}
                     </button>
                 </a>
             </nav>
             <team-and-handler-selector ng-if="taskData.stage_id === TaskStatus.ToAssign" on-hide="taskHandler.assignHandlers"
                                        visible="assignPickerVisible" teams="teams" callback="onAssignHandlers"></team-and-handler-selector>
             <handlers-selector ng-if="taskData.stage_id === TaskStatus.ToAccept" on-hide="taskHandler.acceptTaskAssign"
-                               visible="acceptPickerVisible" callback="onAccept" users="toAcceptUsers" title="'请选择一起接单的运维工'" default-users="toAcceptUsers"></handlers-selector>
+                               visible="acceptPickerVisible" callback="onAccept" users="toAcceptUsers" title="{{ 'task.tip.select.repair.accept' | translate }}" default-users="toAcceptUsers"></handlers-selector>
             <handlers-selector ng-if="taskData.stage_id === TaskStatus.Competition" on-hide="taskHandler.grabTask"
-                               visible="acceptPickerVisible" callback="onGrabTask" users="toAcceptUsers" title="'您可以选择其他人协助'" default-users="toAcceptUsers"></handlers-selector>
+                               visible="acceptPickerVisible" callback="onGrabTask" users="toAcceptUsers" title="'{{ 'task.tip.select.repair.accept' | translate }}'" default-users="toAcceptUsers"></handlers-selector>
             <handlers-selector ng-if="taskData.stage_id === TaskStatus.ToAccept" on-hide="taskHandler.transferHandler"
-                               visible="transferPickerVisible" callback="onTransferUsers" users="toTransferUsers" title="'请选择将工单转给以下哪些运维工'"></handlers-selector>
+                               visible="transferPickerVisible" callback="onTransferUsers" users="toTransferUsers" title="{{ 'task.tip.select.repair.transfer' | translate }}"></handlers-selector>
         </div>
 
         <div ui-view class="page page-left"></div>
@@ -289,7 +291,6 @@
 <script src="../../js/my/notify.js"></script>
 <script src="../../js/controller/static-devices.js"></script>
 <script src="../../components/mui/js/mui.picker.min.js"></script>
-<script src="../../js/controller/dts.js"></script>
 
 <script>
     mui.init();

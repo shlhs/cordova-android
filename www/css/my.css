@@ -1401,6 +1401,16 @@ a:hover.slidesjs-stop {
 .site-info-group.info-group .value{
     margin-left: 80px;
 }
+.english .info-group .title {
+    width: auto;
+}
+.english .site-info-group.info-group .value{
+    margin-left: 0;
+    float: right;
+}
+.english .info-group>li {
+    padding: 5px 2px 5px 2px;
+}
 .btn-status {
     color: #fff;
     font-size: 13px;
@@ -2176,6 +2186,7 @@ color: #a7a7a7;
     height: 28px;
     line-height: 26px;
     font-weight: 300;
+    padding: 0 6px;
 }
 .option-horizontal>li.selected {
     background-color: rgb(88,107,243);
@@ -2455,6 +2466,10 @@ color: #a7a7a7;
 .entrance-list.small>li {
     width: 20% !important;
 }
+.english .entrance-list.small>li {
+    width: 25% !important;
+}
+
 .apps .mui-table-view.mui-grid-view .mui-table-view-cell .mui-media-body {
     margin-top: -2px;
 }
