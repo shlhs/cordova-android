@@ -90,7 +90,7 @@
 <div ng-controller="TaskDetailCtrl" ng-cloak id="taskDetail">
 <header class="mui-bar bg-header">
     <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
-    <h1 class="mui-title">{{'task.order' | translate}} {{'detail' | translate}}</h1>
+    <h1 class="mui-title">{{'task.order detail' | myTranslate}}</h1>
 </header>
 <div style="margin-top: 62px;" ng-class="{english: isEnglish}">
     <!-- 正在处理的任务单 -->
@@ -168,7 +168,7 @@
                     </ul>
                     <ul class="task-detail-info-group" ng-if="taskData.task_type_id === TaskTypes.Xunjian">
                         <li>
-                            <label class="title">巡检描述</label><span class="value">{{taskData.name}}</span>
+                            <label class="title">{{'inspection name' | myTranslate}}</label><span class="value">{{taskData.name}}</span>
                         </li>
                         <li ng-if="!taskData.riplan_create_time">
                             <label class="title">{{ 'task.time.created' | translate }}</label><span class="value">{{taskData.create_time}}</span>
