@@ -20,7 +20,7 @@ app.controller('SecurityBaseCtrl', ['$scope', '$compile', function ($scope, $com
    load();
 }]);
 
-app.service('SecurityReportService', ['userService', 'ajax', function (userService, ajax) {
+app.service('SecurityReportService', ['userService', 'ajax', '$myTranslate', function (userService, ajax, $myTranslate) {
     function _parseSecurityTemplate(template) {
 
         function evaluateItem(path, item) {
@@ -85,9 +85,9 @@ app.service('SecurityReportService', ['userService', 'ajax', function (userServi
             result.status = 'warning';
         }
         result.unqualifiedList.forEach(function (t) {
-            if (t.name === '紧急') {
+            if (t.name === $myTranslate.instant('ops.security.level.urgent')) {
                 emergency += 1;
-            } else if (t.name === '重大') {
+            } else if (t.name === $myTranslate.instant('ops.security.level.serious')) {
                 serious += 1;
             } else {
                 normal += 1;
@@ -123,12 +123,12 @@ app.service('SecurityReportService', ['userService', 'ajax', function (userServi
                 },
                 success: function (data) {
                     $.notify.progressStop();
-                    $.notify.info("保存成功");
+                    $.notify.info($myTranslate.instant('save successful'));
                     successCallback && successCallback(data);
                 },
                 error: function (xhr, status, error) {
                     $.notify.progressStop();
-                    $.notify.error('保存失败');
+                    $.notify.error($myTranslate.instant('save failed'));
                 }
             });
         } else {
@@ -147,7 +147,7 @@ app.service('SecurityReportService', ['userService', 'ajax', function (userServi
                 },
                 success: function (data) {
                     $.notify.progressStop();
-                    $.notify.info("保存成功");
+                    $.notify.info($myTranslate.instant('save successful'));
 
                     // 调用Android接口
                     window.android && window.android.onJsCallbackForPrevPage('setTaskReportId', data.id);
@@ -155,7 +155,7 @@ app.service('SecurityReportService', ['userService', 'ajax', function (userServi
                 },
                 error: function (xhr, status, error) {
                     $.notify.progressStop();
-                    $.notify.error('保存失败');
+                    $.notify.error($myTranslate.instant('save failed'));
                 }
             });
         }
@@ -168,6 +168,7 @@ app.controller('SecurityHistoryCtrl', ['$scope', 'routerService', 'ajax', functi
     $scope.history = [];
     $scope.isLoading = false;
     $scope.loadingFailed = false;
+    $scope.isEnglish = gIsEnglish;
 
     $scope.createOneRecord = function () {
         $scope.openPage('/templates/evaluate/security-evaluate-first-classify.html', {isCreate: true, stationSn: sn,
