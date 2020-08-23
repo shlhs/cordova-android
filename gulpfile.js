@@ -2,28 +2,9 @@ const fs = require('fs');
 // 导入工具包 require('node_modules里对应模块')
 const gulp = require('gulp'), //本地安装gul所用到的地方
     less = require('gulp-less'),
-     del = require('del'),
-    webserver = require('gulp-webserver');
-
-// 源usr
-// var src = {
-//     path: './www',
-//     html: ['./www/templates/*.html'],
-//     css: ['./www/css/*.less', './www/css/*.css'],
-//     js: ['./www/js/*.js', './src/script/*.js'],
-//     images: ['./www/img/*'],
-//     lib: './node_modules/*'
-// };
-
-// 生成
-// var build = {
-//     path: './build',
-//     html: './build/',
-//     css: ['./build/style/', './build/usr/style'],
-//     js: ['./build/script', './build/script/'],
-//     images: ['./build/images', './build/usr/images'],
-//     lib: './build/lib'
-// };
+    del = require('del'),
+    webserver = require('gulp-webserver'),
+    autoprefixer = require('gulp-autoprefixer'); //补全浏览器前缀
 
 
 // 配置主题色： light/dark
@@ -54,22 +35,25 @@ gulp.task('webserver', async function () {
 });
 
 
+
 // 设置主题色
 gulp.task('theme', async function () {
     const text = `@import './${themeType}.less';`;
-    fs.writeFile(`${root}/less/theme/index.less`,text, 'utf-8', function(err){
-        if(err){
-            console.log('err:', err);
+    fs.writeFile(`${root}/less/theme/index.less`, text, 'utf-8', function (err) {
+        if (err) {
+            console.log('写入文件失败:', err);
         }
     })
 })
 
+
+
 // reset css文件夹
-gulp.task('reset:css', async function () {
-   await  del([`${root}/css/**/*`]);
-    fs.mkdir(`${root}/css/iconfont`, function(err){
-        if(err){
-            console.log('目录创建失败');
+gulp.task('reset:css', ['theme'], async function () {
+    await del([`${root}/css/**`, `${root}/css/iconfont`]);
+    await fs.mkdir(`${root}/css/iconfont`, function (err) {
+        if (err) {
+            console.log('目录创建失败', err);
         }
     })
 })
@@ -80,15 +64,19 @@ gulp.task('less', async function () {
 
     await gulp.src([`${root}/less/**/*.less`, `!${root}/less/theme/*.less`])
         .pipe(less())
+        .pipe(autoprefixer({
+            overrideBrowserslist: ['> 1%', 'last 2 versions', 'Firefox ESR'],
+            cascade: false
+        }))
         .pipe(gulp.dest(`${root}/css`));
 });
 
 
 gulp.task('watch', async function () {
-    gulp.watch([`${root}/**/*.less`], gulp.series('less'));
+    gulp.watch([`${root}/**/*.less`], ['less']);
 })
 
 
-gulp.task('default', gulp.series('theme', 'reset:css', 'less',  gulp.parallel('watch', 'webserver')));
+gulp.task('default', ['less', 'watch', 'webserver']);
 
 
