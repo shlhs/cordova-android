@@ -226,7 +226,7 @@
   "生产厂家": "生产厂家",
   "巡检周期": "巡检周期",
   "保养周期": "保养周期",
-  "额定容量": "Rated Capacity",
+  "额定容量": "额定容量",
   "staticdevice.count.ops": "运维次数",
   "staticdevice.count.defects.unresolved": "未解决缺陷",
   "staticdevice.count.defects.resolved": "已解决缺陷",
