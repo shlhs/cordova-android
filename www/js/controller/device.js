@@ -1216,7 +1216,7 @@ app.controller('HistoryVarCtrl', ['$scope', 'ajax', function ($scope, ajax) {
                 textStyle: {
                     fontSize: 14,
                     fontWeight: 'normal',
-                    fontColor: '#333',
+                    fontColor:  $colorEchartAxisTitleText,
                 }
             },
             grid: {
@@ -1235,11 +1235,11 @@ app.controller('HistoryVarCtrl', ['$scope', 'ajax', function ($scope, ajax) {
                 data: xAxis,
                 axisLabel: {
                     fontSize: 11,
-                    color: '#6b6b6b'
+                    color: $colorEchartAxisLabel
                 },
                 axisLine: {
                     lineStyle: {
-                        color: '#E7EAED'
+                        color: $colorEchartAxisLine
                     }
                 }
             },
@@ -1247,21 +1247,21 @@ app.controller('HistoryVarCtrl', ['$scope', 'ajax', function ($scope, ajax) {
                 name: currentGroup.unit,
                 nameGap: 0,
                 nameTextStyle: {
-                    color: '#6b6b6b'
+                    color: $colorEchartAxisLabel
                 },
                 type: 'value',
                 axisLabel: {
                     fontSize: 11,
-                    color: '#6b6b6b'
+                    color: $colorEchartAxisLabel
                 },
                 axisLine: {
                     lineStyle: {
-                        color: '#E7EAED'
+                        color: $colorEchartAxisLine
                     }
                 },
                 splitLine: {
                     lineStyle: {
-                        color: '#E7EAED'
+                        color: $colorEchartAxisLine
                     }
                 }
             },
