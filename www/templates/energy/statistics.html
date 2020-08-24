@@ -94,7 +94,7 @@
                         <div class="content">
                             <div class="now">
                                 <label class="value">{{electricData.today}}</label>
-                                <label class="desp">本日用电(kWh)</label>
+                                <label class="desp">本日用电({{unit}})</label>
                             </div>
                             <div class="history">
                                 <label class="value">{{electricData.yesterday}}</label>
@@ -111,7 +111,7 @@
                         </div>
                         <div style="font-size: 12px;color: #333333;">
                             <label>支路今日用能占比&nbsp;&nbsp;{{getItemRate()}}</label>
-                            <label class="mui-pull-right">{{currentCategory.name}}总用能&nbsp;&nbsp;{{todayTotalDegree}}kWh</label>
+                            <label class="mui-pull-right">{{currentCategory.name}}总用能&nbsp;&nbsp;{{todayTotalDegree}} {{unit}}</label>
                         </div>
                     </div>
                 </div>
@@ -121,7 +121,7 @@
                         <div class="content">
                             <div class="now">
                                 <label class="value">{{electricData.month}}</label>
-                                <label class="desp">本月用电(kWh)</label>
+                                <label class="desp">本月用电({{unit}})</label>
                             </div>
                             <div class="history">
                                 <label class="value">{{electricData.lastMonth}}</label>
