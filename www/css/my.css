@@ -2965,6 +2965,8 @@ color: #a7a7a7;
 }
 .selector-tab.active .dropdown {
     display: block;
+    max-height: 350px;
+    overflow-y: auto;
 }
 .dropdown>div.active {
     color: #586BF3;

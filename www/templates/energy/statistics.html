@@ -95,8 +95,8 @@
                         <div class="content">
                             <div class="now" ng-style="{width: isEnglish ? 'auto' : '40%'}">
                                 <label class="value">{{electricData.today}}</label>
-                                <label class="desp" ng-if="!isEnglish">本日{{currentCategory.costName}}(kWh)</label>
-                                <label class="desp" ng-if="isEnglish">Today Consumption(kWh)</label>
+                                <label class="desp" ng-if="!isEnglish">本日{{currentCategory.costName}}({{unit}})</label>
+                                <label class="desp" ng-if="isEnglish">Today Consumption(({{unit}})</label>
                             </div>
                             <div class="history" ng-hide="isEnglish">
                                 <label class="value">{{electricData.yesterday}}</label>
@@ -113,7 +113,7 @@
                         </div>
                         <div style="font-size: 12px;color: #333333;">
                             <label>{{'占比' | translate}}&nbsp;&nbsp;{{getItemRate()}}</label>
-                            <label class="mui-pull-right">{{'总用能' | myTranslate}}&nbsp;&nbsp;{{todayTotalDegree}}kWh</label>
+                            <label class="mui-pull-right">{{'总用能' | myTranslate}}&nbsp;&nbsp;{{todayTotalDegree}} {{unit}}</label>
                         </div>
                     </div>
                 </div>
@@ -123,8 +123,8 @@
                         <div class="content">
                             <div class="now" ng-style="{width: isEnglish ? 'auto' : '40%'}">
                                 <label class="value">{{electricData.month}}</label>
-                                <label class="desp" ng-if="!isEnglish">本月{{currentCategory.costName}}(kWh)</label>
-                                <label class="desp" ng-if="isEnglish">Current Month Consumption(kWh)</label>
+                                <label class="desp" ng-if="!isEnglish">本月{{currentCategory.costName}}(({{unit}})</label>
+                                <label class="desp" ng-if="isEnglish">Current Month Consumption(({{unit}})</label>
                             </div>
                             <div class="history" ng-hide="isEnglish">
                                 <label class="value">{{electricData.lastMonth}}</label>
