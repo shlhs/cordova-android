@@ -2814,8 +2814,7 @@ div.pinch-zoom, div.pinch-zoom-container{
     -webkit-appearance: none;
     border: none;
     width: 100%;
-    line-height: 40px;
-    padding-left: 36px;
+    padding: 6px 36px;
     font-size: 15px;
     color: rgb(133,133,135);
 }
@@ -3132,6 +3131,8 @@ div.pinch-zoom, div.pinch-zoom-container{
 }
 .dropdown.horizontal {
     display: -webkit-box;
+    max-height: 350px;
+    overflow-y: auto;
 }
 .dropdown .day-list {
     list-style: none;
