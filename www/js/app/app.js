@@ -703,7 +703,8 @@ app.controller('mapCtrl', function ($scope, $timeout, cordovaService) {
         }
 
         $scope.$apply();
-        if (cordovaService.deviceReady) {
+        // if (cordovaService.deviceReady) {
+        if (false) { // 不获取用户位置
             navigator.geolocation.getCurrentPosition(function (position) {
                 var longtitude = position.coords.longtitude;
                 var latitude = position.coords.latitude;

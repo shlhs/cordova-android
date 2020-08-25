@@ -57,6 +57,7 @@
     <plugin name="cordova-plugin-screen-orientation" spec="^3.0.2" />
     <plugin name="cordova-plugin-inappbrowser" spec="^4.0.0" />
     <plugin name="cordova-plugin-wkwebview-file-xhr" spec="^2.1.4" />
-    <engine name="android" spec="^5.2.2" />
+    <plugin name="cordova-plugin-splashscreen" spec="6.0.0" />
+    <plugin name="cordova-plugin-device" spec="2.0.3" />
     <engine name="ios" spec="5.1.1" />
 </widget>
