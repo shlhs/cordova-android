@@ -6,7 +6,7 @@
         <a ng-click="confirm()"
            class="mui-action-menu mui-icon mui-pull-right" style="color: #fff;font-size: 14px;line-height: 24px;" ng-if="multiple">{{'confirm' | translate}}</a>
     </header>
-    <div class="mui-content" ng-cloak style="padding-left: 8px;background-color: #fff;">
+    <div class="mui-content" ng-cloak style="padding-left: 8px;">
         <div>
             <device-tree-view device-list="deviceDatas" click-callback="selectItem" checkbox="multiple" default-checked-devices="defaultDevices"></device-tree-view>
         </div>

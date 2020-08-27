@@ -73,7 +73,7 @@
         <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
         <h1 class="mui-title">{{'device.monitor' | translate}}</h1>
     </header>
-    <div class="mui-content" ng-cloak style="padding-left: 8px;background-color: #fff;">
+    <div class="mui-content" ng-cloak style="padding-left: 8px;">
         <div class="scroll-wrapper" ng-if="!isLoading && !loadingFailed">
             <device-tree-view device-list="deviceDatas" click-callback="gotoDevice" show-status="true" ng-if="hasDevice"></device-tree-view>
             <div class="page-alert-wrapper" ng-if="!hasDevice">
@@ -103,6 +103,7 @@
 <script src="../../components/fastclick-master/lib/fastclick.js"></script>
 <script src="../../js/my/notify.js"></script>
 <script src="../../components/dropload-gh-pages/dist/dropload.min.js"></script>
+<script type="text/javascript" src="../js/controller/themeConst.js"></script>
 <script type="text/javascript" src="../../js/controller/device.js"></script>
 </body>
 </html>

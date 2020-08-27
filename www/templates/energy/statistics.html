@@ -74,7 +74,7 @@
     <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
     <h1 class="mui-title">{{'menu.energy.stat' | translate}}</h1>
 </header>
-<div class="mui-content" style="background-color: #fff;">
+<div class="mui-content">
     <ul class="selector-group" style="background-color: transparent;padding: 0 10px;" ng-show="currentLabel && currentLabel.name !== ('支路' | translate)">
         <ul class="time-type-group">
             <li class="time-type" ng-repeat="type in timeTypeList" ng-click="onSelect('timeType', type)"
@@ -152,7 +152,7 @@
                         </ul>
                     </div>
                     <div class="card-content no-padding">
-                        <div id="zhilu_trend2" style="width:  {{width}};height: 200px;"></div>
+                        <div id="zhilu_trend2" style="width: {{width}};height: 200px;"></div>
                     </div>
                 </div>
             </div>

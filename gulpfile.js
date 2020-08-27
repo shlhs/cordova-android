@@ -2,28 +2,9 @@ const fs = require('fs');
 // 导入工具包 require('node_modules里对应模块')
 const gulp = require('gulp'), //本地安装gul所用到的地方
     less = require('gulp-less'),
-     del = require('del'),
-    webserver = require('gulp-webserver');
-
-// 源usr
-// var src = {
-//     path: './www',
-//     html: ['./www/templates/*.html'],
-//     css: ['./www/css/*.less', './www/css/*.css'],
-//     js: ['./www/js/*.js', './src/script/*.js'],
-//     images: ['./www/img/*'],
-//     lib: './node_modules/*'
-// };
-
-// 生成
-// var build = {
-//     path: './build',
-//     html: './build/',
-//     css: ['./build/style/', './build/usr/style'],
-//     js: ['./build/script', './build/script/'],
-//     images: ['./build/images', './build/usr/images'],
-//     lib: './build/lib'
-// };
+    del = require('del'),
+    webserver = require('gulp-webserver'),
+    autoprefixer = require('gulp-autoprefixer'); //补全浏览器前缀
 
 
 // 配置主题色： light/dark
@@ -40,6 +21,8 @@ gulp.task('js', function () {
 
 });
 
+
+// 启动服务
 gulp.task('webserver', async function () {
     gulp.src(['www', 'node_modules'])
         .pipe(webserver({
@@ -54,41 +37,86 @@ gulp.task('webserver', async function () {
 });
 
 
+
 // 设置主题色
 gulp.task('theme', async function () {
     const text = `@import './${themeType}.less';`;
-    fs.writeFile(`${root}/less/theme/index.less`,text, 'utf-8', function(err){
-        if(err){
-            console.log('err:', err);
+    fs.writeFile(`${root}/less/theme/index.less`, text, 'utf-8', function (err) {
+        if (err) {
+            console.log('写入文件失败:', err);
         }
     })
 })
+
+
 
 // reset css文件夹
-gulp.task('reset:css', async function () {
-   await  del([`${root}/css/**/*`]);
-    fs.mkdir(`${root}/css/iconfont`, function(err){
-        if(err){
-            console.log('目录创建失败');
+gulp.task('reset:css', ['theme'], async function () {
+    await del([`${root}/css/**`, `${root}/css/iconfont`]);
+    await fs.mkdir(`${root}/css/iconfont`, function (err) {
+        if (err) {
+            console.log('目录创建失败', err);
         }
     })
 })
 
 
+// less转css
 gulp.task('less', async function () {
     gulp.src(`${root}/less/iconfont/**`).pipe(gulp.dest(`${root}/css/iconfont`))
 
     await gulp.src([`${root}/less/**/*.less`, `!${root}/less/theme/*.less`])
         .pipe(less())
+        .pipe(autoprefixer({
+            overrideBrowserslist: ['> 1%', 'last 2 versions', 'Firefox ESR'],
+            cascade: false
+        }))
         .pipe(gulp.dest(`${root}/css`));
 });
 
 
+// 侦听less文件变化
 gulp.task('watch', async function () {
-    gulp.watch([`${root}/**/*.less`], gulp.series('less'));
+    gulp.watch([`${root}/**/*.less`], ['less']);
 })
 
 
-gulp.task('default', gulp.series('theme', 'reset:css', 'less',  gulp.parallel('watch', 'webserver')));
+// 生成主题色less对应的js
+gulp.task('reset:themeConst', async function () {
+    let str = '';
+    await fs.readFile(`${root}/less/theme/${themeType}.less`, 'utf-8', function (err, data) {
+        if (err) {
+            return console.log('update:themeConst:readFile', err)
+        }
+        str = data;
+        // less变量格式化为js变量的格式
+        str = str.replace(/-\w/g, function (x) {
+            return x.slice(1).toUpperCase();
+        }).replace(/:/g, " = ").replace(/@/g, 'const $').replace(/#\w*/g, function (x) {
+            return `'${x}'`;
+        })
+
+        fs.writeFile(`${root}/js/controller/themeConst.js`, str, 'utf-8', function (err) {
+            if (err) {
+                console.log('update:themeConst:writeFile', err);
+            }
+        })
+    })
+
+})
+
+gulp.task('update:theme', ['reset:css', 'reset:themeConst'])
+
+gulp.task('default', ['less', 'watch', 'webserver']);
+
+
+
+
+/**
+ * 更改主题色配置之后
+ * > gulp update:theme
+ * > gulp
+ */
+
 
 
