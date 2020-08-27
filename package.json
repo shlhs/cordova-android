@@ -16,11 +16,11 @@
     ]
   },
   "dependencies": {
-    "cordova-ios": "5.1.1",
+    "cordova-ios": "^5.1.1",
     "cordova-plugin-device": "2.0.3",
-    "cordova-plugin-inappbrowser": "^3.0.0",
-    "cordova-plugin-screen-orientation": "^3.0.1",
-    "cordova-plugin-splashscreen": "6.0.0",
+    "cordova-plugin-inappbrowser": "^3.2.0",
+    "cordova-plugin-screen-orientation": "^3.0.2",
+    "cordova-plugin-splashscreen": "^6.0.0",
     "cordova-plugin-wkwebview-engine": "^1.2.1",
     "cordova-plugin-wkwebview-file-xhr": "^2.1.4",
     "gulp": "^3.9.1",

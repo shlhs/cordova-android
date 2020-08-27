@@ -42,7 +42,7 @@
         <icon height="167" src="res/icon/ios/icon-83.5@2x.png" width="167" />
         <icon height="1024" src="res/icon/ios/icon-1024.png" width="1024" />
         <splash src="res/screen/ios/Default@2x~universal~anyany.png" />
-        <preference name="CodePushDeploymentKey" value="kuaikong" />
+        <!--<preference name="CodePushDeploymentKey" value="kuaikong" />-->
         <preference name="WKWebViewOnly" value="true" />
         <feature name="CDVWKWebViewEngine">
             <param name="ios-package" value="CDVWKWebViewEngine" />
@@ -57,7 +57,7 @@
     <plugin name="cordova-plugin-screen-orientation" spec="^3.0.2" />
     <plugin name="cordova-plugin-inappbrowser" spec="^4.0.0" />
     <plugin name="cordova-plugin-wkwebview-file-xhr" spec="^2.1.4" />
-    <plugin name="cordova-plugin-splashscreen" spec="6.0.0" />
+    <plugin name="cordova-plugin-splashscreen" spec="~6.0.0" />
     <plugin name="cordova-plugin-device" spec="2.0.3" />
-    <engine name="ios" spec="5.1.1" />
+    <engine name="ios" spec="^5.1.1" />
 </widget>
