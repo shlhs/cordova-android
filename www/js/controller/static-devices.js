@@ -180,6 +180,9 @@ app.controller('StaticDeviceDetailCtrl', ['$scope', 'ajax', 'routerService', 'pl
                 if (data.qr_photo_src_link) {
                     data.qr_photo_src_link = platformService.getCloudHost() + data.qr_photo_src_link;
                 }
+                if (data.map_pos && JSON.parse(data.map_pos).type === 'point') {
+                    data.showMap = true;
+                }
                 $scope.device = data;
                 $scope.$apply();
             }
@@ -253,6 +256,11 @@ app.controller('StaticDeviceDetailCtrl', ['$scope', 'ajax', 'routerService', 'pl
         window.location.href = '/templates/site/static-devices/device-ops-history.html?device_sn=' + $scope.device.sn;
     };
 
+    $scope.openDeviceMap = function () {
+        var mapPos = JSON.parse($scope.device.map_pos).detail;
+        window.location.href = '/templates/site/static-devices/map.html?lng=' + mapPos.lng + "&lat=" + mapPos.lat;
+    };
+
     init();
 }]);
 
@@ -264,7 +272,7 @@ function onAndroid_deviceImageImport(imageData, filename) {    // 从Android读�
     }
 }
 
-app.controller('StaticDeviceEditCtrl', ['$scope', 'ajax', 'routerService', 'platformService', function ($scope, ajax, routerService, platformService) {
+app.controller('StaticDeviceEditCtrl', ['$scope', 'ajax', 'routerService', 'platformService', '$myTranslate', function ($scope, ajax, routerService, platformService, $myTranslate) {
     $scope.deviceImages = [];
     $scope.device = {};
     $scope.showTab = 'info';
@@ -476,7 +484,7 @@ app.controller('StaticDeviceEditCtrl', ['$scope', 'ajax', 'routerService', 'plat
             },
             success: function (response) {
                 $.notify.progressStop();
-                $.notify.info('更新成功', 1000);
+                $.notify.info($myTranslate.instant('update successful'), 1000);
                 $scope.device = parseDeviceData(response);
                 if ($scope.onSave) {
                     $scope.onSave($scope.device, response.device_photo_src_link);
@@ -489,7 +497,7 @@ app.controller('StaticDeviceEditCtrl', ['$scope', 'ajax', 'routerService', 'plat
             },
             error: function () {
                 $.notify.progressStop();
-                $.notify.error('更新失败');
+                $.notify.error($myTranslate.instant('update failed'));
                 console.log('error');
             }
         })

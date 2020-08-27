@@ -23,6 +23,7 @@
     <!--<script type="text/javascript" src="../../cordova_plugins.js"></script>-->
     <script type="text/javascript" src="../../components/libs/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="/js/lib/angular-translate.min.js"></script>
     <script type="text/javascript" src="../../components/angular-animate/angular-animate.js"></script>
     <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
     <script type="text/javascript" src="../../components/angular-ui-router/release/stateEvents.min.js"></script>
@@ -53,18 +54,6 @@
         .mui-bar-tab{
             box-shadow: none;
             /*background-color: transparent;*/
-        }
-        .mui-bar-tab>a{
-            padding: 0px 2px 4px 2px;
-        }
-        .mui-bar-tab>a:first-child {
-            padding-left: 4px;
-        }
-        .mui-bar-tab>a:last-child {
-            padding-right: 4px;
-        }
-        .mui-bar-tab>a>button{
-            margin-bottom: 6px !important;
         }
         .device-list{
             margin-left: 60px;
@@ -101,36 +90,36 @@
 <div ng-controller="TaskDetailCtrl" ng-cloak id="taskDetail">
 <header class="mui-bar bg-header">
     <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
-    <h1 class="mui-title">{{taskName}}详情</h1>
+    <h1 class="mui-title">{{'task.order detail' | myTranslate}}</h1>
 </header>
-<div style="margin-top: 62px;">
+<div style="margin-top: 62px;" ng-class="{english: isEnglish}">
     <!-- 正在处理的任务单 -->
     <div class="mui-content" style="background-color: transparent; top: 62px;" ng-class="{'page-bottom': canHandle}" ng-style="{'padding-bottom': actions.length>0 ? '50px' : ''}" >
         <div class="xunjian-devices-area horizontal" ng-if="xunjianStage === 'toStart'">
-            <div class="name">应检设备数</div>
+            <div class="name">{{ 'inspect.count.device' | translate }}</div>
             <div class="count">{{taskData.device_record.length}}</div>
-            <button ng-click="gotoDeviceHandlerPage()">查看设备详情</button>
+            <button ng-click="gotoDeviceHandlerPage()">{{ "inspect.device.view" | translate}}</button>
         </div>
         <div class="xunjian-devices-area vertical" ng-if="xunjianStage === 'toHandle' || xunjianStage==='toClose'">
             <div style="height: 80px;display: -webkit-box;">
                 <div class="item">
                     <span class="count" style="color: #FD6D27;">{{taskData.device_record.length}}</span>
-                    <span class="name">应检设备数</span>
+                    <span class="name">{{ 'inspect.count.device' | translate }}</span>
                 </div>
                 <div class="item">
                     <span class="count">{{checkedDeviceCount}}</span>
-                    <span class="name">已检设备数</span>
+                    <span class="name">{{ 'inspect.count.device.checked' | translate }}</span>
                 </div>
                 <div class="item">
                     <span class="count" style="color: #FD6D27;">{{exceptionDeviceCount}}</span>
-                    <span class="name">异常设备数</span>
+                    <span class="name">{{ 'inspect.count.device.unusual' | translate }}</span>
                 </div>
-                <div class="item" ng-if="xunjianStage === 'toClose' && taskData.dts_count" ng-if="false">
+                <div class="item" ng-if="xunjianStage === 'toClose' && taskData.dts_count && false">
                     <span class="count" style="color: #FD6D27;">{{taskData.resolved_dts_count}}</span>
-                    <span class="name">已解决缺陷</span>
+                    <span class="name">{{'staticdevice.count.defects.resolved' | translate}}</span>
                 </div>
             </div>
-            <button ng-click="gotoDeviceHandlerPage()" ng-if="xunjianStage === 'toClose'">查看设备</button>
+            <button ng-click="gotoDeviceHandlerPage()" ng-if="xunjianStage === 'toClose'">{{'inspect.device.view' | translate}}</button>
         </div>
         <div class="mui-card card" style="box-shadow: none;margin-top: 6px;">
             <div class="mui-card-content">
@@ -139,70 +128,78 @@
                         <span class="task-type" ng-class="{'ergent': taskData.task_type_id===3}">{{taskData.task_type_name}}:</span>
                         <span style="font-size: 14px;">{{taskData.no}}</span>
 
-                        <label class="btn-status" style="float: right;" ng-class="{running: taskData.stage_id!=='已完成', closed: taskData.stage_name==='已完成'}">
-                            {{taskData.isToStart ? '任务未开始' : taskData.stage_name}}
+                        <label class="btn-status" style="float: right;" ng-class="{running: taskData.stage_id!==TaskStatus.Closed, closed: taskData.stage_id===TaskStatus.Closed}">
+                            {{taskData.isToStart ? ('task.status.toStart' | translate) : taskData.stage_name}}
                         </label>
                     </div>
                     <ul class="task-detail-info-group" ng-if="taskData.task_type_id !== TaskTypes.Xunjian">
                         <li>
-                            <label class="title">报修人</label><span class="value">{{taskData.creater_name}}</span>
+                            <label class="title">{{ 'task.person.creator' | translate}}</label><span class="value">{{taskData.creater_name}}</span>
                         </li>
                         <li>
-                            <label class="title">报修时间</label><span class="value">{{taskData.create_time}}</span>
+                            <label class="title">{{ 'task.time.created' | translate }}</label><span class="value">{{taskData.create_time}}</span>
                         </li>
                         <li ng-if="taskData.expect_complete_time">
-                            <label class="title">截止时间</label><span class="value">{{taskData.expect_complete_time}}</span>
+                            <label class="title">{{ 'task.time.expected' | translate}}</label><span class="value">{{taskData.expect_complete_time}}</span>
                         </li>
                         <li ng-if="taskData.current_handler">
-                            <label class="title">当前处理人</label>
-                            <div class="value">
-                                <div ng-repeat="user in taskData.current_handler_users">{{getUserNameAndPhone(user)}}</div>
+                            <label class="title">{{ 'task.person.current' | translate }}</label>
+                            <div class="value" style="padding-left: 80px;">
+                                <div ng-repeat="user in taskData.current_handler_users">
+                                    <a ng-click="callPhone(user.phone)">{{user.name}}</a>
+                                </div>
                             </div>
                         </li>
                         <li>
-                            <label class="title">维修班组</label><span class="value">{{taskData.operator_team_name}}</span>
+                            <label class="title">{{ 'task.team' | translate }}</label><span class="value">{{taskData.operator_team_name}}</span>
                         </li>
                         <li ng-if="taskData.operator">
-                            <label class="title">维修人员</label>
+                            <label class="title">{{ 'task.repairer' | translate }}</label>
                             <span class="value">
-                                <div ng-repeat="user in taskData.operator_users">{{getUserNameAndPhone(user)}}</div>
+                                <div ng-repeat="user in taskData.operator_users">
+                                    <a ng-click="callPhone(user.phone)">{{user.name}}</a>
+                                </div>
                             </span>
                         </li>
                         <li ng-if="taskData.finish_time">
-                            <label class="title">完成时间</label>
+                            <label class="title">{{ 'task.time.finished' | translate }}</label>
                             <span class="value">{{taskData.finish_time.substring(0, 16)}}</span>
                         </li>
                     </ul>
                     <ul class="task-detail-info-group" ng-if="taskData.task_type_id === TaskTypes.Xunjian">
                         <li>
-                            <label class="title">巡检描述</label><span class="value">{{taskData.name}}</span>
+                            <label class="title">{{'inspection name' | myTranslate}}</label><span class="value">{{taskData.name}}</span>
                         </li>
                         <li ng-if="!taskData.riplan_create_time">
-                            <label class="title">创建时间</label><span class="value">{{taskData.create_time}}</span>
+                            <label class="title">{{ 'task.time.created' | translate }}</label><span class="value">{{taskData.create_time}}</span>
                         </li>
                         <li ng-if="taskData.riplan_create_time">
-                            <label class="title">启动时间</label><span class="value">{{taskData.create_time.substring(0,16)}}</span>
+                            <label class="title">{{ 'task.time.start' | translate }}</label><span class="value">{{taskData.create_time.substring(0,16)}}</span>
                         </li>
                         <li ng-if="taskData.expect_complete_time">
-                            <label class="title">截止时间</label><span class="value">{{taskData.expect_complete_time}}</span>
+                            <label class="title">{{ 'task.time.expected' | translate }}</label><span class="value">{{taskData.expect_complete_time}}</span>
                         </li>
                         <li>
-                            <label class="title">站点</label>
+                            <label class="title">{{ 'station' | translate }}</label>
                             <span class="value" ng-click="openMap()">
                                 <a>{{taskData.station_name}}<i class="icon icon-location" style="width: 16px;height: 16px;"></i></a>
                             </span>
                         </li>
                         <li>
-                            <label class="title">负责人</label>
-                            <span class="value">{{getUserNameAndPhone(taskData.creater_user)}}</span>
+                            <label class="title">{{ 'owner' | translate }}</label>
+                            <span class="value" style="padding-left: 80px;">
+                                <a ng-click="callPhone(taskData.creater_user.phone)">{{user.name}}</a>
+                            </span>
                         </li>
                         <li>
-                            <label class="title">巡检班组</label><span class="value">{{taskData.operator_team_name}}</span>
+                            <label class="title">{{'inspect.team' | translate}}</label><span class="value">{{taskData.operator_team_name}}</span>
                         </li>
                         <li ng-if="taskData.operator">
-                            <label class="title">巡检人员</label>
-                            <span class="value">
-                                <div ng-repeat="user in taskData.operator_users">{{getUserNameAndPhone(user)}}</div>
+                            <label class="title">{{'inspect.repairer' | translate}}</label>
+                            <span class="value" style="padding-left: 80px;">
+                                <div ng-repeat="user in taskData.operator_users">
+                                    <a ng-click="callPhone(user.phone)">{{user.name}}</a>
+                                </div>
                             </span>
                         </li>
                     </ul>
@@ -212,24 +209,24 @@
         <div class="mui-card card" style="box-shadow: none;margin-top: 6px;" ng-if="taskData.task_type_id !== TaskTypes.Xunjian">
             <div class="mui-card-content">
                 <div class="mui-card-content-inner" style="padding: 0;">
-                    <div style="font-size: 13px;">{{taskName}}内容：</div>
+                    <div style="font-size: 13px;">{{taskName}} {{'description' | translate}}：</div>
                     <ul class="task-detail-info-group">
                         <li>
-                            <label class="title" style="width: 50px;">描述</label>
+                            <!--<label class="title" style="width: 50px;">{{ 'description' | translate }}</label>-->
                             <span class="value" style="padding-left: 50px;">{{taskData.name}}</span>
                         </li>
                         <li ng-if="taskData.desp">
-                            <label class="title" style="width: 50px;">备注</label>
+                            <label class="title" style="width: 50px;">{{ 'remark' | translate }}</label>
                             <span class="value" style="padding-left: 50px;">{{taskData.desp}}</span>
                         </li>
                         <li>
-                            <label class="title" style="width: 50px;">站点</label>
+                            <label class="title" style="width: 50px;">{{ 'station' | translate}}</label>
                             <span class="value" ng-click="openMap()" style="padding-left: 50px;">
                                 <a>{{taskData.station_name}}<i class="icon icon-location" style="width: 16px;height: 16px;"></i></a>
                             </span>
                         </li>
                         <li ng-if="taskData.device_record && taskData.device_record.length">
-                            <label class="title" style="width: 50px;">设备</label>
+                            <label class="title" style="width: 50px;">{{ 'device' | translate }}</label>
                             <span class="value" style="padding-left: 50px;">
                                 <div ng-repeat="record in taskData.device_record" ng-click="gotoDevice(record)">
                                     <a>{{record.device_name}}</a>
@@ -237,7 +234,7 @@
                             </span>
                         </li>
                         <div ng-if="requestPictures" style="padding: 0 12px;font-size: 13px;color: #333;">
-                            <div>{{taskName}}图片</div>
+                            <div>{{taskName}} {{ 'pictures' | translate }}</div>
                             <ul class="image-list" style="padding: 0;">
                                 <li class="image-item" ng-repeat="url in requestPictures" ng-click="showImageGallery(requestPictures, $index+1)">
                                     <div class="content">
@@ -252,7 +249,7 @@
         </div>
         <div class="card" ng-if="taskData.task_type_id === TaskTypes.Xunjian && canHandle && taskData.stage_id === TaskStatus.Arrived">
             <div class="mui-card-content">
-                <div>拍照签到</div>
+                <div>{{ 'task.signin' | translate }}</div>
                 <image-uploader images="inspectUploadImages"></image-uploader>
             </div>
         </div>
@@ -260,7 +257,7 @@
             <div class="mui-card-content">
                 <div class="mui-card-content-inner" style="padding: 0;">
                     <div ng-if="handleResult && taskData.task_type_id !== TaskTypes.Xunjian">
-                        <div style="font-size: 13px;">维修结果：</div>
+                        <div style="font-size: 13px;">{{ 'task.repair.result' | translate }}：</div>
                         <div style="padding: 0 12px;">
                             <div style="font-size: 13px;color: #666;">{{handleResult.desp}}</div>
                             <ul class="image-list" style="padding: 0;">
@@ -273,7 +270,7 @@
                         </div>
                     </div>
                     <div ng-if="handleResult && taskData.task_type_id === TaskTypes.Xunjian">
-                        <div style="font-size: 13px;">巡检签到：</div>
+                        <div style="font-size: 13px;">{{ 'task.signin' | translate }}：</div>
                         <ul class="image-list" style="padding: 0;">
                             <li class="image-item" ng-repeat="url in handleResult.picture_list" ng-click="showImageGallery(handleResult.picture_list, $index+1)">
                                 <div class="content">
@@ -288,7 +285,7 @@
         <div class="mui-card card" ng-if="taskComment != null">
             <div class="mui-card-content">
                 <div class="mui-card-content-inner task-comment" style="padding: 0;">
-                    <div class="comment-title">用户评价：
+                    <div class="comment-title">{{ 'task.evaluate' | translate }}：
                         <div class="stars small">
                            <span ng-repeat="i in [1,2,3,4,5]" class="star" ng-class="{'empty': !taskComment.score || score < i, 'full': taskComment.score >= i}">
                             </span>
@@ -317,7 +314,7 @@
                     <div class="mui-card-content-inner" style="padding: 2px 6px;">
                         <i class="icon icon-ms icon-security pull-left" style="margin-top:8px;margin-right:8px;"></i>
                         <div class="mui-media-body" style="line-height: 40px;font-size: 1.2em;">
-                            查看安全运行检测报告
+                            {{ 'task.security.report.view' | translate }}
                         </div>
                     </div>
                 </div>
@@ -328,7 +325,7 @@
                     <div class="mui-card-content-inner" style="padding: 2px 6px;">
                         <i class="icon icon-ms icon-poweroff pull-left" style="margin-top:8px;margin-right:8px;"></i>
                         <div class="mui-media-body" style="line-height: 40px;font-size: 1.2em;">
-                            查看停电维护报告
+                            {{ 'task.poweroff.report.view' | translate }}
                         </div>
                     </div>
                 </div>
@@ -338,8 +335,8 @@
         <div class="card" ng-show="taskData.stage_id === TaskStatus.Competition && taskData.station_longitude">
             <div id="map" style="height: 300px;width: 100%;"></div>
         </div>
-        <nav class="mui-bar mui-bar-tab bg-transparent" ng-if="actions.length">
-            <a class="mui-tab-item mui-active mui-segmented-control-vertical" href="#" ng-repeat="action in actions">
+        <nav class="mui-bar mui-bar-tab bg-transparent task-btn-bottom" ng-if="actions.length">
+            <a href="#" ng-repeat="action in actions">
                 <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-btn-outlined mui-control-item task-btn"
                         ng-click="taskHandler.execute(action.id)" style="background-color: {{action.color}}">{{action.name}}</button>
             </a>
@@ -347,11 +344,11 @@
         <team-and-handler-selector ng-if="taskData.stage_id === TaskStatus.ToAssign" on-hide="taskHandler.assignHandlers"
                                    visible="assignPickerVisible" teams="teams" callback="onAssignHandlers"></team-and-handler-selector>
         <handlers-selector ng-if="taskData.stage_id === TaskStatus.ToAccept" on-hide="taskHandler.acceptTaskAssign"
-                           visible="acceptPickerVisible" callback="onAccept" users="toAcceptUsers" title="'请选择一起接单的运维工'" default-users="toAcceptUsers"></handlers-selector>
+                           visible="acceptPickerVisible" callback="onAccept" users="toAcceptUsers" title="{{ 'task.tip.select.repair.accept' | translate }}" default-users="toAcceptUsers"></handlers-selector>
         <handlers-selector ng-if="taskData.stage_id === TaskStatus.Competition" on-hide="taskHandler.grabTask"
-                           visible="acceptPickerVisible" callback="onGrabTask" users="toAcceptUsers" title="'您可以选择其他人协助'" default-users="toAcceptUsers"></handlers-selector>
+                           visible="acceptPickerVisible" callback="onGrabTask" users="toAcceptUsers" title="'{{ 'task.tip.select.repair.accept' | translate }}'" default-users="toAcceptUsers"></handlers-selector>
         <handlers-selector ng-if="taskData.stage_id === TaskStatus.ToAccept" on-hide="taskHandler.transferHandler"
-                           visible="transferPickerVisible" callback="onTransferUsers" users="toTransferUsers" title="'请选择将工单转给以下哪些运维工'"></handlers-selector>
+                           visible="transferPickerVisible" callback="onTransferUsers" users="toTransferUsers" title="{{ 'task.tip.select.repair.transfer' | translate }}"></handlers-selector>
     </div>
 
     <div ui-view class="page page-left"></div>
