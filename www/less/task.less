@@ -15,7 +15,7 @@
     position: relative;
 }
 .task-list .task-item.closed {
-    background-color: #e6e6e6;
+    //background-color: #e6e6e6;
 }
 .task-item .task-icon{
     height: 22px;
@@ -37,7 +37,7 @@
     padding-right: 16px;
 }
 .task-main p {
-    color: rgb(102,102,102);
+    //color: rgb(102,102,102);
     font-weight: 300;
 }
 .task-item .task-progress{
@@ -47,7 +47,7 @@
 }
 .task-item .sub-body {
     padding-left: 12px;
-    border-top: #efeff1 0.5px solid;
+    border-top: @color-divider 0.5px solid;
     padding-bottom: 10px;
 }
 .task-infos>div {
@@ -55,13 +55,13 @@
 }
 .task-infos .task-info-label {
     font-size: 13px;
-    color: #999999;
+    color: @color-text-secondary;
     display: inline-block;
     overflow: hidden;
 }
 .task-infos .task-info-value {
     font-size: 13px;
-    color: #666666;
+    color: @color-text-regular;
     font-family: 'PingFang-SC-Medium';
     white-space: nowrap;
     overflow: hidden;
@@ -71,7 +71,6 @@
 .sub-body .task-name{
     padding: 10px 0px 2px 0;
     font-size: 16px;
-    color: #333333;
 }
 .sub-body .icon {
     float: left;
@@ -85,10 +84,13 @@
     right: 10px;
     top: 0;
     padding: 10px 6px;
-    color: #586bf3;
+    color: @color-text-link;
     font-size: 14px;
     /* border-radius: 0 0 4px 4px;
     background-color: rgb(70,167,248); */
+}
+.task-status .not-mine {
+    color: fade(@color-text-link, 50);
 }
 .task-status .recheck {
     color: #ffa500;
@@ -100,7 +102,7 @@
 }
 
 .timeout{
-    color: red;
+    color: @red;
 }
 .task-item.closed .main-body, .task-item.closed .sub-body{
     background-color: rgba(241, 241, 241, 0.2);
@@ -184,17 +186,16 @@
     color: @color-text-reverse;
 }
 .task-type{
-    color: #000;
     font-size: 15px;
 }
 .task-type.normal-dts{
-    color: rgb(239, 212, 61);
+    color: @orange;
 }
 .task-type.ergent{
-    color: rgba(220, 3, 3, 0.71);
+    color: @red;
 }
 .task-type.serious {
-    color: #f0ad4e;
+    color: @orange;
 }
 .steps{
     display: -webkit-box;
@@ -312,7 +313,7 @@
     margin: 0;
 }
 .text-red{
-    color: red;
+    color: @red;
 }
 .alert {
     padding: 8px 16px;
@@ -547,6 +548,12 @@
     font-size: 14px;
     padding: 8px 15px;
 }
+.task-create-rows .mui-input-row>.label.required:after {
+    content: '*';
+    margin-left: 2px;
+    color: @red;
+    display: inline-block;
+}
 .task-create-rows .mui-input-row input, .task-create-rows .mui-input-row textarea {
     min-height: 44px;
     font-size: 14px;
@@ -581,7 +588,15 @@
     display: none;
 }
 .task-create-rows .error {
-    color: red;
+    color: @red;
+    margin-left: 115px;
+    font-size: 12px;
+    margin-top: -8px;
+    padding: 4px 0;
+    width: ~'calc(100% - 115px)'
+}
+.task-create-rows .help {
+    color: @color-text-secondary;
     margin-left: 115px;
     font-size: 12px;
     margin-top: -8px;
@@ -630,25 +645,25 @@
 .mui-input-group .mui-input-row>.label {
     line-height: 28px;
     font-size: 14px;
-    color: rgb(51,51,51);
+    color: @color-text-regular;
 }
 .mui-input-group .mui-input-row input {
     /*height: 50px;*/
 }
-.mui-input-group .mui-input-row input::-webkit-input-placeholder { /* WebKit browsers */
-    color:rgb(153,153,153);
+.mui-input-group .mui-input-row input::-webkit-input-placeholder, .mui-input-group .mui-input-row textarea::-webkit-input-placeholder { /* WebKit browsers */
+    color: @color-text-placeholder;
 }
-.mui-input-group .mui-input-row input:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
-    color:rgb(153,153,153);
+.mui-input-group .mui-input-row input:-moz-placeholder, .mui-input-group .mui-input-row textarea::-webkit-input-placeholder { /* Mozilla Firefox 4 to 18 */
+    color: @color-text-placeholder;
 }
-.mui-input-group .mui-input-row input::-moz-placeholder { /* Mozilla Firefox 19+ */
-    color:rgb(153,153,153);
+.mui-input-group .mui-input-row input::-moz-placeholder, .mui-input-group .mui-input-row textarea::-webkit-input-placeholder { /* Mozilla Firefox 19+ */
+    color: @color-text-placeholder;
 }
-.mui-input-group .mui-input-row input:-ms-input-placeholder { /* Internet Explorer 10+ */
-    color:rgb(153,153,153);
+.mui-input-group .mui-input-row input:-ms-input-placeholder, .mui-input-group .mui-input-row textarea::-webkit-input-placeholder { /* Internet Explorer 10+ */
+    color: @color-text-placeholder;
 }
 .mui-input-group .mui-input-row:after {
-    background-color: rgb(226, 224, 224);
+    background-color: @color-divider;
 }
 .xunjian-devices-area {
     border-top-left-radius: 8px;
@@ -821,9 +836,6 @@
     background: linear-gradient(to right bottom, #6C93F2, #4063DF);
     color: @color-text-reverse;
 }
-.filter-footer .btn.default {
-    color: #1C1B1B
-}
 .task-device-list {
     font-size: 14px;
 
@@ -974,9 +986,9 @@
     text-align: center;
 }
 .teams-selector>div>label {
-    background-color: #FAFAFA;
+    background-color: @mui-picker-body-btn-bg;
     display: inline-block;
-    color: #666;
+    color: @color-text-primary;
     font-size: 14px;
     padding: 4px 32px;
     border-radius: 14px;
@@ -984,15 +996,15 @@
     text-align: center;
     cursor: pointer;
     position: relative;
-    border: #d5d5d5 1px solid;
+    border: @color-border-base 1px solid;
 }
 .teams-selector>div>label:active {
-    background-color: rgb(228, 228, 228);
+    background-color: fade(@color-text-primary, 30);
 }
 .teams-selector label.selected {
-    background-color: rgb(27, 127, 255) !important;
-    border-color: rgb(27, 127, 255);
-    color: @color-text-reverse;
+    background-color: @color-primary !important;
+    border-color: @color-primary;
+    color: #FFF;
 }
 .teams-selector label.selected:before {
     display: inline-block;

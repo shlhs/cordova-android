@@ -3,7 +3,7 @@
         <a class="mui-icon  mui-icon-left-nav mui-pull-left btn-back" onclick="history.back()"></a>
         <h1 class="mui-title">{{record.createTime}}</h1>
     </header>
-    <div class="mui-content" style="background-color: #F6FAFD;">
+    <div class="body-content" style="background-color: #F6FAFD;">
         <div style="font-size: 14px;color: #333;margin: 4px 0 6px 18px;">{{createTime}}
             <span ng-if="record.status !== '0'" class="mui-pull-right" style="font-size: 12px;color: #aaa;margin-right: 12px;">正在保存({{record.downCount}}/{{record.allCount}})</span>
         </div>

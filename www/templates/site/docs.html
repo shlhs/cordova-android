@@ -27,7 +27,7 @@
     /*.mui-table-view-cell{*/
         /*padding-right: 60px;*/
     /*}*/
-    .mui-content{
+    .body-content{
         padding-left: 0px;
         padding-right: 0px;
     }
@@ -57,7 +57,7 @@
     <h1 class="mui-title">{{'menu.device.efile' | translate}}</h1>
 </header>
 <div ng-include="'../../templates/top-menu.html'"></div>
-<div class="mui-content" ng-cloak>
+<div class="body-content" ng-cloak>
     <div style="height: 8px;"></div>
     <div ng-repeat="group in groups" ng-if="!docLoading && !loadingFailed">
         <div class="title">

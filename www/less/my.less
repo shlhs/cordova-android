@@ -8,11 +8,52 @@ html,body{
     margin: 0;
     background-color: @color-bg-primary;
     overflow: hidden;
+    color: @color-text-primary
 }
 * {
     padding: 0;
     margin: 0;
 }
+/*mui样式修改*/
+.mui-poppicker {
+    border-top-color: @mui-picker-border;
+}
+.mui-poppicker-header .mui-btn {
+    background-color: @color-bg-regular;
+    color: @color-text-primary;
+    border-color: @color-border-base;
+}
+.mui-poppicker-header .mui-btn.mui-poppicker-btn-ok {
+    background-color: @btn-primary-bg;
+    border-color: @btn-primary-border;
+}
+.mui-picker {
+    background-color: @mui-picker-body;
+}
+.mui-poppicker-body {
+    border-top-color: @mui-picker-border;
+}
+.mui-pciker-list li.highlight {
+    color: @color-text-primary;
+}
+.mui-pciker-list li {
+    color: @color-text-disabled;
+}
+.mui-input-group {
+    background-color: transparent;
+}
+.mui-dtpicker, .mui-poppicker {
+    background-color: @mui-picker-bg;
+}
+.mui-btn-blue, .mui-btn-primary, input[type=submit] {
+    background-color: @color-primary;
+    border-color: @color-primary;
+}
+input, select, textarea {
+    color: @color-primary;
+    caret-color: @color-text-primary;
+}
+/* mui重写 end */
 .font-14{
     font-size: 14px;
 }
@@ -103,8 +144,9 @@ html,body{
     width: 100%;
 }
 header.bg-header{
-    background-image: url(../img/background/bg-header.png);
-    background-size: cover;
+    background: @page-header-bg-color;
+    //background-size: cover;
+    box-shadow: @page-header-box-shadow;
 }
 header.mui-bar{
     z-index: 0;
@@ -128,7 +170,7 @@ nav.bg-footer .mui-tab-item{
     padding: 4px 12px;
 }
 .bg-white{
-    background-color: @color-bg-regular !important;
+    background-color: @page-body-white !important;
 }
 .head-img{
     width: 40px;
@@ -210,7 +252,7 @@ header.mui-bar{
     padding-top: 8px;
     top:0px;
 }
-.mui-content{
+.body-content{
     padding-left: 0px;
     padding-right: 0px;
     padding-top: 0px !important;
@@ -220,7 +262,7 @@ header.mui-bar{
     top: 60px;
     bottom: 0px;
     width: 100%;
-    background-color: #f5f5f5;
+    //background-color: #f5f5f5;
 }
 .unit{
     font-size: 14px;
@@ -319,7 +361,7 @@ header.mui-bar{
     box-sizing: border-box;
 }
 .upload-item .image-uploader{
-    border: #d9d9d9 1px solid;
+    border: @color-text-secondary 1px solid;
     position: relative;
     display: block;
     width: 100%;
@@ -333,7 +375,7 @@ header.mui-bar{
     height: 70%;
     top:15%;
     left: ~'calc(50% - 1px)';
-    background-color: #d9d9d9;
+    background-color: @color-text-secondary;
     display: inline-block;
 }
 .upload-item .image-uploader:after{
@@ -343,7 +385,7 @@ header.mui-bar{
     width: 70%;
     top: ~'calc(50% - 1px)';
     left: 15%;
-    background-color: #d9d9d9;
+    background-color: @color-text-secondary;
     display: inline-block;
 }
 .image-uploader.no-image {
@@ -441,8 +483,8 @@ header.mui-bar{
     right: 0;
     bottom: 0;
     left: 0;
-    background-color: @color-text-primary;
-    color: @color-text-reverse;
+    background-color: #000;
+    color: #FFF;
     height: 40px;
     text-align: center;
 }
@@ -451,7 +493,7 @@ header.mui-bar{
     padding: 0 16px;
 }
 .weui-icon-delete.weui-icon_gallery-delete {
-    color: @color-text-reverse;
+    color: #FFF;
     font-size: 28px;
     vertical-align: middle;
     cursor: pointer;
@@ -662,14 +704,14 @@ background-image: url("../img/light/64X64/profile.png");
 .nav-horizontal .tab-item .mui-icon~.mui-tab-label{
     display: inline-block;
     padding-top: 6px;
-    color: rgb(141,140,143);
+    color: @nav-tab-color;
     font-size: 12px;
 }
 .mui-active>.mui-tab-label {
-    color: rgb(88,107,243) !important;
+    color: @nav-tab-active-color !important;
 }
 .energy>.mui-active>.mui-tab-label {
-    color: #4889fe !important;
+    color: @nav-tab-active-color !important;
 }
 .nav-horizontal .tab-item .mui-icon{
     height: 22px;
@@ -691,7 +733,7 @@ background-image: url("../img/light/64X64/profile.png");
     background-size: contain;
 }
 .no-station .alert-info {
-    color: #888686;
+    color: @color-text-secondary;
     margin-top: 10px;
     font-size: 14px;
     display: block;
@@ -846,7 +888,7 @@ background-image: url("../img/light/64X64/profile.png");
     font-weight: 300;
 }
 .alert-text.info{
-    color: rgb(153,153,153);
+    color: @color-text-secondary;
     font-size: 16px;
     font-weight: 300;
 }
@@ -1331,6 +1373,11 @@ a:hover.slidesjs-stop {
     width: 24px;
     height: 24px;
     margin-right: 4px;
+    color: @color-primary;
+}
+.card .card-header .iconfont{
+    color: @color-primary;
+    margin-right: 4px;
 }
 .card .card-header.border{
     border-bottom: #eee 1px solid;
@@ -1382,16 +1429,16 @@ a:hover.slidesjs-stop {
     clear: both;
 }
 .info-group .title{
-    color: rgb(141,140,143);
+    color: @color-text-regular;
     width: 98px;
     display: inline-block;
     float: left;
 }
 .info-group .title.dark {
-    color: rgb(51,51,51);
+    color: @color-text-primary;
 }
 .info-group .value{
-    color: rgb(51,51,51);
+    color: @color-text-primary;
     display: block;
     margin-left: 100px;
 }
@@ -1430,7 +1477,7 @@ a:hover.slidesjs-stop {
     background-color: #79C679;
 }
 .btn-status.danger {
-    background-color: red;
+    background-color: @red;
 }
 .btn-status.unchecked {
     background-color: #F4F5F6;
@@ -1460,7 +1507,7 @@ a:hover.slidesjs-stop {
     color: #0bb20c !important;
 }
 .text-status.danger{
-    color: red !important;
+    color: @red !important;
 }
 .text-status.offline{
     color: grey;
@@ -2828,22 +2875,22 @@ color: #a7a7a7;
     margin-top: -10px;
 }
 .static-device-list .status.normal {
-    color: #44D36B;
+    color: @color-success;
 }
 .static-device-list .status.danger {
-    color: #FB6868;
+    color: @red;
 }
 .static-device-list .status.undo {
-    color: #969696;
+    color: @color-text-secondary;
 }
 .status-danger {
-    color: #FB6868;
+    color: @red;
 }
 .text-danger {
-    color: #FB6868;
+    color: @red;
 }
 .text-normal {
-    color: #44D36B;
+    color: @color-success;
 }
 
 .toast {
@@ -2854,7 +2901,7 @@ color: #a7a7a7;
     text-align: center;
 }
 .toast .msg {
-    background: rgba(0, 0, 0, 0.7);
+    background: @toast-bg;
     border-radius: 4px;
     color: @color-text-reverse;
     font-size: 14px;
@@ -2904,8 +2951,8 @@ color: #a7a7a7;
     position: relative;
     list-style: none;
     display: -webkit-box;
-    background-color: @color-bg-regular;
-    margin-bottom: 6px;
+    //background-color: @color-bg-regular;
+    //margin-bottom: 6px;
 }
 .selector-group:after {
     content: '';
@@ -2920,19 +2967,21 @@ color: #a7a7a7;
     cursor: pointer;
     position: relative;
 }
+.selector-tab.time-selector {
+    background-color: @color-bg-regular;
+}
 .selector-tab>label {
     position: relative;
-    color: #565656;
+    color: @color-text-primary;
 }
 .selector-tab.active>label {
-    color: #586BF3;
+    color: @color-primary;
 }
 .selector-tab>label:after {
     content: '\a602';
     display: block;
     position: absolute;
     font-family: iconfont !important;
-    color: #8B8B8B;
     font-size: 10px;
     right: -20px;
     top: 50%;
@@ -2940,31 +2989,27 @@ color: #a7a7a7;
 }
 .selector-tab.active>label:after {
     content: '\a603';
-    color: #586BF3;
+    color: @color-primary;
 }
 .selector-tab.disabled>label{
-    color: #aaaaaa;
-}
-.selector-tab.disabled>label:after{
-    color: #aaaaaa;
+    color: @color-text-disabled;
 }
 .dropdown {
-    background-color: @color-bg-regular;
+    background-color: @mui-picker-body;
     position: absolute;
     left: 50%;
     margin-left: -50%;
     right: 0;
     z-index: 2;
     top: 37px;
-    box-shadow: 0 8px 8px 4px rgba(241, 241, 241, 0.65);
-    border: #efefef 1px solid;
+    //box-shadow: 0 8px 8px 4px rgba(241, 241, 241, 0.65);
+    //border: #efefef 1px solid;
     display: none;
 }
 .dropdown>div {
     padding: 8px;
     margin: 0 6px;
-    border-bottom: rgba(224, 224, 224, 0.7) 1px solid;
-    color: #202020;
+    border-bottom: @color-divider 1px solid;
 }
 .selector-tab.active .dropdown {
     display: block;
@@ -2972,7 +3017,7 @@ color: #a7a7a7;
     overflow-y: auto;
 }
 .dropdown>div.active {
-    color: #586BF3;
+    color: @color-primary;
 }
 .dropdown>div:last-child {
     border-bottom: none;
@@ -3073,9 +3118,9 @@ header .mui-title .dropdown-arrow:after {
 }
 .time-type-group .time-type {
     margin-right: 8px;
-    background-color: #F2F2F2;
+    background-color: @color-bg-regular;
     font-size: 12px;
-    color: #333;
+    //color: #333;
     float: left;
     min-width: 30px;
     text-align: center;
@@ -3083,7 +3128,7 @@ header .mui-title .dropdown-arrow:after {
     cursor: pointer;
 }
 .time-type-group .time-type.active {
-    background-color: #586BF3;
+    background-color: @color-primary;
     color: @color-text-reverse;
 }
 .time-type-group:after {
@@ -3092,10 +3137,10 @@ header .mui-title .dropdown-arrow:after {
     clear: both;
 }
 .energy-electric-card {
-    box-shadow: 0 1px 1px 2px rgb(247, 247, 247);
-    margin: 4px 16px;
+    margin: 4px 8px;
     border-radius: 2px;
     padding: 8px;
+    background-color: @color-bg-regular;
 }
 .energy-electric-body {
     position: relative;
@@ -3123,6 +3168,7 @@ header .mui-title .dropdown-arrow:after {
 }
 .energy-electric-body .content .history {
     width: 20%;
+    background: none;
 }
 .energy-electric-body .content .now {
     width: 40%;
@@ -3131,17 +3177,17 @@ header .mui-title .dropdown-arrow:after {
     width: 70px;
 }
 .energy-electric-body .content .now .value{
-    color: #1A2664;
+    //color: #1A2664;
     font-size: 16px;
     display: block;
 }
 .energy-electric-body .content .now .desp{
-    color: #666666;
+    color: @color-text-regular;
     font-size: 12px;
     display: block;
 }
 .energy-electric-body .content .history .value{
-    color: #1A2664;
+    //color: #1A2664;
     font-size: 12px;
     display: block;
 }
@@ -3154,11 +3200,11 @@ header .mui-title .dropdown-arrow:after {
     font-size: 14px;
 }
 .energy-electric-body .content .rate.down{
-    color: #2B89FF;
+    color: @color-success;
     font-size: 14px;
 }
 .energy-electric-body .content .rate.up{
-    color: #FF550A;
+    color: @red;
     font-size: 14px;
 }
 @keyframes spin {

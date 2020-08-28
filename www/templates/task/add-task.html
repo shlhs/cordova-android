@@ -41,17 +41,17 @@
     <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
     <h1 class="mui-title">{{'task.new' | translate}}</h1>
 </header>
-<div class="mui-content bg-white" ng-controller="TaskCreateCtrl" ng-cloak="" ng-submit="submitForm()" id="main">
+<div class="body-content bg-white" ng-controller="TaskCreateCtrl" ng-cloak="" ng-submit="submitForm()" id="main">
     <form class="mui-input-group task-create-rows" name="myForm" novalidate >
         <div class="mui-input-row">
-            <label class="label">{{'task.param.name' | translate}}<span style="color:red">*</span></label>
+            <label class="label required">{{'task.param.name' | translate}}</label>
             <textarea type="text" name="name" ng-model="taskData.name" placeholder="{{'please.input task.param.name' | myTranslate}}" required></textarea>
             <label class="error" ng-show="myForm.name.$invalid && (myForm.name.$dirty || myForm.$submitted)">
                 <span ng-show="myForm.name.$error.required">{{'task.param.name cannotempty' | myTranslate }}</span>
             </label>
         </div>
         <div class="mui-input-row">
-            <label class="label">{{'task.param.type' | translate}}<span style="color:red">*</span></label>
+            <label class="label required">{{'task.param.type' | translate}}</label>
             <input type="text" name="taskTypeName" ng-model="taskTypeName" placeholder="{{'please select task.param.type' | myTranslate}}" required>
             <button id="taskTypePicker" class="mui-btn mui-btn-block" type="button">&nbsp; </button>
             <label class="error" ng-show="myForm.taskTypeName.$invalid && (myForm.taskTypeName.$dirty || myForm.$submitted)">
@@ -64,7 +64,7 @@
             <button type="button" id='expectedTime' data-options='{}' class="btn mui-btn mui-btn-block">&nbsp;</button>
         </div>
         <div class="mui-input-row">
-            <label class="label">{{'station' | translate}}<span style="color:red">*</span></label>
+            <label class="label required">{{'station' | translate}}</label>
             <input type="text" style="position: absolute;" name="stationName" ng-model="stationName" placeholder="{{'please.select station' | myTranslate}}" required>
             <button type="button" id='stationPicker' data-options='{}' class="btn mui-btn mui-btn-block">&nbsp;</button>
             <label class="error" ng-show="myForm.stationName.$invalid && (myForm.stationName.$dirty || myForm.$submitted)">
@@ -83,7 +83,7 @@
             </div>
         </div>
         <div class="mui-input-row" ng-if="needResign">
-            <label class="label">{{'task.team' | translate}}<span style="color:red">*</span></label>
+            <label class="label required">{{'task.team' | translate}}</label>
             <input type="text" name="operatorTeam" ng-model="operatorTeam" placeholder="{{'please.select task.team' | myTranslate}}" required>
             <button type="button" class="btn mui-btn mui-btn-block" ng-click="showTeamSelector()">&nbsp;</button>
             <!--<div id='teamPicker' class="value"></div>-->
@@ -98,7 +98,7 @@
             <!--<label class="error" ng-show="myForm.handlerName.$invalid && (myForm.handlerName.$dirty || myForm.$submitted)">-->
                 <!--<span ng-show="myForm.handlerName.$error.required">请选择维修工</span>-->
             <!--</label>-->
-            <div class="error" style="color: #9c9c9c;font-size: 11px;" ng-if="!handlerName">{{'task.tip.tograb' | translate}}</div>
+            <div class="help" ng-if="!handlerName">{{'task.tip.tograb' | translate}}</div>
         </div>
         <div class="mui-input-row" ng-if="linkEventInfo" style="display: none;">
             <label class="label">关联事件</label>
@@ -107,10 +107,9 @@
         <div class="mui-input-row" style="margin-bottom: 5px;height: auto;">
             <textarea rows="2" placeholder="{{'task.param.desp' | translate}}" name="desp" ng-model="taskData.desp"></textarea>
         </div>
-        <image-uploader images="imageList"></image-uploader>
+        <image-uploader images="imageList" style="margin-left: 12px;"></image-uploader>
         <div class="mui-button-row" style="padding: 8px 16px;">
-            <button type="submit" class="mui-btn mui-btn-primary mui-btn-block"
-                    style="background-color: rgba(88,107,243,0.88);border-color: rgba(88,107,243,0.88);height: 42px;">{{'submit' | translate}}</button>
+            <button type="submit" class="mui-btn mui-btn-primary mui-btn-block" style="height: 42px;">{{'submit' | translate}}</button>
         </div>
     </form>
     <operator-team-selector teams="teams" visible="teamVisible" callback="onSelectedTeam"></operator-team-selector>

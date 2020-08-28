@@ -5,7 +5,7 @@ const gulp = require('gulp'), //本地安装gul所用到的地方
     del = require('del'),
     webserver = require('gulp-webserver'),
     autoprefixer = require('gulp-autoprefixer'); //补全浏览器前缀
-
+const concat = require('gulp-concat');
 
 // 配置主题色： light/dark
 const themeType = 'dark';
@@ -45,7 +45,11 @@ gulp.task('theme', async function () {
         if (err) {
             console.log('写入文件失败:', err);
         }
-    })
+    });
+    // 设置echarts主题色: 将对应主题色js文件拷贝到index.js，html引用 theme/echarts/index.js
+    gulp.src([`www/theme/echarts/${themeType}.js`])
+        .pipe(concat('index.js'))
+        .pipe(gulp.dest('www/theme/echarts'));
 })
 
 

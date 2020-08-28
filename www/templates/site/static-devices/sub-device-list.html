@@ -3,7 +3,7 @@
         <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="history.back()"></a>
         <h1 class="mui-title">{{groupData.name}}</h1>
     </header>
-    <div class="mui-content" ng-cloak>
+    <div class="body-content" ng-cloak>
         <ul class="mui-table-view" style="font-size: 14px;" ng-if="groups.length">
             <li class="mui-table-view-cell" ng-repeat="device in groups">
                 <a class="mui-navigate-right" href="#" ng-click="openPage(device)">

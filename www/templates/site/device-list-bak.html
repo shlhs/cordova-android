@@ -49,7 +49,7 @@
         <a onclick="showTopMenu()" class="mui-action-menu mui-icon mui-pull-right" ><i class="header-icon white icon-add"></i></a>
     </header>
     <div ng-include="'../../templates/top-menu.html'"></div>
-    <div class="mui-content" ng-cloak>
+    <div class="body-content" ng-cloak>
         <div id="task_types" class="mui-slider-indicator mui-segmented-control mui-segmented-control-inverted" style="margin-left: 0;position: fixed;top:60px;background-color: #fff;box-shadow: 0 0 1px #ccc;z-index:100;">
             <a class="mui-control-item mui-active" ng-click="changeDeviceType('$event', 'all')" ng-class="{'mui-active': showType=='all'}">
                 所有设备({{deviceList.length}})

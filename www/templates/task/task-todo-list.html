@@ -4,7 +4,7 @@
         <h1 class="mui-title">{{'task.todo.my' | translate}}</h1>
         <a id="taskAddBtn" ng-click="toCreateTask()" class="mui-action-menu mui-icon mui-pull-right" ><i class="header-icon white icon-add"></i></a>
     </header>
-    <div id="taskList" style="top:61px;" class="scroll-wrapper">
+    <div id="taskList" style="top: 68px;" class="scroll-wrapper">
         <div class="mui-scroll1" ng-if="!isLoading && !loadingFailed">
             <ul class="mui-table-view mui-table-view-striped mui-table-view-condensed task-list no-out-border" ng-if="tasks.length">
                 <li class="mui-table-view-cell mui-media task-item" ng-repeat="task in tasks"

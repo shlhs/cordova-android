@@ -30,7 +30,7 @@
         <h1 class="mui-title">{{'menu.device.document' | translate}}</h1>
         <a ng-click="startCaptureQR()" class="mui-action-menu mui-icon mui-pull-right"><i class="header-icon white icon-scan"></i></a>
     </header>
-    <div class="mui-content" ng-cloak>
+    <div class="body-content" ng-cloak>
         <div ng-if="!isLoading && !loadingFailed">
             <device-tree-view device-list="deviceDatas" click-callback="gotoDevice" show-status="true"></device-tree-view>
             <div class="page-alert-wrapper" ng-if="deviceDatas.length <= 1">

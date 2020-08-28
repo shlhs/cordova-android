@@ -83,7 +83,7 @@
     <h1 class="mui-title">{{'menu.ops.defect' | translate}}</h1>
     <a ng-click="openDtsCreatePage()" class="mui-action-menu mui-icon mui-pull-right"><i class="header-icon white icon-add"></i></a>
 </header>
-<div style="top:61px;" class="mui-content" ng-controller="StationDtsListCtrl" id="taskListWrapper">
+<div style="top:61px;" class="body-content" ng-controller="StationDtsListCtrl" id="taskListWrapper">
     <div class="scroll-wrapper" id="taskList">
         <div class="mui-scroll1" ng-if="!isLoading && !loadingFailed">
             <ul class="mui-table-view mui-table-view-striped mui-table-view-condensed task-list no-out-border" ng-if="tasks.length">

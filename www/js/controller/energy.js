@@ -525,7 +525,7 @@ app.controller('EnergyMeterReadingCtrl', ['$scope', 'ajax', '$compile', 'platfor
                     var compileFn = $compile(html);
                     var $dom = compileFn($scope);
                     // 添加到文档中
-                    $dom.prependTo($('.mui-content'));
+                    $dom.prependTo($('.body-content'));
                     refreshData();
                     initDatePicker();
                 }
@@ -873,7 +873,7 @@ app.controller('EnergyReportCtrl', ['$scope', 'ajax', '$compile', 'platformServi
                     var compileFn = $compile(html);
                     var $dom = compileFn($scope);
                     // 添加到文档中
-                    $dom.prependTo($('.mui-content'));
+                    $dom.prependTo($('.body-content'));
                     refreshData();
                     setTimeout(initDatePicker, 200);
                 }
@@ -1239,7 +1239,7 @@ app.controller('EnergyStatisticsCtrl', ['$scope', 'ajax', 'platformService', '$c
                     getItemsForLabel();
                     var itemStyle1 = $scope.isEnglish ? 'width:50%; float: left;' : 'width:25%; float: left;';
                     var itemStyle2 = $scope.isEnglish ? 'width:100%; float: left;' : 'width:50%; float: left;';
-                    var html = "<ul class='selector-group' style='border-bottom: #ececec 1px solid;display:block;'>" +
+                    var html = "<ul class='selector-group' style='display:block;'>" +
                         "<drop-down-menu options=\"categories\" on-select=\"onSelect\" model-name=\"'currentCategory'\" selected=\"currentCategory\" style=\"" + itemStyle1 + "\"></drop-down-menu>" +
                         "<drop-down-menu options=\"labelNames\" on-select=\"onSelect\" model-name=\"'currentLabel'\" selected=\"currentLabel\" style=\"" + itemStyle1 + "\"></drop-down-menu>" +
                         "<drop-down-menu id='itemSelector' options=\"energyItems\" on-select=\"onSelect\" model-name=\"'labelItem'\" selected=\"currentItem\" style=\"" + itemStyle2 + "\" disabled=\"currentLabel.name !== '" + branchCircuitName + "'\"></drop-down-menu>" +
@@ -1248,7 +1248,7 @@ app.controller('EnergyStatisticsCtrl', ['$scope', 'ajax', 'platformService', '$c
                     var compileFn = $compile(html);
                     var $dom = compileFn($scope);
                     // 添加到文档中
-                    $dom.prependTo($('.mui-content'));
+                    $dom.prependTo($('.body-content'));
                     refreshData();
                 }
                 $scope.$apply();
@@ -1363,7 +1363,7 @@ app.controller('EnergyStatisticsCtrl', ['$scope', 'ajax', 'platformService', '$c
                     var compileFn = $compile(html);
                     var $dom = compileFn($scope);
                     // 添加到文档中
-                    $dom.prependTo($('.mui-content'));
+                    $dom.prependTo($('.body-content'));
                 }
             }
             // 如果当前所选不是"支路"，且是英文版，则第三个选项不显示
@@ -1395,7 +1395,6 @@ app.controller('EnergyStatisticsCtrl', ['$scope', 'ajax', 'platformService', '$c
     init();
 }]);
 
-const ENERGY_LINE_COLORS = ['#41bed8','#fde664','#9283ea','#3cd3cb','#fe7979','#f9b344','#46be8a','#579fe4','#f37c54','#3995ea'];
 
 app.controller('EnergyStatisticsZhiluCtrl', ['$scope', 'ajax', 'platformService', '$myTranslate', function ($scope, ajax, platformService, $myTranslate) {
     $scope.timeTypes = [$myTranslate.instant('日'), $myTranslate.instant('月'), $myTranslate.instant('年')];
@@ -1712,7 +1711,6 @@ app.controller('EnergyStatisticsZhiluCtrl', ['$scope', 'ajax', 'platformService'
                     name: $scope.unit,
                     nameGap: '5'
                 },
-                color: ENERGY_LINE_COLORS,
                 series: [
                     {
                         name: $myTranslate.instant('today'),
@@ -1730,7 +1728,7 @@ app.controller('EnergyStatisticsZhiluCtrl', ['$scope', 'ajax', 'platformService'
                 ],
             };
 
-            echarts.init(document.getElementById('zhilu_trend1')).setOption(config);
+            echarts.init(document.getElementById('zhilu_trend1'), "custom").setOption(config);
         }
     }
 
@@ -1872,7 +1870,6 @@ app.controller('EnergyStatisticsZhiluCtrl', ['$scope', 'ajax', 'platformService'
                         // verticalAlign: 'top'
                     }
                 },
-                color: ENERGY_LINE_COLORS,
                 series: [{
                     name: labels[0],
                     type:'bar',
@@ -1888,7 +1885,7 @@ app.controller('EnergyStatisticsZhiluCtrl', ['$scope', 'ajax', 'platformService'
                 },
                 ],
             };
-            echarts.init(document.getElementById('zhilu_trend2')).setOption(config);
+            echarts.init(document.getElementById('zhilu_trend2'), "custom").setOption(config);
         }
     }
     
@@ -2057,14 +2054,13 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
                     formatter: '{b} : {c} ' + $scope.unit + '({d}%)',
                     confine: true
                 },
-                backgroundColor:'#ffffff',
                 title: [
                     {
                         text: total + '\n' + $scope.unit,
                         textStyle: {
                             fontFamily: 'Microsoft YaHei',
                             fontSize: 12,
-                            color: '#818181',
+                            // color: '#818181',
                         },
                         x: 'center',
                         y: 'center',
@@ -2075,7 +2071,6 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
                     left: 'center',
                     show: false
                 },
-                color: ENERGY_LINE_COLORS,
                 series: [
                     {
                         avoidLabelOverlap: false,
@@ -2104,7 +2099,7 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
                     },
                 ],
             };
-            echarts.init(document.getElementById('chart_pie1')).setOption(config);
+            echarts.init(document.getElementById('chart_pie1'), "custom").setOption(config);
         }
     }
 
@@ -2222,7 +2217,6 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
                     data: labels,
                     inverse: true,
                 },
-                color: ENERGY_LINE_COLORS,
                 series: [{
                     type:'bar',
                     barGap:0,
@@ -2237,7 +2231,7 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
                     data: seriesData,
                 }],
             };
-            echarts.init(document.getElementById('chart_bar1')).setOption(config);
+            echarts.init(document.getElementById('chart_bar1'), "custom").setOption(config);
         }
     }
     
@@ -2301,14 +2295,13 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
                     name: $scope.unit,
                     nameGap: '5',
                 },
-                color: ENERGY_LINE_COLORS,
                 series: {
                     type:'bar',
                     barMaxWidth: "30px",
                     data: seriesData
                 },
             };
-            echarts.init(document.getElementById('chart_bar2')).setOption(config);
+            echarts.init(document.getElementById('chart_bar2'), "custom").setOption(config);
         }
     }
 
@@ -2404,7 +2397,6 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
                     type: 'category',
                     data: labels,
                 },
-                color: ENERGY_LINE_COLORS,
                 series: [{
                     name: $myTranslate.instant('本期'),
                     type:'bar',
@@ -2419,7 +2411,7 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
                     data: historyValues,
                 }],
             };
-            echarts.init(document.getElementById('chart_bar3')).setOption(config);
+            echarts.init(document.getElementById('chart_bar3'), "custom").setOption(config);
         }
     }
 
@@ -2613,13 +2605,12 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
                     name: $scope.unit,
                     nameGap: '5'
                 },
-                color: ENERGY_LINE_COLORS,
                 series: seriesData,
             };
             if (chart5) {
                 chart5.dispose();
             }
-            chart5 = echarts.init(document.getElementById('chart_bar4'));
+            chart5 = echarts.init(document.getElementById('chart_bar4'), "custom");
             chart5.setOption(config);
         }
     }
