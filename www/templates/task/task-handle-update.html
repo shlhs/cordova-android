@@ -5,20 +5,18 @@
         </a>
         <a class="mui-icon mui-action-menu mui-pull-right mui-control-item" style="font-size: 16px;margin-right: 6px;top:10px;" ng-click="submitAndBack()">{{'submit' | translate}}</a>
     </header>
-    <div class="mui-input-group task-create-rows dts-create-rows create-form no-border" style="padding: 12px;">
-        <div class="task-result">
-            <div class="label" style="color: #333;font-size: 14px;margin: 8px 4px 4px 4px;">{{'task.update.desp.title' | translate}}</div>
-            <div style="background-color: #F9F9F9;">
-                <textarea rows="3" placeholder="{{'task.update.desp.placeholder' | translate}}..." name="description" ng-model="description"></textarea>
-            </div>
+    <div class="mui-input-group create-form no-border" style="padding: 12px;">
+        <div class="label" style="font-size: 14px;margin: 8px 4px 4px 4px;">{{'task.update.desp.title' | translate}}</div>
+        <div class="task-result info-group">
+            <textarea rows="3" placeholder="{{'task.update.desp.placeholder' | translate}}..." name="description" ng-model="description"></textarea>
             <div class="mui-input-row" ng-if="audioVideoEnabled">
                 <label class="label" style="width: auto;">{{'voice' | translate}}</label>
                 <audio-recorder audio="audioUrl" duration="audioDuration" on-update="onUpdateVoice" can-edit="true" class="right-placeholder"></audio-recorder>
             </div>
-            <div class="label" style="color: #333;font-size: 14px;margin: 0 4px 4px 4px;">{{'photos' |translate}}</div>
-            <image-uploader images="images"></image-uploader>
-            <div class="label" style="color: #333;font-size: 14px;margin: 0 4px 4px 4px;" ng-if="audioVideoEnabled">{{'video' | translate}}</div>
-            <video-uploader video="videoUrl" on-update="onUpdateVideo" can-edit="true" ng-if="audioVideoEnabled"></video-uploader>
+            <div class="label" style="font-size: 14px;margin: 0 4px 4px 10px;">{{'photos' |translate}}</div>
+            <image-uploader images="images" style="margin-left: 10px;"></image-uploader>
+            <div class="label" style="font-size: 14px;margin: 0 4px 4px 10px;" ng-if="true || audioVideoEnabled">{{'video' | translate}}</div>
+            <video-uploader video="videoUrl" on-update="onUpdateVideo" can-edit="true" ng-if="true || audioVideoEnabled" style="margin-left: 10px;"></video-uploader>
         </div>
     </div>
 </div>

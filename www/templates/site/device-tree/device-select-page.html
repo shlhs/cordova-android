@@ -6,11 +6,11 @@
         <a ng-click="confirm()"
            class="mui-action-menu mui-icon mui-pull-right" style="color: #fff;font-size: 14px;line-height: 24px;" ng-if="multiple">{{'confirm' | translate}}</a>
     </header>
-    <div class="body-content" ng-cloak style="padding-left: 8px;">
+    <div class="body-content" ng-cloak>
         <div>
             <device-tree-view device-list="deviceDatas" click-callback="selectItem" checkbox="multiple" default-checked-devices="defaultDevices"></device-tree-view>
         </div>
-        <div ng-if="!deviceList || !deviceList.length" style="padding: 10px; color: #666;">
+        <div ng-if="!deviceDatas || !deviceDatas.length" style="padding: 10px; color: #666;">
             {{'none device' | myTranslate}}
         </div>
     </div>

@@ -2171,14 +2171,20 @@ app.controller('CommonTaskEditAssignCtrl', ['$scope', '$timeout', 'ajax', functi
         id: task.task_type_id,
         name: task.task_type_name
     };
-    $scope.selectedTeam = task.operator_team ? {
-        id: task.operator_team,
-        name: task.operator_team_name
-    } : null;
+    $scope.selectedTeam = null;
     $scope.selectedTeamUsers = []; // 所选的分组的所有运维工
-    $scope.selectedUsers = task.operator_team ? task.current_handler_users : []; // 如果是待指派，则维修人为
+    $scope.selectedUsers = []; // 如果是待指派，则维修人为
     $scope.teamVisible = false; // 显示分组选择
     $scope.handlerVisible = false;  // 显示用户选择
+    if (task.stage_id !== TaskStatus.ToAssign) {
+        if (task.operator_team) {
+            $scope.selectedTeam = {
+                id: task.operator_team,
+                name: task.operator_team_name
+            };
+            $scope.selectedUsers = task.current_handler_users;
+        }
+    }
 
     // 复测班组和人员选择
     $scope.selectedRecheckTeam = task.recheck_team ? {
@@ -2344,6 +2350,12 @@ app.controller('CommonTaskEditAssignCtrl', ['$scope', '$timeout', 'ajax', functi
             $scope.error.recheckHandler = true;
         } else {
             $scope.error.recheckHandler = false;
+        }
+    };
+
+    $scope.callPhone = function (phone) {
+        if (phone && window.android && window.android.callPhone) {
+            window.android.callPhone(phone);
         }
     };
 

@@ -1,10 +1,10 @@
 <div ng-controller="CommonTaskEditAssignCtrl">
-    <header class="mui-bar mui-bar-transparent mui-segmented-control-vertical" style=" -webkit-box-shadow: none;box-shadow: none;position: relative;">
-        <a class="mui-icon mui-pull-left mui-control-item" style="font-size: 16px;margin-left: 6px;color: #9e9e9e;top:5px;" ng-click="cancel()">{{'cancel' |translate}}</a>
+    <header class="mui-bar mui-bar-transparent mui-segmented-control-vertical bg-header" style=" -webkit-box-shadow: none;box-shadow: none;position: relative;">
+        <a class="mui-icon mui-pull-left mui-control-item" style="font-size: 16px;margin-left: 6px;top:5px;" ng-click="cancel()">{{'cancel' |translate}}</a>
         <h1 class="mui-title" style="font-weight: 400;">{{pageName}}</h1>
         <a class="mui-icon mui-action-menu mui-pull-right mui-control-item" style="font-size: 16px;margin-right: 6px;top:5px;" ng-click="submitAndBack()">{{'submit' | translate}}</a>
     </header>
-    <div class="body-content" style="background-color: #FFF;">
+    <div class="body-content">
         <div class="mui-input-group task-create-rows dts-create-rows" style="padding: 0 12px;">
             <div class="mui-input-row" ng-if="task.is_defect">
                 <label class="label">{{'dts.level' | translate}}<span style="color:red">*</span></label>
@@ -35,7 +35,9 @@
             <div class="mui-input-row">
                 <label class="label">{{'defect.ops.person' | translate}}<span style="color:red">*</span></label>
                 <div class="right-text" ng-if="selectedUsers.length">
-                    <div ng-repeat="h in selectedUsers">{{h.name}}</div>
+                    <div ng-repeat="h in selectedUsers">
+                        <a ng-click="callPhone(h.phone)">{{h.name}}</a>
+                    </div>
                 </div>
                 <div class="right-placeholder" ng-if="!selectedUsers.length">
                     {{'please.select defect.ops.person' | myTranslate}}
@@ -58,15 +60,14 @@
             <div class="mui-input-row" ng-if="task.is_defect && showRecheck">
                 <label class="label">{{'defect.recheck.person' | translate}}</label>
                 <div class="right-text" ng-if="selectedRecheckUsers.length">
-                    <div ng-repeat="h in selectedRecheckUsers">{{h.name}}</div>
+                    <div ng-repeat="h in selectedRecheckUsers">
+                        <a ng-click="callPhone(h.phone)">{{h.name}}</a>
+                    </div>
                 </div>
                 <div class="right-placeholder" ng-if="!selectedRecheckUsers.length">
-                    {{'please.select defect.recheck.person' | myTranslate}}
-                </div>
-                <button type="button" class="btn mui-btn mui-btn-block" ng-click="toggleRecheckHandlerSelector()" style="position: absolute;top: 0;left: 130px;bottom: 0;">&nbsp;</button>
-                <div class="error" style="color: #666;" ng-if="error.recheckHandler">
                     {{'defect.recheck.persion.empty' | translate}}
                 </div>
+                <button type="button" class="btn mui-btn mui-btn-block" ng-click="toggleRecheckHandlerSelector()" style="position: absolute;top: 0;left: 130px;bottom: 0;">&nbsp;</button>
             </div>
         </div>
     </div>

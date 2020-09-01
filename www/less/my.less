@@ -14,6 +14,15 @@ html,body{
     padding: 0;
     margin: 0;
 }
+p {
+    color: @color-text-primary
+}
+a {
+    color: @color-text-link;
+}
+div {
+    color: @color-text-primary;
+}
 /*mui样式修改*/
 .mui-poppicker {
     border-top-color: @mui-picker-border;
@@ -49,17 +58,80 @@ html,body{
     background-color: @color-primary;
     border-color: @color-primary;
 }
-input, select, textarea {
+.mui-popover {
+    background-color: @mui-picker-body;
+}
+.mui-popover .mui-table-view {
+    background-color: transparent;
+}
+.mui-popover .mui-popover-arrow:after {
+    background-color: @mui-picker-body;
+}
+.mui-btn, button, input[type=button], input[type=reset], input[type=submit] {
+    color: @color-text-primary;
+}
+.mui-dtpicker {
+    border-top-color: @color-divider;
+}
+.mui-dtpicker-title h5 {
+    background-color: transparent;
+    border-top-color: @color-divider;
+    border-bottom-color: @color-divider;
+}
+.mui-h5, h5 {
+    color: @color-text-secondary;
+}
+.mui-dtpicker-header .mui-btn {
+    background-color: rgba(91, 155, 174, 0.3);
+    color: #FAFAFA;
+    border-color: rgba(91, 155, 174, 0.3);
+}
+.mui-dtpicker-header .mui-btn-blue {
+    background-color: @btn-primary-bg;
+    border-color: @btn-primary-border;
+}
+// 对话框
+.mui-popup-inner {
+    background-color: fade(@mui-picker-body, 95);
+}
+.mui-popup-button {
+    background-color: fade(@mui-picker-body, 95);
     color: @color-primary;
-    caret-color: @color-text-primary;
+}
+.mui-popup-input input {
+    border: 1px solid @input-bg;
+    border-radius: 0;
+    background: @input-bg;
 }
 /* mui重写 end */
 .font-14{
     font-size: 14px;
 }
+.red {
+    color: @red;
+}
+.text-primary {
+    color: @color-text-primary;
+}
+.text-secondary {
+    color: @color-text-secondary;
+}
+.text-link {
+    color: @color-text-link;
+}
+.color-success {
+    color: @color-success;
+}
+.color-warning {
+    color: @color-warning;
+}
+.color-danger {
+    color: @color-danger;
+}
 .page{
     height: 100%;
     z-index: 1;
+    background-color: @color-bg-primary;
 }
 .page-left.ng-enter {
     -webkit-animation: slideInRight 0.5s;
@@ -122,7 +194,6 @@ input, select, textarea {
     height: 100%;
     width: 100%;
 }
-
 .page-down.ng-enter {
     -webkit-animation: slideInDown 0.3s;
     -moz-animation: slideInDown 0.3s;
@@ -193,8 +264,8 @@ nav.bg-footer .mui-tab-item{
 .bg-header h1{
     color: @color-text-reverse;
 }
-.bg-header .mui-action-back{
-    color: @color-text-reverse;
+.bg-header .mui-action-back, .bg-header .mui-pull-left {
+    color: @color-text-secondary;
 }
 .mui-bar-nav{
     background-color: #4791FC;
@@ -503,7 +574,7 @@ header.mui-bar{
     width: 100%;
     left: 0;
     height: 100%;
-    background-color: #efeff4;
+    background-color: @color-bg-primary;
     opacity: 1;
     z-index: 100;
     top:0;
@@ -1747,17 +1818,17 @@ header.bg-warning{
 .check-box-item .mui-checkbox input[type=checkbox]:before, .check-box-item .mui-radio input[type=radio]:before {
     font-size: 18px;
 }
-.info-group input::-webkit-input-placeholder {
-    color: #b2b2b2;
+.info-group input::-webkit-input-placeholder, .info-group textarea::-webkit-input-placeholder, .info-group select::-webkit-input-placeholder {
+    color: @color-text-placeholder;
 }
-.info-group input:-ms-input-placeholder { // IE10+
-color: #a7a7a7;
+.info-group input:-ms-input-placeholder, .info-group textarea::-webkit-input-placeholder, .info-group select::-webkit-input-placeholder { // IE10+
+    color: @color-text-placeholder;
 }
-.info-group input:-moz-placeholder { // Firefox4-18
-color: #a7a7a7;
+.info-group input:-moz-placeholder, .info-group textarea::-webkit-input-placeholder, .info-group select::-webkit-input-placeholder { // Firefox4-18
+    color: @color-text-placeholder;
 }
-.info-group input::-moz-placeholder { // Firefox19+
-color: #a7a7a7;
+.info-group input::-moz-placeholder, .info-group textarea::-webkit-input-placeholder, .info-group select::-webkit-input-placeholder { // Firefox19+
+    color: @color-text-placeholder;
 }
 
 .device-card{
@@ -1980,7 +2051,7 @@ color: #a7a7a7;
     color: @color-text-reverse;
 }
 .dark-popover .mui-table-view-cell:after {
-    background-color: rgb(73,72,75);
+    background-color: @color-divider;
 }
 .site-status {
     width: 8px;
@@ -2043,7 +2114,7 @@ color: #a7a7a7;
     left: 0;
 }
 .mui-table-view-cell:after {
-    background-color: #F0F1F4;
+    background-color: @color-divider;
 }
 .event-list {
     background-color: transparent;
@@ -2628,9 +2699,10 @@ color: #a7a7a7;
     white-space: nowrap;
     text-overflow: ellipsis;
     color: inherit;
-    border-bottom: rgba(230, 230, 230, 0.57) 1px solid;
-    padding: 12px;
+    border-bottom: @color-divider 1px solid;
+    padding: 12px 12px 12px 0;
     text-align: left;
+    margin-left: 12px;
 }
 .tree-cell .tree-group {
     display: none;
@@ -2724,14 +2796,14 @@ color: #a7a7a7;
     font-family: iconfont;
     content: '\a601';
     display: inline-block;
-    color: #b9b9b9;
+    color: @color-text-regular;
     font-style: normal;
 }
 .mui-checkbox .checkbox.checked:before {
     font-family: iconfont;
     content: '\a600';
     display: inline-block;
-    color: #03a9f4;
+    color: @color-primary;
     font-style: normal;
 }
 .checkbox-tree .mui-checkbox .checkbox:before {

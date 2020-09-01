@@ -5,6 +5,10 @@
     /*padding: 0 8px;*/
 /*}*/
 
+.task-create-rows input, .task-create-rows select, .task-create-rows textarea {
+    color: @color-primary;
+    caret-color: @color-text-primary;
+}
 .task-list{
     background-color: transparent;
 }
@@ -61,7 +65,7 @@
 }
 .task-infos .task-info-value {
     font-size: 13px;
-    color: @color-text-regular;
+    color: @color-text-secondary;
     font-family: 'PingFang-SC-Medium';
     white-space: nowrap;
     overflow: hidden;
@@ -332,7 +336,7 @@
     position: relative;
     list-style: none;
     padding: 0;
-    background-color: @color-bg-regular;
+    //background-color: @color-bg-regular;
     margin: 0px;
 }
 .timeline-vertical .timeline-one{
@@ -349,19 +353,19 @@
     line-height: 20px;
     display: inline-block;
     font-size: 12px;
-    color: #808080;
+    color: @color-text-secondary;
 }
 .timeline-vertical .time{
     line-height: 20px;
     display: inline-block;
     font-size: 12px;
-    color: #808080;
+    color: @color-text-secondary;
 }
 .timeline-vertical .time-icon{
     left: 3px;
     width: 8px;
     height: 8px;
-    background-color: #eaeaea;
+    background-color: @color-text-secondary;
     -webkit-border-radius: 50%;
     -moz-border-radius: 50%;
     border-radius: 50%;
@@ -369,7 +373,7 @@
     top: 8px;
 }
 .timeline-one.active .time-icon{
-    background-color: rgb(96, 181, 255);
+    background-color: @color-primary;
     width: 12px;
     height: 12px;
     left: 1px;
@@ -382,7 +386,7 @@
     position: absolute;
     left: -3px;
     top:-3px;
-    background-color: rgba(96, 181, 255, 0.3);
+    background-color: fade(@color-primary, 30);
     border-radius: 50%;
 }
 .timeline-one  .time-icon.handle-item{
@@ -430,7 +434,7 @@
     top: 28px;
 }
 .timeline-vertical .timeline-one .timeline-body{
-    border-bottom: #f1f1f1 1px solid;
+    border-bottom: @color-divider 1px solid;
     padding-bottom: 10px;
 }
 .timeline-vertical .timeline-one .timeline-body:after{
@@ -471,7 +475,7 @@
     top:6px;
 }
 .timeline-vertical .handler{
-    color: rgb(96, 181, 255);
+    color: @color-primary;
     position: relative;
 }
 .timeline-vertical .handler.is-msg{
@@ -490,7 +494,7 @@
 }
 .timeline-vertical .timeline-comment{
     font-size: 13px;
-    color: #717171;
+    color: @color-text-secondary;
 }
 .task-btn-bottom {
     position: fixed;
@@ -520,6 +524,7 @@
     margin: 0;
     border-radius: 0;
     line-height: 30px;
+    top: 0;
 }
 .task-btn-bottom>a {
     border-right: 1px solid rgba(255, 255, 255, 0.2);
@@ -607,7 +612,7 @@
     position: absolute;
 }
 .dts-create-rows .mui-input-row {
-    background-color: #F9F9F9;
+    //background-color: #F9F9F9;
     margin: 6px 0px;
 }
 .dts-create-rows .mui-input-row:after {
@@ -631,9 +636,10 @@
     padding: 8px 0px;
     line-height: 28px;
     margin-left: 115px;
+    color: @color-primary;
 }
 .dts-create-rows .mui-input-row .right-placeholder {
-    color: #8e8e8e;
+    color: @color-text-placeholder;
     font-size: 14px;
     /*text-align: right;*/
     padding: 8px 15px;
@@ -669,7 +675,7 @@
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
     background-color: @color-bg-regular;
-    margin-bottom: 10px;
+    margin-bottom: 6px;
 }
 .xunjian-devices-area {
     text-align: center;
@@ -687,7 +693,7 @@
     display: block;
     width: 1px;
     height: 44px;
-    background-color: #e8e8e8;
+    background-color: @color-divider;
     position: absolute;
     left: 0;
     top: 14px;
@@ -696,20 +702,20 @@
     display: none;
 }
 .xunjian-devices-area .name {
-    color: #666666;
+    color: @color-text-regular;
     font-size: 14px;
     display: block;
 }
 .xunjian-devices-area .count {
-    color: #5177FD;
+    color: @color-primary;
     font-size: 24px;
 }
 .xunjian-devices-area button {
     background-color: @color-bg-regular;
-    border: #00A1EA 1px dotted;
+    border: @color-primary 1px dotted;
     border-radius: 20px;
     padding: 8px 70px;
-    color: #4E82FD;
+    color: @color-primary;
     font-size: 16px;
     margin-bottom: 12px;
 }
@@ -720,21 +726,17 @@
     -webkit-box-align: center;
     height: 70px;
 }
-.xunjian-devices-area.horizontal .name {
-    color: #666666;
-    font-size: 14px;
-}
 .xunjian-devices-area.horizontal .count {
-    color: #5177FD;
+    color: @color-primary;
     font-size: 24px;
     margin-left: 14px;
 }
 .xunjian-devices-area.horizontal button {
-    background-color: #E7E7E7;
+    background-color: @color-primary;
     border-radius: 12px;
     border: none;
     outline: none;
-    color: #666666;
+    color: #FFF;
     font-size: 12px;
     margin-left: 50px;
     padding: 6px 30px;
@@ -774,7 +776,7 @@
     padding: 10px 12px 0 24px;
 }
 .filter-body .group .title{
-    color: #000;
+    //color: #000;
     font-size: 14px;
     margin-bottom: 4px;
 }
@@ -941,7 +943,7 @@
 }
 .task-detail-info-group>li{
     list-style: none;
-    background-color: rgba(244, 244, 244, 0.5);
+    //background-color: rgba(244, 244, 244, 0.5);
     margin: 4px 0;
     padding: 5px 10px;
     font-size: 13px;
@@ -952,7 +954,8 @@
     clear: both;
 }
 .task-detail-info-group .title{
-    color: #333;
+    //color: #333;
+    color: @color-text-regular;
     width: 80px;
     display: inline-block;
     float: left;
@@ -961,7 +964,7 @@
     color: rgb(51,51,51);
 }
 .task-detail-info-group .value{
-    color: #666;
+    color: @color-text-primary;
     display: block;
     /*padding-left: 80px;*/
 }
@@ -1141,4 +1144,10 @@
     margin-bottom: 7px;
     display: flex;
     align-items: center;
+}
+.team-selector-title {
+    text-align: right;
+    font-size: 12px;
+    padding: 10px;
+    border-bottom: @color-divider 1px solid
 }

@@ -126,7 +126,6 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
                         }
                     });
                 }, false);
-                staticDevices = data;
                 pickerI18n();
             }, error: function () {
                 $.notify.error($myTranslate.instant('get device list failed'));

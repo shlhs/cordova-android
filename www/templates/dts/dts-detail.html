@@ -54,7 +54,6 @@
         }
         .mui-bar-tab{
             box-shadow: none;
-            /*background-color: transparent;*/
         }
         .device-list{
             margin-left: 60px;
@@ -118,7 +117,7 @@
                             <li>
                                 <label class="title">{{'station' | translate}}</label>
                                 <span class="value" ng-click="openMap()" style="padding-left: 50px;">
-                                    <a>{{taskData.station_name}}<i class="icon icon-location" style="width: 16px;height: 16px;"></i></a>
+                                    <a>{{taskData.station_name}}<i class="iconfont anticon-location"></i></a>
                                 </span>
                             </li>
                             <li ng-if="taskData.current_handler">
@@ -151,14 +150,14 @@
                                 <span class="value">{{taskData.finish_time.substring(0, 16)}}</span>
                             </li>
                         </ul>
-                        <div ng-click="onToggleTaskDetail()" style="color: rgb(96, 181, 255); text-align: center">
+                        <div ng-click="onToggleTaskDetail()" style="text-align: center">
                             <div ng-if="taskDetailVisible">{{'collapse' | translate}}<i class="mui-icon mui-icon-arrowup" style="font-size: 14px;"></i></div>
                             <div ng-if="!taskDetailVisible">{{'expand' | translate}}<i class="mui-icon mui-icon-arrowdown" style="font-size: 14px;"></i></div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="mui-input-row" style="padding-bottom: 8px;background-color: #FFF;" ng-if="taskData.device_record && taskData.device_record.length">
+            <div class="mui-card card" style="padding-bottom: 8px;" ng-if="taskData.device_record && taskData.device_record.length">
                 <label class="label" style="font-size: 14px;padding-bottom: 4px;">{{'devices' | translate}}</label>
                 <div class="devices">
                     <a ng-repeat="d in taskData.device_record" class="device-name" ng-click="gotoDevice(d)">{{d.device_name}};</a>
@@ -182,7 +181,7 @@
                                 <span class="value" style="padding-left: 50px;">{{taskData.desp}}</span>
                             </li>
                             <audio-recorder audio="createRecord.voice_src" ng-if="createRecord.voice_src" duration="createRecord.voice_duration"></audio-recorder>
-                            <div ng-if="createRecord.picture_list.length || createRecord.video_src" style="font-size: 13px;color: #333;">
+                            <div ng-if="createRecord.picture_list.length || createRecord.video_src" style="font-size: 13px;">
                                 <div>{{'defect.video.and.voice' | translate}}</div>
                                 <image-grid-list images="createRecord.picture_list" video="createRecord.video_src"></image-grid-list>
                             </div>
@@ -195,11 +194,11 @@
                     <div class="mui-card-content-inner" style="padding: 0;">
                         <div>
                             <div>{{'defect.resolve.result' | translate}}：</div>
-                            <div style="color: #F28150;margin-top: 6px;" ng-if="!taskData.is_closed && taskData.expect_complete_time && !handleResult">
+                            <div style="margin-top: 6px;" ng-if="!taskData.is_closed && taskData.expect_complete_time && !handleResult" class="color-warning">
                                 {{'defect.expecttime' | translate}}：{{taskData.expect_complete_time.substring(0, 11)}}
                             </div>
                             <div style="padding: 0 12px;" ng-if="handleResult">
-                                <div style="font-size: 13px;color: #666;">{{handleResult.desp}}</div>
+                                <div style="font-size: 13px;" class="text-secondary">{{handleResult.desp}}</div>
                                 <!--<image-grid-list images="handleResult.picture_list" ng-if="handleResult.picture_list"></image-grid-list>-->
                                 <audio-recorder audio="handleResult.voice_src" ng-if="handleResult.voice_src" duration="handleResult.voice_duration"></audio-recorder>
                                 <image-grid-list images="handleResult.picture_list" video="handleResult.video_src"></image-grid-list>
@@ -216,7 +215,7 @@
                                 <label class="btn-status" ng-class="{success: recheckResult.recheck_pass, danger: !recheckResult.recheck_pass}" style="font-size: 12px;">
                                     {{recheckResult.recheck_pass ? ('recheck.pass' | translate) : ('recheck.nopass' | translate)}}
                                 </label>
-                                <span style="color: #666;font-size: 14px;margin-left: 12px;">{{recheckResult.update_time.substring(0, 16)}}</span>
+                                <span style="font-size: 14px;margin-left: 12px;" class="text-secondary">{{recheckResult.update_time.substring(0, 16)}}</span>
                             </div>
                             <ul class="task-detail-info-group" ng-if="recheckResult" style="padding: 4px 12px;">
                                 <li ng-if="recheckResult.desp">
@@ -227,9 +226,9 @@
                             </ul>
                         </div>
                         <div ng-if="!recheckResult">
-                            <div>{{'recheck.result' | translate}}： <span style="color: #666;margin-left: 12px;">{{'recheck.result.norecord' | translate}}</span></div>
+                            <div>{{'recheck.result' | translate}}： <span style="margin-left: 12px;" class="text-secondary">{{'recheck.result.norecord' | translate}}</span></div>
                         </div>
-                        <div style="color: #F28150;margin-top: 6px;" ng-if="!taskData.is_closed">
+                        <div style="margin-top: 6px;" ng-if="!taskData.is_closed" class="color-warning">
                             {{'recheck.nexttime' | translate}}：{{taskData.next_recheck_time.substring(0, 10)}}
                         </div>
                     </div>
@@ -262,7 +261,7 @@
                 </div>
             </div>
             <div ng-include="'/templates/task/task-update-history.html'"></div>
-            <nav class="mui-bar mui-bar-tab bg-transparent task-btn-bottom" ng-if="actions.length">
+            <nav class="mui-bar mui-bar-tab bg-transparent task-btn-bottom" ng-if="actions.length" style="height: 40px;">
                 <a href="#" ng-repeat="action in actions">
                     <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-btn-outlined mui-control-item task-btn"
                             ng-click="taskHandler.execute(action.id)" style="background-color: {{action.color}}">
@@ -280,7 +279,7 @@
                                visible="transferPickerVisible" callback="onTransferUsers" users="toTransferUsers" title="{{ 'task.tip.select.repair.transfer' | translate }}"></handlers-selector>
         </div>
 
-        <div ui-view class="page page-left"></div>
+        <div ui-view></div>
     </div>
 </div>
 <script src="../../components/mui/js/mui.min.js"></script>

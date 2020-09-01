@@ -53,7 +53,6 @@
         }
         .mui-bar-tab{
             box-shadow: none;
-            /*background-color: transparent;*/
         }
         .device-list{
             margin-left: 60px;
@@ -94,7 +93,7 @@
 </header>
 <div style="margin-top: 62px;" ng-class="{english: isEnglish}">
     <!-- 正在处理的任务单 -->
-    <div class="body-content" style="background-color: transparent; top: 62px;" ng-class="{'page-bottom': canHandle}" ng-style="{'padding-bottom': actions.length>0 ? '50px' : ''}" >
+    <div class="body-content" style="background-color: transparent; top: 60px;" ng-class="{'page-bottom': canHandle}" ng-style="{'padding-bottom': actions.length>0 ? '50px' : ''}" >
         <div class="xunjian-devices-area horizontal" ng-if="xunjianStage === 'toStart'">
             <div class="name">{{ 'inspect.count.device' | translate }}</div>
             <div class="count">{{taskData.device_record.length}}</div>
@@ -155,7 +154,7 @@
                         </li>
                         <li ng-if="taskData.operator">
                             <label class="title">{{ 'task.repairer' | translate }}</label>
-                            <span class="value">
+                            <span class="value" style="margin-left: 80px;">
                                 <div ng-repeat="user in taskData.operator_users">
                                     <a ng-click="callPhone(user.phone)">{{user.name}}</a>
                                 </div>
@@ -182,13 +181,13 @@
                         <li>
                             <label class="title">{{ 'station' | translate }}</label>
                             <span class="value" ng-click="openMap()">
-                                <a>{{taskData.station_name}}<i class="icon icon-location" style="width: 16px;height: 16px;"></i></a>
+                                <a>{{taskData.station_name}}<i class="iconfont anticon-location"></i></a>
                             </span>
                         </li>
                         <li>
                             <label class="title">{{ 'owner' | translate }}</label>
                             <span class="value" style="padding-left: 80px;">
-                                <a ng-click="callPhone(taskData.creater_user.phone)">{{user.name}}</a>
+                                <a ng-click="callPhone(taskData.creater_user.phone)">{{taskData.creater_user.name}}</a>
                             </span>
                         </li>
                         <li>
@@ -222,7 +221,7 @@
                         <li>
                             <label class="title" style="width: 50px;">{{ 'station' | translate}}</label>
                             <span class="value" ng-click="openMap()" style="padding-left: 50px;">
-                                <a>{{taskData.station_name}}<i class="icon icon-location" style="width: 16px;height: 16px;"></i></a>
+                                <a>{{taskData.station_name}}<i class="iconfont anticon-location"></i></a>
                             </span>
                         </li>
                         <li ng-if="taskData.device_record && taskData.device_record.length">
@@ -233,7 +232,7 @@
                                 </div>
                             </span>
                         </li>
-                        <div ng-if="requestPictures" style="padding: 0 12px;font-size: 13px;color: #333;">
+                        <div ng-if="requestPictures" style="padding: 0 12px;font-size: 13px;">
                             <div>{{taskName}} {{ 'pictures' | translate }}</div>
                             <ul class="image-list" style="padding: 0;">
                                 <li class="image-item" ng-repeat="url in requestPictures" ng-click="showImageGallery(requestPictures, $index+1)">
@@ -259,7 +258,7 @@
                     <div ng-if="handleResult && taskData.task_type_id !== TaskTypes.Xunjian">
                         <div style="font-size: 13px;">{{ 'task.repair.result' | translate }}：</div>
                         <div style="padding: 0 12px;">
-                            <div style="font-size: 13px;color: #666;">{{handleResult.desp}}</div>
+                            <div style="font-size: 13px;" class="text-secondary">{{handleResult.desp}}</div>
                             <ul class="image-list" style="padding: 0;">
                                 <li class="image-item" ng-repeat="url in handleResult.picture_list" ng-click="showImageGallery(handleResult.picture_list, $index+1)">
                                     <div class="content">
@@ -335,7 +334,7 @@
         <div class="card" ng-show="taskData.stage_id === TaskStatus.Competition && taskData.station_longitude">
             <div id="map" style="height: 300px;width: 100%;"></div>
         </div>
-        <nav class="mui-bar mui-bar-tab bg-transparent task-btn-bottom" ng-if="actions.length">
+        <nav class="mui-bar mui-bar-tab bg-transparent task-btn-bottom" ng-if="actions.length" style="height: 40px;">
             <a href="#" ng-repeat="action in actions">
                 <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-btn-outlined mui-control-item task-btn"
                         ng-click="taskHandler.execute(action.id)" style="background-color: {{action.color}}">{{action.name}}</button>
@@ -351,7 +350,7 @@
                            visible="transferPickerVisible" callback="onTransferUsers" users="toTransferUsers" title="{{ 'task.tip.select.repair.transfer' | translate }}"></handlers-selector>
     </div>
 
-    <div ui-view class="page page-left"></div>
+    <div ui-view></div>
 </div>
 </div>
 <script src="../../components/mui/js/mui.min.js"></script>
