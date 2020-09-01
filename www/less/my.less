@@ -20,6 +20,9 @@ p {
 a {
     color: @color-text-link;
 }
+a:active, a:hover {
+    color: fade(@color-text-link, 90);
+}
 div {
     color: @color-text-primary;
 }
@@ -102,6 +105,12 @@ div {
     border: 1px solid @input-bg;
     border-radius: 0;
     background: @input-bg;
+}
+.mui-table-view {
+    background-color: transparent;
+}
+.mui-table-view.mui-grid-view .mui-table-view-cell .mui-media-body {
+    color: @color-text-primary;
 }
 /* mui重写 end */
 .font-14{

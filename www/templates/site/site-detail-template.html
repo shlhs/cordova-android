@@ -52,7 +52,7 @@
                     <label class="title">{{ 'station.address' | myTranslate }}</label>
                     <span class="value" ng-click="openMap()" ng-if="currentSite.longitude">
                         {{currentSite.full_address}}
-                        <i class="icon icon-location" style="width: 18px; height: 18px; float: right"></i>
+                        <a class="iconfont anticon-location" style="float: right"></a>
                     </span>
                     <span class="value" ng-if="!currentSite.longitude">
                         {{currentSite.address}}
