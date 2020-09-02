@@ -115,6 +115,9 @@ div {
 .mui-checkbox input[type=checkbox]:checked:before, .mui-radio input[type=radio]:checked:before {
     color: @color-primary;
 }
+.mui-table-view-cell.mui-active {
+    background-color: fade(@mui-picker-body, 95);
+}
 /* mui重写 end */
 
 
@@ -2774,7 +2777,7 @@ header.bg-warning{
     height: 40px;
 }
 .site-search-comp .search-wrapper {
-    background-color: @input-bgl;
+    background-color: @input-bg;
     border-radius: 2px;
     height: 40px;
     position: relative;
