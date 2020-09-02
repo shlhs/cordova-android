@@ -1999,59 +1999,157 @@ header.bg-warning{
     top: 0px;
     right: 0px;
 }
-.site-header .site-popover {
-    color: rgb(255,255,255);
-    font-size: 14px;
-    border-bottom: rgb(232,232,232) 1px dashed;
-    margin-top:10px;
-}
 .site-header {
-    /*height: 35%;*/
-    background: url(../img/site-title-bg@2x.png) no-repeat top left;
-    background-size: contain;
+    position: relative;
+    height: 35%;
+    header{
+        position: absolute;
+        top: 0;
+        left:0;
+        z-index: 2;
+        .site-popover {
+            margin-top: 11px;
+            display: inline-block;
+            text-align: center;
+            width: 72px;
+            height: 22px;
+            line-height: 22px;
+            font-size: 12px;
+            color: @color-text-reverse;
+            background-color: @color-header-btn-bg;
+            border-radius: 7px;
+        }
+        .event-icon-link{
+            margin: 11px 8px 0 0;
+        }
+    }
+    .site-img-wrapper{
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1;
+        width: 100%;
+        height: 100%;
+        .img-border{
+            width: 100%;
+            height: 100%;
+        }
+        // 站点图遮罩
+        &:after{
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            content: '';
+            background-image: linear-gradient(rgba(0, 0, 0, .2),rgba(0, 0, 0, .6));
+        }
+    }
 }
-.site-header .mui-pull-right {
-    margin-top: 13px;
+// home页 中部卡片背景
+.home-nav-bg{
+    background-image: url("../img/home_card_bg.png");
+    background-size: 100% 80%;
+    background-repeat: no-repeat;
 }
+// home页 底部站点信息
+.home-station-title{
+    position: relative;
+    margin-top: 10px;
+    line-height: 25px;
+    font-size: 18px;
+    color: @color-text-primary;
+    padding-left: 17px;
+    left: 12px;
+    &:before{
+        position: absolute;
+        height: 19px;
+        left: 0;
+        top: 3px;
+        content: '';
+        border-left: 4px solid @color-text-primary;
+    }
+}
+.home-station{
+    padding: 0;
+    .item-list{
+        height: 89px;
+        display: flex;
+        list-style-type: none;
+        align-items: center;
+        border-bottom: 1px dashed @color-border-base;
+        padding-bottom: 10px;
+        .item{
+            flex: 1;
+            list-style-type: none;
+            .title, .value{
+                text-align: center;
+                display: block;
+            }
+            .item{
+                font-size: 21px;
+                color: @color-text-primary;
+            }
+            .value{
+                color: @color-text-regular;
+                line-height: 30px;
+                font-size: 13px;
+            }
+            &:nth-child(2){
+                position: relative;
+                &:before, &:after{
+                    content: '';
+                    position: absolute;
+                    top: 5px;
+                    height: 36px;
+                    border: 1px dashed @color-border-base;
+                }
+                &:before{
+                    left: 0;
+                }
+                &:after{
+                    right: 0;
+                }
+            }
+        }
+    }
+    .item-tele, .item-loca{
+        margin: 0 28px;
+        line-height: 32px;
+        font-size: 13px;
+        color: @color-text-primary;
+        height: 32px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+    .item-tele{
+        border-bottom: 1px dashed @color-border-base;
+    }
+    .item-loca{
+        margin-bottom: 4px;
+    }
+}
+
 .layout-center {
     display: -webkit-box;
     -webkit-box-orient: horizontal;
     -webkit-box-pack: center;
 }
-.site-img-wrapper {
-    padding-bottom: 40%;
-    position: relative;
-    width: 80%;
-    margin-left: 10%;
-}
-.site-img-wrapper .img-border {
-    background: url("../img/site-img-border@2x.png") 50% no-repeat;
-    background-size: 100% 100%;
+
+.status-line{
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    padding: 1px;
-    box-sizing: border-box;
+    width: 34px;
+    height: 22px;
+    right: 15px;
+    bottom: 16px;
+    line-height: 22px;
     text-align: center;
+    background-color: @color-header-btn-bg;
+    border-radius: 7px;
+    z-index: 3;
 }
-.site-img-wrapper .status-line {
-    position: absolute;
-    bottom: 0;
-    height: 20px;
-    background-color: rgba(0, 0, 0, 0.5);
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
-    left: 1px;
-    right: 1px;
-}
-.status-line .status {
-    position: absolute;
-    right: 10px;
-    bottom: 1px;
-    padding-left: 6px;
-}
+
 .status-line .status.normal {
     color: rgb(41,202,147);
     font-size: 10px;
