@@ -11,8 +11,8 @@
         <h1 class="mui-title">{{'ops.poweroff.report.name' | translate}}</h1>
         <a class="mui-action-menu mui-icon mui-pull-right" style="font-size: 16px;line-height: 28px;color: #fff;" ng-click="save()" ng-if="canEdit">{{'save' | translate}}</a>
     </header>
-    <div class="body-content" ng-cloak style="background-color: #FFFFFF;">
-        <div class="card no-padding">
+    <div class="body-content" ng-cloak>
+        <div class="no-padding">
             <ul class="mui-table-view info-group mui-input-group poweroff-info-list" style="font-size: 14px;padding-left: 16px;">
                 <li class="mui-table-view-cell">
                     <label class="title dark">{{'station' | translate}}：</label><span class="value">{{recordData.station_name}}</span>
@@ -40,11 +40,11 @@
                     <label class="title dark">{{'ops.poweroff.handler' | translate}}：</label><span class="name">{{recordData.creator_name}}</span>
                 </li>
             </ul>
-            <div class="card" style="text-align: center;">
+            <div style="text-align: center;padding: 8px 16px">
                 <button class="mui-btn mui-btn-primary" ng-click="gotoCheckListPage()">{{'view ops.security.items' | myTranslate}}</button>
             </div>
         </div>
-        <div class="font-14" style="border-top: #eee 1px solid;margin: 0px 16px;padding: 12px 0 4px 0;">
+        <div class="font-14 poweroff-list-item">
             <div class="info-group"><span class="title dark" style="float: none;min-width: 98px;width: auto;">{{'ops.poweroff.picture.before' | translate}}：</span>
                 <div class="icon icon-20 icon-camera" style="position: absolute;" ng-if="canEdit">
                     <div class="image-uploader">
@@ -64,7 +64,7 @@
                 </li>
             </ul>
         </div>
-        <div class="card font-14" style="border-top: #eee 1px solid;margin: 0px 16px;padding: 12px 0 4px 0;">
+        <div class="font-14 poweroff-list-item">
             <div class="info-group"><span class="title dark" style="float: none;min-width: 98px;width: auto;">{{'ops.poweroff.picture.between' | translate}}：</span>
                 <div class="icon icon-20 icon-camera" style="position: absolute;" ng-if="canEdit">
                     <div class="image-uploader">
@@ -84,7 +84,7 @@
                 </li>
             </ul>
         </div>
-        <div class="card font-14" style="border-top: #eee 1px solid;margin: 0px 16px;padding: 12px 0 4px 0;">
+        <div class="font-14 poweroff-list-item">
             <div class="info-group"><span class="title dark" style="float: none;min-width: 98px;width: auto;">{{'ops.poweroff.picture.after' | translate}}：</span>
                 <div class="icon icon-20 icon-camera" style="position: absolute;" ng-if="canEdit">
                     <div class="image-uploader">

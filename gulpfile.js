@@ -85,31 +85,9 @@ gulp.task('watch', async function () {
 })
 
 
-// 生成主题色less对应的js
-gulp.task('reset:themeConst', async function () {
-    let str = '';
-    await fs.readFile(`${root}/less/theme/${themeType}.less`, 'utf-8', function (err, data) {
-        if (err) {
-            return console.log('update:themeConst:readFile', err)
-        }
-        str = data;
-        // less变量格式化为js变量的格式
-        str = str.replace(/-\w/g, function (x) {
-            return x.slice(1).toUpperCase();
-        }).replace(/:/g, " = ").replace(/@/g, 'const $').replace(/#\w*/g, function (x) {
-            return `'${x}'`;
-        })
 
-        fs.writeFile(`${root}/js/controller/themeConst.js`, str, 'utf-8', function (err) {
-            if (err) {
-                console.log('update:themeConst:writeFile', err);
-            }
-        })
-    })
 
-})
-
-gulp.task('update:theme', ['reset:css', 'reset:themeConst'])
+gulp.task('update:theme', ['reset:css'])
 
 gulp.task('default', ['less', 'watch', 'webserver']);
 

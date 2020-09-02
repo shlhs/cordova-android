@@ -52,10 +52,10 @@
             <div class="mui-scroll" ng-if="!eventLoading && !loadingFailed">
                 <ul class="mui-table-view mui-table-view-striped mui-table-view-condensed event-list no-border"
                     ng-if="events.length" style="margin-top:0px;padding: 0 8px;">
-                    <li class="mui-table-view-cell no-border" ng-repeat="e in events" data-id="{{e.id}}" style="background-color: #fff;">
+                    <li class="mui-table-view-cell no-border" ng-repeat="e in events" data-id="{{e.id}}">
                         <div class="event-title">
                             {{e.report_time}}
-                            <label class="mui-pull-right" style="color:#97969B;">{{e.device_name}}</label>
+                            <label class="mui-pull-right device-name">{{e.device_name}}</label>
                         </div>
                         <div class="info">
                             {{e.info}}

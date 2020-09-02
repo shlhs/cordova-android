@@ -6,7 +6,7 @@
         <a class="mui-action-menu mui-icon mui-pull-right" style="font-size: 16px;line-height: 28px;color: #fff;" ng-click="save()" ng-if="hasPermission && editable">{{'save' | translate}}</a>
     </header>
     <div class="body-content" ng-cloak style="display: -webkit-box;-webkit-box-align: stretch;">
-        <div class="left-panel" style="background-color: #FFFFFF;width: 35%;box-shadow: 0 0 2px #ccc;">
+        <div class="left-panel" style="width: 35%;box-shadow: 0 0 2px #ccc;">
             <ul class="check-list">
                 <li class="check-item" ng-repeat="item in items" ng-class="{'active': $index===currentIndex}">
                     <a class="mui-navigate-right" href="#" ng-click="chooseItem($index)">
@@ -20,7 +20,7 @@
 
         </div>
         <div class="right-panel" style="-webkit-box-flex: 2;">
-            <h5 class="mui-text-center" style="color: #444;padding: 4px;">{{currentItem.name}}</h5>
+            <h5 class="mui-text-center" style="padding: 4px;">{{currentItem.name}}</h5>
             <div style="padding: 0 8px;">
                 <ul class="check-box-list">
                     <li class="check-box-item" ng-repeat="item in checklist">

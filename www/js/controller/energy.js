@@ -2060,7 +2060,6 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
                         textStyle: {
                             fontFamily: 'Microsoft YaHei',
                             fontSize: 12,
-                            // color: '#818181',
                         },
                         x: 'center',
                         y: 'center',

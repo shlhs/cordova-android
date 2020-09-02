@@ -224,35 +224,17 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', '$myTranslate', functi
         var yAxis = [
             {
                 type: 'value',
-                nameTextStyle: {
-                    color: '#999999'
-                },
-                "axisLine": {
-                    lineStyle: {
-                        color: '#e7ecf1'
-                    }
-                },
-                axisLabel: {
-                    textStyle: {
-                        color: '#999999'
-                    }
-                },
-                splitLine: {
-                    lineStyle: {
-                        color: ['#e7ecf1']
-                    }
-                },
                 axisTick: {
                     "show": false
                 },
                 scale: false
             },
             {
-                "axisLine": {
-                    lineStyle: {
-                        color: '#e7ecf1'
-                    }
-                },
+                // "axisLine": {
+                //     lineStyle: {
+                //         color: '#e7ecf1'
+                //     }
+                // },
             }
         ];
         var group = $scope.trendGroups.find(function (item) {
@@ -320,16 +302,16 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', '$myTranslate', functi
                 ri = data.data[0].time_keys[0].slice(8, 10); //针对最后一个点 为第二天0点 的特殊处理
             }
             yAxis[1]={
-                "axisLine": {
-                    lineStyle: {
-                        color: '#e7ecf1'
-                    }
-                },
-                axisLabel: {
-                    textStyle: {
-                        color: '#999999'
-                    }
-                },
+                // "axisLine": {
+                //     lineStyle: {
+                //         color: '#e7ecf1'
+                //     }
+                // },
+                // axisLabel: {
+                //     textStyle: {
+                //         color: '#999999'
+                //     }
+                // },
                 splitLine: {
                     show: false,
                 },
@@ -512,7 +494,6 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', '$myTranslate', functi
                 itemWidth: 15,
                 itemHeight: 8,
                 textStyle: {
-                    color: '#848484',
                     fontSize: 11,
                 },
             },
@@ -521,24 +502,13 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', '$myTranslate', functi
                 splitNumber: 6,
                 min: mintime,
                 max: maxtime,
-                nameTextStyle: {
-                    color: '#999999'
-                },
                 boundaryGap: false,
                 splitLine: {
                     show: false
                 },
-                "axisLine": {
-                    lineStyle: {
-                        color: '#e7ecf1'
-                    }
-                },
                 axisLabel: {
-                    textStyle: {
-                        color: '#999999'
-                    },
                     formatter: function(value, index) {
-
+                        
                         var date = new Date(value);
                         var texts = [];
                         if (timety === "DAY") {

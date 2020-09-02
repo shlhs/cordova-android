@@ -599,7 +599,6 @@ app.controller('KanbanCtrl', ['$scope', '$stateParams', 'ajax', '$timeout', func
                         x: 'left',
                         data: ['峰', '平', '谷']
                     },
-                    color: ['#F04863', '#F9CC13', '#369FFF', '#12C1C1', '#8442E0', '#2FC15B'],
                     series: [{
                         name: '用电量',
                         type: 'pie',
@@ -870,7 +869,6 @@ app.controller('KanbanCtrl', ['$scope', '$stateParams', 'ajax', '$timeout', func
                 data: times
             },
             yAxis: yAxis,
-            color: ['#369FFF', '#F9CC13', '#F04863', '#12C1C1', '#8442E0', '#2FC15B'],
             series: data
         };
     }
@@ -896,7 +894,6 @@ app.controller('KanbanCtrl', ['$scope', '$stateParams', 'ajax', '$timeout', func
     function getRatioPie(title, data, unit) {
         var echartOptions = {
             title: [],
-            color: ['#F04863', '#F9CC13', '#369FFF', '#12C1C1', '#8442E0', '#2FC15B'],
             series: [{
                 name: '2',
                 type: 'pie',
@@ -1114,7 +1111,6 @@ app.controller('SiteOverviewCtrl', ['$scope', 'ajax', 'varDataService', '$myTran
             yAxis: {
                 name: 'kW'
             },
-            color: ['#F9CC13', '#369FFF'],
             series: [{
                 type: 'line',
                 data: yesterdayData,

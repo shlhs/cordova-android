@@ -201,43 +201,20 @@ EnergyFuncApi.prototype.paintAvgPriceTrend = function (chartId, data) {
             data: times,
             axisLabel: {
                 fontSize: 11,
-                color: $colorEchartAxisLabel
             },
-            axisLine: {
-                lineStyle: {
-                    color: $colorEchartAxisLine
-                }
-            }
         },
         yAxis: {
             name: '元',
             nameGap: 0,
-            nameTextStyle: {
-                color: $colorEchartAxisLabel
-            },
             type: 'value',
             axisLabel: {
                 fontSize: 11,
-                color: $colorEchartAxisLabel
             },
-            axisLine: {
-                lineStyle: {
-                    color: $colorEchartAxisLine
-                }
-            },
-            splitLine: {
-                lineStyle: {
-                    color: $colorEchartAxisLine
-                }
-            }
         },
         series: [{
             data: yAxis,
             type: 'line',
             symbolSize: 4,
-            itemStyle: {
-                color: '#8D6ADD'
-            }
         }]
     };
     echarts.init(document.getElementById(chartId)).setOption(option);
@@ -692,39 +669,19 @@ function paintAvgLoadTrendByDay(chartId, times, datas) {
             data: times,
             axisLabel: {
                 fontSize: 11,
-                color: $colorEchartAxisLabel
             },
-            axisLine: {
-                lineStyle: {
-                    color: $colorEchartAxisLine
-                }
-            }
         },
         yAxis: {
             type: 'value',
             axisLabel: {
                 fontSize: 11,
-                color: $colorEchartAxisLabel,
                 formatter: '{value}%'
-            },
-            axisLine: {
-                lineStyle: {
-                    color: $colorEchartAxisLine
-                }
-            },
-            splitLine: {
-                lineStyle: {
-                    color: $colorEchartAxisLine
-                }
             },
         },
         series: [{
             data: datas,
             type: 'line',
             symbolSize: 0,
-            itemStyle: {
-                color: '#8D6ADD'
-            },
             markPoint: {
                 data: [
                     {type: 'max', name: '最大值', offset: [0, -12]},
@@ -740,7 +697,6 @@ function paintAvgLoadTrendByDay(chartId, times, datas) {
                 symbolSize: 15,
                 label: {
                     fontSize: 10,
-                    color: '#666',
                     offset: [0, -12],
                     formatter: '{c}%'
                 }
@@ -751,7 +707,6 @@ function paintAvgLoadTrendByDay(chartId, times, datas) {
                 ],
                 label: {
                     fontSize: 10,
-                    color: '#666',
                     formatter: '{c}%',
                     offset: [-5, 0]
                 },
@@ -939,13 +894,11 @@ app.controller('EnergyOverviewCtrl', ['$scope', 'ajax', 'platformService', 'varD
             colors.push(g_pvf_colors[key]);
         });
         var option = {
-            backgroundColor:'#ffffff',
             legend: {
                 data: ['峰', '平', '谷'],
                 right: 20,
                 top: 0,
                 textStyle: {
-                    color: '#666666',
                     fontSize: 10,
                 },
                 itemWidth: 14,
@@ -965,35 +918,15 @@ app.controller('EnergyOverviewCtrl', ['$scope', 'ajax', 'platformService', 'varD
                 data: times,
                 axisLabel: {
                     fontSize: 11,
-                    color: $colorEchartAxisLabel
-                },
-                axisLine: {
-                    lineStyle: {
-                        color: $colorEchartAxisLine
-                    }
                 },
             },
             yAxis: {
                 type: 'value',
                 name: '元',
                 nameGap: 0,
-                nameTextStyle: {
-                    color: $colorEchartAxisLabel
-                },
                 axisLabel: {
                     fontSize: 11,
-                    color: $colorEchartAxisLabel
                 },
-                axisLine: {
-                    lineStyle: {
-                        color: $colorEchartAxisLine
-                    }
-                },
-                splitLine: {
-                    lineStyle: {
-                        color: $colorEchartAxisLine
-                    }
-                }
             },
             color: colors,
             series: series,
@@ -1130,7 +1063,6 @@ app.controller('EnergyCostAnalysisCtrl', ['$scope', 'ajax', 'platformService', '
                 text: total + (unit ? '\n' + unit : ''),
                 textStyle: {
                     fontSize: 13,
-                    color: '#666666',
                     align: 'center',
                     lineHeight: 14,
                 },
@@ -1143,7 +1075,6 @@ app.controller('EnergyCostAnalysisCtrl', ['$scope', 'ajax', 'platformService', '
                 triggerOn: 'none',
                 formatter: '{b} : {c} ({d}%)',
             },
-            backgroundColor:'#ffffff',
             grid: {
                 top: '20%',
                 left: 0,
@@ -1330,39 +1261,19 @@ app.controller('EnergyLoadAnalysisCtrl', ['$scope', 'varDataService', function (
                 data: times,
                 axisLabel: {
                     fontSize: 11,
-                    color: $colorEchartAxisLabel
                 },
-                axisLine: {
-                    lineStyle: {
-                        color: $colorEchartAxisLine
-                    }
-                }
             },
             yAxis: {
                 type: 'value',
                 axisLabel: {
                     fontSize: 11,
-                    color: $colorEchartAxisLabel,
                     formatter: '{value}%'
-                },
-                axisLine: {
-                    lineStyle: {
-                        color: $colorEchartAxisLine
-                    }
-                },
-                splitLine: {
-                    lineStyle: {
-                        color: $colorEchartAxisLine
-                    }
                 },
             },
             series: [{
                 data: avgList,
                 type: 'line',
                 symbolSize: 0,
-                itemStyle: {
-                    color: '#8D6ADD'
-                }
             }]
         };
         echarts.init(document.getElementById('chart1')).setOption(option);
@@ -1553,44 +1464,21 @@ app.controller('EnergyMaxDemandCtrl', ['$scope', 'varDataService', function ($sc
                     data: times,
                     axisLabel: {
                         fontSize: 11,
-                        color: $colorEchartAxisLabel
                     },
-                    axisLine: {
-                        lineStyle: {
-                            color: $colorEchartAxisLine
-                        }
-                    }
                 },
                 yAxis: {
                     name: 'kW',
                     type: 'value',
                     nameGap: 8,
-                    nameTextStyle: {
-                        color: $colorEchartAxisLabel,
-                    },
                     axisLabel: {
                         fontSize: 11,
-                        color: $colorEchartAxisLabel,
                         formatter: '{value}'
-                    },
-                    axisLine: {
-                        lineStyle: {
-                            color: $colorEchartAxisLine
-                        }
-                    },
-                    splitLine: {
-                        lineStyle: {
-                            color: $colorEchartAxisLine
-                        }
                     },
                 },
                 series: [{
                     data: data.datas,
                     type: 'line',
                     symbolSize: 0,
-                    itemStyle: {
-                        color: '#8D6ADD'
-                    },
                     markPoint: {
                         data: [
                             {type: 'max', name: '最大值'},
@@ -1599,7 +1487,6 @@ app.controller('EnergyMaxDemandCtrl', ['$scope', 'varDataService', function ($sc
                         label: {
                             fontSize: 10,
                             offset: [0, -12],
-                            color: '#666',
                             formatter: '{c}kW'
                         }
                     },
@@ -1909,9 +1796,6 @@ app.controller('EnergyQualityMonitorCtrl', ['$scope', 'varDataService', 'collect
             title: {
                 left: 'center',
                 text: '',
-                textStyle: {
-                    color: '#787878',
-                },
             },
             polar: {
                 radius: 70,
@@ -1944,21 +1828,9 @@ app.controller('EnergyQualityMonitorCtrl', ['$scope', 'varDataService', 'collect
             radiusAxis: {
                 splitNumber: 2,
                 axisLabel: {
-                    color: '#666',
                     fontSize: 10,
                     margin: 4
                 },
-                axisLine: {
-                    lineStyle: {
-                        color: '#666',
-                    }
-                },
-                splitLine: {
-                    lineStyle: {
-                        color: '#aaa',
-                        type: 'dashed'
-                    }
-                }
             },
             series: aseries,
         };
@@ -2019,7 +1891,6 @@ app.controller('EnergyQualityMonitorCtrl', ['$scope', 'varDataService', 'collect
                 data: ['A相', 'B相', 'C相'],
                 right: 0,
                 textStyle: {
-                    color: $colorEchartAxisLabel,
                     fontSize: 10
                 },
                 itemHeight: 10
@@ -2030,38 +1901,15 @@ app.controller('EnergyQualityMonitorCtrl', ['$scope', 'varDataService', 'collect
             xAxis: {
                 type: 'category',
                 data: xAxis,
-                axisLabel: {
-                    fontSize: 11,
-                    color: $colorEchartAxisLabel
-                },
-                axisLine: {
-                    lineStyle: {
-                        color: $colorEchartAxisLine
-                    }
-                }
             },
             yAxis: {
                 name: keys.unit,
                 type: 'value',
                 splitNumber: 4,
-                nameTextStyle: {
-                    color: $colorEchartAxisLabel,
-                },
                 nameGap: 5,
                 axisLabel: {
                     fontSize: 11,
-                    color: $colorEchartAxisLabel,
                     formatter: '{value}'
-                },
-                axisLine: {
-                    lineStyle: {
-                        color: $colorEchartAxisLine
-                    }
-                },
-                splitLine: {
-                    lineStyle: {
-                        color: $colorEchartAxisLine
-                    }
                 },
                 axisTick: {
                     show: false

@@ -51,10 +51,10 @@
             </ul>
             <a class="mui-pull-right" ng-click="toggleEdit()" ng-if="!isEditing">{{'app.edit' | translate}}</a>
         </div>
-        <ul class="mui-table-view mui-grid-view mui-grid-9 no-border" ng-if="isEditing">
+        <ul class="mui-table-view mui-grid-view mui-grid-9 no-border app-grid-bg" ng-if="isEditing">
             <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border" ng-repeat="app in selectedApps">
                 <a class="app">
-                    <span class="mui-icon icon icon-32 {{app.icon}}"></span>
+                    <span class="mui-icon icon icon-20 {{app.icon}}"></span>
                     <div class="mui-media-body">{{app.name}}</div>
                     <label class="btn-editor delete" ng-click="onAddOrDelete(app)"></label>
                 </a>
@@ -66,12 +66,12 @@
         </ul>
     </div>
     <div style="padding: 6px 10px;font-size: 14px;">{{'all apps' | myTranslate}}</div>
-    <div class="card round-card apps" ng-class="{'apps-selector': isEditing}" ng-repeat="appGroup in allApps" style="padding: 2px 0;margin: 0;">
+    <div class="card round-card apps" ng-class="{'apps-selector': isEditing}" ng-repeat="appGroup in allApps" style="padding: 0;margin: 0;">
         <div style="padding: 10px 0 4px 12px;" class="card-title">{{appGroup.name}}</div>
-        <ul class="mui-table-view mui-grid-view mui-grid-9 no-border">
+        <ul class="mui-table-view mui-grid-view mui-grid-9 no-border app-grid-bg">
             <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border" ng-repeat="app in appGroup.children">
                 <a class="app">
-                    <span class="mui-icon icon icon-32 {{app.icon}}"></span>
+                    <span class="mui-icon icon icon-20 {{app.icon}}"></span>
                     <div class="mui-media-body">{{app.name}}</div>
                     <label class="btn-editor" ng-class="app.selected ? 'delete' : 'add'" ng-click="onAddOrDelete(app)"></label>
                 </a>

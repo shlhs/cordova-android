@@ -1,5 +1,5 @@
 
-<div style="height: 100%;" ng-style="{'background-color': currentSite.sn ? '' : '#fff'}">
+<div style="height: 100%;">
     <div class="site-header">
         <header class="mui-bar bg-header bg-transparent">
             <a class=" mui-pull-left site-popover" ng-click="openSiteSelectPage()" ng-show="sites.length > 1" ng-if="!isSiteDetail">{{'station.switch' | translate}}</a>
@@ -8,8 +8,7 @@
             <a class="mui-pull-right event-icon-link" href="/templates/site/event-list.html?sn={{currentSite.sn}}&name={{currentSite.name}}" ng-if="currentSite.sn">
                 <i class="icon white icon-events" style="width: 18px;height: 18px;">
                 </i>
-                <span class="mui-badge mui-badge-danger" ng-if="currentSite.unclosed_envet_amount"
-                      style="position: absolute;font-size: 9px;top:-8px;left: 10px;font-weight: 300;">
+                <span class="mui-badge mui-badge-danger event-badge" ng-if="currentSite.unclosed_envet_amount">
                     {{currentSite.events_amount}}
                 </span>
             </a>
@@ -65,7 +64,7 @@
             </ul>
 
             <p class="item-tele">
-                <span class="value">{{currentSite.fix_line_telephone}}11112234555</span>
+                <span class="value">{{currentSite.fix_line_telephone}}</span>
             </p>
 
             <p class="item-loca">
@@ -83,7 +82,7 @@
         <i class="alert-icon"></i>
         <label class="alert-info">{{'tip.nostation' | translate}}，<a ng-click="getDataList()">{{ 'reload' | translate }}</a></label>
     </div>
-    <div class="page-alert-wrapper" ng-if="isLoading" style="background-color: #fff;">
+    <div class="page-alert-wrapper" ng-if="isLoading">
         <div class="page-alert">
             <img src="../../img/page-loading.gif" class="loading-img">
             <div class="alert-text info">{{'loading' | translate}}...</div>

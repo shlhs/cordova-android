@@ -1260,35 +1260,17 @@ app.controller('HistoryVarCtrl', ['$scope', 'ajax', '$myTranslate', function ($s
                 data: xAxis,
                 axisLabel: {
                     fontSize: 11,
-                    // color: $colorEchartAxisLabel
                 },
-                axisLine: {
-                    lineStyle: {
-                        // color: $colorEchartAxisLine
-                    }
-                }
             },
             yAxis: {
                 name: currentGroup.unit,
                 nameGap: 0,
                 nameTextStyle: {
-                    // color: $colorEchartAxisLabel
                 },
                 type: 'value',
                 axisLabel: {
                     fontSize: 11,
-                    // color: $colorEchartAxisLabel
                 },
-                axisLine: {
-                    lineStyle: {
-                        // color: $colorEchartAxisLine
-                    }
-                },
-                splitLine: {
-                    lineStyle: {
-                        // color: $colorEchartAxisLine
-                    }
-                }
             },
             series: series,
         };

@@ -1507,7 +1507,7 @@ a:hover.slidesjs-stop {
     margin-right: 4px;
 }
 .card .card-header.border{
-    border-bottom: #eee 1px solid;
+    border-bottom: @color-border-light 1px solid;
 }
 .card .card-content{
     padding-top:8px;
@@ -1789,10 +1789,10 @@ header.bg-warning{
     content: '';
     -webkit-transform: scaleY(.5);
     transform: scaleY(.5);
-    background-color: #efeef0;
+    background-color: @color-border-base;
 }
 .check-item.active{
-    background-color: rgba(228, 228, 228, 0.8);
+    background-color: rgba(228, 228, 228, 0.1);
 }
 .check-item a{
     color: inherit;
@@ -2020,7 +2020,17 @@ header.bg-warning{
             border-radius: 7px;
         }
         .event-icon-link{
+            position: relative;
             margin: 11px 8px 0 0;
+            width: 18px;
+            height: 18px;
+            .event-badge{
+                position: absolute;
+                top: -10px;
+                right: -15px;
+                font-weight: 300;
+                font-size: 8px;
+            }
         }
     }
     .site-img-wrapper{
@@ -2268,16 +2278,18 @@ header.bg-warning{
 .event-list>li {
     margin: 6px 0;
     background-color: @color-bg-regular;
-    border: #ededed 1px solid;
     padding-bottom: 4px;
 }
 .event-list>li .event-title {
-    color: #333;
+    color: @color-text-secondary;
     font-size: 12px;
-    border-bottom: #EDEDED 1px solid;
+    border-bottom: @color-border-light 1px solid;
     padding-bottom: 4px;
     margin-top: -4px;
     position: relative;
+    .device-name{
+        color: @color-text-secondary;
+    }
 }
 .event-list>li .event-title.status-cleared:before {
     content: '';
@@ -2300,7 +2312,7 @@ header.bg-warning{
     background-color: #6CAAD8;
 }
 .event-list .info {
-    color: #464662;
+    color: @color-text-regular;
     font-size: 15px;
     margin: 6px 0 1px 0;
     font-weight: 500;
@@ -2318,17 +2330,17 @@ header.bg-warning{
 }
 .event-list .close {
     float: right;
-    color: #6CAAD8;
+    color: @color-primary;
     padding: 2px;
 }
 .event-list .closed-time {
-    color: #97969B;
+    color: @color-text-placeholder;
     font-size: 10px;
     line-height: 10px;
     margin-bottom: 4px;
 }
 .event-list .status-name {
-    color: #97969B;
+    color: @color-text-placeholder;
     padding: 2px;
     font-size: 13px;
 }
@@ -3291,7 +3303,7 @@ header .mui-title .dropdown-arrow:after {
 .apps-selector .mui-grid-view.mui-grid-9 .mui-table-view-cell>a:not(.mui-btn) {
     margin: 0 4px;
     padding: 4px 0;
-    background-color: rgba(236, 236, 236, 0.55);
+    background-color: fade(@color-bg-primary, 50);
     position: relative;
 }
 .apps-selector .app .btn-editor {
@@ -3988,4 +4000,15 @@ table.dataTable tbody th, table.dataTable tbody td {
         text-align: right;
         padding-right: 4px;
     }
+}
+
+// 停电维护>电房及设备停电维护作业表页 列表项
+.poweroff-list-item{
+    margin: 0px 16px;
+    padding: 12px 0 4px 0;
+    border-top: 1px solid @color-border-base;
+}
+// 所有应用页
+.app-grid-bg.mui-grid-view.mui-table-view{
+    background: fade(@color-bg-primary, 30);
 }
