@@ -270,6 +270,8 @@
   "tip.number.validate": "please enter number",
   "tip.nopicture": "no picture",
   "tip.thereisno": "There is no",
+  "tip.novar.ofdevice": "No variables of this device",
+  "tip.nogroupvar.ofdevice": "No standard variables",
 
   "app.my": "My Apps",
   "app.edit": "Edit",

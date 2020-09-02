@@ -1063,7 +1063,7 @@ app.controller('VarRealtimeCtrl', ['$scope', 'ajax', '$myTranslate', function ($
             $scope.realtimeType = realtimeItem.name;
             getRealTimeData();
             if (null === interval) {
-                interval = setInterval(getRealTimeData, 5000);
+                // interval = setInterval(getRealTimeData, 5000);
             }
         } else {
             $scope.isLoading = false;
@@ -1230,7 +1230,6 @@ app.controller('HistoryVarCtrl', ['$scope', 'ajax', '$myTranslate', function ($s
                 textStyle: {
                     fontSize: 14,
                     fontWeight: 'normal',
-                    fontColor:  $colorEchartAxisTitleText,
                 }
             },
             grid: {
@@ -1261,11 +1260,11 @@ app.controller('HistoryVarCtrl', ['$scope', 'ajax', '$myTranslate', function ($s
                 data: xAxis,
                 axisLabel: {
                     fontSize: 11,
-                    color: $colorEchartAxisLabel
+                    // color: $colorEchartAxisLabel
                 },
                 axisLine: {
                     lineStyle: {
-                        color: $colorEchartAxisLine
+                        // color: $colorEchartAxisLine
                     }
                 }
             },
@@ -1273,28 +1272,28 @@ app.controller('HistoryVarCtrl', ['$scope', 'ajax', '$myTranslate', function ($s
                 name: currentGroup.unit,
                 nameGap: 0,
                 nameTextStyle: {
-                    color: $colorEchartAxisLabel
+                    // color: $colorEchartAxisLabel
                 },
                 type: 'value',
                 axisLabel: {
                     fontSize: 11,
-                    color: $colorEchartAxisLabel
+                    // color: $colorEchartAxisLabel
                 },
                 axisLine: {
                     lineStyle: {
-                        color: $colorEchartAxisLine
+                        // color: $colorEchartAxisLine
                     }
                 },
                 splitLine: {
                     lineStyle: {
-                        color: $colorEchartAxisLine
+                        // color: $colorEchartAxisLine
                     }
                 }
             },
             series: series,
         };
         echarts.dispose(document.getElementById('chartContainer'));
-        echarts.init(document.getElementById('chartContainer')).setOption(option);
+        echarts.init(document.getElementById('chartContainer'), 'custom').setOption(option);
     }
 }]);
 

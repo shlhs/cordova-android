@@ -926,7 +926,7 @@ app.controller('KanbanCtrl', ['$scope', '$stateParams', 'ajax', '$timeout', func
             <div class="chart" id="' + id + '"></div>\
             </div>\
             </div>').prependTo($("#chartSlider"));
-        echarts.init(document.getElementById(id)).setOption(config);
+        echarts.init(document.getElementById(id), 'custom').setOption(config);
         chartCount += 1;
         paintSuccess();
     }
@@ -1125,7 +1125,7 @@ app.controller('SiteOverviewCtrl', ['$scope', 'ajax', 'varDataService', '$myTran
                 name: $myTranslate.instant('today')
             }]
         };
-        echarts.init(document.getElementById('loadChart')).setOption(option);
+        echarts.init(document.getElementById('loadChart'), 'custom').setOption(option);
     }
     var g_pvf_label = {
         p: $myTranslate.instant('峰'),
@@ -1198,7 +1198,7 @@ app.controller('SiteOverviewCtrl', ['$scope', 'ajax', 'varDataService', '$myTran
             },
             series: series
         };
-        echarts.init(document.getElementById('electricChart')).setOption(option);
+        echarts.init(document.getElementById('electricChart'), 'custom').setOption(option);
     }
 
     function sum(datalist) {
@@ -1262,6 +1262,6 @@ app.controller('SiteOverviewCtrl', ['$scope', 'ajax', 'varDataService', '$myTran
                 },
             ],
         };
-        echarts.init(document.getElementById('electricPie')).setOption(option);
+        echarts.init(document.getElementById('electricPie'), 'custom').setOption(option);
     }
 }]);

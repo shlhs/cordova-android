@@ -271,6 +271,8 @@
   "tip.number.validate": "请输入数字",
   "tip.nopicture": "暂无图片",
   "tip.thereisno": "当前未配置",
+  "tip.novar.ofdevice": "该设备未配置任何变量",
+  "tip.nogroupvar.ofdevice": "变量未关联标准定义",
 
   "app.my": "我的应用",
   "app.edit": "编辑",
