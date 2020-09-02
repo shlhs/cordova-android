@@ -32,23 +32,6 @@
             padding: 0;
             margin: 0;
         }
-        table{
-            width: 100%;
-        }
-        th,td{
-            text-align: left;
-            height: 40px;
-            border-bottom: #eee 1px solid;
-            font-size: 14px;
-        }
-        .mui-table-view.mui-grid-view .mui-table-view-cell .mui-media-body{
-            font-size: 0.8em;
-        }
-        tbody tr:nth-child(odd) {background: rgba(246, 246, 246, 0.6)}
-        tbody tr:nth-child(even) {background: #FFF}
-        td, th{
-            padding-left: 16px;
-        }
         .mui-btn{
             margin-right:6px;
         }
@@ -67,7 +50,7 @@
     <a href="/templates/site/device-monitor/remote-control.html?device_sn={{deviceSn}}"
        class="mui-action-menu mui-icon mui-pull-right" style="color: #fff;font-size: 14px;line-height: 24px;" ng-if="canControl">{{'device.control.center' | translate}}</a>
 </header>
-<div class="body-content" ng-cloak style="background-color: #fff;">
+<div class="body-content bg-white" ng-cloak>
     <div class="cascade-selector" style="top: 60px;" ng-class="{'collapse': collapse[0] || collapse[1]}">
         <div class="selector-mask"  ng-if="collapse[0] || collapse[1]" ng-click="toggleCollapse(-1)" style="top: 105px;"></div>
         <div class="selector separator" style="width: 50%" ng-class="{'collapse': collapse[0]}">
@@ -82,7 +65,7 @@
             </ul>
         </div>
         <div class="selector" style="width: 50%" ng-class="{'collapse': collapse[1]}">
-            <div ng-click="toggleCollapse(1)"><label class="result-label" ng-class="{'nodata': !dataName}">{{dataName ? dataName : '无数据'}}</label></div>
+            <div ng-click="toggleCollapse(1)"><label class="result-label" ng-class="{'nodata': !dataName}">{{dataName ? dataName : ('none data' | myTranslate)}}</label></div>
 
             <ul class="option-wrapper option-horizontal">
                 <li ng-repeat="item in secondOptions[showType]" ng-class="{'selected': dataName===item.name}"
@@ -93,21 +76,21 @@
     <div style="margin-top: 45px;" ng-show="showType===historyLabel" ng-controller="HistoryVarCtrl">
         <ul class="calendar-tabs" ng-if="currentGroup">
             <li class="tab" ng-class="{'active': timeRange==='DAY'}" ng-click="switchTimeRange('DAY')">
-                <label><i class="icon icon-tab-clock"></i>{{ 'today' | translate }}</label>
+                <label><i class="iconfont anticon-thisday" style="margin-right: 4px;"></i>{{ 'today' | translate }}</label>
             </li>
             <li class="tab" ng-class="{'active': timeRange==='MONTH'}" ng-click="switchTimeRange('MONTH')">
-                <label><i class="icon icon-tab-calendar"></i>{{ 'thismonth' | translate }}</label>
+                <label><i class="iconfont anticon-thismonth" style="margin-right: 4px;"></i>{{ 'thismonth' | translate }}</label>
             </li>
         </ul>
-        <div class="mui-scroll" style="background-color: #ffffff;">
-            <div class="card">
+        <div class="mui-scroll">
+            <div class="card bg-white" ng-if="currentGroup">
                 <div id="chartContainer" style="height: 320px;"></div>
-                <div class="page-alert-wrapper" ng-if="!currentGroup">
+            </div>
+            <div class="page-alert-wrapper" ng-if="!currentGroup">
+                <div class="page-alert">
                     <div class="page-alert">
-                        <div class="page-alert">
-                            <i class="alert-icon nodata"></i>
-                            <div class="alert-text info">变量未关联标准定义</div>
-                        </div>
+                        <i class="alert-icon nodata"></i>
+                        <div class="alert-text info">{{'tip.nogroupvar.ofdevice' | translate}}</div>
                     </div>
                 </div>
             </div>
@@ -115,20 +98,20 @@
     </div>
     <div class="scroll-wrapper" ng-show="showType===realtimeLabel" style="margin-top:45px;" ng-controller="VarRealtimeCtrl">
 
-        <div class="mui-scroll" style="background-color: #ffffff;" ng-if="realtime && !isLoading">
+        <div class="mui-scroll" ng-if="realtime && !isLoading">
             <div ng-if="realtimeType===analogLabel">
-                <table>
+                <table class="device-analog-table">
                     <tbody>
                     <tr ng-repeat="item in realtimeValues">
                         <td>{{item.name}}</td>
-                        <td style="text-align: right;color: #3e7fdb;">{{item.data}}</td>
-                        <td style="padding-left: 4px;">{{item.unit}}</td>
+                        <td class="value">{{item.data}}</td>
+                        <td>{{item.unit}}</td>
                     </tr>
                     </tbody>
                 </table>
             </div>
             <div ng-if="realtimeType === digitalLabel" class=" height-wrap-parent" data-init="false">
-                <table>
+                <table class="device-analog-table">
                     <tbody>
                     <tr ng-repeat="item in realtimeValues">
                         <td>{{item.name}}</td>
@@ -138,9 +121,14 @@
                 </table>
             </div>
         </div>
-        <div class="page-alert-wrapper" ng-if="!isLoading && !realtime">
+        <div class="page-alert-wrapper" ng-if="!isLoading && !realtime" style="margin-top: -60px;">
             <div class="page-alert">
-                <div class="alert-text info">该设备未配置任何变量</div>
+                <div class="page-alert">
+                    <div class="page-alert">
+                        <i class="alert-icon nodata"></i>
+                        <div class="alert-text info">{{'tip.novar.ofdevice' | translate}}</div>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="page-alert-wrapper" ng-if="isLoading">
@@ -153,8 +141,8 @@
 </div>
 <script src="../../components/fastclick-master/lib/fastclick.js"></script>
 <script src="../../js/my/notify.js"></script>
-<script type="text/javascript" src="../js/controller/themeConst.js"></script>
 <script type="text/javascript" src="../../js/controller/device.js"></script>
 <script src="../../components/echart/echarts.min-3.x.js"></script>
+<script type="text/javascript" src="../../theme/echarts/index.js"></script>
 </body>
 </html>

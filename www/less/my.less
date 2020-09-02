@@ -1,5 +1,5 @@
 @import './theme/index.less';
-
+@import "./iconfont/iconfont.css";
 
 html,body{
     width: 100%;
@@ -112,35 +112,64 @@ div {
 .mui-table-view.mui-grid-view .mui-table-view-cell .mui-media-body {
     color: @color-text-primary;
 }
+.mui-checkbox input[type=checkbox]:checked:before, .mui-radio input[type=radio]:checked:before {
+    color: @color-primary;
+}
 /* mui重写 end */
+
+
+::-webkit-input-placeholder {
+    color: @color-text-placeholder !important;
+}
+:-ms-input-placeholder { // IE10+
+    color: @color-text-placeholder !important;;
+}
+:-moz-placeholder { // Firefox4-18
+    color: @color-text-placeholder !important;;
+}
+::-moz-placeholder { // Firefox19+
+    color: @color-text-placeholder !important;;
+}
 .font-14{
     font-size: 14px;
 }
 .red {
-    color: @red;
+    color: @red !important;;
 }
 .text-primary {
-    color: @color-text-primary;
+    color: @color-text-primary !important;;
 }
 .text-secondary {
-    color: @color-text-secondary;
+    color: @color-text-secondary !important;;
 }
 .text-link {
-    color: @color-text-link;
+    color: @color-text-link !important;;
 }
 .color-success {
-    color: @color-success;
+    color: @color-success !important;
 }
 .color-warning {
-    color: @color-warning;
+    color: @color-warning !important;;
 }
 .color-danger {
-    color: @color-danger;
+    color: @color-danger !important;;
+
 }
 .page{
     height: 100%;
     z-index: 1;
     background-color: @color-bg-primary;
+    //position: absolute;
+    //top: 0;
+    //width: 100%;
+
+    header {
+        background: @page-header-bg-color;
+        box-shadow: none;
+    }
+    .body-content {
+        background-color: @color-bg-primary;
+    }
 }
 .page-left.ng-enter {
     -webkit-animation: slideInRight 0.5s;
@@ -927,23 +956,38 @@ background-image: url("../img/light/64X64/profile.png");
 .page-alert .alert-icon{
     width: 64px;
     height: 64px;
-    display: inline-block;
+    display: block;
     background-size: cover;
     background-repeat: no-repeat;
     padding-top: 35%;
+    font-style: normal;
+    font-size: 60px;
+    color: @color-text-secondary;
+    margin-bottom: 12px;
 }
 .page-alert .alert-icon.nodata-info{
-    background-image: url(../img/nodata-info.png);
+    font-family: "iconfont" !important;
+    &:before {
+        content: "\a643";
+    }
 }
 .page-alert .alert-icon.no-task{
     background-image: url(../img/no-task.png);
     width: 100px;
 }
 .page-alert .alert-icon.nodata {
-    background-image: url(../img/nodata.png);
+    font-family: "iconfont" !important;
+    &:before {
+        content: "\a642";
+    }
 }
 .page-alert .alert-icon.warning {
-    background-image: url(../img/loading-error.png);
+    //background-image: url(../img/loading-error.png);
+    font-family: "iconfont" !important;
+
+    &:before {
+        content: "\a641";
+    }
 }
 .page-alert .loading-img{
     width: 25px;
@@ -961,9 +1005,9 @@ background-image: url("../img/light/64X64/profile.png");
     height: 29px;
     text-align: center;
     line-height: 29px;
-    border: rgba(153, 153, 153, 0.66) 1px solid;
+    border: @color-text-secondary 1px solid;
     border-radius: 2px;
-    color: rgb(153,153,153);
+    color: @color-text-secondary;
     margin-top: 10px;
     font-weight: 300;
 }
@@ -1827,18 +1871,6 @@ header.bg-warning{
 .check-box-item .mui-checkbox input[type=checkbox]:before, .check-box-item .mui-radio input[type=radio]:before {
     font-size: 18px;
 }
-.info-group input::-webkit-input-placeholder, .info-group textarea::-webkit-input-placeholder, .info-group select::-webkit-input-placeholder {
-    color: @color-text-placeholder;
-}
-.info-group input:-ms-input-placeholder, .info-group textarea::-webkit-input-placeholder, .info-group select::-webkit-input-placeholder { // IE10+
-    color: @color-text-placeholder;
-}
-.info-group input:-moz-placeholder, .info-group textarea::-webkit-input-placeholder, .info-group select::-webkit-input-placeholder { // Firefox4-18
-    color: @color-text-placeholder;
-}
-.info-group input::-moz-placeholder, .info-group textarea::-webkit-input-placeholder, .info-group select::-webkit-input-placeholder { // Firefox19+
-    color: @color-text-placeholder;
-}
 
 .device-card{
     margin:6px 0 0 0;
@@ -2223,6 +2255,9 @@ header.bg-warning{
 .mui-table-view-cell:after {
     background-color: @color-divider;
 }
+.write-var-list .mui-table-view-cell:after {
+    background-color: transparent;
+}
 .event-list {
     background-color: transparent;
     position: relative;
@@ -2344,7 +2379,7 @@ header.bg-warning{
     right: -20px;
 }
 .cascade-selector .option-wrapper {
-    background-color: rgb(245,245,245);
+    background-color: @mui-picker-body;
     width: 100%;
     list-style: none;
     position: absolute;
@@ -2375,13 +2410,11 @@ header.bg-warning{
     width: 100%;
     padding-left: 30px;
     font-size: 14px;
-    color: rgb(51,51,51);
     text-align: left;
-    font-weight: 300;
     cursor: pointer;
 }
 .option-vertical>li.selected {
-    color: rgb(88,107,243);
+    color: @color-primary;
     position: relative;
     font-family: Muiicons;
 }
@@ -2400,9 +2433,9 @@ header.bg-warning{
     clear: both;
 }
 .option-horizontal>li {
-    color: rgb(121,121,121);
-    border: rgba(195,195,195, 0.7) 1px solid;
-    background-color: rgb(255,255,255);
+    color: @color-text-primary;
+    border: fade(@mui-picker-body-btn-bg, 70) 1px solid;
+    background-color: @mui-picker-body-btn-bg;
     border-radius: 4px;
     min-width: 75px;
     text-align: center;
@@ -2413,16 +2446,15 @@ header.bg-warning{
     font-size: 14px;
     height: 28px;
     line-height: 26px;
-    font-weight: 300;
     padding: 0 6px;
 }
 .option-horizontal>li.selected {
-    background-color: rgb(88,107,243);
+    background-color: @color-primary;
     color: @color-text-reverse;
     border: none;
 }
 .selector.collapse .result-label {
-    color: rgb(88,107,243);
+    color: @color-primary;
 }
 .selector.collapse label.result-label:after {
     content: '\e580';
@@ -2431,7 +2463,7 @@ header.bg-warning{
     display: block;
 }
 .selector label.nodata {
-    color: #7d8491;
+    color: @color-text-disabled;
 }
 .selector label.nodata:after {
     display: none;
@@ -2465,13 +2497,12 @@ header.bg-warning{
 .calendar-tabs>.tab {
     width: 50%;
     text-align: center;
-    color: rgb(195,195,195);
     font-size: 14px;
-    font-weight: 300;
+    font-weight: 400;
     line-height: 45px;
 }
 .calendar-tabs>.tab.active {
-    color: rgb(88,107,243);
+    color: @color-primary;
     position: relative;
 }
 .calendar-tabs>.tab.active:after {
@@ -2480,7 +2511,7 @@ header.bg-warning{
     height: 2px;
     width: 50%;
     left: 25%;
-    background-color: rgb(88,107,243);
+    background-color: @color-primary;
     bottom: 0;
 }
 .calendar-tabs>.tab label {
@@ -2580,7 +2611,7 @@ header.bg-warning{
     border-bottom: rgba(230,230,230,0.5) 1px solid;
     border-right: #fff 1px solid;
     margin-right: -1px;
-    color: rgb(88,107,243);
+    color: @color-primary;
     margin-top: -1px;
 }
 /*
@@ -2640,24 +2671,24 @@ header.bg-warning{
     font-size: 14px;
 }
 .properties-group li {
-    background-color: #f4f4f4;
+    background-color: @color-bg-regular;
     margin-bottom: 2px;
     padding: 6px 10px;
 }
 .properties-group li .title {
-    color: #0091E0;
+    color: @color-primary;
     position: absolute;
 }
 .properties-group li .value {
     float: right;
-    color: #666666;
+    color: @color-text-regular;
     min-height: 22px;
 }
 .properties-group.is-edit li {
     position: relative;
     margin-right: 22px;
 }
-.properties-group.is-edit li .icon-delete {
+.properties-group.is-edit li .anticon-minus-circle {
     position: absolute;
     right: -32px;
     top: 4px;
@@ -2676,9 +2707,9 @@ header.bg-warning{
     bottom: 24px;
     width: 48px;
     height: 48px;
-    background-color: #586BF3;
+    background-color: @color-primary;
     border-radius: 50%;
-    box-shadow: 0 4px 4px #b4bcf5;
+    box-shadow: 0 4px 4px fade(@color-primary, 30);
     cursor: pointer;
     text-align: center;
 }
@@ -2709,7 +2740,6 @@ header.bg-warning{
     line-height: 44px;
     padding-left: 12px;
     font-size: 14px;
-    color: rgb(51,51,51);
     border-bottom: rgba(220, 220, 220, 0.51) 1px solid;
 }
 .device-detail-title.is-edit {
@@ -2744,7 +2774,7 @@ header.bg-warning{
     height: 40px;
 }
 .site-search-comp .search-wrapper {
-    background-color: @color-bg-regular;
+    background-color: @input-bgl;
     border-radius: 2px;
     height: 40px;
     position: relative;
@@ -2759,18 +2789,15 @@ header.bg-warning{
     line-height: 40px;
     padding-left: 36px;
     font-size: 15px;
-    color: rgb(133,133,135);
+    color: @color-text-regular;
 }
 .search-wrapper .icon {
-    width: 18px;
-    height: 18px;
     position: absolute;
-    top: 11px;
-    left: 10px;
+    margin-left: 8px;
 }
 .site-tree .tree-group {
     list-style: none;
-    background-color: @color-bg-regular;
+    //background-color: @color-bg-regular;
 }
 .site-tree .node-group {
     width: 18px;
@@ -2950,12 +2977,12 @@ header.bg-warning{
     border-radius: 20px;
     font-size: 14px;
     padding: 8px;
-    border: #0091E0 dashed 1px;
-    color: #0091E0;
+    //border: @color-primary dashed 1px;
+    color: #FFF;
     cursor: pointer;
 }
 .add-item-btn:active,.add-item-btn:focus,.add-item-btn:enabled:active {
-    background-color: #0091E0;
+    background-color: fade(@color-primary, 80);
     color: @color-text-reverse;
     border: none;
 }
@@ -2980,7 +3007,7 @@ header.bg-warning{
     text-align: left;
 }
 .form-group label {
-    color: #7A7A7A;
+    color: @color-text-regular;
     margin-bottom: 4px;
     display: block;
     font-size: 14px;
@@ -2990,11 +3017,11 @@ header.bg-warning{
     width: 100%;
     line-height: 32px;
     padding: 4px 0;
-    background-color: @color-bg-regular;
-    border: #efefef 1px solid;
+    background-color: @input-bg;
+    border: @input-bg 1px solid;
     margin-bottom: 8px;
     padding-left: 8px;
-    color: #5f5f5f;
+    color: @color-text-primary;
 }
 .device-img-wrapper {
     box-sizing: border-box;
@@ -3013,7 +3040,7 @@ header.bg-warning{
 }
 .device-img-wrapper .img {
     height: 100%;
-    background-color: #F4F4F4;
+    background-color: @color-bg-regular;
     margin-right: 4px;
     display: -webkit-box;
     -webkit-box-orient: vertical;
@@ -3427,7 +3454,6 @@ header .mui-title .dropdown-arrow:after {
 .write-var-list .value {
     float: right;
     margin-right: 40px;
-    color: #888;
 }
 .write-var-list .edit {
     position: absolute;
@@ -3467,7 +3493,6 @@ header .mui-title .dropdown-arrow:after {
     padding-left: 4px;
     width: ~'calc(100% - 40px)';
     display: inline-block;
-    color: #333;
 }
 .ipc-list>li .status {
     float: right;
@@ -3475,10 +3500,10 @@ header .mui-title .dropdown-arrow:after {
     margin-right: 4px;
 }
 .ipc-list>li .status.online {
-    color: #39C78A;
+    color: @color-success;
 }
 .ipc-list>li .status.offline {
-    color: #ccc
+    color: @color-text-disabled
 }
 .ipc-wrapper {
     position: relative;
@@ -3548,9 +3573,9 @@ header .mui-title .dropdown-arrow:after {
     bottom: 24px;
     width: 48px;
     height: 48px;
-    background-color: #586BF3;
+    background-color: @color-primary;
     border-radius: 50%;
-    box-shadow: 0 4px 4px #b4bcf5;
+    box-shadow: 0 4px 4px fade(@color-primary, 30);
     cursor: pointer;
     text-align: center;
     font-size: 28px;
@@ -3567,9 +3592,9 @@ header .mui-title .dropdown-arrow:after {
     bottom: 82px;
     width: 30px;
     height: 30px;
-    background-color: @color-bg-regular;
+    background-color: fade(@color-bg-regular, 70);
     border-radius: 50%;
-    box-shadow: 0 0px 12px #e4e6f9;
+    box-shadow: 0 0px 12px fade(@color-bg-regular, 30);
     cursor: pointer;
     text-align: center;
     font-size: 28px;
@@ -3610,11 +3635,9 @@ header .mui-title .dropdown-arrow:after {
     background-color: @color-bg-regular !important;
 }
 .mui-switch.no-color:before {
-    color: #999;
     right: 10px;
 }
 .mui-switch.mui-active.no-color:before {
-    color: #999;
     left: 10px;
 }
 table.dataTable thead th, table.dataTable thead td {
@@ -3936,4 +3959,30 @@ table.dataTable tbody th, table.dataTable tbody td {
     display: flex;
     flex-direction: row;
     justify-content: center;
+}
+.device-analog-table {
+    width: 100%;
+    th,td{
+        text-align: left;
+        height: 40px;
+        border-bottom: @color-divider 1px solid;
+        font-size: 14px;
+    }
+    .mui-table-view.mui-grid-view .mui-table-view-cell .mui-media-body{
+        font-size: 0.8em;
+    }
+    tbody tr:nth-child(odd) {
+        background: @color-bg-regular;
+    }
+    tbody tr:nth-child(even) {
+        background: fade(@color-bg-regular, 20);
+    }
+    tr td:first-child {
+        padding-left: 16px;
+    }
+    .value {
+        color: @color-primary;
+        text-align: right;
+        padding-right: 4px;
+    }
 }

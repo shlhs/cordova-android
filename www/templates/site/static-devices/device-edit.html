@@ -1,10 +1,10 @@
 <div class="page page-fade" ng-controller="StaticDeviceEditCtrl" id="staticDeviceEditPage">
-    <header class="mui-bar bg-header" style="box-shadow: none;background: #fff;">
-        <a class="mui-icon text-white" onclick="history.back()" style="color: #9a9a9a;font-size: 16px;margin-top: 6px;margin-left: 6px;">{{'cancel' | translate}}</a>
-        <h1 class="mui-title" style="color: #444;">{{'device edit' | myTranslate}}</h1>
-        <a class="mui-action-menu mui-icon mui-pull-right" style="font-size: 16px;line-height: 28px;color: #222;margin-right: 6px;" ng-click="save()">{{'save' | translate}}</a>
+    <header class="mui-bar bg-header" style="box-shadow: none;">
+        <a class="mui-icon text-white" onclick="history.back()" style="font-size: 16px;margin-top: 6px;margin-left: 6px;">{{'cancel' | translate}}</a>
+        <h1 class="mui-title">{{'device edit' | myTranslate}}</h1>
+        <a class="mui-action-menu mui-icon mui-pull-right" style="font-size: 16px;line-height: 28px;margin-right: 6px;" ng-click="save()">{{'save' | translate}}</a>
     </header>
-    <div class="body-content" ng-cloak style="background-color: #fff;padding-bottom: 60px;top: 60px;">
+    <div class="body-content" ng-cloak style="padding-bottom: 60px;top: 60px;">
         <div style="height: 80px">
             <image-uploader images="deviceImages" single="true" style="margin-left: 35%;"></image-uploader>
         </div>
@@ -63,15 +63,15 @@
                 <li ng-repeat="p in device.properties" ng-click="onClickEditProperty(device.properties, $index)">
                     <label class="title">{{p.name}}</label>
                     <span class="value">{{p.value}}{{p.unit}}</span>
-                    <a class="icon icon-delete" ng-click="onClickDeleteProperty($event, device.properties, $index)"></a>
+                    <a class="iconfont anticon-minus-circle color-danger" ng-click="onClickDeleteProperty($event, device.properties, $index)"></a>
                 </li>
             </div>
         </div>
-        <div class="card no-padding sub-device-card" ng-repeat="item in device.items">
+        <div class="card no-padding sub-device-card" ng-repeat="item in device.items" style="margin-top: 24px;">
             <div class="card-header device-detail-title is-edit">
                 <label ng-click="onClickEditItem(device.items, $index)">
                     {{item.name}}
-                    <a class="icon icon-delete" ng-click="onClickDeleteItem($event, device.items, $index)"></a>
+                    <a class="iconfont anticon-minus-circle color-danger" ng-click="onClickDeleteItem($event, device.items, $index)"></a>
                 </label>
                 <a class="add-property-btn" ng-click="onClickAddProperty(item.properties)">{{'add property' | myTranslate}}</a>
             </div>
@@ -80,7 +80,7 @@
                     <li ng-repeat="p in item.properties" ng-click="onClickEditProperty(item.properties, $index)">
                         <label class="title">{{p.name}}</label>
                         <span class="value">{{p.value}}{{p.unit}}</span>
-                        <a class="icon icon-delete" ng-click="onClickDeleteProperty($event, item.properties, $index)"></a>
+                        <a class="iconfont anticon-minus-circle color-danger" ng-click="onClickDeleteProperty($event, item.properties, $index)"></a>
                     </li>
                 </div>
                 <div class="card" ng-repeat="sub in item.contains">
@@ -93,8 +93,8 @@
                 </div>
             </div>
         </div>
-        <div style="margin-top: 10px">
-            <button class="mui-btn mui-btn-primary mui-btn-outlined add-item-btn" ng-click="onClickAddItem(device.items)">{{'add staticdevice.param.component' | myTranslate}}</button>
+        <div style="margin-top: 36px; padding: 0 12px;">
+            <button class="mui-btn mui-btn-primary mui-btn-block add-item-btn" ng-click="onClickAddItem(device.items)">{{'add staticdevice.param.component' | myTranslate}}</button>
         </div>
     </div>
 </div>

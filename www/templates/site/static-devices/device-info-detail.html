@@ -1,4 +1,4 @@
-<div ng-cloak style="background-color: #fff;padding-bottom: 40px;padding-top: 10px;height: 100%;">
+<div ng-cloak style="padding-bottom: 40px;padding-top: 10px;height: 100%;">
     <a ng-if="device.showMap" style="padding: 0 0 8px 10px; font-size: 14px;" href="javascript:void(0);" ng-click="openDeviceMap()">
         <i class="icon icon-16 icon-location"></i> 查看位置
     </a>
@@ -62,7 +62,7 @@
             <span class="value">{{p.value}}{{p.unit}}</span>
         </li>
     </div>
-    <div class="card no-padding sub-device-card" ng-repeat="item in device.items">
+    <div class="card no-padding sub-device-card" ng-repeat="item in device.items" style="margin-top: 12px;">
         <div class="card-header device-detail-title">{{item.name}}</div>
         <div class="card-content">
             <div class="info-group properties-group">
