@@ -12,7 +12,7 @@ function onVideoPause(ipcId) {       // 暂停视频播放
     }
 }
 
-app.controller('VideoMonitorCtrl', ['$scope', '$timeout', '$sce', 'platformService', 'ajax', 'routerService', function ($scope, $timeout, $sce, platformService, ajax, routerService) {
+app.controller('VideoMonitorCtrl', ['$scope', '$timeout', '$sce', 'platformService', 'ajax', 'routerService', '$myTranslate', function ($scope, $timeout, $sce, platformService, ajax, routerService, $myTranslate) {
     $scope.sn = GetQueryString("sn");
     $scope.ipcs = [];
     $scope.isLoading = true;
@@ -35,10 +35,10 @@ app.controller('VideoMonitorCtrl', ['$scope', '$timeout', '$sce', 'platformServi
                 $scope.isLoading = false;
                 data.forEach(function (ipc) {
                     if (ipc.status === '0') {
-                        ipc.statusName = '在线';
+                        ipc.statusName = $myTranslate.instant('online');
                         ipc.online = true;
                     } else if (ipc.status) {
-                        ipc.statusName = '不在线';
+                        ipc.statusName = $myTranslate.instant('offline');
                         ipc.online = false;
                     } else {
                         ipc.statusName = '';
@@ -65,7 +65,7 @@ app.controller('VideoMonitorCtrl', ['$scope', '$timeout', '$sce', 'platformServi
             error: function () {
                 $scope.loadingFailed = true;
                 $scope.isLoading = false;
-                $.notify.error('获取摄像头列表失败');
+                $.notify.error($myTranslate.instant('video.geterror'));
                 $scope.$apply();
             }
         });
@@ -116,7 +116,7 @@ app.controller('VideoMonitorCtrl', ['$scope', '$timeout', '$sce', 'platformServi
     $timeout($scope.getIpcList, 500);
 }]);
 
-app.controller('VideoMonitorSnapConfirmCtrl', ['$scope', 'platformService', 'ajax', function ($scope, platformService, ajax) {
+app.controller('VideoMonitorSnapConfirmCtrl', ['$scope', 'platformService', 'ajax', '$myTranslate', function ($scope, platformService, ajax, $myTranslate) {
     var newValue = '';
 
     $scope.onInputValidate = function (value) {
@@ -134,7 +134,7 @@ app.controller('VideoMonitorSnapConfirmCtrl', ['$scope', 'platformService', 'aja
                 $scope.onSuccess();
             },
             error: function () {
-                $.notify.error('远程巡检失败');
+                $.notify.error($myTranslate.instant('video.error.capture'));
             }
         })
     };
@@ -144,7 +144,7 @@ app.controller('VideoMonitorSnapConfirmCtrl', ['$scope', 'platformService', 'aja
     }
 }]);
 
-app.controller('IpcRecordHistoryCtrl', ['$scope', 'platformService', '$timeout', 'ajax', 'routerService', function ($scope, platformService, $timeout, ajax, routerService) {
+app.controller('IpcRecordHistoryCtrl', ['$scope', 'platformService', '$timeout', 'ajax', 'routerService', '$myTranslate', function ($scope, platformService, $timeout, ajax, routerService, $myTranslate) {
     // $scope.sn = GetQueryString("sn");
     $scope.records = [];
     $scope.isLoading = true;
@@ -178,7 +178,7 @@ app.controller('IpcRecordHistoryCtrl', ['$scope', 'platformService', '$timeout',
                 startRefreshInterval();
             },
             error: function () {
-                $.notify.error('获取巡检记录失败');
+                $.notify.error($myTranslate.instant('get video.snapshots failed'));
                 $scope.isLoading = false;
                 $scope.$apply();
             }

@@ -2,8 +2,8 @@
 <div class="page page-left" ng-controller="MaintenanceChecklistCtrl">
     <header class="mui-bar bg-header">
         <a class="mui-icon mui-icon-left-nav text-white btn-back" ng-click="pageBack()"></a>
-        <h1 class="mui-title">电房及设备停电维护作业表</h1>
-        <a class="mui-action-menu mui-icon mui-pull-right" style="font-size: 16px;line-height: 28px;color: #fff;" ng-click="save()" ng-if="canEdit">保存</a>
+        <h1 class="mui-title">{{'ops.poweroff.report.name' | translate}}</h1>
+        <a class="mui-action-menu mui-icon mui-pull-right" style="font-size: 16px;line-height: 28px;color: #fff;" ng-click="save()" ng-if="canEdit">{{'save' | translate}}</a>
     </header>
     <div class="mui-content" ng-cloak style="display: -webkit-box;-webkit-box-align: stretch;">
         <div class="left-panel" style="background-color: #FFFFFF;width: 35%;box-shadow: 0 0 2px #ccc;">
