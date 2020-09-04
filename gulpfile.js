@@ -67,7 +67,8 @@ gulp.task('reset:css', ['theme'], async function () {
 
 // less转css
 gulp.task('less', async function () {
-    gulp.src(`${root}/less/iconfont/**`).pipe(gulp.dest(`${root}/css/iconfont`))
+    gulp.src(`${root}/less/iconfont/**`).pipe(gulp.dest(`${root}/css/iconfont`));
+    gulp.src(`${root}/less/*.css`).pipe(gulp.dest(`${root}/css`));
 
     await gulp.src([`${root}/less/**/*.less`, `!${root}/less/theme/*.less`])
         .pipe(less())

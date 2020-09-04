@@ -17,9 +17,14 @@ app.controller('StaticDevicesHomeCtrl', ['$scope', 'ajax', 'routerService', func
     $scope.deviceDatas = [];
     $scope.isLoading = false;
     $scope.loadingFailed = false;
+    var stationPosition = null;
 
     $scope.gotoDevice = function(deviceData){
-        routerService.openPage($scope, '/templates/site/static-devices/device-detail.html', {device_sn: deviceData.sn});
+        routerService.openPage($scope, '/templates/site/static-devices/device-detail.html', {
+            stationSn: stationSn,
+            device_sn: deviceData.sn,
+            stationPosition: stationPosition,
+        });
     };
 
     $scope.getDataList = function() {
@@ -29,8 +34,6 @@ app.controller('StaticDevicesHomeCtrl', ['$scope', 'ajax', 'routerService', func
             url: '/stations/' + stationSn + '/staticdevices',
             success: function (data) {
                 $scope.isLoading = false;
-                // $scope.treeData = formatToTreeData(data);
-                // setDefaultData();
                 $scope.deviceDatas = data;
                 $scope.$apply();
             }, error: function () {
@@ -38,7 +41,19 @@ app.controller('StaticDevicesHomeCtrl', ['$scope', 'ajax', 'routerService', func
                 $scope.loadingFailed = true;
                 $scope.$apply();
             }
-        })
+        });
+
+        ajax.get({
+            url: '/stations/' + stationSn,
+            success: function (data) {
+                if (data.longitude && data.latitude) {
+                    stationPosition = {
+                        lng: data.longitude,
+                        lat: data.latitude
+                    };
+                }
+            }
+        });
     };
 
     $scope.startCaptureQR = function() {
@@ -116,7 +131,7 @@ app.controller('StaticDeviceSubListCtrl', ['$scope', 'ajax', function ($scope, a
             }, error: function (xhr, status, error) {
 
             }
-        })
+        });
     }
 
     $scope.toggleContent = function (device) {      // 显示或隐藏设备详情
@@ -170,7 +185,7 @@ app.controller('StaticDeviceDetailCtrl', ['$scope', 'ajax', 'routerService', 'pl
                                 n.properties = JSON.parse(n.properties);
                             }
 
-                        })
+                        });
                     }
                 }
                 if (data.device_photo_src_link) {
@@ -180,7 +195,7 @@ app.controller('StaticDeviceDetailCtrl', ['$scope', 'ajax', 'routerService', 'pl
                 if (data.qr_photo_src_link) {
                     data.qr_photo_src_link = platformService.getCloudHost() + data.qr_photo_src_link;
                 }
-                if (data.map_pos && JSON.parse(data.map_pos).type === 'point') {
+                if (gEnableDeviceMap && (!data.is_group || (data.product_type_id))) {
                     data.showMap = true;
                 }
                 $scope.device = data;
@@ -257,8 +272,15 @@ app.controller('StaticDeviceDetailCtrl', ['$scope', 'ajax', 'routerService', 'pl
     };
 
     $scope.openDeviceMap = function () {
-        var mapPos = JSON.parse($scope.device.map_pos).detail;
-        window.location.href = '/templates/site/static-devices/map.html?lng=' + mapPos.lng + "&lat=" + mapPos.lat;
+        var stationPosition = $scope.stationPosition;
+        var url = '/templates/site/static-devices/map.html?deviceSn=' + $scope.device_sn;
+        if (stationPosition) {
+            url += "&stationPos=" + stationPosition.lng + "," + stationPosition.lat;
+        }
+        if ($scope.canEdit) {
+            url += "&edit=1";
+        }
+        window.location.href = url;
     };
 
     init();

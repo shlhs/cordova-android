@@ -1092,12 +1092,21 @@ app.controller('VarRealtimeCtrl', ['$scope', 'ajax', '$myTranslate', function ($
                 $scope.isLoading = false;
                 if (type === $myTranslate.instant('var.digital')) {   // 状态量
                     data.forEach(function (n) {
+                        var v = n.data;
+                        var isnull = false;
+                        if (v < 0) { // 值<0表示实际值为NULL，+2=上一次有效值
+                            v += 2;
+                            isnull = true;
+                        }
                         if (n.data > 0) {
                             n.value = n.var.one_meaning ? n.var.one_meaning : 'ON';
                             n.status = 'danger';
                         } else {
                             n.value = n.var.zero_meaning ? n.var.zero_meaning : 'OFF';
                             n.status = 'normal';
+                        }
+                        if (isnull) {
+                            n.value += " ?";
                         }
                     });
                 }

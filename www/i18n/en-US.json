@@ -215,6 +215,7 @@
   "staticdevice.nodata": "no equipments",
   "staticdevice.noqr": "no QR code",
   "staticdevice.param.type": "Device Type",
+  "staticdevice.map.edit.tip": "long click to change device position",
   "设备名称": "Device Name",
   "设备类型": "Device Type",
   "设备型号": "Device Model",
@@ -401,6 +402,9 @@
   "video": "Video",
   "photos": "Photos",
   "total": "Total",
+  "map": "Map",
+  "position": "Position",
+  "coordinate": "Coordinate",
 
   "edit": "Edit",
   "new": "New",
@@ -438,6 +442,7 @@
   "view": "View",
   "select": "Select",
   "upload": "Upload",
+  "search": "Search",
 
   "terrible": "Terrible",
   "bad": "Bad",
