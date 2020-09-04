@@ -34,7 +34,7 @@
     <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
     <h1 class="mui-title">{{'menu.station.dataline' | translate}}</h1>
 </header>
-<div class="body-content">
+<div class="body-content history-trend-page">
     <ul class="selector-group" style="position: fixed; top: 60px;width: 100%;z-index: 1;">
         <drop-down-menu options="timeTypeList" on-select="onSelect" model-name="'timeType'" selected="timeType"></drop-down-menu>
         <li class="selector-tab" style="width: 20%;">
@@ -48,7 +48,7 @@
         <div class="card" ng-repeat="group in trendGroups" style="padding: 0;">
             <div class="card-content" style="padding-top: 6px;height: 238px;">
                 <div class="mui-content-padded no-margin">
-                    <div style="margin: 0 10px;padding-bottom: 6px;border-bottom: #f1f1f1 1px solid;text-align: center;color: #007aff;">{{group.name}}</div>
+                    <div class="chart-title">{{group.name}}</div>
                     <div class="chart" id="chart{{group.id}}" ng-class="{'spin-loading': group.isLoading}" ng-style="{width: screenWidth + 'px'}">
                     </div>
                 </div>

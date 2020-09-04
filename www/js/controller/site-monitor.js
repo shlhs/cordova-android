@@ -469,7 +469,7 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', '$myTranslate', functi
         if (echartsDiv.length) {
             echarts.dispose(echartsDiv[0]);
         }
-        var echartsObj = echarts.init(getChartDiv(groupId));
+        var echartsObj = echarts.init(getChartDiv(groupId), "custom");
         var that = "";
         var legendData = [];
         data.data.forEach(function (item) {

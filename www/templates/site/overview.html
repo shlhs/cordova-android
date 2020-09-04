@@ -33,7 +33,6 @@
         .summary-list{
             list-style: none;
             padding: 0px;
-            /*display: -webkit-box;*/
             margin: 0 3px;
         }
         .summary-item{
@@ -42,14 +41,12 @@
             line-height: 24px;
             font-size: 12px;
             text-align: center;
-            background-color: #fff;
             margin: 0 3px;
             padding: 8px 0;
-            color: #fff;
             width: calc(33% - 6px);
             margin-bottom: 6px;
             height: 68px;
-        }
+        } 
         @media screen and (max-width: 350px){
             .summary-item{
                 width: calc(50% - 6px);
@@ -84,7 +81,7 @@
     <!--<a onclick="showTopMenu()" class="mui-action-menu mui-icon mui-pull-right" ><i class="header-icon white icon-add"></i></a>-->
 </header>
 <!--<div ng-include="'../../templates/top-menu.html'"></div>-->
-<div class="body-content" ng-cloak ng-controller="SiteOverviewCtrl">
+<div class="body-content overview-page" ng-cloak ng-controller="SiteOverviewCtrl">
     <ul class="mui-row summary-list" style="padding-top:6px;">
         <li class="mui-col-xs-6 mui-col-sm-6 summary-item" style="background-color: #8f79ff">
             <span class="title mui-ellipsis">{{ 'station.realtime.load' | translate }}</span>
@@ -101,12 +98,12 @@
     </ul>
     <div class="card">
         <div class="card-header border">
-            <i class="iconfont anticon-shuju2" style="color: #007aff;"></i>
+            <i class="iconfont anticon-shuju2"></i>
             {{ 'station.load.trend.today' | translate }}
         </div>
         <div class="card-content">
             <div style="height: 150px;" id="loadChart" class="chart" ng-class="{'spin-loading': fuheLoading}">
-                <div ng-if="!fuheLoading && fuheError" style="line-height: 130px;text-align: center;color: #737373;font-size: 14px;">
+                <div ng-if="!fuheLoading && fuheError" class="no-data-tip">
                     {{fuheError}}
                 </div>
             </div>
@@ -114,12 +111,12 @@
     </div>
     <div class="card">
         <div class="card-header border">
-            <i class="iconfont anticon-energy-fenxiang" style="color: #007aff;"></i>
+            <i class="iconfont anticon-energy-fenxiang"></i>
             {{'station.pfv.ratio.month' | translate}}
         </div>
         <div class="card-content">
             <div style="height: 140px;" id="electricPie" class="chart" ng-class="{'spin-loading': electricLoading}">
-                <div ng-if="!electricLoading && electricError" style="line-height: 130px;text-align: center;color: #737373;font-size: 14px;">
+                <div ng-if="!electricLoading && electricError" class="no-data-tip">
                     {{electricError}}
                 </div>
             </div>
@@ -127,12 +124,12 @@
     </div>
     <div class="card">
         <div class="card-header border">
-            <i class="iconfont anticon-shuju11" style="color: #007aff;"></i>
+            <i class="iconfont anticon-shuju11"></i>
             {{ 'station.electric.trend.month' | translate }}
         </div>
         <div class="card-content">
             <div style="height: 150px;" id="electricChart" class="chart" ng-class="{'spin-loading': electricLoading}">
-                <div ng-if="!electricLoading && electricError" style="line-height: 130px;text-align: center;color: #737373;font-size: 14px;">
+                <div ng-if="!electricLoading && electricError" class="no-data-tip">
                     {{electricError}}
                 </div>
             </div>

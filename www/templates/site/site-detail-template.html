@@ -8,9 +8,8 @@
             <a class="mui-pull-right event-icon-link" href="/templates/site/event-list.html?sn={{currentSite.sn}}&name={{currentSite.name}}" ng-if="currentSite.sn">
                 <i class="icon white icon-events" style="width: 18px;height: 18px;">
                 </i>
-                <span class="mui-badge mui-badge-danger event-badge" ng-if="currentSite.unclosed_envet_amount">
-                    {{currentSite.events_amount}}
-                </span>
+                <!-- {{currentSite.events_amount}} -->
+                <span class="mui-badge mui-badge-danger event-badge" ng-if="currentSite.unclosed_envet_amount"></span>
             </a>
         </header>
         <div class="site-img-wrapper">
@@ -63,11 +62,11 @@
                 </li>
             </ul>
 
-            <p class="item-tele">
-                <span class="value">{{currentSite.fix_line_telephone}}</span>
+            <p class="item-tele" ng-if="currentSite.fix_line_telephone">
+                <span class="value">联系电话:{{currentSite.fix_line_telephone}}</span>
             </p>
 
-            <p class="item-loca">
+            <p class="item-loca" ng-if="currentSite.longitude">
                 <span class="value" ng-click="openMap()" ng-if="currentSite.longitude">
                     {{currentSite.full_address}}
                     <a class="iconfont anticon-location" style="float: right"></a>

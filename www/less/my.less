@@ -162,6 +162,7 @@ input {
 
 }
 .page{
+	position: relative;
     height: 100%;
     z-index: 1;
     background-color: @color-bg-primary;
@@ -264,7 +265,10 @@ header.bg-header{
     box-shadow: @page-header-box-shadow;
 }
 header.mui-bar{
-    z-index: 0;
+	z-index: 0;
+	a{
+		color: @color-text-primary;
+	}
 }
 header .mui-action-menu.add-task {
     line-height: 24px;
@@ -2028,11 +2032,13 @@ header.bg-warning{
             width: 18px;
             height: 18px;
             .event-badge{
+                width: 6px;
+                height: 6px;
+                padding: 0;
+                border-radius: 3px;
                 position: absolute;
-                top: -10px;
-                right: -15px;
-                font-weight: 300;
-                font-size: 8px;
+                top: 0;  
+                right: 0;
             }
         }
     }
@@ -2107,6 +2113,7 @@ header.bg-warning{
                 color: @color-text-regular;
                 line-height: 30px;
                 font-size: 13px;
+                min-height: 30px;
             }
             &:nth-child(2){
                 position: relative;
@@ -2752,6 +2759,9 @@ header.bg-warning{
 }
 .apps .mui-grid-view.mui-grid-9 .mui-table-view-cell {
     margin: 0;
+}
+.apps .mui-grid-view.mui-grid-9 .mui-table-view-cell.mui-active {
+    background-color: @btn-active-bg;
 }
 .card .card-header.device-detail-title {
     height: 44px;
@@ -4133,7 +4143,7 @@ table.dataTable tbody th, table.dataTable tbody td {
     }
     .address-popover .btn {
         width: 70px;
-        background: #007aff;
+        background: @color-blue;
         color: #fff;
         text-align: center;
         border-radius: 16px;
@@ -4141,5 +4151,36 @@ table.dataTable tbody th, table.dataTable tbody td {
         margin-bottom: 0;
         line-height: 28px;
         margin-left: 8px;
+    }
+}
+
+// 站点总览
+.overview-page {
+    .summary-item {
+        color: @color-text-primary;
+    }
+    .card {
+        .iconfont {
+            color: @color-blue;
+        }
+        .no-data-tip {
+            line-height: 130px;
+            text-align: center;
+            color: @color-text-secondary;
+            font-size: 14px;
+        }
+    }
+}
+
+//历史曲线
+.history-trend-page {
+    .card {
+        .chart-title {
+            margin: 0 10px;
+            padding-bottom: 6px;
+            border-bottom: @color-border-base 1px solid;
+            text-align: center;
+            color: @color-blue;
+        }
     }
 }
