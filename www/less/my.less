@@ -121,6 +121,9 @@ div {
 input {
     background-color: @input-bg;
 }
+.mui-table-view:before, .mui-table-view:after {
+    background-color: @color-divider;
+}
 /* mui重写 end */
 
 
@@ -1063,7 +1066,7 @@ background-image: url("../img/light/64X64/profile.png");
 
 .mui-popup-backdrop.notify .mui-popup.mui-popup-in{
     color: @color-text-reverse;
-    background-color: #5a5a5a;
+    background-color: @notify-bg;
     width: auto;
     display: block;
 }

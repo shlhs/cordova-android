@@ -1,14 +1,14 @@
 
 <!-- 运维公司信息 -->
-<div class="mui-page" ng-controller="CompanyCtrl">
-    <header class="mui-bar bg-header">
+<div class="mui-page page" ng-controller="CompanyCtrl">
+    <header class="mui-bar bg-header" style="z-index: 1;">
         <button type="button" class="mui-left mui-btn mui-btn-link mui-btn-nav mui-pull-left" onclick="history.back()" style="color: #fff;">
             <span class="mui-icon mui-icon-left-nav"></span>{{'tab.me' | translate}}
         </button>
         <h1 class="mui-center mui-title">{{'company' | translate}}</h1>
     </header>
-    <div class="body-content">
-        <ul class="mui-table-view">
+    <div class="body-content" style="top: 0;">
+        <ul class="mui-table-view" style="margin-top: 72px;">
             <li class="mui-table-view-cell">
                 <a>{{'company name' | myTranslate}}<span class="mui-pull-right">{{company.name}}</span></a>
             </li>
