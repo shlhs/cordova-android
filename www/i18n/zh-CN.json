@@ -216,6 +216,7 @@
   "staticdevice.nodata": "设备档案为空",
   "staticdevice.noqr": "暂无二维码",
   "staticdevice.param.type": "设备类型",
+  "staticdevice.map.edit.tip": "长按可修改设备位置",
   "设备名称": "设备名称",
   "设备类型": "设备类型",
   "设备型号": "设备型号",
@@ -400,6 +401,9 @@
   "video": "视频",
   "photos": "照片",
   "total": "总计",
+  "map": "地图",
+  "position": "位置",
+  "coordinate": "坐标",
 
   "edit": "编辑",
   "new": "新增",
@@ -437,6 +441,7 @@
   "view": "查看",
   "select": "选择",
   "upload": "上传",
+  "search": "搜索",
 
   "terrible": "非常差",
   "bad": "差",
