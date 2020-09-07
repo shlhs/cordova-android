@@ -14,7 +14,7 @@
 }
 .task-list .task-item{
     background-color: @color-bg-regular;
-    margin: 0px 8px 7px 8px;
+    margin: 7px 8px 7px 8px;
     padding: 0;
     position: relative;
 }
@@ -97,8 +97,8 @@
     color: fade(@color-text-link, 50);
 }
 .task-status .recheck {
-    color: #ffa500;
-    border: #ffa500 1px solid;
+    color: @color-yellow;
+    border: @color-yellow 1px solid;
 }
 .task-progress .task-deadline{
     color: #8f8f94;
@@ -148,7 +148,7 @@
     line-height: 20px!important;
 }
 .task-type-control.active {
-    color: rgb(88,107,243) !important;
+    color: @color-primary !important;
     position: relative;
 }
 .task-type-control.active:after {
@@ -156,7 +156,7 @@
     position: absolute;
     bottom: 0;
     height: 2px;
-    background-color: rgb(88,107,243);
+    background-color: @color-primary;
     left: 25%;
     width: 50%;
 }
@@ -182,7 +182,7 @@
     right: 10px;
     bottom: 12px;
     border-radius: 2px;
-    background-color: rgba(88, 107, 243, 0.9);
+    background-color: fade(@color-primary, 90);
     font-size: 14px;
     line-height: 30px;
     text-align: center;
@@ -240,7 +240,7 @@
     border-radius: 50%;
     font-size: 12px;
     color: @color-text-reverse;
-    border: #fff 1px solid;
+    border: @color-border-base 1px solid;
 }
 .steps .step .desc{
     font-size: 12px;
@@ -329,7 +329,7 @@
 }
 .alert-warning {
     color: @color-text-reverse;
-    background-color: #f8c969;
+    background-color: @color-yellow;
 }
 
 .timeline-vertical{
@@ -427,7 +427,7 @@
 .timeline-vertical .timeline-one:first-child:before{
     display: none;
     height: 28px;
-    border-left: #d6d6d6 2px dotted;
+    border-left: @color-border-base 2px dotted;
     background-color: transparent;
 }
 .timeline-vertical .timeline-one:first-child:after{
@@ -454,7 +454,7 @@
     height: 16px;
     left: 0px;
     background-color: @color-bg-regular;
-    border: #fff 1px solid;
+    border: @color-border-base 1px solid;
     z-index: 1;
 }
 .timeline-vertical .timeline-one.end .time-icon:before{
@@ -509,12 +509,12 @@
     flex: 1;
 }
 .task-btn.mui-btn-primary{
-    background-color: #03a9f4;
+    background-color: @color-primary;
     border: 0;
     color: @color-text-reverse;
 }
 .task-btn.mui-btn-danger{
-    background-color: #ff9800;
+    background-color: @color-yellow;
     border:0;
     color: @color-text-reverse;
 }
@@ -564,6 +564,8 @@
     font-size: 14px;
     height: auto;
     width: ~'calc(100% - 115px)';
+    background-color: transparent;
+    // color: @color-text-regular;
 }
 .task-create-rows .mui-input-row textarea {
     margin-top: 4px;
@@ -625,7 +627,7 @@
 }
 .dts-create-rows .device-name {
     font-size: 14px;
-    /*color: #586BF3;*/
+    // color: @color-text-regular;
     cursor: pointer;
     margin-right: 8px;
     word-break: keep-all;
@@ -724,14 +726,14 @@
     border-radius: 12px;
     border: none;
     outline: none;
-    color: #FFF;
+    color: @color-text-primary;
     font-size: 12px;
     margin-left: 50px;
     padding: 6px 30px;
     margin-bottom: 0;
 }
 .filter-btn {
-    background-color: @color-bg-regular;
+    background-color: lighten(@color-bg-primary, 5);
     width: 100%;
     text-align: center;
     line-height: 32px;
@@ -755,7 +757,7 @@
     background-color: rgba(0, 0, 0, 0.3);
 }
 .dropdown-filter-wrapper .filter-inner {
-    background-color: @color-bg-regular;
+    background-color: @color-bg-primary;
     width: 100%;
     position: absolute;
     top: 0;
@@ -781,19 +783,19 @@
     text-align: center;
     float: left;
     margin-bottom: 11px;
-    background-color: #F5F5F5;
+    background-color: @color-bg-regular;
     line-height: 24px;
     border-radius: 12px;
-    border: #f5f5f5 1px solid;
-    color: #7b7b7b;
+    border: @color-border-base 1px solid;
+    color: @color-text-regular;
     display: inline-block;
     margin-right: 12px;
     font-size: 12px;
     padding: 0 4px;
 }
 .filter-body .group .items .item.checked {
-    border-color: #659CFF;
-    color: #659CFF;
+    border-color: @color-primary;
+    color: @color-primary;
     background-color: rgba(101, 156, 255, 0.10);
 }
 .dropdown-filter-wrapper .filter-footer {
@@ -801,7 +803,7 @@
     height: 48px;
     font-size: 13px;
     background-color: @color-bg-regular;
-    border-top: #E1E1E1 1px solid;
+    border-top: @color-border-base 1px solid;
     display: -webkit-box;
 }
 .filter-footer .btn {
@@ -817,13 +819,13 @@
     top: 0;
     bottom: 0;
     width: 1px;
-    background-color: #e1e1e1;
+    background-color: @color-border-base;
 }
 .filter-footer .btn:first-child:before {
     display: none;
 }
 .filter-footer .btn.primary {
-    background: linear-gradient(to right bottom, #6C93F2, #4063DF);
+    background: linear-gradient(to right bottom, @color-primary-light, @color-primary);
     color: @color-text-reverse;
 }
 .task-device-list {
@@ -853,14 +855,14 @@
     border-radius: 2px;
 }
 .item-pass.normal {
-    background-color: #4E83FD;
+    background-color: @color-primary-light;
     color: @color-text-reverse;
-    border-color: #4E83FD;
+    border-color: @color-primary-light;
 }
 .item-pass.exception {
-    background-color: #dd524d;
+    background-color: @red;
     color: @color-text-reverse;
-    border-color: #dd524d;
+    border-color: @red;
 }
 .check-item input, .check-item textarea {
     background-color: #F4F5F6;
@@ -900,12 +902,12 @@
     margin-right: 4px;
 }
 .device-check-pass-result>div.checked {
-    color: #4E83FD;
-    border-color: #4E83FD;
+    color: @color-primary-light;
+    border-color: @color-primary-light;
 }
 .device-check-pass-result>div.checked .radio {
-    color: #4E83FD;
-    border-color: #4E83FD;
+    color: @color-primary-light;
+    border-color: @color-primary-light;
     position: relative;
 }
 .device-check-pass-result>div.checked .radio:before {
@@ -913,7 +915,7 @@
     width: 7px;
     height: 4px;
     transform: rotate(-45deg);
-    border: #4E83FD 1px solid;
+    border: @color-primary-light 1px solid;
     border-right: none;
     border-top: none;
     position: absolute;
@@ -1003,7 +1005,7 @@
     color: @color-text-reverse;
     width: 12px;
     height: 6px;
-    border: #fff 2px solid;
+    border: @color-border-base 2px solid;
     border-top: none;
     border-right: none;
     transform: rotate(-45deg);
@@ -1045,7 +1047,7 @@
 }
 .task-comment .comment-title {
     font-size: 13px;
-    border-bottom: 1px solid #e8e8e8;
+    border-bottom: 1px solid @color-border-base;
     padding-bottom: 4px;
 }
 .task-comment .anticon-edit {
@@ -1061,7 +1063,7 @@
     height: 22px;
     margin: -2px 8px 0 0;
     border-radius: 11px;
-    border: 1px solid #bfbfbf;
+    border: 1px solid @color-border-base;
     background-color: @color-bg-regular;
 }
 .task-comment-user .time {
@@ -1094,7 +1096,7 @@
     width: 17px;
     height: 17px;
     border-radius: 50%;
-    background-color: #5184F7;
+    background-color: @color-primary-light;
     text-align: center;
     cursor: pointer;
     margin-left: 8px;
@@ -1137,5 +1139,5 @@
     text-align: right;
     font-size: 12px;
     padding: 10px;
-    border-bottom: @color-divider 1px solid
+    border-bottom: @color-divider 1px solid;
 }

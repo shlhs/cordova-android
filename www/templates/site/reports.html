@@ -22,7 +22,7 @@
     <script type="text/javascript" src="/js/app/utils.js"></script>
     <script type="text/javascript" src="/js/app/app.js"></script>
     <script type="text/javascript" src="/js/service/common-service.js"></script>
-<body class="box-vertical-center" ng-app="myApp" ng-controller="SiteReportsCtrl">
+<body class="box-vertical-center site-reports-ctrl-page" ng-app="myApp" ng-controller="SiteReportsCtrl">
 <header class="mui-bar bg-header">
     <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
     <h1 class="mui-title">{{'menu.station.report' | translate}}</h1>
@@ -35,7 +35,7 @@
                 <h5 style="margin: 6px 0 0 0;position: relative;" class="ng-binding">{{'create time' | myTranslate}}：{{r.output_created.substring(0,11)}}
                 </h5>
                 <div class="icon-report-download" ng-click="download($event, r.output_src_link)">
-                    <i class="icon icon-20 icon-download"></i>
+                    <i class="iconfont anticon-download"></i>
                 </div>
             </a>
         </li>

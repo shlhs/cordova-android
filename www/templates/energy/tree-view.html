@@ -1,6 +1,6 @@
 <li class="selector-tab" ng-class="{active: active}">
     <label ng-click="toggle()">{{isEnglish ? '' : labelName}}{{'select' | translate}}</label>
-    <div class="dropdown" style="position: fixed; top: 96px;bottom: 0;border: none;border-top: #efefef 1px solid;box-shadow: 0 2px 8px rgba(232, 232, 232, 0.65) inset;">
+    <div class="dropdown" style="position: fixed; top: 96px;bottom: 0;border: none;">
         <div class="site-tree" style="padding-bottom: 0px;position: absolute;top: 0;bottom: 60px;width: 100%;overflow-y: auto;border-bottom: none;" ng-if="datas.length">
             <ul class="tree-group checkbox-tree" ng-if="datas.length">
                 <li class="tree-cell" ng-repeat="item in datas"
@@ -10,9 +10,9 @@
                 ></li>
             </ul>
         </div>
-        <div ng-if="!datas.length" style="color: #aaa;" ng-click="toggle()">{{'energy.noitem' | translate}}</div>
+        <div ng-if="!datas.length"  ng-click="toggle()">{{'energy.noitem' | translate}}</div>
         <div style="position: absolute; bottom: 0;width: 100%;height: 48px;line-height: 48px;padding: 0;margin: 0;">
-            <a style="height: 100%;float: left; width: 50%;text-align: center;color: #666666;border-top: rgba(239, 239, 239, 0.57) 1px solid;" ng-click="onCancel()">{{'cancel' | translate}}</a>
+            <a class="cancel-btn" style="height: 100%;float: left; width: 50%;text-align: center;" ng-click="onCancel()">{{'cancel' | translate}}</a>
             <a ng-click="toggle()"
                style="height: 100%;float: left; width: 50%;text-align: center;background: linear-gradient(to bottom left, #4063DF, #6C93F2);color: #fff;">
                 {{'confirm' | translate}}

@@ -30,9 +30,6 @@
         .mui-table-view-cell:after{
             right:15px;
         }
-        .offline h4, .offline span{
-            color: grey;
-        }
         h4.mui-ellipsis{
             font-weight: normal;
         }
@@ -44,7 +41,7 @@
     <header class="mui-bar bg-header">
         <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
         <h1 class="mui-title">{{'menu.events' | translate}}</h1>
-        <a class="mui-action-menu mui-icon mui-pull-right" style="font-size: 14px;line-height: 28px;color: #fff;margin-right: 6px;"
+        <a class="mui-action-menu mui-icon mui-pull-right" style="font-size: 14px;line-height: 28px;margin-right: 6px;"
            href="/templates/site/closed-event-list.html?status=0&sn={{sn}}">{{'event.history' | translate}}</a>
     </header>
     <div class="body-content" ng-cloak>

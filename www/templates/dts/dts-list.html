@@ -118,7 +118,7 @@
                         </div>
                     </div>
                     <div class="task-status">
-                        <span ng-if="!task.isMyself" style="color: #6f6f6f;">{{task.stage_name}}</span>
+                        <span ng-if="!task.isMyself">{{task.stage_name}}</span>
                         <span ng-if="task.isMyself">{{task.stage_name}}</span>
                     </div>
                 </li>

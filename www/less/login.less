@@ -1,0 +1,151 @@
+@import './theme/index.less';
+html,body{
+    font-family:SimHei,'Helvetica Neue',Arial,'Droid Sans',sans-serif;
+    padding: 0;
+    margin: 0;
+    position: relative;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+.main-icon {
+    margin-top: 20%;
+    width: 57%;
+    margin-left: 21.5%;
+}
+.login-area {
+    padding: 0;
+    overflow: hidden;
+    left: 0;
+    width: 100%;
+    bottom: 40px;
+    margin-top: 12%;
+}
+.form-item {
+    border-bottom: @color-border-light 1px solid;
+    padding: 2px 0;
+    box-sizing: border-box;
+    margin: 0 44px;
+    position: relative;
+}
+.form-item label {
+    color: @color-text-reverse;
+    font-size: 16px;
+    position: absolute;
+    left: 0;
+    line-height: 46px;
+    // margin-left: 12px;
+    /*top: 2px;*/
+}
+.form-item input {
+    outline: none;
+    border: none;
+    padding-left: 84px;
+    /*width: calc(100% - 115px);*/
+    font-size: 18px;
+    line-height: 46px;
+    margin: 0;
+    color: @color-text-reverse;
+    background-color: transparent;
+}
+.form-item .password-not-seen {
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    background: url("../img/login/password-not-seen.png") no-repeat 50%;
+    background-size: 100% 100%;
+    position: absolute;
+    right: 6px;
+    top: 12px;
+}
+.form-item .password-can-seen {
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    background: url("../img/login/password-can-seen.png") no-repeat 50%;
+    background-size: 100% 100%;
+    position: absolute;
+    right: 6px;
+    top: 12px;
+}
+input::-webkit-input-placeholder {
+    color: @color-text-placeholder;
+}
+input::-moz-placeholder {
+    color: @color-text-placeholder;
+}
+.login-btn {
+    background-color: lighten(@color-primary, 20%);
+    border-radius: 4px;
+    margin: 20px 4% 0 4%;
+    box-sizing: border-box;
+    height: 48px;
+    line-height: 48px;
+    text-align: center;
+    font-size: 18px;
+    color: @color-text-primary;
+}
+.login-btn.enable {
+    background-color: @color-primary;
+}
+.error{
+    color: @red;
+    padding-left: 20px;
+    margin-top: 10px;
+}
+@media screen and (max-height: 600px) {
+    .main-icon {
+        margin-top: 15%;
+    }
+    .login-area {
+        margin-top: 10%;
+    }
+    .login-btn {
+        margin-top: 30px;
+        height: 40px;
+        line-height: 40px;
+    }
+}
+.login-checkbox {
+    position: relative;
+    color: @color-text-regular;
+    font-size: 14px;
+}
+.login-checkbox input[type=checkbox] {
+    position: absolute;
+    display: inline-block;
+    outline: 0!important;
+    background-color: transparent;
+    -webkit-appearance: none;
+    border: @color-border-base 1px solid;
+    border-radius: 4px;
+    width: 16px;
+    height: 16px;
+    top: -2px;
+    left: 0;
+}
+.login-checkbox label {
+    display: inline-block;
+    float: none;
+    width: 100%;
+    padding-left: 24px;
+}
+.login-checkbox input[type=checkbox]:checked {
+    background-color: @color-primary;
+    border-color: @color-primary;
+}
+.login-checkbox input[type=checkbox]:checked:before{
+    content: '';
+    position: absolute;
+    display: block;
+    width: 8px;
+    height: 4px;
+    border-left: @color-border-base 2px solid;
+    border-bottom: @color-border-base 2px solid;
+    transform: rotate(-45deg);
+    top: 2px;
+    left: 2px;
+}
+input::placeholder {
+    font-size: 14px;
+}

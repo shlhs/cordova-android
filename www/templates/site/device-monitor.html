@@ -48,7 +48,7 @@
     <h1 class="mui-title">{{deviceName}}</h1>
     <!--<a href="/templates/task/add-task.html" class="mui-action-menu mui-icon mui-pull-right" ng-if="hasOpsAuthMenu"><i class="header-icon white icon-add"></i></a>-->
     <a href="/templates/site/device-monitor/remote-control.html?device_sn={{deviceSn}}"
-       class="mui-action-menu mui-icon mui-pull-right" style="color: #fff;font-size: 14px;line-height: 24px;" ng-if="canControl">{{'device.control.center' | translate}}</a>
+       class="mui-action-menu mui-icon mui-pull-right" style="font-size: 14px;line-height: 24px;" ng-if="canControl">{{'device.control.center' | translate}}</a>
 </header>
 <div class="body-content bg-white" ng-cloak>
     <div class="cascade-selector" style="top: 60px;" ng-class="{'collapse': collapse[0] || collapse[1]}">
