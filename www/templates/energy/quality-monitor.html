@@ -24,13 +24,13 @@
     <!--<script type="text/javascript" src="../../js/controller/sites.js"></script>-->
 <!--</head>-->
 <!--<body ng-app="myApp" ng-cloak ng-controller="EnergyBaseCtrl">-->
-<div ng-controller="EnergyBaseCtrl" class="page page-left">
+<div ng-controller="EnergyBaseCtrl" class="page page-left energy-base-ctrl-page">
 <header class="mui-bar bg-header mui-segmented-control-vertical">
     <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="history.back()"></a>
     <h1 class="mui-title">电能质量实时监测</h1>
 </header>
 <div class="body-content" ng-controller="EnergyQualityMonitorCtrl">
-    <div class="device-selector-line" ng-click="openDeviceSelector()" style="box-shadow: 0 0 2px 2px #eaeaea;">
+    <div class="device-selector-line" ng-click="openDeviceSelector()">
         <label class="value">{{currentDevice.name}}</label>
     </div>
     <div class="energy-realtime-values">
@@ -39,20 +39,20 @@
         <div class="item" ng-class="{'warning': warning.Q}"><label class="title">无功功率</label><label class="unit">(kVar)</label><label class="value">{{current.Q}}</label> </div>
         <div class="item" ng-class="{'warning': warning.PF}"><label class="title">功率因数</label><label class="value">{{current.PF}}</label> </div>
     </div>
-    <h3 style="color: #333333; font-size: 14px;margin: 10px 0 10px;text-align: center;">三相不平衡</h3>
+    <h3 class="chart-title" style="font-size: 14px;margin: 10px 0 10px;text-align: center;">三相不平衡</h3>
     <div style="display: flex">
         <div style="flex: 1;height: 100%;width: 50%">
             <div id="chart1" style="height: 150px;"></div>
             <div style="text-align: center;">
-                <label style="color: #333;font-size: 14px;">{{getPercent(current.ublup)}}</label>
-                <label style="color: #666666;display: block;font-size: 13px">三相电压不平衡度</label>
+                <label style="font-size: 14px;">{{getPercent(current.ublup)}}</label>
+                <label style="display: block;font-size: 13px">三相电压不平衡度</label>
             </div>
         </div>
         <div style="flex: 1;height: 100%;width: 50%">
             <div id="chart2" style="height: 150px;"></div>
             <div style="text-align: center;">
-                <label style="color: #333;font-size: 14px;">{{getPercent(current.ublip)}}</label>
-                <label style="color: #666666;display: block;font-size: 13px">三相电流不平衡度</label>
+                <label style="font-size: 14px;">{{getPercent(current.ublip)}}</label>
+                <label style="display: block;font-size: 13px">三相电流不平衡度</label>
             </div>
         </div>
     </div>

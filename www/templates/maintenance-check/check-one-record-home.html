@@ -6,7 +6,7 @@
             padding: 8px 2px;
         }
     </style>
-    <header class="mui-bar bg-header" style="z-index:1;box-shadow: 0 0 1px rgba(239, 237, 237, 0.85);">
+    <header class="mui-bar bg-header" style="z-index:1;">
         <a class="mui-icon mui-icon-left-nav mui-pull-left text-white btn-back" ng-click="gotoPrevPage()"></a>
         <h1 class="mui-title">{{'ops.poweroff.report.name' | translate}}</h1>
         <a class="mui-action-menu mui-icon mui-pull-right" style="font-size: 16px;line-height: 28px;" ng-click="save()" ng-if="canEdit">{{'save' | translate}}</a>
@@ -46,7 +46,7 @@
         </div>
         <div class="font-14 poweroff-list-item">
             <div class="info-group"><span class="title dark" style="float: none;min-width: 98px;width: auto;">{{'ops.poweroff.picture.before' | translate}}：</span>
-                <div class="icon icon-20 icon-camera" style="position: absolute;" ng-if="canEdit">
+                <div class="icon iconfont anticon-camera-b" style="position: absolute;" ng-if="canEdit">
                     <div class="image-uploader">
                         <input type="file" accept="image/*" name="upload" multiple="" style="width: 25px;overflow: hidden;padding-left: 25px;"
                                onchange="angular.element(this).scope().chooseImage('image_before_check', this)" ng-if="!useMobileGallery">
@@ -66,7 +66,7 @@
         </div>
         <div class="font-14 poweroff-list-item">
             <div class="info-group"><span class="title dark" style="float: none;min-width: 98px;width: auto;">{{'ops.poweroff.picture.between' | translate}}：</span>
-                <div class="icon icon-20 icon-camera" style="position: absolute;" ng-if="canEdit">
+                <div class="icon iconfont anticon-camera-b" style="position: absolute;" ng-if="canEdit">
                     <div class="image-uploader">
                         <input type="file" accept="image/*" name="upload" multiple=""
                                onchange="angular.element(this).scope().chooseImage('image_in_check', this)" ng-if="!useMobileGallery" style="width: 25px;overflow: hidden;padding-left: 25px;">
@@ -86,7 +86,7 @@
         </div>
         <div class="font-14 poweroff-list-item">
             <div class="info-group"><span class="title dark" style="float: none;min-width: 98px;width: auto;">{{'ops.poweroff.picture.after' | translate}}：</span>
-                <div class="icon icon-20 icon-camera" style="position: absolute;" ng-if="canEdit">
+                <div class="icon iconfont anticon-camera-b" style="position: absolute;" ng-if="canEdit">
                     <div class="image-uploader">
                         <input type="file" accept="image/*" name="upload" multiple="" style="width: 25px;overflow: hidden;padding-left: 25px;"
                                onchange="angular.element(this).scope().chooseImage('image_after_check', this)" ng-if="!useMobileGallery">

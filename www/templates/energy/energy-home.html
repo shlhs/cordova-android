@@ -1,6 +1,6 @@
 <!-- 能源管理模式首页 -->
 <div ng-controller="SiteListCtrl" style="height: 100%;" class="energy-home">
-    <div style="height: 100%;" ng-style="{'background-color': stationSn ? '' : '#fff'}" ng-controller="EnergyBaseCtrl">
+    <div style="height: 100%;" ng-controller="EnergyBaseCtrl">
         <div class="site-header energy-header" style="background-size: cover;">
             <header class="mui-bar bg-header bg-transparent" style="box-shadow: none;position: static;">
                 <a class=" mui-pull-left site-popover" ng-click="openSiteSelectPage()" ng-show="sites.length > 1" ng-if="!isSiteDetail">站点切换</a>
@@ -37,7 +37,7 @@
                 <div class="item"><span class="name">当月用电量</span> <span class="value">{{currentMonthData.allDegree}}</span> <span class="unit">kWh</span></div>
                 <div class="item"> <span class="name">当月电费</span> <span class="value">{{currentMonthData.allCharge}}</span> <span class="unit">元</span></div>
             </div>
-            <div style="background-color: #fff;height:{{contentHeight - 220}}px;" ng-show="degreeVarSn" ng-if="!isLoading && currentDevice">
+            <div style="height:{{contentHeight - 220}}px;" ng-show="degreeVarSn" ng-if="!isLoading && currentDevice">
                 <div style="height: calc(100% - 170px);max-height: 300px;">
                     <div style="text-align: center;padding-top: 8px;">日平均电度电价/元</div>
                     <div id="main_chart" style="width: {{screenWidth}}px;height: {{contentHeight-420 > 270 ? 270 : contentHeight - 420}}px;max-height: 270px;"></div>
@@ -55,13 +55,13 @@
                     </ul>
                 </div>
             </div>
-            <div style="background-color: #fff;height: calc(100% - 170px)" ng-show="!isLoading && currentDevice && !degreeVarSn">
+            <div style="height: calc(100% - 170px)" ng-show="!isLoading && currentDevice && !degreeVarSn">
                 <div class="no-station" style="text-align: center;">
                     <i class="alert-icon"></i>
                     <label class="alert-info">监测点未配置电度变量，无法读取数据</label>
                 </div>
             </div>
-            <div style="background-color: #fff;height: {{contentHeight - 170}}px;" ng-show="!isLoading && !currentDevice">
+            <div style="height: {{contentHeight - 170}}px;" ng-show="!isLoading && !currentDevice">
                 <div class="no-station" style="text-align: center;">
                     <i class="alert-icon"></i>
                     <label class="alert-info">站点未配置用电监测点</label>
@@ -71,7 +71,7 @@
                 <i class="alert-icon"></i>
                 <label class="alert-info">未配置站点，<a ng-click="getDataList()">{{'reload' | translate}}</a></label>
             </div>
-            <div class="page-alert-wrapper" ng-if="isLoading" style="background-color: #fff;height: {{contentHeight-220}}px;">
+            <div class="page-alert-wrapper" ng-if="isLoading" style="height: {{contentHeight-220}}px;">
                 <div class="page-alert">
                     <img src="../../img/page-loading.gif" class="loading-img">
                     <div class="alert-text info">{{'loading' | translate}}...</div>

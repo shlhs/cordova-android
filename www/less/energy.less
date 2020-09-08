@@ -1,13 +1,13 @@
 @import './theme/index.less';
 
 .energy-home {
-    background: url(../img/site-title-bg@2x.png) no-repeat top left;
-    background-size: cover;
-    overflow-x: hidden;
+    // background: url(../img/site-title-bg@2x.png) no-repeat top left;
+    // background-size: cover;
+    // overflow-x: hidden;
 }
 .energy-page {
-    background: url(../img/energy-page-bg.png) no-repeat top left;
-    background-size: cover;
+    // background: url(../img/energy-page-bg.png) no-repeat top left;
+    // background-size: cover;
 }
 /*.energy-page>header {*/
     /*background: none;*/
@@ -16,10 +16,13 @@
 .energy-header {
     background: none;
 }
+.site-header.energy-header{
+    height: 60px;
+}
 
 .energy-page-body {
-    background: url(../img/energy-body-bg.png) no-repeat top left;
-    background-size: cover;
+    // background: url(../img/energy-body-bg.png) no-repeat top left;
+    // background-size: cover;
 }
 .site-header .mui-title {
     font-size: 18px;
@@ -36,21 +39,21 @@
     font-family: "iconfont" !important;
     display: inline-block;
     margin-left: 10px;
-    color: #fff;
+    color: @color-text-regular;
     top: -10px;
     right: -20px;
     font-size: 10px;
 }
 .value-tab {
     text-align: center;
-    color: #fff;
+    color: @color-text-regular;
     flex: 1px;
     position: relative;
 }
 .value-tab .top {
     font-size: 12px;
     margin-bottom: 20px;
-    color: #C8DAFF;
+    color: @color-text-secondary;
     display: block;
 }
 .value-tab .value {
@@ -76,11 +79,11 @@
 .h-values .item {
     flex: 1;
     text-align: center;
-    color: #fff;
+    color: @color-text-regular;
 }
 .h-values .item .name {
     font-size: 12px;
-    color: #C8DAFF;
+    color: @color-text-secondary;
 }
 .h-values .item .value {
     font-size: 14px;
@@ -91,10 +94,13 @@
     font-weight: 100;
 }
 .head-select-tabs {
+    display: flex;
     display: -webkit-box;
-    background-color: rgba(255, 255, 255, 0.4);
+    background-color: @color-bg-regular;
+    border-top: 1px solid  @color-border-base;
 }
 .head-select-tabs>.item {
+    flex:1;
     -webkit-box-flex: 1;
     text-align: center;
     padding: 10px;
@@ -102,12 +108,12 @@
 }
 .head-select-tabs>.item>.title {
     font-size: 12px;
-    color: #333333;
+    color: @color-text-regular;
     display: block;
 }
 .head-select-tabs>.item>.value {
     font-size: 14px;
-    color: #333;
+    color: @color-text-primary;
     font-weight: 700;
 }
 .head-select-tabs>.item:before {
@@ -123,7 +129,7 @@
     display: none;
 }
 .head-select-tabs>.item:after {
-    content: '\e70a';
+    content: '\a61f';
     font-family: "iconfont" !important;
     display: block;
     position: absolute;
@@ -131,7 +137,7 @@
     top: 50%;
     margin-top: -11px;
     font-size: 10px;
-    color: #666;
+    color: @color-text-regular;
 }
 .sides-values {
     display: -webkit-box;
@@ -155,12 +161,12 @@
     font-size: 12px;
 }
 .energy-value {
-    color: #fff;
+    color: @color-text-regular;
     font-size: 14px;
     margin-left: 4px;
 }
 .energy-value-unit {
-    color: #B0D3EF;
+    color: @color-text-secondary;
     font-size: 12px;
 }
 .energy-value-separate {
@@ -168,40 +174,40 @@
     height: 12px;
     display: inline-block;
     margin: 0 6px;
-    background-color: #85A7FD;
+    background-color: @color-primary-light;
 }
 .light-value-tabs {
     display: flex;
     padding: 8px;
 }
 .light-value-tabs>.value-tab>.top {
-    color: #333;
+    color: @color-text-regular;
     font-size: 12px;
     margin-bottom: 0;
 }
-.light-value-tabs>.value-tab:before {
+.light-value-tabs>.value-tab:last-child:before {
     display: inline-block;
     content: '';
     width: 1px;
-    background-color: #F5F7F8;
+    background-color: @color-border-base;
     position: absolute;
     top: 11px;
     bottom: 11px;
     left: 0;
 }
 .light-value-tabs>.value-tab>.value {
-    color: #808080;
+    color: @color-text-secondary;
     font-size: 14px;
     display: block;
 }
 .light-value-tabs.border-top {
-    border-top: #E7EAED 1px solid;
+    border-top: @color-border-base 1px solid;
 }
 .chart-title {
-    background-color: #F6FAFD;
+    background-color: @color-border-base;
     font-size: 14px;
     padding: 4px;
-    color: #333;
+    color: @color-text-regular;
     text-align: center;
 }
 .energy-rate {
@@ -210,23 +216,23 @@
     font-weight: 500;
 }
 .energy-rate.up {
-    color: #BA1930;
+    color: @red;
 }
 .energy-rate.down {
-    color: #4cd964;
+    color: @color-primary;
 }
 .energy-rate.up:before {
     content: '\a615';
     font-family: "iconfont" !important;
     display: inline-block;
-    color: #BA1930;
+    color: @red;
     font-size: 12px;
 }
 .energy-rate.down:before {
     content: '\a614';
     font-family: "iconfont" !important;
     display: inline-block;
-    color: #4cd964;
+    color: @color-primary;
     font-size: 12px;
 }
 .pfv-texts {
@@ -247,10 +253,9 @@
     display: inline-block;
 }
 .device-selector-line {
-    background: #fff;
     padding: 9px;
     text-align: center;
-    color: #666;
+    color: @color-text-regular;
     font-size: 14px;
 }
 .device-selector-line>label {
@@ -262,7 +267,7 @@
     font-family: "iconfont" !important;
     right: -20px;
     display: block;
-    color: #666;
+    color: @color-text-secondary;
     font-size: 8px;
     top: 50%;
     margin-top: -10px;
@@ -276,7 +281,7 @@
     margin-right: 4px;
     padding: 10px 0;
     text-align: center;
-    background-color: #ECF0F9;
+    background-color: @color-bg-regular;
     position: relative;
 }
 .energy-realtime-values>.item.warning:after {
@@ -287,18 +292,18 @@
     top: 0;
     right: 4px;
     font-size: 12px;
-    color: #EC4B62;
+    color: @red
 }
 .energy-realtime-values>.item .title {
-    color: #596CAD;
+    color: @color-text-regular;
     font-size: 12px;
 }
 .energy-realtime-values>.item .unit {
-    color: #596CAD;
+    color: @color-text-regular;
     font-size: 10px;
 }
 .energy-realtime-values>.item .value {
-    color: #596CAD;
+    color: @color-text-regular;
     font-size: 13px;
     display: block;
     margin-top: -2px;
@@ -306,31 +311,30 @@
 .energy-realtime-values>.item:last-child {
     margin-right: 0;
 }
+
 .monitor-table {
     font-size: 13px;
     width: ~'calc(100% - 12px)';
     margin-left: 6px;
 }
 .monitor-table th, .monitor-table td {
-    border: #fff 2px solid;
+    border: @color-border-base 2px solid;
 }
 .monitor-table th {
-    color: #333;
+    color: @color-text-regular;
     font-weight: bold;
-    background-color: #E5E5E5;
     padding: 10px 0;
     text-align: center;
 }
 .monitor-table td {
-    background-color: #F4F4F4;
-    color: #666666;
+    color: @color-text-secondary;
     font-size: 12px;
     padding: 10px 0;
     text-align: center;
 }
 .monitor-table td.title {
     font-size: 13px;
-    color: #333;
+    color: @color-text-regular;
 }
 .monitor-table td.warning {
     position: relative;
@@ -348,17 +352,17 @@
 .report-card {
     margin: 8px 0;
     padding: 10px 15px;
-    background-color: #fff;
+    background-color: @color-bg-regular;
 }
 .report-card .header {
     margin-bottom: 8px;
 }
 .report-card .header .title {
-    color: #333;
+    color:@color-text-primary;
     font-size: 15px;
 }
 .report-card .report-list>.report-item {
-    background-color: #F2F4F5;
+    background-color: rgba(0, 0, 0, .1);
     display: -webkit-box;
     -webkit-box-align: center;
     padding: 8px;
@@ -366,7 +370,7 @@
     margin-top: 2px;
 }
 .report-item>.title{
-    color: #333;
+    color: @color-text-regular;
     font-size: 13px;
     width: 75px;
 }
@@ -375,19 +379,19 @@
 
 }
 .report-item>.group .value {
-    color: #1A2664;
+    color: @color-text-primary;
     font-size: 14px;
     font-weight: 500;
 }
 .report-item>.group .title {
-    color: #666;
+    color: @color-text-secondary;
     font-size: 12px;
     display: block;
 }
 .report-item>.conclusion {
     border-radius: 12px;
     text-align: center;
-    color: #fff;
+    color: @color-text-regular;
     font-size: 12px;
     padding: 2px 8px;
     min-width: 52px;
@@ -427,4 +431,26 @@
 }
 .hand.right:before {
     content: '\e606';
+}
+
+.page{
+    // 监测站点选择
+    .device-select-body{
+        .mui-navigate-right{
+            .left-group{
+                width: 18px;
+                height: 18px;
+                display: inline-block;
+                margin-right: 8px;
+                color: @color-primary;
+            }
+        }
+    }
+    // 电能实时监测
+    .energy-base-ctrl-page{
+        .chart-title{
+            color: @color-text-regular;
+            background-color: @color-bg-regular;
+        }
+    }
 }

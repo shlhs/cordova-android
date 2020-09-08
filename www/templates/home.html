@@ -63,11 +63,11 @@
     <!--</a>-->
     <label class="tab-item" ng-repeat="menu in navMenus"
        ng-click="chooseNav($event, menu.id)" ng-class="{'mui-active': tabName===menu.id}">
-        <span class="mui-icon nav-icon {{menu.icon}}"></span>
+        <span class="mui-icon nav-icon iconfont anticon-{{menu.icon}}"></span>
         <span class="mui-tab-label">{{menu.name}}</span>
     </label>
     <label class="tab-item" ng-click="chooseNav($event, 'setting')" ng-class="{'mui-active': tabName==='setting'}">
-        <span class="mui-icon nav-icon nav-setting"></span>
+        <span class="mui-icon nav-icon iconfont anticon-nav-setting"></span>
         <span class="mui-tab-label">{{ 'tab.me' | translate }}</span>
     </label>
 </nav>
@@ -98,6 +98,7 @@
     <!--<script src="../components/echart/echarts.common.js"></script>-->
     <script src="../components/mui/js/mui.min.js"></script>
     <script src="../components/mui/js/mui.picker.min.js"></script>
+    <script src="../../theme/echarts/index.js"></script>
     <script id="grab-task-template" type="text/x-handlebars-template">
         <div class="mui-popup mui-popup-in android-dialog" style="display: block;">
             <div class="mui-popup-inner">

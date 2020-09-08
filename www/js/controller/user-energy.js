@@ -217,7 +217,7 @@ EnergyFuncApi.prototype.paintAvgPriceTrend = function (chartId, data) {
             symbolSize: 4,
         }]
     };
-    echarts.init(document.getElementById(chartId)).setOption(option);
+    echarts.init(document.getElementById(chartId), "custom").setOption(option);
 };
 
 // 计算出电度电费以外的所有电费
@@ -714,7 +714,7 @@ function paintAvgLoadTrendByDay(chartId, times, datas) {
             }
         }]
     };
-    echarts.init(document.getElementById(chartId)).setOption(option);
+    echarts.init(document.getElementById(chartId), 'custom').setOption(option);
 }
 
 // 能源管理
@@ -931,7 +931,7 @@ app.controller('EnergyOverviewCtrl', ['$scope', 'ajax', 'platformService', 'varD
             color: colors,
             series: series,
         };
-        echarts.init(document.getElementById('charge_chart')).setOption(option);
+        echarts.init(document.getElementById('charge_chart'), 'custom').setOption(option);
     }
 
     function calcCosAndLoad(varMap) {
@@ -1115,7 +1115,7 @@ app.controller('EnergyCostAnalysisCtrl', ['$scope', 'ajax', 'platformService', '
                 },
             ],
         };
-        echarts.init(document.getElementById(chartId)).setOption(option);
+        echarts.init(document.getElementById(chartId), 'custom').setOption(option);
     }
 
     setTimeout(function () {
@@ -1276,7 +1276,7 @@ app.controller('EnergyLoadAnalysisCtrl', ['$scope', 'varDataService', function (
                 symbolSize: 0,
             }]
         };
-        echarts.init(document.getElementById('chart1')).setOption(option);
+        echarts.init(document.getElementById('chart1'), 'custom').setOption(option);
     }
 
     setTimeout(function () {
@@ -1492,7 +1492,7 @@ app.controller('EnergyMaxDemandCtrl', ['$scope', 'varDataService', function ($sc
                     },
                 }]
             };
-            echarts.init(document.getElementById('chart1')).setOption(option);
+            echarts.init(document.getElementById('chart1'), 'custom').setOption(option);
         });
     }
 
@@ -1834,7 +1834,7 @@ app.controller('EnergyQualityMonitorCtrl', ['$scope', 'varDataService', 'collect
             },
             series: aseries,
         };
-        echarts.init(document.getElementById(chartId)).setOption(option);
+        echarts.init(document.getElementById(chartId), 'custom').setOption(option);
     }
 
     function paintThdTrend(chartId, type, varDatas) {
@@ -1917,7 +1917,7 @@ app.controller('EnergyQualityMonitorCtrl', ['$scope', 'varDataService', 'collect
             },
             series: series
         };
-        echarts.init(document.getElementById(chartId)).setOption(option);
+        echarts.init(document.getElementById(chartId), 'custom').setOption(option);
     }
 
     $scope.getPercent = function (v) {      // 用于界面显示百分比数据

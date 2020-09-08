@@ -3,16 +3,16 @@
     <header class="mui-bar bg-header">
         <a class="mui-icon mui-icon-left-nav mui-pull-left text-white btn-back" ng-click="gotoPrevPage()"></a>
         <h1 class="mui-title">{{group.name}}</h1>
-        <a class="mui-action-menu mui-icon mui-pull-right" style="font-size: 16px;line-height: 28px;color: #fff;" ng-click="save()" ng-if="hasPermission && editable">{{'save' | translate}}</a>
+        <a class="mui-action-menu mui-icon mui-pull-right" style="font-size: 16px;line-height: 28px;" ng-click="save()" ng-if="hasPermission && editable">{{'save' | translate}}</a>
     </header>
     <div class="body-content" ng-cloak style="display: -webkit-box;-webkit-box-align: stretch;">
-        <div class="left-panel" style="width: 35%;box-shadow: 0 0 2px #ccc;">
+        <div class="left-panel">
             <ul class="check-list">
                 <li class="check-item" ng-repeat="item in items" ng-class="{'active': $index===currentIndex}">
                     <a class="mui-navigate-right" href="#" ng-click="chooseItem($index)">
                         <i class="icon icon-16 icon-all-right" ng-if="item.status === 'success'"></i>
                         <i class="icon icon-16 icon-warning" ng-if="item.status === 'warning'"></i>
-                        <i class="icon icon-16 icon-circle-grey" ng-if="item.status === 'disabled'"></i>
+                        <i class="icon icon-16 circle-grey" ng-if="item.status === 'disabled'"></i>
                         {{item.name}}
                     </a>
                 </li>

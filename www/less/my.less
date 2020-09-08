@@ -86,7 +86,7 @@ div {
 }
 .mui-dtpicker-header .mui-btn {
     background-color: rgba(91, 155, 174, 0.3);
-    color: #FAFAFA;
+    color: @color-text-regular;
     border-color: rgba(91, 155, 174, 0.3);
 }
 .mui-dtpicker-header .mui-btn-blue {
@@ -108,6 +108,12 @@ div {
 }
 .mui-table-view {
     background-color: transparent;
+    &:after{
+        background-color: @color-border-light;
+    }
+    &:before{
+        height: 0;
+    }
 }
 .mui-table-view.mui-grid-view .mui-table-view-cell .mui-media-body {
     color: @color-text-primary;
@@ -164,7 +170,7 @@ input {
 .page{
     height: 100%;
     z-index: 1;
-    background-color: @color-bg-primary;
+    // background-color: @color-bg-primary;
     //position: absolute;
     //top: 0;
     //width: 100%;
@@ -172,9 +178,6 @@ input {
     header {
         background: @page-header-bg-color;
         box-shadow: none;
-    }
-    .body-content {
-        background-color: @color-bg-primary;
     }
 }
 .page-left.ng-enter {
@@ -369,6 +372,7 @@ header.mui-bar{
     height: 60px;
     padding-top: 8px;
     top:0px;
+    border-bottom: 1px solid transparent;
 }
 .body-content{
     padding-left: 0px;
@@ -708,30 +712,30 @@ aside.light .mui-table-view-cell>a:not(.mui-btn){
 .todo{
     background-image: url("../img/dark/64X64/todo.png");
 }
-.nav-task-grab{
-    background-image: url("../img/dashboard/icon-home-grab@2x.png");
-}
-.nav-all-tasks{
-    background-image: url('../img/dashboard/icon-home-task@2x.png');
-}
-.mui-active .nav-all-tasks{
-    background-image: url('../img/dashboard/icon-home-task-active@2x.png');
-}
-.mui-active .nav-task-grab{
-    background-image: url("../img/dashboard/icon-home-grab-active@2x.png");
-}
-.nav-sites{
-    background-image: url('../img/dashboard/icon-home-sites@2x.png');
-}
-.nav-energy {
-    background-image: url('../img/dashboard/icon-home-energy.jpg');
-}
+// .nav-task-grab{
+//     background-image: url("../img/dashboard/icon-home-grab@2x.png");
+// }
+// .nav-all-tasks{
+//     background-image: url('../img/dashboard/icon-home-task@2x.png');
+// }
+// .mui-active .nav-all-tasks{
+//     background-image: url('../img/dashboard/icon-home-task-active@2x.png');
+// }
+// .mui-active .nav-task-grab{
+//     background-image: url("../img/dashboard/icon-home-grab-active@2x.png");
+// }
+// .nav-sites{
+//     background-image: url('../img/dashboard/icon-home-sites@2x.png');
+// }
+// .nav-energy {
+//     background-image: url('../img/dashboard/icon-home-energy.jpg');
+// }
 .nav-setting2 {
     background-image: url('../img/dashboard/icon-home-profile2.jpg');
 }
-.mui-active>.nav-energy {
-    background-image: url('../img/dashboard/icon-home-energy-active.jpg');
-}
+// .mui-active>.nav-energy {
+//     background-image: url('../img/dashboard/icon-home-energy-active.jpg');
+// }
 .nav-service {
     background-image: url("../img/dashboard/icon-nav-service.png");
 }
@@ -741,23 +745,37 @@ aside.light .mui-table-view-cell>a:not(.mui-btn){
 .mui-active>.nav-setting2 {
     background-image: url('../img/dashboard/icon-home-profile2-active.jpg');
 }
-.mui-active>.nav-sites {
-    background-image: url('../img/dashboard/icon-home-sites-active@2x.png');
-}
-.mui-active>.nav-setting{
-    background-image: url('../img/dashboard/icon-home-profile-active@2x.png');
-}
-.nav-setting{
-    background-image: url('../img/dashboard/icon-home-profile@2x.png');
-}
-.nav-energy {
-    background-image: url('../img/dashboard/icon-nav-energy.png');
-}
-.mui-active>.nav-energy {
-    background-image: url('../img/dashboard/icon-nav-energy-active.png');
-}
+// .mui-active>.nav-sites {
+//     background-image: url('../img/dashboard/icon-home-sites-active@2x.png');
+// }
+// .mui-active>.nav-setting{
+//     background-image: url('../img/dashboard/icon-home-profile-active@2x.png');
+// }
+// .nav-setting{
+//     background-image: url('../img/dashboard/icon-home-profile@2x.png');
+// }
+// .nav-energy {
+//     background-image: url('../img/dashboard/icon-nav-energy.png');
+// }
+// .mui-active>.nav-energy {
+//     background-image: url('../img/dashboard/icon-nav-energy-active.png');
+// }
 .mui-active>.nav-icon.todo{
     background-image: url("../img/dark/64X64/todo_active.png");
+}
+.tab-item.mui-active{
+    .iconfont{
+        color: @color-primary;
+    }
+}
+.tab-item{
+    .mui-icon{
+        padding: 3px 0;
+        font-size: 19px;
+        .iconfont{
+            color: @nav-tab-color;
+        }
+    }
 }
 .energy .nav-icon.nav-sites {
     background-image: url('../img/dashboard/icon-home-energy.jpg');
@@ -1696,7 +1714,6 @@ a:hover.slidesjs-stop {
     width: 100%;
     padding-bottom: 75%;
     margin: 0;
-    padding-top: 60px;
 }
 .statics-card.bg-disabled{
     /*background-color: #bdbdbd;*/
@@ -1716,7 +1733,7 @@ a:hover.slidesjs-stop {
 .statics-card .container{
     position: absolute;
     width: 100%;
-    height: ~'calc(100% - 60px)';
+    height: 100%;
 }
 .statics-card h5{
     padding: 16px 16px;
@@ -1834,7 +1851,13 @@ header.bg-warning{
 }
 .left-panel{
     height: 100%;
+    width:35%;
     overflow-y: auto;
+    box-shadow: 0 0 2px @color-border-base;
+    .circle-grey{
+        border: 1px solid @color-border-light;
+        border-radius: 8px;
+    }
 }
 .right-panel{
     height: 100%;
@@ -1845,9 +1868,10 @@ header.bg-warning{
     padding: 0;
     margin: 0;
 }
+// 停电维护作业表, 安全评测
 .check-box-item{
     border-radius: 6px;
-    border: #e0e0e0 1px solid;
+    border: 1px solid  @color-border-base;
     background-color: @color-bg-regular;
     padding: 8px;
     margin-bottom: 12px;
@@ -1880,6 +1904,7 @@ header.bg-warning{
 }
 .check-box-item .mui-checkbox input[type=checkbox]:before, .check-box-item .mui-radio input[type=radio]:before {
     font-size: 18px;
+    color: @color-border-light;
 }
 
 .device-card{
@@ -3466,7 +3491,7 @@ header .mui-title .dropdown-arrow:after {
     -o-animation: spin 1.2s infinite linear;
     animation: spin 1.2s infinite linear;
     font-size: 28px;
-    color: #999;
+    color: @color-border-light;
     margin-top: 50px;
     display: inline-block;
     margin-left: ~'calc(50% - 14px)';
@@ -3734,7 +3759,7 @@ table.dataTable tbody th, table.dataTable tbody td {
 }
 .login-expire-modal .btn-login {
     color: @color-text-reverse;
-    background-color: #5690FF;
+    background-color: @color-primary;
 }
 .device-tree-selector .node-group {
     background-image: url("../img/device-node.png");
@@ -3747,10 +3772,10 @@ table.dataTable tbody th, table.dataTable tbody td {
 }
 .device-tree-selector .tree-cell>a.selected:after {
     display: inline-block;
-    content: '\e605';
+    content: '\a622';
     font-family: "iconfont" !important;
     font-size: 24px;
-    color: #007aff;
+    color: @color-primary;
 }
 
 .my-picker .mui-poppicker-body{
@@ -4023,15 +4048,37 @@ table.dataTable tbody th, table.dataTable tbody td {
 }
 
 // 停电维护>电房及设备停电维护作业表页 列表项
+.poweroff-info-list{
+    &:before{
+        height: 0;
+    }
+}
 .poweroff-list-item{
     margin: 0px 16px;
     padding: 12px 0 4px 0;
     border-top: 1px solid @color-border-base;
+    .anticon-camera-b{
+        font-size: 19px;
+        color: @color-text-regular;
+        &:before{
+            position: absolute;
+        }
+        input[name="upload"]{
+            background: none;
+        }
+        .image-uploader{
+            position: absolute;
+            z-index: 2;
+        }
+    }
+    &:last-child{
+        border-bottom: 1px solid @color-border-base;
+    }
 }
 
 .device-map {
     header .btn-back {
-        color: #007aff;
+        color: @color-primary;
     }
     .tip {
         position: absolute;
@@ -4197,7 +4244,7 @@ table.dataTable tbody th, table.dataTable tbody td {
 // 电子档案
 .docs-page{
     .mui-card-content{
-        background: fade(@color-bg-primary, 30);
+        background: @color-bg-regular;
     }
 }
 
@@ -4237,6 +4284,7 @@ table.dataTable tbody th, table.dataTable tbody td {
     table.dataTable.row-border tbody th, table.dataTable.row-border tbody td, table.dataTable.display tbody th, table.dataTable.display tbody td {
         border-right: @color-border-light 1px solid;
         text-align: center;
+        border-top: none;
     }
     table td, table th {
         border-right: @color-border-base 1px solid;
@@ -4275,6 +4323,13 @@ table.dataTable tbody th, table.dataTable tbody td {
         font-size: 24px;
         color: @color-primary;
     }
+    .margin-table-view{
+        .mui-table-view-cell{
+            &:after{
+                height: 0;
+            }
+        }
+    }
 }
 // 所有应用
 .app-store-page{
@@ -4286,4 +4341,9 @@ table.dataTable tbody th, table.dataTable tbody td {
         background-color: transparent;
         border: @color-border-light 1px dashed;
     }
+}
+
+// 公共
+.border-bottom-base{
+    border-bottom: 1px solid @color-border-base;
 }

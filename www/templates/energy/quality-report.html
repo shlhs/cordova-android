@@ -30,7 +30,7 @@
     <h1 class="mui-title">电能质量报告</h1>
 </header>
 <div class="body-content" ng-controller="EnergyQualityReportCtrl">
-    <div style="box-shadow: 0 0 2px 2px #eaeaea;display: flex;">
+    <div style="display: flex;">
         <div class="device-selector-line" ng-click="openDeviceSelector()" style="flex: 1;">
             <label class="value">{{currentDevice.name}}</label>
         </div>
@@ -41,8 +41,8 @@
     <div class="report-card">
         <div class="header">
             <label class="title">电压质量分析</label>
-            <label style="color: #333;font-size: 12px;float: right;margin-left: 6px;width: 100px;margin-top: 1px;">额定电压：{{currentDevice.vc}}V</label>
-            <label style="color: #333;font-size: 12px;float: right;width: 100px;margin-top: 1px;">监测点数：{{volt.count || 0}}</label>
+            <label style="font-size: 12px;float: right;margin-left: 6px;width: 100px;margin-top: 1px;">额定电压：{{currentDevice.vc}}V</label>
+            <label style="font-size: 12px;float: right;width: 100px;margin-top: 1px;">监测点数：{{volt.count || 0}}</label>
         </div>
         <div class="report-list" ng-if="currentDevice.vc">
             <div class="report-item">
@@ -73,8 +73,8 @@
     <div class="report-card">
         <div class="header">
             <label class="title">频率分析</label>
-            <label style="color: #333;font-size: 12px;float: right;margin-left: 6px;width: 100px;margin-top: 1px;">标称频率：50Hz</label>
-            <label style="color: #333;font-size: 12px;float: right;width: 100px;margin-top: 1px;">监测点数：{{freq.count || 0}}</label>
+            <label style="font-size: 12px;float: right;margin-left: 6px;width: 100px;margin-top: 1px;">标称频率：50Hz</label>
+            <label style="font-size: 12px;float: right;width: 100px;margin-top: 1px;">监测点数：{{freq.count || 0}}</label>
         </div>
         <div class="report-list">
             <div class="report-item">
@@ -101,7 +101,7 @@
     <div class="report-card">
         <div class="header">
             <label class="title">电压谐波含量分析</label>
-            <label style="color: #333;font-size: 12px;float: right;width: 100px;margin-top: 1px;">监测点数：{{harm.count || 0}}</label>
+            <label style="font-size: 12px;float: right;width: 100px;margin-top: 1px;">监测点数：{{harm.count || 0}}</label>
         </div>
         <div class="report-list" ng-if="currentDevice.vc">
             <div class="report-item">
