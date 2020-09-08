@@ -6,7 +6,7 @@
             <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()" ng-if="isSiteDetail"></a>
             <h1 class="mui-title" style="font-size: 18px;left: 70px;right: 70px;">{{currentSite.name}}</h1>
             <a class="mui-pull-right event-icon-link" href="/templates/site/event-list.html?sn={{currentSite.sn}}&name={{currentSite.name}}" ng-if="currentSite.sn">
-                <i class="icon white icon-events" style="width: 18px;height: 18px;">
+                <i class="iconfont anticon-event-alarm">
                 </i>
                 <!-- {{currentSite.events_amount}} -->
                 <span class="mui-badge mui-badge-danger event-badge" ng-if="currentSite.unclosed_envet_amount"></span>

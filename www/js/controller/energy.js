@@ -517,7 +517,7 @@ app.controller('EnergyMeterReadingCtrl', ['$scope', 'ajax', '$compile', 'platfor
                 getVariableUnits(response.energyItems);
                 $scope.$apply();
                 if ($scope.categories.length) {
-                    var html = "<ul class='selector-group' style='border-bottom: #ececec 1px solid;'>" +
+                    var html = "<ul class='selector-group'>" +
                         "<drop-down-menu options=\"categories\" on-select=\"onSelect\" model-name=\"'currentCategory'\" selected=\"currentCategory\"></drop-down-menu>" +
                         "<drop-down-menu options=\"labelNames\" on-select=\"onSelect\" model-name=\"'currentLabel'\" selected=\"currentLabel\"></drop-down-menu>" +
                         "<energy-config-tree category=\"currentCategory.name\" label-name=\"currentLabel.name\" datas=\"energyItems\" on-select=\"onSelectItems\"></energy-config-tree>" +
@@ -865,7 +865,7 @@ app.controller('EnergyReportCtrl', ['$scope', 'ajax', '$compile', 'platformServi
                 checkAll($scope.energyItems);
                 $scope.$apply();
                 if ($scope.currentLabel) {
-                    var html = "<ul class='selector-group' style='border-bottom: #ececec 1px solid;'>" +
+                    var html = "<ul class='selector-group'>" +
                         "<drop-down-menu options=\"categories\" on-select=\"onSelect\" model-name=\"'currentCategory'\" selected=\"currentCategory\"></drop-down-menu>" +
                         "<drop-down-menu options=\"labelNames\" on-select=\"onSelect\" model-name=\"'currentLabel'\" selected=\"currentLabel\"></drop-down-menu>" +
                         "<energy-config-tree category=\"currentCategory.name\" label-name=\"currentLabel.name\" datas=\"energyItems\" on-select=\"onSelectItems\"></energy-config-tree>" +

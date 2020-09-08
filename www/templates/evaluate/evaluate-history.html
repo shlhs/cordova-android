@@ -27,7 +27,7 @@
     <header class="mui-bar bg-header" style="z-index:1;box-shadow: 0 0 1px rgba(239, 237, 237, 0.85);">
         <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
         <h1 class="mui-title">{{'ops.security.header' | translate}}</h1>
-        <a class="mui-action-menu mui-icon mui-pull-right" style="font-size: 16px;line-height: 28px;color: #fff;" ng-click="createOneRecord()">{{'new' | translate}}</a>
+        <a class="mui-action-menu mui-icon mui-pull-right" style="font-size: 16px;line-height: 28px;" ng-click="createOneRecord()">{{'new' | translate}}</a>
     </header>
     <div class="body-content" ng-cloak>
         <ul class="mui-table-view mui-table-view-striped mui-table-view-condensed no-border">
@@ -51,7 +51,7 @@
         <div class="page-alert-wrapper" ng-if="!loadingFailed  && !isLoading && !history.length">
             <div class="page-alert">
                 <i class="alert-icon nodata"></i>
-                <div class="alert-text info">{{'none ops.security.header"' | myTranslate}}</div>
+                <div class="alert-text info">{{'none ops.security.header' | myTranslate}}</div>
             </div>
         </div>
         <div class="page-alert-wrapper" ng-if="isLoading">

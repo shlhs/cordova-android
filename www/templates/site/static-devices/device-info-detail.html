@@ -7,12 +7,12 @@
             <li class="img device-img"
                 style="background-image: url({{device.device_photo_src_link}});background-position: center;background-repeat: no-repeat; background-size: contain;">
                 <i class="icon icon-no-picture icon-36" ng-if="!device.device_photo_src_link"></i>
-                <div style="color: #999; font-size: 13px;margin-top: -4px;" ng-if="!device.device_photo_src_link">{{'tip.nopicture' | translate}}</div>
+                <div style="font-size: 13px;margin-top: -4px;" ng-if="!device.device_photo_src_link">{{'tip.nopicture' | translate}}</div>
             </li>
             <li class="img qr"
                 style="background-image: url({{device.qr_photo_src_link}});background-position: center;background-repeat: no-repeat; background-size: cover;">
                 <i class="icon icon-no-qr icon-36" ng-if="!device.qr_photo_src_link"></i>
-                <div style="color: #999; font-size: 13px;margin-top: -4px;" ng-if="!device.qr_photo_src_link">{{'staticdevice.noqr' | translate}}</div>
+                <div style="font-size: 13px;margin-top: -4px;" ng-if="!device.qr_photo_src_link">{{'staticdevice.noqr' | translate}}</div>
             </li>
         </ul>
     </div>

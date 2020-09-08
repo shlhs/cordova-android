@@ -165,7 +165,6 @@ input {
 
 }
 .page{
-	position: relative;
     height: 100%;
     z-index: 1;
     background-color: @color-bg-primary;
@@ -319,7 +318,7 @@ nav.bg-footer .mui-tab-item{
     color: @color-text-secondary;
 }
 .mui-bar-nav{
-    background-color: #4791FC;
+    background-color: @color-primary;
 }
 .mui-bar-nav a{
     color: @color-text-reverse;
@@ -956,7 +955,7 @@ background-image: url("../img/light/64X64/profile.png");
     -webkit-box-pack:center;
 }
 .page-alert-wrapper .page-alert{
-    padding-top: 35%;
+    padding: 35% 0 20% 0 ;
     text-align: center;
     display: -webkit-box;
     -webkit-box-orient: vertical;
@@ -972,7 +971,7 @@ background-image: url("../img/light/64X64/profile.png");
     display: block;
     background-size: cover;
     background-repeat: no-repeat;
-    padding-top: 35%;
+    // padding-top: 35%; // 父元素过宽 图标和文字重叠
     font-style: normal;
     font-size: 60px;
     color: @color-text-secondary;
@@ -1163,6 +1162,7 @@ background-image: url("../img/light/64X64/profile.png");
 }
 .mui-card{
     box-shadow: none;
+    background-color: transparent;
 }
 .site-list{
     background-color: transparent;
@@ -2032,16 +2032,19 @@ header.bg-warning{
         .event-icon-link{
             position: relative;
             margin: 11px 8px 0 0;
-            width: 18px;
-            height: 18px;
+            width: 20px;
+            height: 20px;
+            .iconfont{
+                font-size: 21px;
+            }
             .event-badge{
                 width: 6px;
                 height: 6px;
                 padding: 0;
                 border-radius: 3px;
                 position: absolute;
-                top: 0;  
-                right: 0;
+                top: 3px;  
+                right: 1px;
             }
         }
     }
@@ -2295,7 +2298,7 @@ header.bg-warning{
     padding-bottom: 4px;
 }
 .event-list>li .event-title {
-    color: @color-text-secondary;
+    color: @color-text-regular;
     font-size: 12px;
     border-bottom: @color-border-light 1px solid;
     padding-bottom: 4px;
@@ -2326,7 +2329,7 @@ header.bg-warning{
     background-color: #6CAAD8;
 }
 .event-list .info {
-    color: @color-text-regular;
+    color: @color-text-primary;
     font-size: 15px;
     margin: 6px 0 1px 0;
     font-weight: 500;
@@ -4018,6 +4021,9 @@ table.dataTable tbody th, table.dataTable tbody td {
         padding-right: 4px;
     }
 }
+.mui-table-view-cell>a:not(.mui-btn).mui-active {
+    background-color: @input-bg-active;
+}
 
 // 停电维护>电房及设备停电维护作业表页 列表项
 .poweroff-list-item{
@@ -4025,10 +4031,7 @@ table.dataTable tbody th, table.dataTable tbody td {
     padding: 12px 0 4px 0;
     border-top: 1px solid @color-border-base;
 }
-// 所有应用页
-.app-grid-bg.mui-grid-view.mui-table-view{
-    background: fade(@color-bg-primary, 30);
-}
+
 .device-map {
     header .btn-back {
         color: #007aff;
@@ -4147,8 +4150,8 @@ table.dataTable tbody th, table.dataTable tbody td {
     }
     .address-popover .btn {
         width: 70px;
-        background: @color-blue;
-        color: #fff;
+        background: @color-primary;
+        color: @color-text-primary;
         text-align: center;
         border-radius: 16px;
         font-size: 14px;
@@ -4165,7 +4168,7 @@ table.dataTable tbody th, table.dataTable tbody td {
     }
     .card {
         .iconfont {
-            color: @color-blue;
+            color: @color-primary;
         }
         .no-data-tip {
             line-height: 130px;
@@ -4184,7 +4187,106 @@ table.dataTable tbody th, table.dataTable tbody td {
             padding-bottom: 6px;
             border-bottom: @color-border-base 1px solid;
             text-align: center;
-            color: @color-blue;
+            color: @color-primary;
         }
+    }
+}
+
+
+.ipc-record-history-page{
+    position: relative;
+}
+
+// 电子档案
+.docs-page{
+    .mui-card-content{
+        background: fade(@color-bg-primary, 30);
+    }
+}
+
+// 用能 data-history  用能报表页 energy-report  抄表meter-reading
+.site-history-report-page, .energy-report-ctrl-page, .energy-meter-reading-ctrl-page{
+    th, td { white-space: nowrap; }
+    table.dataTable tbody tr {
+        background-color: transparent;
+    }
+    table.dataTable.stripe tbody tr.odd{
+        background-color: transparent;
+    }
+    table.dataTable.stripe tbody tr.even{
+        background-color: fade(@color-bg-primary, 70);
+    }
+    table.dataTable thead th {
+        background-color: fade(@color-bg-primary, 90);
+    }
+    div.dataTables_wrapper {
+        width: 100%;
+        margin: 0 auto;
+    }
+    table.dataTable.no-footer {
+        border-bottom: none;
+    }
+    table.dataTable thead th, table.dataTable thead td {
+        border-bottom: none;
+    }
+    .dataTables_wrapper.no-footer .dataTables_scrollBody {
+        border-bottom: none;
+    }
+    table.dataTable thead th, table.dataTable thead td {
+        border-right: @color-border-light 1px solid;
+        border-bottom: @color-border-light 1px solid;
+        border-top: @color-border-light 1px solid;
+    }
+    table.dataTable.row-border tbody th, table.dataTable.row-border tbody td, table.dataTable.display tbody th, table.dataTable.display tbody td {
+        border-right: @color-border-light 1px solid;
+        text-align: center;
+    }
+    table td, table th {
+        border-right: @color-border-base 1px solid;
+        border-bottom: @color-border-base 1px solid;
+        padding: 4px 8px;
+        font-weight: normal;
+        font-size: 14px;
+    }
+    table th {
+        background-color: transparent;
+    }
+    table tbody tr:nth-child(even) td {
+        background-color: fade(@color-bg-primary, 70);
+    }
+    table tbody tr:nth-child(odd) td {
+        background-color: fade(@color-bg-primary, 90);
+    }
+    table thead th.no-borderb {
+        border-bottom: none;
+    }
+    .cancel-btn{
+        color: @color-text-regular;
+        border-top:@color-border-base 1px solid;
+    }
+    .selector-group{
+        border-top:@color-border-light 1px solid;
+    }
+    .dropdown{
+        border-top: @color-border-base 1px solid;
+        box-shadow: 0 2px 8px @color-border-base inset;
+    }
+}
+//  月度报告
+.site-reports-ctrl-page{
+    .anticon-download{
+        font-size: 24px;
+        color: @color-primary;
+    }
+}
+// 所有应用
+.app-store-page{
+    .app-grid-bg.mui-grid-view.mui-table-view{
+        background: fade(@color-bg-primary, 30);
+    }
+    .app-edit{
+        height: 46px;
+        background-color: transparent;
+        border: @color-border-light 1px dashed;
     }
 }
