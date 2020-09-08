@@ -23,8 +23,7 @@
 }
 .task-item .task-icon{
     height: 22px;
-    margin-left: 0px;
-    margin-right: 8px;
+    margin-left: 0;
     margin-top: 8px;
 }
 
@@ -112,17 +111,17 @@
     background-color: rgba(241, 241, 241, 0.2);
 }
 .task-item.closed .task-status{
-    color: #8f8f94;
+    color: @color-text-secondary !important;
 } 
 .closed.task-status{
-    color: #8f8f94 !important;
+    color: @color-text-secondary !important;
 }
-.task-item.closed h4{
-    color: #8f8f94 !important;
-}
-.task-item.closed .task-type{
-    color: #8f8f94 !important;
-}
+//.task-item.closed h4{
+//    color: #8f8f94 !important;
+//}
+//.task-item.closed .task-type{
+//    color: #8f8f94 !important;
+//}
 .task-deadline .icon{
     width: 12px;
     height: 12px;
@@ -1138,4 +1137,20 @@
     font-size: 12px;
     padding: 10px;
     border-bottom: @color-divider 1px solid
+}
+.task-icon {
+    background: linear-gradient(102deg, @task-icon-color-normal-1 0%, @task-icon-color-normal-2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    &.warning {
+        background: linear-gradient(102deg, @task-icon-color-warning-1 0%, @task-icon-color-warning-2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    &.danger {
+        background: linear-gradient(102deg, @task-icon-color-danger-1 0%, @task-icon-color-danger-2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
 }

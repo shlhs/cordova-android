@@ -106,7 +106,7 @@
                         <div ng-if="!task.finish_time">
                             <span class="task-info-label">{{task.riplan_create_time ? ('start time' | myTranslate) + "：" : ('create time' | myTranslate) + "："}}</span>
                             <span class="task-info-value" ng-if="!task.isToStart">{{task.create_time}}</span>
-                            <span class="task-info-value" ng-if="task.isToStart" style="color: rgb(70, 190, 138);">{{task.create_time}}</span>
+                            <span class="task-info-value" ng-if="task.isToStart">{{task.create_time}}</span>
                         </div>
                         <div ng-if="task.stage_id !== TaskStatus.Closed">
                             <span class="task-info-label">{{'task.person.current' | translate}}：</span>
@@ -118,7 +118,7 @@
                         </div>
                     </div>
                     <div class="task-status">
-                        <span ng-if="!task.isMyself" style="color: #6f6f6f;">{{task.stage_name}}</span>
+                        <span ng-if="!task.isMyself">{{task.stage_name}}</span>
                         <span ng-if="task.isMyself">{{task.stage_name}}</span>
                     </div>
                 </li>
