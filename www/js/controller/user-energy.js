@@ -210,6 +210,7 @@ EnergyFuncApi.prototype.paintAvgPriceTrend = function (chartId, data) {
             axisLabel: {
                 fontSize: 11,
             },
+            splitNumber: 4,
         },
         series: [{
             data: yAxis,
@@ -577,7 +578,11 @@ app.controller('EnergyBaseCtrl', ['$scope', 'ajax', 'platformService', 'routerSe
     $scope.openDeviceSelector = function () {
         // 打开设备选择页面
         routerService.openPage($scope, '/templates/energy/device-select-page.html',
-            {treeData: $scope.devices, onSelect: $scope.onChangeDevice, selectedSn: $scope.currentDevice.sn});
+            {
+                treeData: $scope.devices, onSelect: $scope.onChangeDevice, selectedSn: $scope.currentDevice.sn
+            }, {
+                hidePrev: false
+            });
     };
 
     function initDatePicker() {
@@ -677,6 +682,7 @@ function paintAvgLoadTrendByDay(chartId, times, datas) {
                 fontSize: 11,
                 formatter: '{value}%'
             },
+            splitNumber: 4,
         },
         series: [{
             data: datas,
@@ -927,6 +933,7 @@ app.controller('EnergyOverviewCtrl', ['$scope', 'ajax', 'platformService', 'varD
                 axisLabel: {
                     fontSize: 11,
                 },
+                splitNumber: 4,
             },
             color: colors,
             series: series,
@@ -1269,6 +1276,7 @@ app.controller('EnergyLoadAnalysisCtrl', ['$scope', 'varDataService', function (
                     fontSize: 11,
                     formatter: '{value}%'
                 },
+                splitNumber: 4,
             },
             series: [{
                 data: avgList,
@@ -1474,6 +1482,7 @@ app.controller('EnergyMaxDemandCtrl', ['$scope', 'varDataService', function ($sc
                         fontSize: 11,
                         formatter: '{value}'
                     },
+                    splitNumber: 4,
                 },
                 series: [{
                     data: data.datas,

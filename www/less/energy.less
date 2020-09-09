@@ -24,6 +24,9 @@
     // background: url(../img/energy-body-bg.png) no-repeat top left;
     // background-size: cover;
 }
+.energy-card {
+    background-color: @energy-card-bg;
+}
 .site-header .mui-title {
     font-size: 18px;
     left: 70px;
@@ -59,6 +62,7 @@
 .value-tab .value {
     font-size: 30px;
     display: block;
+    color: @energy-color-primary;
 }
 .value-tab .value .unit {
     font-size: 14px;
@@ -68,7 +72,7 @@
     margin-top: 2px;
     font-size: 12px;
     display: block;
-    font-weight: 200;
+    //font-weight: 400;
 }
 .value-mask {
     background-color: rgba(0, 0, 0, 0.1);
@@ -91,7 +95,7 @@
 }
 .h-values .item .unit {
     font-size: 12px;
-    font-weight: 100;
+    font-weight: 300;
 }
 .head-select-tabs {
     display: flex;
@@ -181,7 +185,7 @@
     padding: 8px;
 }
 .light-value-tabs>.value-tab>.top {
-    color: @color-text-regular;
+    color: @color-text-primary;
     font-size: 12px;
     margin-bottom: 0;
 }
@@ -204,10 +208,10 @@
     border-top: @color-border-base 1px solid;
 }
 .chart-title {
-    background-color: @color-border-base;
+    background-color: @energy-card-title-bg;
     font-size: 14px;
     padding: 4px;
-    color: @color-text-regular;
+    color: @energy-card-title;
     text-align: center;
 }
 .energy-rate {
@@ -287,7 +291,7 @@
 .energy-realtime-values>.item.warning:after {
     display: block;
     position: absolute;
-    content: '\e6be';
+    content: '\a621';
     font-family: "iconfont" !important;
     top: 0;
     right: 4px;
@@ -342,12 +346,12 @@
 .monitor-table td.warning:after {
     display: block;
     position: absolute;
-    content: '\e6be';
+    content: '\a621';
     font-family: "iconfont" !important;
     top: 0;
     right: 4px;
     font-size: 12px;
-    color: #EC4B62;
+    color: @red;
 }
 .report-card {
     margin: 8px 0;
@@ -424,13 +428,13 @@
     display: inline-block;
 }
 .hand.left:before {
-    content: '\e606';
+    content: '\a620';
 }
 .hand.right {
     transform: rotateY(180deg);
 }
 .hand.right:before {
-    content: '\e606';
+    content: '\a620';
 }
 
 .page{

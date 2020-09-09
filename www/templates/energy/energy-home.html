@@ -43,7 +43,7 @@
                     <div id="main_chart" style="width: {{screenWidth}}px;height: {{contentHeight-420 > 270 ? 270 : contentHeight - 420}}px;max-height: 270px;"></div>
                 </div>
                 <!-- app入口 -->
-                <div class="card round-card apps" style="padding: 0;margin-top: 0;" ng-if="stationSn">
+                <div class="card round-card apps energy-card" style="padding: 0;margin-top: 0;" ng-if="stationSn">
                     <ul class="mui-table-view mui-grid-view mui-grid-9 no-border entrance-list" style="background-color: transparent;border-radius: 0;">
                         <li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-4 no-padding no-border" ng-repeat="app in selectedApps">
                             <a style="padding: 6px 0 0 0;" ng-click="openAppPage(app, $index)">
