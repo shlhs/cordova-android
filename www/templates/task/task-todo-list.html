@@ -2,7 +2,7 @@
     <header class="mui-bar bg-header">
         <a class=" mui-icon mui-pull-left" style="font-size: 14px;margin-left: 6px;color: #fff;top:5px;" ng-click="gotoTaskHistory()">{{'task.history' | translate}}</a>
         <h1 class="mui-title">{{'task.todo.my' | translate}}</h1>
-        <a id="taskAddBtn" ng-click="toCreateTask()" class="mui-action-menu mui-icon mui-pull-right" ><i class="header-icon white icon-add"></i></a>
+        <a id="taskAddBtn" ng-click="toCreateTask()" class="mui-action-menu mui-icon mui-pull-right" ><i class="iconfont anticon-plus"></i></a>
     </header>
     <div id="taskList" style="top: 68px;" class="scroll-wrapper">
         <div class="mui-scroll1" ng-if="!isLoading && !loadingFailed">

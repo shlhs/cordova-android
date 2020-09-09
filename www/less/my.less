@@ -185,6 +185,11 @@ input {
         background: @page-header-bg-color;
         box-shadow: none;
     }
+    //.body-content {
+    //    position: static;
+    //    height: 100%;
+    //    padding-top: 60px;
+    //}
 }
 .page-left.ng-enter {
     -webkit-animation: slideInRight 0.5s;
@@ -383,7 +388,7 @@ header.mui-bar{
 .body-content{
     padding-left: 0px;
     padding-right: 0px;
-    padding-top: 0px !important;
+    padding-top: 0px;
     overflow-y: auto;
     overflow-x: hidden;
     position: fixed;
@@ -715,23 +720,11 @@ aside.light .mui-table-view-cell>a:not(.mui-btn){
     width: 24px;
     height: 24px;
 }
-.todo{
-    background-image: url("../img/dark/64X64/todo.png");
-}
-.nav-setting2 {
-    background-image: url('../img/dashboard/icon-home-profile2.jpg');
-}
 .nav-service {
     background-image: url("../img/dashboard/icon-nav-service.png");
 }
 .mui-active>.nav-service {
     background-image: url("../img/dashboard/icon-nav-service-active.png");
-}
-.mui-active>.nav-setting2 {
-    background-image: url('../img/dashboard/icon-home-profile2-active.jpg');
-}
-.mui-active>.nav-icon.todo{
-    background-image: url("../img/dark/64X64/todo_active.png");
 }
 .tab-item.mui-active{
     .iconfont{
@@ -750,14 +743,8 @@ aside.light .mui-table-view-cell>a:not(.mui-btn){
 .energy .nav-icon.nav-sites {
     background-image: url('../img/dashboard/icon-home-energy.jpg');
 }
-.energy .nav-icon.nav-setting {
-    background-image: url('../img/dashboard/icon-home-profile2.jpg');
-}
 .energy>.mui-active>.nav-icon.nav-sites {
     background-image: url('../img/dashboard/icon-home-energy-active.jpg');
-}
-.energy>.mui-active>.nav-icon.nav-setting {
-    background-image: url('../img/dashboard/icon-home-profile2-active.jpg');
 }
 .profile{
 background-image: url("../img/light/64X64/profile.png");
@@ -767,18 +754,6 @@ background-image: url("../img/light/64X64/profile.png");
 }
 .mui-active>.nav-icon.profile{
     background-image: url("../img/dark/64X64/profile_active.png");
-}
-.task-history{
-    background-image: url("../img/dark/64X64/history.png");
-}
-.mui-active>.nav-icon.task-history{
-    background-image: url("../img/dark/64X64/history_active.png");
-}
-.discover{
-    background-image: url("../img/dark/64X64/discover.png");
-}
-.mui-active>.nav-icon.discover{
-    background-image: url("../img/dark/64X64/discover_active.png");
 }
 .nav-horizontal{
     bottom: 0;
@@ -806,11 +781,12 @@ background-image: url("../img/light/64X64/profile.png");
     -webkit-box-orient: vertical;
     -webkit-box-pack: center;
     -webkit-box-align: center;
+    color: @nav-tab-color;
 }
 .nav-horizontal .tab-item .mui-icon~.mui-tab-label{
     display: inline-block;
     padding-top: 6px;
-    color: @nav-tab-color;
+    //color: @nav-tab-color;
     font-size: 12px;
 }
 .mui-active>.mui-tab-label {
@@ -824,9 +800,6 @@ background-image: url("../img/light/64X64/profile.png");
     width: 22px;
     margin-top: 2px;
     display: block;
-}
-.sites{
-    background-image: url("../img/dark/64X64/sites.png");
 }
 .no-station {
     padding-top: 80px;
@@ -844,19 +817,9 @@ background-image: url("../img/light/64X64/profile.png");
     font-size: 14px;
     display: block;
 }
-.building {
-    background-image: url(../img/building.png);
-}
-.motorbike{
-    background-image: url("../img/motorbike.png");
-}
 .msg{
     background-image: url("../img/msg.png");
 }
-.mui-active>.nav-icon.sites{
-    background-image: url("../img/dark/64X64/sites_active.png");
-}
-
 .header-icon{
     background-size: cover;
     background-repeat: no-repeat;
@@ -979,7 +942,6 @@ background-image: url("../img/light/64X64/profile.png");
     }
 }
 .page-alert .alert-icon.warning {
-    //background-image: url(../img/loading-error.png);
     font-family: "iconfont" !important;
 
     &:before {
@@ -1026,9 +988,6 @@ background-image: url("../img/light/64X64/profile.png");
 @-webkit-keyframes loading1 {
     0% {-webkit-transform: rotate(0deg)}
     100% {-webkit-transform: rotate(360deg)}
-}
-.page-alert .alert-icon.loading{
-    background-image: url(../img/loading.png);
 }
 .loading{
     animation: loading1 0.6s;
@@ -1123,27 +1082,6 @@ background-image: url("../img/light/64X64/profile.png");
 }
 .dev-status.offline{
     background-color: darkgrey;
-}
-.bg-red{
-    background-color: #e00202;
-}
-.bg-green{
-    background-color: #08b762;
-}
-.bg-grey{
-    background-color: darkgrey;
-}
-.triangle{
-    width: 24px;
-    height:24px;
-    display: inline-block;
-    background: url(../img/triangle.png) no-repeat;
-}
-.triangle-left {
-    transform: rotate(-90deg);
-}
-.triangle-right {
-    transform: rotate(90deg);
 }
 .mui-card{
     box-shadow: none;
@@ -1342,9 +1280,6 @@ a:hover.slidesjs-stop {
     display: inline-block;
     background-size: cover;
 }
-.event{
-    background-image: url("../img/dark/32X32/event.png");
-}
 .todo-black{
     background-image: url("../img/dark/32X32/todo_black.png");
 }
@@ -1521,15 +1456,6 @@ a:hover.slidesjs-stop {
 .status-top-right{
     top:0px;
     right: 12px;
-}
-.bg-status.danger{
-    background-image: url("../img/station_status/alarm.png");
-}
-.bg-status.normal{
-    background-image: url("../img/station_status/normal.png");
-}
-.bg-status.offline{
-    background-image: url("../img/station_status/offline.png");
 }
 .info-group{
     margin: 0;
@@ -1874,7 +1800,7 @@ header.bg-warning{
 }
 .check-box-item .mui-checkbox input[type=checkbox]:before, .check-box-item .mui-radio input[type=radio]:before {
     font-size: 18px;
-    color: @color-border-light;
+    color: @color-primary;
 }
 
 .device-card{
@@ -2548,18 +2474,6 @@ header.bg-warning{
     float: left;
     margin-top: 16px;
 }
-.calendar-tabs .icon-tab-clock {
-    background-image: url("../img/icon/icon-tab-clock@2x.png");
-}
-.calendar-tabs .active .icon-tab-clock {
-    background-image: url("../img/icon/icon-tab-clock-active@2x.png");
-}
-.calendar-tabs .icon-tab-calendar {
-    background-image: url("../img/icon/icon-calendar@2x.png");
-}
-.calendar-tabs .active .icon-tab-calendar {
-    background-image: url("../img/icon/icon-calendar-active@2x.png");
-}
 .device-tree-container {
     position: absolute;
     top: 45px;
@@ -2638,21 +2552,6 @@ header.bg-warning{
     color: @color-primary;
     margin-top: -1px;
 }
-/*
-.second-list .selected label:before {
-    content: '';
-    display: block;
-    position: absolute;
-    left: -14px;
-    width: 8px;
-    height: 12px;
-    background: url(/img/icon/device-selected-mark@2x.png) 50% no-repeat;
-    -webkit-background-size: 100% 100%;
-    background-size: 100% 100%;
-    top: 50%;
-    margin-top: -8px;
-}
-*/
 .device-list li {
     list-style: none;
     height: 50px;
@@ -3330,7 +3229,7 @@ header .mui-title .dropdown-arrow:after {
     content: '\a610';
     font-family: iconfont;
     display: inline-block;
-    color: #e2533e;
+    color: @red;
     font-size: 12px;
     line-height: 12px;
 }
@@ -3338,7 +3237,7 @@ header .mui-title .dropdown-arrow:after {
     content: '\a611';
     font-family: iconfont;
     display: inline-block;
-    color: #5092E3;
+    color: @color-primary;
     font-size: 12px;
     line-height: 12px;
 }

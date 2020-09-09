@@ -34,13 +34,6 @@
     .mui-card{
         margin: 6px 0;
     }
-    .icon-download{
-        position: absolute;
-        right: 8px;
-        top: 10px;
-        width: 20px;
-        height: 20px;
-    }
     .title{
         margin: 0px 15px;
         font-size: 15px;
@@ -50,12 +43,11 @@
         height: 28px;
     }
 </style>
-<body class="box-vertical-center docs-page" ng-app="myApp" ng-controller="SiteDocsCtrl">
+<body class="box-vertical-center docs-page" ng-app="myApp" ng-controller="SiteDocsCtrl" ng-cloak>
 <header class="mui-bar bg-header">
     <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
     <h1 class="mui-title">{{'menu.device.efile' | translate}}</h1>
 </header>
-<div ng-include="'../../templates/top-menu.html'"></div>
 <div class="body-content" ng-cloak>
     <div style="height: 8px;"></div>
     <div ng-repeat="group in groups" ng-if="!docLoading && !loadingFailed">
@@ -74,7 +66,6 @@
                                 <!-- <span class="mui-pull-right">{{doc.creator}}</span> -->
                             </p>
                         </div>
-                        <!--<i class="mui-pull-right icon icon-ms icon-download"></i>-->
                     </li>
                 </ul>
             </div>

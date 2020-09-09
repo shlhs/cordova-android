@@ -6,14 +6,6 @@
                 <a class=" mui-pull-left site-popover" ng-click="openSiteSelectPage()" ng-show="sites.length > 1" ng-if="!isSiteDetail">站点切换</a>
                 <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()" ng-if="isSiteDetail"></a>
                 <h1 class="mui-title" ng-click="openDeviceSelector()"><label>{{currentDevice ? currentDevice.name : ''}}</label> </h1>
-                <a class="mui-pull-right" href="/templates/site/event-list.html?sn={{currentSite.sn}}&name={{currentSite.name}}" style="position: relative;margin-right: 8px;" ng-if="currentSite.sn">
-                    <i class="icon white icon-events" style="width: 18px;height: 18px;">
-                    </i>
-                    <span class="mui-badge mui-badge-danger" ng-if="currentSite.unclosed_envet_amount"
-                          style="position: absolute;font-size: 9px;top:-8px;left: 10px;font-weight: 300;">
-                        {{currentSite.events_amount}}
-                    </span>
-                </a>
             </header>
         </div>
         <div ng-controller="EnergyHomeCtrl" style="height: calc(100% - 60px);">
