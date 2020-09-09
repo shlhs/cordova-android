@@ -22,15 +22,15 @@ var build = {
     images: ['./build/images', './build/usr/images'],
     lib: './build/lib'
 };
-gulp.src(['www/*', 'node_modules/*']);
+// gulp.src(['www/*', 'node_modules/*']);
 
-gulp.task('js',['jscs', 'jshint'],function(){
-    return gulp
-        .src('./www/**/*.js', {base:'./www/'})
-        .pipe(uglify())
-        .pipe(gulp.dest('./build/'));
+// gulp.task('js', function(){
+//     return gulp
+//         .src('./www/**/*.js', {base:'./www/'})
+//         .pipe(uglify())
+//         .pipe(gulp.dest('./build/'));
 
-});
+// });
 
 gulp.task('webserver', function(){
     gulp.src(['www', 'node_modules'])
