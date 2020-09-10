@@ -13,14 +13,16 @@ var DEFAULT_MENUS = [
             {
                 name: '站点总览',
                 key: 'menu.station.overview',
-                icon: 'icon-kanban',
+                icon: 'app-site-overview',
+                color: 'green',
                 templateUrl: '/templates/site/overview.html',
                 url: 'site-overview',
                 defaultChecked: true
             }, {
                 name: '画面',
                 key: 'menu.monitor.screen',
-                icon: 'icon-monitor',
+                icon: 'app-graph',
+                color: 'blue',
                 templateUrl: '/templates/site/monitor-list.html',
                 url: 'site-monitors',
                 sn: 'station-monitor/monitor-screen-v2',
@@ -28,7 +30,8 @@ var DEFAULT_MENUS = [
             }, {
                 name: '设备监测',
                 key: 'menu.monitor.device',
-                icon: 'icon-device-monitor',
+                icon: 'app-device-monitor',
+                color: 'green',
                 templateUrl: '/templates/site/device-monitor-list.html',
                 url: 'device-monitor',
                 sn: 'station-monitor/device-monitor',
@@ -37,7 +40,8 @@ var DEFAULT_MENUS = [
             {
                 name: '视频监控',
                 key: 'menu.monitor.video',
-                icon: 'icon-video-monitor',
+                icon: 'app-video',
+                color: 'green',
                 templateUrl: '/templates/video-monitor/video-monitor.html',
                 url: 'video-monitor',
                 sn: 'station-monitor/video-monitor',
@@ -46,7 +50,8 @@ var DEFAULT_MENUS = [
             {
                 name: '设备档案',
                 key: 'menu.device.document',
-                icon: 'icon-archives',
+                icon: 'app-static-devices',
+                color: 'blue',
                 templateUrl: '/templates/site/static-devices/device-home.html',
                 url: 'static-devices',
                 sn: 'station-monitor/device-documents',
@@ -54,7 +59,8 @@ var DEFAULT_MENUS = [
             }, {
                 name: '月度报告',
                 key: 'menu.station.report',
-                icon: 'icon-reports',
+                icon: 'app-report',
+                color: 'green',
                 templateUrl: '/templates/site/reports.html',
                 url: 'monthly-report',
                 sn: 'station-monitor/month-report',
@@ -62,7 +68,8 @@ var DEFAULT_MENUS = [
             }, {
                 name: '电子档案',
                 key: 'menu.device.efile',
-                icon: 'icon-docs',
+                icon: 'app-docs',
+                color: 'blue',
                 templateUrl: '/templates/site/docs.html',
                 url: 'site-documents',
                 sn: 'station-monitor/e-file',
@@ -70,7 +77,8 @@ var DEFAULT_MENUS = [
             }, {
                 name: '历史曲线',
                 key: 'menu.station.dataline',
-                icon: 'icon-history-line',
+                icon: 'app-dataline',
+                color: 'cyan',
                 templateUrl: '/templates/site-monitor/data-line.html',
                 url: 'data-line',
                 sn: 'station-monitor/data-line',
@@ -78,7 +86,8 @@ var DEFAULT_MENUS = [
             }, {
                 name: '历史报表',
                 key: 'menu.station.history',
-                icon: 'icon-history-report',
+                icon: 'app-data-history',
+                color: 'green',
                 templateUrl: '/templates/site-monitor/data-history.html',
                 url: 'data-history',
                 sn: 'station-monitor/data-report-v2',
@@ -93,6 +102,7 @@ var DEFAULT_MENUS = [
                 name: '服务申请',
                 key: 'menu.ops.create',
                 icon: 'icon-add-task',
+                color: 'orange',
                 templateUrl: '/templates/task/add-task.html',
                 url: 'add-task',
                 sn: 'ops-management/add-task',
@@ -101,7 +111,8 @@ var DEFAULT_MENUS = [
             }, {
                 name: '缺陷记录',
                 key: 'menu.ops.defect',
-                icon: 'icon-dashboard-dts',
+                icon: 'warning',
+                color: 'orange',
                 templateUrl: '/templates/dts/dts-list.html',
                 url: 'dts-list',
                 sn: 'ops-management/defect-tasks',
@@ -110,7 +121,8 @@ var DEFAULT_MENUS = [
             }, {
                 name: '安全评测',
                 key: 'menu.ops.security',
-                icon: 'icon-security',
+                icon: 'app-security',
+                color: 'green',
                 templateUrl: '/templates/evaluate/evaluate-history.html',
                 sn: 'ops-management',
                 url: 'evaluate-security',
@@ -119,7 +131,8 @@ var DEFAULT_MENUS = [
             }, {
                 name: '停电维护',
                 key: 'menu.ops.poweroff',
-                icon: 'icon-poweroff',
+                icon: 'app-poweroff',
+                color: 'red',
                 templateUrl: '/templates/maintenance-check/check-history.html',
                 sn: 'ops-management',
                 url: 'poweroff-maintenance',
@@ -134,7 +147,8 @@ var DEFAULT_MENUS = [
             {
                 name: '用能统计',
                 key: 'menu.energy.stat',
-                icon: 'icon-energy-statistics',
+                icon: 'app-energy-statistics',
+                color: 'red',
                 templateUrl: '/templates/energy/statistics.html',
                 url: 'energy-overview',
                 sn: 'energy/overview',
@@ -142,7 +156,8 @@ var DEFAULT_MENUS = [
             }, {
                 name: '用能报表',
                 key: 'menu.energy.dataline',
-                icon: 'icon-energy-history',
+                icon: 'app-energy-report',
+                color: 'cyan',
                 templateUrl: '/templates/energy/energy-report.html',
                 url: 'energy-report',
                 sn: 'energy/report',
@@ -150,7 +165,8 @@ var DEFAULT_MENUS = [
             }, {
                 name: '抄表',
                 key: 'menu.energy.meterreading',
-                icon: 'icon-energy-reading',
+                icon: 'app-meterreading',
+                color: 'orange',
                 templateUrl: '/templates/energy/meter-reading.html',
                 sn: 'energy/meter-reading',
                 url: 'energy-meter-reading',
@@ -164,43 +180,40 @@ var DEFAULT_ENERGY_MENUS = [
     {
         name: '用电概况',
         key: 'menu.energy.overview',
-        icon: 'icon-dashboard-energy-overview',
+        icon: 'app-degree-overview',
+        color: 'blue',
         templateUrl: '/templates/energy/overview.html'
     }, {
         name: '电费分析',
         key: 'menu.energy.cost',
-        icon: 'icon-dashboard-energy-cost-analysis',
+        icon: 'app-energy-statistics',
+        color: 'cyan',
         templateUrl: '/templates/energy/cost-analysis.html'
     }, {
         name: '用电负荷',
         key: 'menu.energy.load',
-        icon: 'icon-dashboard-energy-charge',
+        icon: 'app-load',
+        color: 'cyan',
         templateUrl: '/templates/energy/load-analysis.html'
     }, {
         name: '最大需量',
         key: 'menu.energy.maxdemand',
-        icon: 'icon-dashboard-energy-max-demand',
+        icon: 'app-max-demand',
+        color: 'green',
         templateUrl: '/templates/energy/max-demand.html'
     }, {
         name: '电能质量',
         key: 'menu.energy.quality.monitor',
-        icon: 'icon-dashboard-energy-monitor',
+        icon: 'app-quality',
+        color: 'green',
         templateUrl: '/templates/energy/quality-monitor.html'
     }, {
         name: '质量报告',
         key: 'menu.energy.quality.report',
-        icon: 'icon-dashboard-energy-quality-report',
+        icon: 'app-quality-report',
+        color: 'green',
         templateUrl: '/templates/energy/quality-report.html'
     },
-    // {
-    //     name: '设备监控',
-    //     icon: 'icon-device-monitor-new',
-    //     templateUrl: '/templates/site/device-monitor-list.html'
-    // }, {
-    //     name: '设备档案',
-    //     icon: 'icon-archives-new',
-    //     templateUrl: '/templates/site/static-devices/device-home.html'
-    // }
 ];
 
 app.service('appStoreProvider', ['$translate', function ($translate) {

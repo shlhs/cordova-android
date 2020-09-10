@@ -306,22 +306,23 @@
                 </div>
             </div>
         </div>
+        <!-- 安全评测 -->
         <div ng-if="taskData.stage_id===4 || taskData.stage_id === 5 || taskData.stage_id === 8"> <!-- 只有用户接单并到现场后才能看到报告 -->
             <div class="mui-card card" ng-if="taskData.task_type_id===1" ng-click="gotoHandleTask()">
                 <div class="mui-card-content mui-navigate-right">
                     <div class="mui-card-content-inner" style="padding: 2px 6px;">
-                        <i class="icon icon-ms icon-security pull-left" style="margin-top:8px;margin-right:8px;"></i>
+                        <i class="iconfont anticon-app-security app-icon orange pull-left" style="margin-top:8px;margin-right:8px;"></i>
                         <div class="mui-media-body" style="line-height: 40px;font-size: 1.2em;">
                             {{ 'task.security.report.view' | translate }}
                         </div>
                     </div>
                 </div>
             </div>
-
+            <!-- 停电维护 -->
             <div class="mui-card card" ng-if="taskData.task_type_id===6" ng-click="gotoHandleTask()">
                 <div class="mui-card-content mui-navigate-right">
                     <div class="mui-card-content-inner" style="padding: 2px 6px;">
-                        <i class="icon icon-ms icon-poweroff pull-left" style="margin-top:8px;margin-right:8px;"></i>
+                        <i class="iconfont anticon-app-poweroff app-icon orange pull-left" style="margin-top:8px;margin-right:8px;"></i>
                         <div class="mui-media-body" style="line-height: 40px;font-size: 1.2em;">
                             {{ 'task.poweroff.report.view' | translate }}
                         </div>

@@ -742,12 +742,6 @@ aside.light .mui-table-view-cell>a:not(.mui-btn){
     width: 24px;
     height: 24px;
 }
-.nav-service {
-    background-image: url("../img/dashboard/icon-nav-service.png");
-}
-.mui-active>.nav-service {
-    background-image: url("../img/dashboard/icon-nav-service-active.png");
-}
 .tab-item.mui-active{
     .iconfont{
         color: @color-primary;
@@ -761,21 +755,6 @@ aside.light .mui-table-view-cell>a:not(.mui-btn){
             color: @nav-tab-color;
         }
     }
-}
-.energy .nav-icon.nav-sites {
-    background-image: url('../img/dashboard/icon-home-energy.jpg');
-}
-.energy>.mui-active>.nav-icon.nav-sites {
-    background-image: url('../img/dashboard/icon-home-energy-active.jpg');
-}
-.profile{
-background-image: url("../img/light/64X64/profile.png");
-}
-.nav-icon.profile{
-    background-image: url("../img/dark/64X64/profile.png");
-}
-.mui-active>.nav-icon.profile{
-    background-image: url("../img/dark/64X64/profile_active.png");
 }
 .nav-horizontal{
     bottom: 0;
@@ -1141,7 +1120,42 @@ background-image: url("../img/light/64X64/profile.png");
     display: inline-block;
     margin-top: 6px;
 }
+.app-icon {
+    font-size: 20px;
+    display: block;
+    margin-bottom: 8px;
 
+    &.green {
+        background: @app-icon-color-green;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    &.blue {
+        background: @app-icon-color-blue;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    &.cyan {
+        background: @app-icon-color-cyan;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    &.orange {
+        background: @app-icon-color-orange;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    &.red {
+        background: @app-icon-color-red;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    &.grey {
+        background: @app-icon-color-grey;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+}
 #slides {
     position:fixed;
     top:0px;

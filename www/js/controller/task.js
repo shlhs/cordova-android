@@ -459,7 +459,7 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
                 id: 'my_tasks',
                 name: $myTranslate.instant('tab.om'),
                 templateUrl: '/templates/task/user-task-list.html',
-                icon: 'nav-service'
+                icon: 'nav-all-tasks'
             };
         }
         return null;
