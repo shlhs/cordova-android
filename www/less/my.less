@@ -38,6 +38,7 @@ div {
 .mui-poppicker-header .mui-btn.mui-poppicker-btn-ok {
     background-color: @btn-primary-bg;
     border-color: @btn-primary-border;
+    opacity: 1;
 }
 .mui-picker {
     background-color: @mui-picker-body;
@@ -127,11 +128,14 @@ div {
 .mui-table-view-cell.mui-active {
     background-color: fade(@mui-picker-body, 95);
 }
-input {
+input, textarea {
     background-color: @input-bg;
 }
 .mui-table-view:before, .mui-table-view:after {
     background-color: @color-divider;
+}
+.mui-icon.mui-active {
+    color: @color-primary;
 }
 /* mui重写 end */
 
@@ -161,7 +165,11 @@ input {
     color: @color-text-secondary !important;;
 }
 .text-link {
-    color: @color-text-link !important;;
+    color: @color-text-link !important;
+
+    &:hover {
+
+    }
 }
 .color-success {
     color: @color-success !important;
@@ -463,6 +471,12 @@ header.mui-bar{
     margin: 0;
     width: 100%;
     height: 100%;
+
+    &.center {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 }
 .image-list:after{
     content: '';
@@ -533,6 +547,7 @@ header.mui-bar{
     opacity: 0;
     display: inline-block;
     position: relative;
+    top: 0;
 }
 .image-item .img-file{
     float: left;
@@ -2972,6 +2987,19 @@ header.bg-warning{
     -webkit-box-orient: vertical;
     -webkit-box-align: center;
     -webkit-box-pack: center;
+
+    &.no-picture {
+        color: @color-text-secondary;
+
+        .iconfont {
+            font-size: 24px;
+            display: block;
+            margin-bottom: 8px;
+        }
+        div {
+            color: @color-text-secondary;
+        }
+    }
 }
 .device-img-wrapper .img:last-child {
     margin-right: 0;
@@ -2990,7 +3018,7 @@ header.bg-warning{
     position: relative;
 }
 .static-device-list .device-body {
-    border-bottom: #E6E6E6 1px solid;
+    border-bottom: @color-border-base 1px solid;
     width: ~'calc(100% - 24px)';
     padding: 12px 12px 8px 8px;
     position: relative;

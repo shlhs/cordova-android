@@ -464,6 +464,7 @@
   "overview": "Overview",
   "realtime": "Real-time",
   "none": "No",
+  "abnormal": "abnormal",
 
   "select.daily": "by Day",
   "select.monthly": "by Month",

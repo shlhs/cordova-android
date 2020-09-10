@@ -143,8 +143,8 @@
                         <li ng-if="taskData.current_handler">
                             <label class="title">{{ 'task.person.current' | translate }}</label>
                             <div class="value" style="padding-left: 80px;">
-                                <div ng-repeat="user in taskData.current_handler_users">
-                                    <a ng-click="callPhone(user.phone)">{{user.name}}</a>
+                                <div ng-repeat="user in taskData.current_handler_users" ng-click="callPhone(user.phone)">
+                                    {{user.name}}
                                 </div>
                             </div>
                         </li>
@@ -154,8 +154,8 @@
                         <li ng-if="taskData.operator">
                             <label class="title">{{ 'task.repairer' | translate }}</label>
                             <span class="value" style="margin-left: 80px;">
-                                <div ng-repeat="user in taskData.operator_users">
-                                    <a ng-click="callPhone(user.phone)">{{user.name}}</a>
+                                <div ng-repeat="user in taskData.operator_users" ng-click="callPhone(user.phone)">
+                                    {{user.name}}
                                 </div>
                             </span>
                         </li>
@@ -185,8 +185,8 @@
                         </li>
                         <li>
                             <label class="title">{{ 'owner' | translate }}</label>
-                            <span class="value" style="padding-left: 80px;">
-                                <a ng-click="callPhone(taskData.creater_user.phone)">{{taskData.creater_user.name}}</a>
+                            <span class="value" style="padding-left: 80px;" ng-click="callPhone(taskData.creater_user.phone)">
+                                {{taskData.creater_user.name}}
                             </span>
                         </li>
                         <li>
@@ -195,8 +195,8 @@
                         <li ng-if="taskData.operator">
                             <label class="title">{{'inspect.repairer' | translate}}</label>
                             <span class="value" style="padding-left: 80px;">
-                                <div ng-repeat="user in taskData.operator_users">
-                                    <a ng-click="callPhone(user.phone)">{{user.name}}</a>
+                                <div ng-repeat="user in taskData.operator_users" ng-click="callPhone(user.phone)">
+                                    {{user.name}}
                                 </div>
                             </span>
                         </li>
@@ -336,7 +336,7 @@
         <nav class="mui-bar mui-bar-tab bg-transparent task-btn-bottom" ng-if="actions.length" style="height: 40px;">
             <a href="#" ng-repeat="action in actions">
                 <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-btn-outlined mui-control-item task-btn"
-                        ng-click="taskHandler.execute(action.id)" style="background-color: {{action.color}}">{{action.name}}</button>
+                        ng-click="taskHandler.execute(action.id)" ng-style="{'backgroundColor': action.color}">{{action.name}}</button>
             </a>
         </nav>
         <team-and-handler-selector ng-if="taskData.stage_id === TaskStatus.ToAssign" on-hide="taskHandler.assignHandlers"

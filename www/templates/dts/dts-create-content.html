@@ -12,7 +12,7 @@
         <div class="mui-input-row" style="padding-bottom: 8px;">
             <label class="label required" style="padding-bottom: 0">{{'device' | translate}}</label>
             <button class="mui-btn mui-btn-block" type="button" ng-click="openDeviceSelector()" ng-if="!isForDevice" style="font-size: 14px;text-align: left;padding-left: 0;padding-bottom: 0;min-height: 36px;">{{'select' | translate}}</button>
-            <div class="devices">
+            <div class="devices" style="padding-left: 115px;">
                 <a ng-repeat="d in devices" class="device-name" ng-click="showDeviceDetail(d)">{{d.name}};</a>
             </div>
             <label class="error" ng-show="deviceEmptyError" style="margin-top: 0;">

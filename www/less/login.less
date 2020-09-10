@@ -1,151 +1,235 @@
-@import './theme/index.less';
+//@import './theme/index.less';
 html,body{
     font-family:SimHei,'Helvetica Neue',Arial,'Droid Sans',sans-serif;
     padding: 0;
     margin: 0;
     position: relative;
     height: 100%;
-    width: 100%;
+    //width: 100%;
     overflow: hidden;
 }
-.main-icon {
-    margin-top: 20%;
-    width: 57%;
-    margin-left: 21.5%;
-}
-.login-area {
-    padding: 0;
-    overflow: hidden;
+.toast {
+    position: fixed;
+    bottom: 28px;
     left: 0;
     width: 100%;
-    bottom: 40px;
-    margin-top: 12%;
-}
-.form-item {
-    border-bottom: @color-border-light 1px solid;
-    padding: 2px 0;
-    box-sizing: border-box;
-    margin: 0 44px;
-    position: relative;
-}
-.form-item label {
-    color: @color-text-reverse;
-    font-size: 16px;
-    position: absolute;
-    left: 0;
-    line-height: 46px;
-    // margin-left: 12px;
-    /*top: 2px;*/
-}
-.form-item input {
-    outline: none;
-    border: none;
-    padding-left: 84px;
-    /*width: calc(100% - 115px);*/
-    font-size: 18px;
-    line-height: 46px;
-    margin: 0;
-    color: @color-text-reverse;
-    background-color: transparent;
-}
-.form-item .password-not-seen {
-    width: 16px;
-    height: 16px;
-    display: inline-block;
-    background: url("../img/login/password-not-seen.png") no-repeat 50%;
-    background-size: 100% 100%;
-    position: absolute;
-    right: 6px;
-    top: 12px;
-}
-.form-item .password-can-seen {
-    width: 20px;
-    height: 20px;
-    display: inline-block;
-    background: url("../img/login/password-can-seen.png") no-repeat 50%;
-    background-size: 100% 100%;
-    position: absolute;
-    right: 6px;
-    top: 12px;
-}
-input::-webkit-input-placeholder {
-    color: @color-text-placeholder;
-}
-input::-moz-placeholder {
-    color: @color-text-placeholder;
-}
-.login-btn {
-    background-color: lighten(@color-primary, 20%);
-    border-radius: 4px;
-    margin: 20px 4% 0 4%;
-    box-sizing: border-box;
-    height: 48px;
-    line-height: 48px;
     text-align: center;
-    font-size: 18px;
-    color: @color-text-primary;
+
+    .msg {
+        border-radius: 4px;
+        color: #fff;
+        font-size: 14px;
+        display: inline-block;
+        padding: 4px 8px;
+    }
+
 }
-.login-btn.enable {
-    background-color: @color-primary;
-}
-.error{
-    color: @red;
-    padding-left: 20px;
-    margin-top: 10px;
-}
-@media screen and (max-height: 600px) {
+.light-login {
+    .toast .msg {
+        background: rgba(0,0,0,0.7);
+    }
     .main-icon {
-        margin-top: 15%;
+        margin-top: 20%;
+        width: 57%;
+        margin-left: 21.5%;
     }
     .login-area {
-        margin-top: 10%;
+        padding: 0;
+        overflow: hidden;
+        left: 0;
+        width: 100%;
+        bottom: 40px;
+        margin-top: 12%;
+    }
+    .form-item {
+        border-bottom: rgb(232,232,232) 1px solid;
+        padding: 2px 0;
+        box-sizing: border-box;
+        margin: 0 44px;
+        position: relative;
+    }
+    .form-item label {
+        color: rgb(1,1,1);
+        font-size: 18px;
+        position: absolute;
+        left: 0;
+        line-height: 46px;
+        /*top: 2px;*/
+    }
+    .form-item input {
+        outline: none;
+        border: none;
+        padding-left: 84px;
+        /*width: calc(100% - 115px);*/
+        font-size: 18px;
+        line-height: 46px;
+        margin: 0;
+    }
+    input:-webkit-autofill {
+        background-color: rgba(91, 155, 174, 0.7) !important;
+        color: #FFF !important;
+    }
+    input::-webkit-input-placeholder {
+        /* placeholder颜色  */
+        color: rgb(187,187,187);
+    }
+    input::-moz-placeholder {
+        /* placeholder颜色  */
+        color: rgb(187,187,187);
+    }
+    .form-item .iconfont {
+        color: #333;
+        position: absolute;
+        right: 4px;
+        padding: 8px;
+        bottom: 10px;
     }
     .login-btn {
-        margin-top: 30px;
-        height: 40px;
-        line-height: 40px;
+        background-color: rgb(195,227,249);
+        border-radius: 4px;
+        margin: 20px 4% 0 4%;
+        box-sizing: border-box;
+        height: 48px;
+        line-height: 48px;
+        text-align: center;
+        font-size: 18px;
+        color: #fff;
+    }
+    .login-btn.enable {
+        background-color: #108ee9;
+    }
+    .error{
+        color: red;
+        padding-left: 20px;
+        margin-top: 10px;
+    }
+    @media screen and (max-height: 600px) {
+        .main-icon {
+            margin-top: 15%;
+        }
+        .login-area {
+            margin-top: 10%;
+        }
+        .login-btn {
+            margin-top: 30px;
+            height: 40px;
+            line-height: 40px;
+        }
+    }
+    .login-checkbox {
+        position: relative;
+        color: #666;
+        font-size: 14px;
+    }
+    .login-checkbox input[type=checkbox] {
+        position: absolute;
+        display: inline-block;
+        outline: 0!important;
+        background-color: transparent;
+        -webkit-appearance: none;
+        border: #d2d2d2 1px solid;
+        border-radius: 4px;
+        width: 16px;
+        height: 16px;
+        top: -2px;
+        left: 0;
+    }
+    .login-checkbox label {
+        display: inline-block;
+        float: none;
+        width: 100%;
+        padding-left: 24px;
+    }
+    .login-checkbox input[type=checkbox]:checked {
+        background-color: #007aff;
+        border-color: #007aff;
+    }
+    .login-checkbox input[type=checkbox]:checked:before{
+        content: '';
+        position: absolute;
+        display: block;
+        width: 8px;
+        height: 4px;
+        border-left: #fff 2px solid;
+        border-bottom: #fff 2px solid;
+        transform: rotate(-45deg);
+        top: 2px;
+        left: 2px;
     }
 }
-.login-checkbox {
-    position: relative;
-    color: @color-text-regular;
-    font-size: 14px;
-}
-.login-checkbox input[type=checkbox] {
-    position: absolute;
-    display: inline-block;
-    outline: 0!important;
-    background-color: transparent;
-    -webkit-appearance: none;
-    border: @color-border-base 1px solid;
-    border-radius: 4px;
-    width: 16px;
-    height: 16px;
-    top: -2px;
-    left: 0;
-}
-.login-checkbox label {
-    display: inline-block;
-    float: none;
-    width: 100%;
-    padding-left: 24px;
-}
-.login-checkbox input[type=checkbox]:checked {
-    background-color: @color-primary;
-    border-color: @color-primary;
-}
-.login-checkbox input[type=checkbox]:checked:before{
-    content: '';
-    position: absolute;
-    display: block;
-    width: 8px;
-    height: 4px;
-    border-left: @color-border-base 2px solid;
-    border-bottom: @color-border-base 2px solid;
-    transform: rotate(-45deg);
-    top: 2px;
-    left: 2px;
-}
-input::placeholder {
-    font-size: 14px;
+.dark-login {
+
+    background: url("../img/login-bg-dark.png") 50% no-repeat;
+    background-size: cover;
+    padding: 0 23px;
+    height: 100%;
+    overflow: hidden;
+
+    .toast .msg {
+        background: #5B9BAE;
+    }
+
+    .form-item {
+        margin-top: 18px;
+        position: relative;
+    }
+    .form-item label {
+        color: rgba(254, 254, 255, 0.3);
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+    input {
+        background-color: rgba(91, 155, 174, 0.7);
+        height: 60px;
+        outline: none;
+        border: none;
+        border-radius: 10px;
+        padding-left: 28px;
+        width: ~'calc(100% - 28px)';
+        font-size: 18px;
+        color: #FFF;
+    }
+    input:-webkit-autofill {
+        background-color: rgba(91, 155, 174, 0.7) !important;
+        color: #FFF !important;
+    }
+    ::-webkit-input-placeholder {
+        color: rgba(254, 254, 255, 0.6);
+    }
+    :-ms-input-placeholder { // IE10+
+        color: rgba(254, 254, 255, 0.6);
+    }
+    :-moz-placeholder { // Firefox4-18
+        color: rgba(254, 254, 255, 0.6);
+    }
+    ::-moz-placeholder { // Firefox19+
+        color: rgba(254, 254, 255, 0.6);
+    }
+    .login-btn {
+        background-color: rgba(3, 154, 163, 0.6);
+        color: #ccc;
+        height: 60px;
+        outline: none;
+        border: none;
+        border-radius: 10px;
+        width: 100%;
+        font-size: 18px;
+        line-height: 60px;
+        text-align: center;
+        margin-top: 50px;
+    }
+    .login-btn.enable {
+        background-color: #039AA3;
+        color: #FFF;
+    }
+    .toast {
+        bottom: 30px;
+    }
+    .form-item .iconfont {
+        color: #FFF;
+        position: absolute;
+        right: 4px;
+        padding: 8px;
+        bottom: 14px;
+    }
 }

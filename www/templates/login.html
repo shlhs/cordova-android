@@ -7,9 +7,10 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta http-equiv="Access-Control-Allow-Origin" content="*">
-    <link rel="stylesheet" href="../components/mui/css/icons-extra.css">
-    <link rel="stylesheet" href="../css/setting.css">
+    <!--<link rel="stylesheet" href="../components/mui/css/icons-extra.css">-->
+    <!--<link rel="stylesheet" href="../css/setting.css">-->
     <link rel="stylesheet" href="../css/login.css">
+    <link rel="stylesheet" href="../css/iconfont/iconfont.css">
     <script type="text/javascript" src="../components/libs/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="../components/angular/angular.min.js"></script>
     <script type="text/javascript" src="../components/angular-ui-router/release/angular-ui-router.min.js"></script>
@@ -22,23 +23,25 @@
     <!--<script type="text/javascript" src="../js/lib/jwt/jwt-token.js"></script>-->
     <script type="text/javascript" src="../js/app/app.js"></script>
     <script type="text/javascript" src="../js/service/common-service.js"></script>
-<body class="box-vertical-center" ng-app="myApp" >
-    <img class="main-icon" src="../img/login/login-icon.png">
-    <div class="login-area" ng-controller="LoginCtrl">
+<body class="box-vertical-center" ng-app="myApp" ng-cloak ng-controller="LoginCtrl" ng-class="isDark ? 'dark-login' : 'light-login'">
+    <img class="main-icon" src="../img/login/login-icon.png" ng-if="!isDark">
+    <div style="color: rgba(255, 255, 255, 0.6);font-size: 25px;margin-top: 15%;" ng-if="isDark">欢迎使用</div>
+    <div style="color: #FFF; font-size: 30px;" ng-if="isDark">{{appName}}</div>
+    <div class="login-area">
         <div class="login-form">
             <div class="form-item" ng-show="platformCodeVisible">
-                <label for="platform">{{ 'login.code' | translate}}</label>
-                <input type="text" id="platform" placeholder="{{'login.code.placeholder' | translate}}" ng-model="platformCode" ng-change="inputChange('platformCode')"></div>
+                <label>{{ 'login.code' | translate}}</label>
+                <input type="text" placeholder="{{'login.code.placeholder' | translate}}" ng-model="platformCode" ng-change="inputChange('platformCode')"></div>
             <div class="form-item">
-                <label for="username">{{ 'login.account' | translate }}</label>
-                <input type="text" id="username" ng-model="username" ng-change="inputChange('username')" placeholder="{{ 'login.account.placeholder' | translate }}">
+                <label>{{ 'login.account' | translate }}</label>
+                <input type="text" ng-model="username" ng-change="inputChange('username')" placeholder="{{ 'login.account.placeholder' | translate }}">
             </div>
             <div class="form-item">
-                <label for="password">{{ 'login.pwd' | translate }}</label>
-                <input type="password" id="password" ng-model="password" ng-change="inputChange('password')" placeholder="{{ 'login.pwd.placeholder' | translate }}" ng-show="!passwordVisible">
-                <i class="password-not-seen" ng-if="!passwordVisible" ng-click="togglePasswordVisible()"></i>
+                <label>{{ 'login.pwd' | translate }}</label>
+                <input type="password" ng-model="password" ng-change="inputChange('password')" placeholder="{{ 'login.pwd.placeholder' | translate }}" ng-show="!passwordVisible">
+                <i class="iconfont anticon-password-not-seen" ng-if="!passwordVisible" ng-click="togglePasswordVisible()"></i>
                 <input type="text" ng-model="password" ng-change="inputChange('password')" placeholder="{{ 'login.pwd.placeholder' | translate }}" ng-show="passwordVisible">
-                <i class="password-can-seen" ng-if="passwordVisible" ng-click="togglePasswordVisible()"></i>
+                <i class="iconfont anticon-password-seen" ng-if="passwordVisible" ng-click="togglePasswordVisible()"></i>
             </div>
             <div class="login-btn" ng-class="{'enable': enable}" ng-click="login()">
                 <span ng-if="!isLogin">{{ 'login' | translate}}</span>

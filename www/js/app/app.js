@@ -13,6 +13,7 @@ var gIsEnergyPlatform = false; // 是否是能源管理平台，是的话部分�
 var gEnableDeviceMap = false; // 是否显示设备档案地图
 var LANGUAGE = 'zh-CN'; //如果需要根据手机系统来自动切换的话，使用：getStorageItem('LANGUAGE') || "zh-CN";
 var gIsEnglish = LANGUAGE === 'en-US';
+var gTheme = 'dark'; // 主题色 light/dark
 var gShowRecheck = true; // 是否显示复测内容
 
 function setSystemLanguage(language) {

@@ -465,6 +465,7 @@
   "overview": "总览",
   "realtime": "实时",
   "none": "无",
+  "abnormal": "异常",
 
   "select.daily": "按日",
   "select.monthly": "按月",

@@ -99,7 +99,7 @@ function formatTaskStatusName(task) {   // 根据任务状态转换任务描述
             break;
         case TaskTypes.FatalDts:
             icon = 'defect danger';
-            break;dts
+            break;
         case TaskTypes.Jianxiu:
             icon = 'jianxiu';
             break;
@@ -1533,7 +1533,7 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
                 res.forEach(function (action, i) {
                     var obj = TaskActionName[action.id];
                     var name = action.name;
-                    var color = obj.color || '#03a9f4';
+                    var color = obj.color;
                     if (action.id === TaskAction.Update && task.task_type_id === TaskTypes.Xunjian) {
                         name = $myTranslate.instant('task.action.checkdevice');
                     }
@@ -1898,22 +1898,25 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
             });
         },
         assignHandlers: function () {       // 指定责任人
-            // $scope.assignPickerVisible = !$scope.assignPickerVisible;
-            routerService.openPage($scope, '/templates/task/task-assign-modal.html', {
-                task: $scope.taskData,
-                teams: $scope.teams,
-                onSuccess: function (data) {
-                    $scope.recheckResult = data;
-                    if (comment.pictures) {
-                        var pictureList = [];
-                        data.pictures.split(',').forEach(function (url) {
-                            pictureList.push(platformService.getCloudHost() + url);
-                        });
-                        $scope.recheckResult.picture_list = pictureList;
+            if ([TaskTypes.NormalDts, TaskTypes.FatalDts, TaskTypes.SeriousDts].indexOf($scope.taskData.task_type_id) >= 0) { // 缺陷
+                routerService.openPage($scope, '/templates/task/task-assign-modal.html', {
+                    task: $scope.taskData,
+                    teams: $scope.teams,
+                    onSuccess: function (data) {
+                        $scope.recheckResult = data;
+                        if (comment.pictures) {
+                            var pictureList = [];
+                            data.pictures.split(',').forEach(function (url) {
+                                pictureList.push(platformService.getCloudHost() + url);
+                            });
+                            $scope.recheckResult.picture_list = pictureList;
+                        }
+                        $scope.$apply();
                     }
-                    $scope.$apply();
-                }
-            });
+                });
+            } else { // 非缺陷
+                $scope.assignPickerVisible = !$scope.assignPickerVisible;
+            }
         },
         transferHandler: function () {      // 转单
             $scope.transferPickerVisible = !$scope.transferPickerVisible;
@@ -2070,7 +2073,7 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
                 canHandle: $scope.canHandle && $scope.taskData.stage_id === TaskStatus.Arrived,
                 recountFunc: $scope.recountCheckedDevices
             }, {
-                hidePrev: false
+                hidePrev: true
             }
         );
     };

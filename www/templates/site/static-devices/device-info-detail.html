@@ -4,9 +4,9 @@
     </a>
     <div class="device-img-wrapper">
         <ul class="container">
-            <li class="img device-img"
+            <li class="img device-img no-picture"
                 style="background-image: url({{device.device_photo_src_link}});background-position: center;background-repeat: no-repeat; background-size: contain;">
-                <i class="icon icon-no-picture icon-36" ng-if="!device.device_photo_src_link"></i>
+                <i class="iconfont anticon-picture-empty" ng-if="!device.device_photo_src_link"></i>
                 <div style="font-size: 13px;margin-top: -4px;" ng-if="!device.device_photo_src_link">{{'tip.nopicture' | translate}}</div>
             </li>
             <li class="img qr"
