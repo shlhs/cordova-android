@@ -13,8 +13,7 @@
         <div ng-if="!datas.length"  ng-click="toggle()">{{'energy.noitem' | translate}}</div>
         <div style="position: absolute; bottom: 0;width: 100%;height: 48px;line-height: 48px;padding: 0;margin: 0;">
             <a class="cancel-btn" style="height: 100%;float: left; width: 50%;text-align: center;" ng-click="onCancel()">{{'cancel' | translate}}</a>
-            <a ng-click="toggle()"
-               style="height: 100%;float: left; width: 50%;text-align: center;background: linear-gradient(to bottom left, #4063DF, #6C93F2);color: #fff;">
+            <a class="ok-btn" ng-click="toggle()">
                 {{'confirm' | translate}}
             </a>
         </div>

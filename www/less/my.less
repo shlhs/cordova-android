@@ -1982,13 +1982,18 @@ header.bg-warning{
                 font-size: 21px;
             }
             .event-badge{
-                width: 6px;
-                height: 6px;
-                padding: 0;
-                border-radius: 3px;
+                //width: 6px;
+                //height: 6px;
+                //padding: 0;
+                //border-radius: 3px;
+                //position: absolute;
+                //top: 3px;
+                //right: 1px;
                 position: absolute;
-                top: 3px;  
-                right: 1px;
+                font-size: 9px;
+                top: -8px;
+                left: 10px;
+                font-weight: 300;
             }
         }
     }
@@ -2874,6 +2879,7 @@ header.bg-warning{
 .checkbox-tree .checkbox-square {
     position: absolute;
     left: 0;
+    top: 8px;
 }
 .mui-checkbox .checkbox {
     font-size: 16px;
@@ -3124,6 +3130,7 @@ header.bg-warning{
     display: -webkit-box;
     //background-color: @color-bg-regular;
     //margin-bottom: 6px;
+
 }
 .selector-group:after {
     content: '';
@@ -4166,10 +4173,10 @@ table.dataTable tbody th, table.dataTable tbody td {
         background-color: transparent;
     }
     table.dataTable.stripe tbody tr.even{
-        background-color: fade(@color-bg-primary, 70);
+        background-color: @table-bg-even;
     }
     table.dataTable thead th {
-        background-color: fade(@color-bg-primary, 90);
+        background-color: @table-bg-odd;
     }
     div.dataTables_wrapper {
         width: 100%;
@@ -4185,18 +4192,19 @@ table.dataTable tbody th, table.dataTable tbody td {
         border-bottom: none;
     }
     table.dataTable thead th, table.dataTable thead td {
-        border-right: @color-border-light 1px solid;
-        border-bottom: @color-border-light 1px solid;
-        border-top: @color-border-light 1px solid;
+        border-right: @table-td-border 1px solid;
+        border-bottom: @table-td-border 1px solid;
+        border-top: @table-td-border 1px solid;
     }
     table.dataTable.row-border tbody th, table.dataTable.row-border tbody td, table.dataTable.display tbody th, table.dataTable.display tbody td {
-        border-right: @color-border-light 1px solid;
+        border-right: @table-td-border 1px solid;
         text-align: center;
         border-top: none;
+        color: @color-text-regular;
     }
     table td, table th {
-        border-right: @color-border-base 1px solid;
-        border-bottom: @color-border-base 1px solid;
+        border-right: @table-td-border 1px solid;
+        border-bottom: @table-td-border 1px solid;
         padding: 4px 8px;
         font-weight: normal;
         font-size: 14px;
@@ -4205,10 +4213,10 @@ table.dataTable tbody th, table.dataTable tbody td {
         background-color: transparent;
     }
     table tbody tr:nth-child(even) td {
-        background-color: fade(@color-bg-primary, 70);
+        background-color: @table-bg-even;
     }
     table tbody tr:nth-child(odd) td {
-        background-color: fade(@color-bg-primary, 90);
+        background-color: @table-bg-odd;
     }
     table thead th.no-borderb {
         border-bottom: none;
@@ -4219,10 +4227,24 @@ table.dataTable tbody th, table.dataTable tbody td {
     }
     .selector-group{
         border-top:@color-border-light 1px solid;
+
+        &.header-selector-group {
+            background-color: @color-bg-regular;
+            border-top: 0;
+        }
     }
     .dropdown{
         border-top: @color-border-base 1px solid;
-        box-shadow: 0 2px 8px @color-border-base inset;
+        //box-shadow: 0 2px 8px @color-border-base inset;
+
+        .ok-btn {
+            height: 100%;
+            float: left;
+            width: 50%;
+            text-align: center;
+            background: linear-gradient(to bottom left, @color-primary, fade(@color-primary, 80));
+            color: #fff;
+        }
     }
 }
 //  月度报告
