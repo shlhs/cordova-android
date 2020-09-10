@@ -46,13 +46,6 @@ gulp.task('theme', async function () {
             console.log('写入文件失败:', err);
         }
     });
-    // 设置echarts主题色: 将对应主题色js文件拷贝到index.js，html引用 theme/echarts/index.js
-    gulp.src([`theme/echarts/${themeType}.js`])
-        .pipe(concat('echartsTheme.js'))
-        .pipe(gulp.dest(`${root}/js`));
-    // 图片
-    gulp.src([`theme/img/${themeType}/**`])
-        .pipe(gulp.dest('www/img'));
 });
 
 
@@ -82,15 +75,26 @@ gulp.task('less', async function () {
         .pipe(gulp.dest(`${root}/css`));
 });
 
+// 拷贝不同主题的图片
+gulp.task('themeStatic', async function () {
+    // 设置echarts主题色: 将对应主题色js文件拷贝到index.js，html引用 theme/echarts/index.js
+    gulp.src([`theme/echarts/${themeType}.js`])
+        .pipe(concat('echartsTheme.js'))
+        .pipe(gulp.dest(`${root}/js`));
+    // 图片
+    gulp.src([`theme/img/${themeType}/**`])
+        .pipe(gulp.dest('www/img'));
+});
+
 
 // 侦听less文件变化
 gulp.task('watch', async function () {
-    gulp.watch([`${root}/**/*.less`], ['less']);
+    gulp.watch([`less/**/*.less`], ['less']);
 });
 
 gulp.task('update:theme', ['reset:css']);
 
-gulp.task('default', ['less', 'watch', 'webserver']);
+gulp.task('default', ['less', 'themeStatic', 'watch', 'webserver']);
 
 
 /**

@@ -1,3 +1,4 @@
 node_modules/
 .history/
 www/css/
+www/js/echartsTheme.js
