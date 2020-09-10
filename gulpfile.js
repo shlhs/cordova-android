@@ -41,16 +41,19 @@ gulp.task('webserver', async function () {
 // 设置主题色
 gulp.task('theme', async function () {
     const text = `@import './${themeType}.less';`;
-    fs.writeFile(`${root}/less/theme/index.less`, text, 'utf-8', function (err) {
+    fs.writeFile('less/theme/index.less', text, 'utf-8', function (err) {
         if (err) {
             console.log('写入文件失败:', err);
         }
     });
     // 设置echarts主题色: 将对应主题色js文件拷贝到index.js，html引用 theme/echarts/index.js
-    gulp.src([`www/theme/echarts/${themeType}.js`])
-        .pipe(concat('index.js'))
-        .pipe(gulp.dest('www/theme/echarts'));
-})
+    gulp.src([`theme/echarts/${themeType}.js`])
+        .pipe(concat('echartsTheme.js'))
+        .pipe(gulp.dest(`${root}/js`));
+    // 图片
+    gulp.src([`theme/img/${themeType}/**`])
+        .pipe(gulp.dest('www/img'));
+});
 
 
 
@@ -67,10 +70,10 @@ gulp.task('reset:css', ['theme'], async function () {
 
 // less转css
 gulp.task('less', async function () {
-    gulp.src(`${root}/less/iconfont/**`).pipe(gulp.dest(`${root}/css/iconfont`));
-    gulp.src(`${root}/less/*.css`).pipe(gulp.dest(`${root}/css`));
+    gulp.src('less/iconfont/**').pipe(gulp.dest(`${root}/css/iconfont`));
+    gulp.src('less/*.css').pipe(gulp.dest(`${root}/css`));
 
-    await gulp.src([`${root}/less/**/*.less`, `!${root}/less/theme/*.less`])
+    await gulp.src(['./less/**/*.less', '!less/theme/*.less'])
         .pipe(less())
         .pipe(autoprefixer({
             overrideBrowserslist: ['> 1%', 'last 2 versions', 'Firefox ESR'],
@@ -83,16 +86,11 @@ gulp.task('less', async function () {
 // 侦听less文件变化
 gulp.task('watch', async function () {
     gulp.watch([`${root}/**/*.less`], ['less']);
-})
+});
 
-
-
-
-gulp.task('update:theme', ['reset:css'])
+gulp.task('update:theme', ['reset:css']);
 
 gulp.task('default', ['less', 'watch', 'webserver']);
-
-
 
 
 /**
