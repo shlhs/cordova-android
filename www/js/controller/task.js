@@ -862,7 +862,7 @@ app.controller('CompetitionTaskListCtrl', ['$scope', '$rootScope', 'scrollerServ
                 $scope.tasks = result;
                 $scope.tasks.sort(sortByCreateTime);
                 $scope.$apply();
-                getAllDistance(result);
+                // getAllDistance(result);
             },
             error: function (a, b, c) {
                 $scope.isLoading = false;

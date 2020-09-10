@@ -15,6 +15,7 @@ var LANGUAGE = 'zh-CN'; //如果需要根据手机系统来自动切换的话，
 var gIsEnglish = LANGUAGE === 'en-US';
 var gTheme = 'dark'; // 主题色 light/dark
 var gShowRecheck = true; // 是否显示复测内容
+var appName = GetQueryString('appName');
 
 function setSystemLanguage(language) {
     if (language) {

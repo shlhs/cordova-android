@@ -20,7 +20,7 @@ app.controller('LoginCtrl', ['$scope', '$timeout', 'platformService', 'userServi
     $scope.isLogin = false;
     $scope.isAutoLogin = false;
     $scope.passwordVisible = false;
-    $scope.appName = GetQueryString('appName');
+    $scope.appName = appName;
 
     $scope.togglePasswordVisible = function () {
         $scope.passwordVisible = !$scope.passwordVisible;
@@ -202,11 +202,7 @@ app.controller('AutoLoginCtrl', ['$scope', '$timeout', function ($scope, $timeou
         }else{
             $timeout(function () {
                 // $state.go('login');
-                if ($scope.isDark) {
-                    location.href = '/templates/login-dark.html?finishPage=1';
-                } else {
-                    location.href = '/templates/login.html?finishPage=1';
-                }
+                location.href = '/templates/login.html?finishPage=1';
             }, 1500);
         }
     };
