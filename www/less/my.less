@@ -847,14 +847,24 @@ background-image: url("../img/light/64X64/profile.png");
 }
 .top-base {
     width: 100%;
-    height: 36%;
+    //height: 36%;
     position: relative;
     background-color: @color-bg-regular;
+
+    .mask {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        background: linear-gradient(180deg, rgba(7, 58, 78, 0) 0%, #073A4E 100%);
+        opacity: 1;
+    }
 }
 @media screen and (max-width: 600px){
 
     .top-base {
-        height: 44%;
+        //height: 44%;
     }
 }
 .top-base .portrait {
@@ -863,9 +873,8 @@ background-image: url("../img/light/64X64/profile.png");
     background: url("../img/icon/portrait-bg.png") 50% no-repeat;
     background-size: 100% 100%;
     position: absolute;
-    left: 25px;
-    top: 52%;
-    margin-top: -41px;
+    right: 18px;
+    bottom: 18px;
 }
 .portrait img {
     height: 58px;
@@ -874,7 +883,7 @@ background-image: url("../img/light/64X64/profile.png");
 }
 .top-base .base-info {
     position: absolute;
-    bottom: 18px;
+    bottom: 35px;
     left: 25px;
     right: 25px;
     height: 50px;
@@ -885,16 +894,18 @@ background-image: url("../img/light/64X64/profile.png");
 }
 .account-info .role {
     margin-left: 6px;
-    border-radius: 2px;
-    border: rgba(75,118,252, 0.55) 1px solid;
-    color: rgb(75,118,252);
+    border-radius: 11px;
+    border: fade(@color-primary, 55) 1px solid;
+    color: @color-primary;
     font-size: 12px;
-    padding: 3px 10px;
+    padding: 0 10px;
     text-align: center;
+    float: right;
 }
 .account-info .account {
     font-size: 15px;
-    color: rgb(102,102,102);
+    color: @color-text-regular;
+    margin-top: 8px;
 }
 .history{
     background-image: url("../img/light/64X64/history.png");

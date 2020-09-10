@@ -109,15 +109,11 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
         */
     // 设置相关
     $stateProvider
-        // .state('index.setting', {
-        //     url: '/setting',
-        //     views: {
-        //         'setting': {
-        //             templateUrl: '/templates/setting/setting.html',
-        //             controller: 'SettingCtrl'
-        //         }
-        //     }
-        // })
+        .state('index.setting', {
+            url: 'setting/',
+            templateUrl: '/templates/setting/setting.html'
+
+        })
         .state('index.account', {
             url: 'account/',
             templateUrl: '/templates/setting/account.html'
@@ -133,7 +129,7 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
             url: 'share',
             templateUrl: '/templates/setting/share.html'
         })
-        .state('index.account.password', {
+        .state('index.setting.password', {
             url: 'password',
             templateUrl: '/templates/setting/password_setter.html',
             controller: 'PasswordCtrl'

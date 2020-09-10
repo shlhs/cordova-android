@@ -405,6 +405,7 @@
   "map": "Map",
   "position": "Position",
   "coordinate": "Coordinate",
+  "username": "User Name",
 
   "edit": "Edit",
   "new": "New",
