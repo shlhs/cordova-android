@@ -466,6 +466,7 @@
   "realtime": "Real-time",
   "none": "No",
   "abnormal": "abnormal",
+  "to2": "to",
 
   "select.daily": "by Day",
   "select.monthly": "by Month",
