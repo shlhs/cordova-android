@@ -6,7 +6,7 @@ app.controller('MonitorListCtrl', ['$scope', '$stateParams', 'platformService', 
     $scope.monitorLoading = true;
     $scope.loadingFailed = false;
 
-    var sn = GetQueryString('sn');
+    var sn = $scope.currentSite.sn;
     $scope.getDataList = function() {
 
         $scope.loadingFailed = false;

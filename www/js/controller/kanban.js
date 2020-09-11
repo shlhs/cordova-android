@@ -937,8 +937,8 @@ app.controller('KanbanCtrl', ['$scope', '$stateParams', 'ajax', '$timeout', func
 }]);
 
 app.controller('SiteOverviewCtrl', ['$scope', 'ajax', 'varDataService', '$myTranslate', function ($scope, ajax, varDataService, $myTranslate) {
-    $scope.sn = GetQueryString('sn');
-    $scope.stationName = GetQueryString('name');
+    $scope.sn = $scope.currentSite.sn; // GetQueryString('sn');
+    $scope.stationName = $scope.currentSite.name; // GetQueryString('name');
     var stationData = null;
     $scope.fuheLoading = true; // 负荷数据获取
     $scope.fuheError = null; // 负荷变量错误
@@ -949,15 +949,17 @@ app.controller('SiteOverviewCtrl', ['$scope', 'ajax', 'varDataService', '$myTran
     $scope.realtimeLoad = '-'; // 实时负荷
     var realtimeLoadInterval = null;
 
-    ajax.get({
-        url: '/stations/' + $scope.sn,
-        success: function (data) {
-            stationData = data;
-            getLoadTrend(data.realtime_load_var);
-            getLoadRealtime(data.realtime_load_var);
-            getElectricData(data.sum_epf_var);
-        }
-    });
+    setTimeout(function () {
+        ajax.get({
+            url: '/stations/' + $scope.sn,
+            success: function (data) {
+                stationData = data;
+                getLoadTrend(data.realtime_load_var);
+                getLoadRealtime(data.realtime_load_var);
+                getElectricData(data.sum_epf_var);
+            }
+        });
+    }, 300);
 
     function getLoadRealtime(varSn) {
         if (!varSn) {

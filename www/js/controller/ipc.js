@@ -12,8 +12,8 @@ function onVideoPause(ipcId) {       // 暂停视频播放
     }
 }
 
-app.controller('VideoMonitorCtrl', ['$scope', '$timeout', '$sce', 'platformService', 'ajax', 'routerService', '$myTranslate', function ($scope, $timeout, $sce, platformService, ajax, routerService, $myTranslate) {
-    $scope.sn = GetQueryString("sn");
+app.controller('VideoMonitorCtrl', ['$scope', '$stateParams', '$state', '$timeout', '$sce', 'platformService', 'ajax', 'routerService', '$myTranslate', function ($scope, $stateParams, $state, $timeout, $sce, platformService, ajax, routerService, $myTranslate) {
+    $scope.sn = $stateParams.sn; // GetQueryString("sn");
     $scope.ipcs = [];
     $scope.isLoading = true;
     $scope.loadingFailed = false;
@@ -86,11 +86,12 @@ app.controller('VideoMonitorCtrl', ['$scope', '$timeout', '$sce', 'platformServi
     };
 
     $scope.openCaptureRecordPage = function () {
-        routerService.openPage($scope, '/templates/video-monitor/ipc-record-history.html', {
-            sn: $scope.sn
-        }, {
-            hidePrev: false
-        });
+        // routerService.openPage($scope, '/templates/video-monitor/ipc-record-history.html', {
+        //     sn: $scope.sn
+        // }, {
+        //     hidePrev: false
+        // });
+        $state.go('.records');
     };
 
     $scope.switchListType = function () {
@@ -144,8 +145,8 @@ app.controller('VideoMonitorSnapConfirmCtrl', ['$scope', 'platformService', 'aja
     }
 }]);
 
-app.controller('IpcRecordHistoryCtrl', ['$scope', 'platformService', '$timeout', 'ajax', 'routerService', '$myTranslate', function ($scope, platformService, $timeout, ajax, routerService, $myTranslate) {
-    // $scope.sn = GetQueryString("sn");
+app.controller('IpcRecordHistoryCtrl', ['$scope', '$stateParams', '$state', 'platformService', '$timeout', 'ajax', 'routerService', '$myTranslate', function ($scope, $stateParams, $state, platformService, $timeout, ajax, routerService, $myTranslate) {
+    $scope.sn = $stateParams.sn; // GetQueryString("sn");
     $scope.records = [];
     $scope.isLoading = true;
     var isSavingRecords = [];
@@ -232,9 +233,10 @@ app.controller('IpcRecordHistoryCtrl', ['$scope', 'platformService', '$timeout',
     }
 
     $scope.openRecordDetail = function (record) {
-        routerService.openPage($scope, '/templates/video-monitor/ipc-pic-record-detail.html', {
-            record: record
-        });
+        // routerService.openPage($scope, '/templates/video-monitor/ipc-pic-record-detail.html', {
+        //     record: record
+        // });
+        $state.go('.detail', {id: record.id});
     };
 
     $scope.$on('$destroy', function (event) {
@@ -244,21 +246,26 @@ app.controller('IpcRecordHistoryCtrl', ['$scope', 'platformService', '$timeout',
     $timeout($scope.getRecords, 500);
 }]);
 
-app.controller('IpcPicRecordDetailCtrl', ['$scope', 'platformService', 'ajax', '$timeout', 'routerService', function ($scope, platformService, ajax, $timeout, routerService) {
-    var createMoment = moment($scope.record.createTime, 'YYYY-MM-DD HH:mm:ss');
-    var dayOfWeek = createMoment.format('e');
-    var daysOfWeek = ['日', '一', '二', '三', '四', '五', '六'];
-    $scope.createTime = createMoment.format('M月D日 ') + '周' + daysOfWeek[dayOfWeek];
+app.controller('IpcPicRecordDetailCtrl', ['$scope', '$stateParams', 'platformService', 'ajax', '$timeout', 'routerService', function ($scope, $stateParams, platformService, ajax, $timeout, routerService) {
+    // var createMoment = moment($scope.record.createTime, 'YYYY-MM-DD HH:mm:ss');
+    // var dayOfWeek = createMoment.format('e');
+    // var daysOfWeek = ['日', '一', '二', '三', '四', '五', '六'];
+    $scope.record = {};
+    $scope.createTime = null; // createMoment.format('M月D日 ') + '周' + daysOfWeek[dayOfWeek];
     $scope.images = [];
     var refreshInterval = null;
+    var recordId = $stateParams.id;
 
     function getRecordDetail() {
         ajax.get({
-            url: platformService.getIpcServiceHost() + '/captureRecord/' + $scope.record.id,
+            url: platformService.getIpcServiceHost() + '/captureRecord/' + recordId,
             headers: {
                 Accept: "application/json; charset=utf-8"
             },
             success: function (data) {
+                // var createMoment = moment(data.createTime, 'YYYY-MM-DD HH:mm:ss');
+                $scope.record = data;
+                // $scope.createTime = moment(data.createTime, 'YYYY-MM-DD HH:mm:ss').format('M月D日 周e');
                 $scope.images = [];
                 data.ipcRecord.forEach(function (ipc) {
                     $scope.images.push(platformService.getIpcServiceHost() + ipc.srcLink);

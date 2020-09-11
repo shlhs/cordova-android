@@ -615,8 +615,8 @@ app.controller('SiteDocsCtrl', ['$scope', 'ajax', 'platformService', function ($
 }]);
 
 
-app.controller('SiteReportsCtrl', ['$scope', 'ajax', 'routerService', 'platformService', function ($scope, ajax, routerService, platformService) {
-    var stationSn = GetQueryString('sn');
+app.controller('SiteReportsCtrl', ['$scope', '$stateParams', 'ajax', 'routerService', 'platformService', function ($scope, $stateParams, ajax, routerService, platformService) {
+    var stationSn = $stateParams.sn; // GetQueryString('sn');
     $scope.reports = [];
     $scope.isLoading = false;
     $scope.loadingFailed = false;

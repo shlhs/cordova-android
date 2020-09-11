@@ -134,6 +134,55 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
             templateUrl: '/templates/setting/password_setter.html',
             controller: 'PasswordCtrl'
         })
+        .state('index.overview', { // 站点总览
+            url: 'overview/:sn/',
+            templateUrl: '/templates/site/overview2.html',
+            controller: 'SiteOverviewCtrl',
+        })
+        .state('index.graphs', { // 站点总览
+            url: 'graphs/:sn/',
+            templateUrl: '/templates/site/monitor-list.html',
+        })
+        .state('index.monitorDevices', { // 设备监控
+            url: 'monitor-devices/:sn/',
+            templateUrl: '/templates/site/device-monitor-list.html',
+        })
+        .state('index.monitorDevices.detail', { // 设备监控详情
+            url: 'detail/:deviceSn/',
+            templateUrl: '/templates/site/device-monitor.html',
+            params: {
+                deviceSn: null,
+                name: null
+            }
+        })
+        .state('index.monitorDevices.detail.control', { // 设备监控-控制中心
+            url: 'control/',
+            templateUrl: '/templates/site/device-monitor/remote-control.html',
+            params: {
+                deviceSn: null,
+                name: null
+            }
+        })
+        .state('index.videos', { // 站点总览
+            url: 'videos/:sn/',
+            templateUrl: '/templates/video-monitor/video-monitor.html',
+        })
+        .state('index.videos.records', { // 站点总览
+            url: 'records/',
+            templateUrl: '/templates/video-monitor/ipc-record-history.html',
+        })
+        .state('index.videos.records.detail', { // 站点总览
+            url: 'detail/:id/',
+            templateUrl: '/templates/video-monitor/ipc-pic-record-detail.html',
+        })
+        .state('index.reports', {
+            url: 'reports/:sn/',
+            templateUrl: '/templates/site/reports.html',
+        })
+        .state('index.docs', {
+            url: 'docs/:sn/',
+            templateUrl: '/templates/site/docs.html',
+        })
     ;
 
     $urlRouterProvider.when('', '/');

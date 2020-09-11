@@ -100,6 +100,10 @@
     <script src="../../js/echartsTheme.js"></script>
     <script type="text/javascript" src="/js/service/varData.js"></script>
     <script src="/js/controller/kanban.js"></script>
+    <script type="text/javascript" src="/js/controller/monitor.js"></script>
+    <script type="text/javascript" src="/js/controller/device.js"></script>
+    <script type="text/javascript" src="/js/controller/ipc.js"></script>
+    <script src="/components/slides-playing/js/jquery.slides.js"></script>
     <script id="grab-task-template" type="text/x-handlebars-template">
         <div class="mui-popup mui-popup-in android-dialog" style="display: block;">
             <div class="mui-popup-inner">
@@ -116,6 +120,15 @@
         </div>
         <div class="mui-popup-backdrop mui-active" style="display: block;"></div>
     </script>
+    <script>
+
+        window.addEventListener('message', function(e) {
+            var frames = window.frames;
+            for(var i=0; i<frames.length; i++) {
+                frames[i].postMessage('Bearer' + (getStorageItem('accountToken') || ''), '*');
+            }
+        }, false);
+    </script>
     <!--<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=ITbaaCqA7nMWRjEIycEpddoUW1AvZvRq"></script>-->
-    </body>
+</body>
 </html>

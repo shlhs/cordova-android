@@ -1,52 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>所有设备</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta http-equiv="Access-Control-Allow-Origin" content="*">
-    <link rel="stylesheet" href="../../components/mui/css/mui.min.css">
-    <link rel="stylesheet" href="../../css/my.css">
-    <link rel="stylesheet" href="../../css/icon.css">
-    <link rel="stylesheet" href="../../css/animate.css">
-    <link rel="stylesheet" href="../../components/mui/css/icons-extra.css">
-    <link rel="stylesheet" href="../../css/setting.css">
-    <script type="text/javascript" src="../../components/libs/jquery-2.1.4.min.js"></script>
-    <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
-    <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
-    <!--<script type="text/javascript" src="components/ui-router-extras/release/ct-ui-router-extras.js"></script>-->
-    <script type="text/javascript" src="../../components/angular-animate/angular-animate.js"></script>
-    <script type="text/javascript" src="../../components/angular-ui-router/release/stateEvents.min.js"></script>
-    <script type="text/javascript" src="/js/lib/angular-translate.min.js"></script>
-    <script type="text/javascript" src="../../js/app/utils.js"></script>
-    <script type="text/javascript" src="../../js/app/app.js"></script>
-    <script type="text/javascript" src="../../js/service/appstore.js"></script>
-    <script type="text/javascript" src="../../js/service/common-service.js"></script>
-    <!--<script type="text/javascript" src="../../js/router/site-router.js"></script>-->
-
-    <style>
-        html,body{
-            height: 100%;
-            padding: 0;
-            margin: 0;
-        }
-        .mui-btn{
-            margin-right:6px;
-        }
-        @media screen and (max-width: 360px) {
-            th, td {
-                font-size: 12px;
-            }
-        }
-    </style>
-</head>
-<body class="box-vertical-center" ng-app="myApp" ng-controller="DeviceMonitorCtrl" ng-cloak>
+<div class="mui-page page" ng-controller="DeviceMonitorCtrl" ng-cloak>
 <header class="mui-bar bg-header">
     <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
     <h1 class="mui-title">{{deviceName}}</h1>
-    <a href="/templates/site/device-monitor/remote-control.html?device_sn={{deviceSn}}"
+    <a href="/templates/site/device-monitor/remote-control.html?device_sn={{deviceSn}}" ui-sref=".control({deviceSn: deviceSn})"
        class="mui-action-menu mui-icon mui-pull-right" style="font-size: 14px;line-height: 24px;" ng-if="canControl">{{'device.control.center' | translate}}</a>
 </header>
 <div class="body-content bg-white" ng-cloak>
@@ -138,10 +94,5 @@
         </div>
     </div>
 </div>
-<script src="../../components/fastclick-master/lib/fastclick.js"></script>
-<script src="../../js/my/notify.js"></script>
-<script type="text/javascript" src="../../js/controller/device.js"></script>
-<script src="../../components/echart/echarts.min-3.x.js"></script>
-<script type="text/javascript" src="../../js/echartsTheme.js"></script>
-</body>
-</html>
+    <div ui-view=""></div>
+</div>

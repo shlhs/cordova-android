@@ -567,8 +567,8 @@ app.controller('DeviceTreeCommonCtrl', ['$scope', function ($scope) {
     };
 }]);
 
-app.controller('DeviceMonitorListCtrl', ['$scope', 'ajax', 'platformService', function ($scope, ajax, platformService) {       // 检测设备列表页
-    var stationSn = GetQueryString('sn');
+app.controller('DeviceMonitorListCtrl', ['$scope', '$stateParams', '$state', 'ajax', 'platformService', function ($scope, $stateParams, $state, ajax, platformService) {       // 检测设备列表页
+    var stationSn = $stateParams.sn;
     $scope.deviceDatas = [];
     $scope.treeData = [];
     $scope.hasDevice = false; // 是否有设备
@@ -678,17 +678,18 @@ app.controller('DeviceMonitorListCtrl', ['$scope', 'ajax', 'platformService', fu
     }
 
     $scope.gotoDevice = function (deviceData) {
-        location.href = '/templates/site/device-monitor.html?stationSn=' + stationSn + '&deviceSn=' + deviceData.sn + '&deviceName=' + encodeURIComponent(deviceData.name);
+        // location.href = '/templates/site/device-monitor.html?stationSn=' + stationSn + '&deviceSn=' + deviceData.sn + '&deviceName=' + encodeURIComponent(deviceData.name);
+        $state.go('.detail', {deviceSn: deviceData.sn, name: deviceData.name});
     };
 
     $scope.getDataList();
 }]);
 
-app.controller('DeviceMonitorCtrl', ['$scope', 'ajax', 'appStoreProvider', 'userService', 'platformService', '$myTranslate', function ($scope, ajax, appStoreProvider, userService, platformService, $myTranslate) {
+app.controller('DeviceMonitorCtrl', ['$scope', '$stateParams', 'ajax', 'appStoreProvider', 'userService', 'platformService', '$myTranslate', function ($scope, $stateParams, ajax, appStoreProvider, userService, platformService, $myTranslate) {
     $scope.isLoading = true;
-    $scope.stationSn = GetQueryString('stationSn');
-    $scope.deviceSn=GetQueryString('deviceSn');
-    $scope.deviceName = GetQueryString('deviceName');
+    $scope.stationSn = $scope.currentSite.sn; // GetQueryString('stationSn');
+    $scope.deviceSn= $stateParams.deviceSn; // GetQueryString('deviceSn');
+    $scope.deviceName = $stateParams.name; // GetQueryString('deviceName');
     $scope.realtimeLabel = $myTranslate.instant('device.realtime');
     $scope.historyLabel = $myTranslate.instant('device.history');
     $scope.analogLabel = $myTranslate.instant('var.analog');
@@ -819,8 +820,8 @@ app.controller('DeviceMonitorCtrl', ['$scope', 'ajax', 'appStoreProvider', 'user
 
 }]);
 
-app.controller('DeviceRemoteControlCtrl', ['$scope', '$interval', 'routerService', 'platformService', 'ajax', function ($scope, $interval, routerService, platformService, ajax) {
-    $scope.device_sn = GetQueryString('device_sn');
+app.controller('DeviceRemoteControlCtrl', ['$scope', '$stateParams', '$interval', 'routerService', 'platformService', 'ajax', function ($scope, $stateParams, $interval, routerService, platformService, ajax) {
+    $scope.device_sn = $stateParams.deviceSn; // GetQueryString('device_sn');
     $scope.varList = [];
     $scope.confirmVisible = false;
     $scope.controlObj = null;
