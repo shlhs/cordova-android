@@ -42,6 +42,24 @@ var colorPalette = [
     '#f37c54',
     '#3995ea'
 ];
+var g_pvf_label = {
+    p: '峰',
+    f: '平',
+    v: '谷',
+    s: '尖'
+};
+var g_pvf_colors = {
+    'p': 'rgba(239, 150, 166, 1)',
+    'v': 'rgba(138, 212, 199, 1)',
+    'f': 'rgba(136, 169, 248, 1)',
+    's': 'rgba(254,139,106, 1)',
+};
+var g_pvf_label_colors = {
+    'p': 'rgba(239, 150, 166, 1)',
+    'v': 'rgba(138, 212, 199, 1)',
+    'f': 'rgba(136, 169, 248, 1)',
+    's': 'rgba(254,139,106, 1)',
+};
 
 var echartThemeConfig = {
     color: colorPalette,

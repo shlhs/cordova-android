@@ -644,8 +644,8 @@ app.controller('DeviceDtsListCtrl', ['$scope', 'ajax', 'scrollerService', 'userS
     $scope.getDataList();
 }]);
 
-app.controller('StationDtsListCtrl', ['$scope', '$rootScope', 'scrollerService', 'userService', 'ajax', function ($scope, $rootScope, scrollerService, userService, ajax) {
-    var stationSn = GetQueryString("sn");
+app.controller('StationDtsListCtrl', ['$scope', '$stateParams', '$rootScope', 'scrollerService', 'userService', 'ajax', function ($scope, $stateParams, $rootScope, scrollerService, userService, ajax) {
+    var stationSn = $stateParams.sn; // GetQueryString("sn");
     $scope.TaskStatus = TaskStatus;
     $scope.tasks = [];
     $scope.isLoading = true;

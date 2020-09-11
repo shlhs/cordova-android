@@ -456,8 +456,8 @@ function distinctVarSns(sns) {      // 变量sn去重
     return tmpSns;
 }
 
-app.controller('EnergyMeterReadingCtrl', ['$scope', 'ajax', '$compile', 'platformService', 'energyFormatService', '$myTranslate', function ($scope, ajax, $compile, platformService, energyFormatService, $myTranslate) {
-    var stationSn = GetQueryString("sn");
+app.controller('EnergyMeterReadingCtrl', ['$scope', '$stateParams', 'ajax', '$compile', 'platformService', 'energyFormatService', '$myTranslate', function ($scope, $stateParams, ajax, $compile, platformService, energyFormatService, $myTranslate) {
+    var stationSn = $stateParams.sn ; // GetQueryString("sn");
     $scope.categories = [];
     $scope.labelNames = [];
     $scope.currentCategory = null;
@@ -742,6 +742,13 @@ app.controller('EnergyMeterReadingCtrl', ['$scope', 'ajax', '$compile', 'platfor
         }
     }
 
+    $scope.$on('$destroy', function () {
+        if ($scope.picker) {
+            $scope.picker.dispose();
+            $scope.picker = null;
+        }
+    });
+
     // initDatePicker();
     getConfig(stationSn);
 }]);
@@ -789,8 +796,8 @@ app.directive('energyMeterReadingTableRepeatFinish',function(){
     }
 });
 
-app.controller('EnergyReportCtrl', ['$scope', 'ajax', '$compile', 'platformService', 'energyFormatService', '$myTranslate', function ($scope, ajax, $compile, platformService, energyFormatService, $myTranslate) {
-    var stationSn = GetQueryString("sn");
+app.controller('EnergyReportCtrl', ['$scope', '$stateParams', 'ajax', '$compile', 'platformService', 'energyFormatService', '$myTranslate', function ($scope, $stateParams, ajax, $compile, platformService, energyFormatService, $myTranslate) {
+    var stationSn = $stateParams.sn; // GetQueryString("sn");
     $scope.categories = [];
     $scope.labelNames = [];
     $scope.currentCategory = null;
@@ -897,6 +904,7 @@ app.controller('EnergyReportCtrl', ['$scope', 'ajax', '$compile', 'platformServi
             case 'YEAR':
                 $scope.dateName = currentDay.substring(0, 4);
         }
+        setDtPickerTimeType($scope.picker, $scope.timeType.id);
     }
 
     function initDatePicker() {
@@ -915,6 +923,7 @@ app.controller('EnergyReportCtrl', ['$scope', 'ajax', '$compile', 'platformServi
             } else {
                 var options = {type: 'date'};
                 _self.picker = new mui.DtPicker(options);
+                setDtPickerTimeType(_self.picker, $scope.timeType.id);
                 _self.picker.show(function(rs) {
                     currentDay = rs.text + ' 00:00:00.000';
                     refreshDateShowName();
@@ -1120,6 +1129,13 @@ app.controller('EnergyReportCtrl', ['$scope', 'ajax', '$compile', 'platformServi
         }
     }
 
+    $scope.$on('$destroy', function () {
+        if ($scope.picker) {
+            $scope.picker.dispose();
+            $scope.picker = null;
+        }
+    });
+
     init();
 }]);
 
@@ -1164,8 +1180,8 @@ app.directive('energyReportTableRepeatFinish',function(){
     }
 });
 
-app.controller('EnergyStatisticsCtrl', ['$scope', 'ajax', 'platformService', '$compile', '$myTranslate', 'energyFormatService', function ($scope, ajax, platformService, $compile, $myTranslate, energyFormatService) {
-    var stationSn = GetQueryString("sn");
+app.controller('EnergyStatisticsCtrl', ['$scope', '$stateParams', 'ajax', 'platformService', '$compile', '$myTranslate', 'energyFormatService', function ($scope, $stateParams, ajax, platformService, $compile, $myTranslate, energyFormatService) {
+    var stationSn = $stateParams.sn; // GetQueryString("sn");
     $scope.categories = [];
     $scope.labelNames = [];
     $scope.currentCategory = null;
@@ -1239,7 +1255,7 @@ app.controller('EnergyStatisticsCtrl', ['$scope', 'ajax', 'platformService', '$c
                     getItemsForLabel();
                     var itemStyle1 = $scope.isEnglish ? 'width:50%; float: left;' : 'width:25%; float: left;';
                     var itemStyle2 = $scope.isEnglish ? 'width:100%; float: left;' : 'width:50%; float: left;';
-                    var html = "<ul class='selector-group' style='display:block;'>" +
+                    var html = "<ul class='selector-group no-border'>" +
                         "<drop-down-menu options=\"categories\" on-select=\"onSelect\" model-name=\"'currentCategory'\" selected=\"currentCategory\" style=\"" + itemStyle1 + "\"></drop-down-menu>" +
                         "<drop-down-menu options=\"labelNames\" on-select=\"onSelect\" model-name=\"'currentLabel'\" selected=\"currentLabel\" style=\"" + itemStyle1 + "\"></drop-down-menu>" +
                         "<drop-down-menu id='itemSelector' options=\"energyItems\" on-select=\"onSelect\" model-name=\"'labelItem'\" selected=\"currentItem\" style=\"" + itemStyle2 + "\" disabled=\"currentLabel.name !== '" + branchCircuitName + "'\"></drop-down-menu>" +
@@ -1328,6 +1344,7 @@ app.controller('EnergyStatisticsCtrl', ['$scope', 'ajax', 'platformService', '$c
             } else {
                 var options = {type: 'date'};
                 _self.picker = new mui.DtPicker(options);
+                setDtPickerTimeType(_self.picker, $scope.timeType.id);
                 _self.picker.show(function(rs) {
                     currentDay = rs.text + ' 00:00:00.000';
                     refreshDateShowName();
@@ -1353,6 +1370,7 @@ app.controller('EnergyStatisticsCtrl', ['$scope', 'ajax', 'platformService', '$c
             case 'YEAR':
                 $scope.dateName = currentDay.substring(0, 4);
         }
+        setDtPickerTimeType($scope.picker, $scope.timeType.id);
     }
 
     $scope.onSelect = function (key, item) {
@@ -1391,6 +1409,13 @@ app.controller('EnergyStatisticsCtrl', ['$scope', 'ajax', 'platformService', '$c
             $scope.$broadcast('$otherRefresh');
         }
     }
+
+    $scope.$on('$destroy', function () {
+       if ($scope.picker) {
+           $scope.picker.dispose();
+           $scope.picker = null;
+       }
+    });
 
     init();
 }]);

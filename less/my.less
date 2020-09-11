@@ -10,6 +10,9 @@ html,body{
     overflow: hidden;
     color: @color-text-primary
 }
+.mui-page {
+    background: @page-bg;
+}
 body, .page {
   background: @page-bg;
   background-size: cover;
@@ -177,6 +180,9 @@ input, textarea {
     &:hover {
 
     }
+}
+.bg-regular {
+    background: @color-bg-regular;
 }
 .color-success {
     color: @color-success !important;
@@ -1759,7 +1765,7 @@ header.bg-warning{
     background-color: @color-border-base;
 }
 .check-item.active{
-    background-color: rgba(228, 228, 228, 0.1);
+    background-color: rgba(228, 228, 228, 0.3);
 }
 .check-item a{
     color: inherit;
@@ -2269,7 +2275,7 @@ header.bg-warning{
 .event-list>li .event-title {
     color: @color-text-regular;
     font-size: 12px;
-    border-bottom: @color-border-light 1px solid;
+    border-bottom: @color-border-base 1px solid;
     padding-bottom: 4px;
     margin-top: -4px;
     position: relative;
@@ -3243,23 +3249,26 @@ header.bg-warning{
 .dropdown .day-list>li.active {
     color: #586BF3;
 }
-.timeType-MONTH .mui-picker, .timeType-MONTH .mui-dtpicker-title h5 {
-    width: ~'calc(50% - 1px)';
-}
-.timeType-MONTH [data-id=title-d] {
-    display: none;
-}
-.timeType-MONTH [data-id=picker-d] {
-    width: 1px !important;
-}
-.timeType-YEAR .mui-picker, .timeType-YEAR .mui-dtpicker-title h5 {
-    width: ~'calc(100% - 2px)';
-}
-.timeType-YEAR [data-id=title-m],.timeType-YEAR [data-id=title-d] {
-    display: none;
-}
-.timeType-YEAR [data-id=picker-m], .timeType-YEAR [data-id=picker-d] {
-    width: 1px !important;;
+.mui-dtpicker {
+    &.timeType-MONTH .mui-picker, &.timeType-MONTH .mui-dtpicker-title h5 {
+        width: ~'calc(50% - 1px)';
+    }
+    &.timeType-MONTH [data-id=title-d] {
+        display: none;
+    }
+    &.timeType-MONTH [data-id=picker-d] {
+        width: 1px !important;
+    }
+    &.timeType-YEAR .mui-picker, &.timeType-YEAR .mui-dtpicker-title h5 {
+        width: ~'calc(100% - 2px)';
+    }
+    &.timeType-YEAR [data-id=title-m], &.timeType-YEAR [data-id=title-d] {
+        display: none;
+    }
+    &.timeType-YEAR [data-id=picker-m], &.timeType-YEAR [data-id=picker-d] {
+        width: 1px !important;;
+    }
+
 }
 header .mui-title .dropdown-arrow {
     position: relative;
@@ -4184,7 +4193,7 @@ table.dataTable tbody th, table.dataTable tbody td {
 }
 
 // 用能 data-history  用能报表页 energy-report  抄表meter-reading
-.site-history-report-page, .energy-report-ctrl-page, .energy-meter-reading-ctrl-page{
+.energy-page {
     th, td { white-space: nowrap; }
     table.dataTable tbody tr {
         background-color: transparent;
@@ -4248,6 +4257,10 @@ table.dataTable tbody th, table.dataTable tbody td {
     .selector-group{
         border-top:@color-border-light 1px solid;
 
+        &.no-border {
+            border: none;
+        }
+
         &.header-selector-group {
             background-color: @color-bg-regular;
             border-top: 0;
@@ -4264,6 +4277,10 @@ table.dataTable tbody th, table.dataTable tbody td {
             text-align: center;
             background: linear-gradient(to bottom left, @color-primary, fade(@color-primary, 80));
             color: #fff;
+        }
+        .cancel-btn {
+            color: @color-text-secondary;
+            border-top:@color-border-base 1px solid;
         }
     }
 }
@@ -4290,6 +4307,10 @@ table.dataTable tbody th, table.dataTable tbody td {
         height: 46px;
         background-color: transparent;
         border: @color-border-light 1px dashed;
+    }
+    .app-icon {
+        font-size: 15px;
+        margin-bottom: 4px;
     }
 }
 

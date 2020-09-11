@@ -162,9 +162,9 @@ app.service('SecurityReportService', ['userService', 'ajax', '$myTranslate', fun
     };
 }]);
 
-app.controller('SecurityHistoryCtrl', ['$scope', 'routerService', 'ajax', function ($scope, routerService, ajax) {
-    var sn = GetQueryString('sn');
-    $scope.stationName = GetQueryString("name");
+app.controller('SecurityHistoryCtrl', ['$scope', '$stateParams', 'routerService', 'ajax', function ($scope, $stateParams, routerService, ajax) {
+    var sn = $stateParams.sn; // GetQueryString('sn');
+    $scope.stationName = $stateParams.name; // GetQueryString("name");
     $scope.history = [];
     $scope.isLoading = false;
     $scope.loadingFailed = false;
@@ -224,7 +224,7 @@ app.controller('SecurityHistoryCtrl', ['$scope', 'routerService', 'ajax', functi
     $scope.getDataList();
 }]);
 
-app.controller('SecurityEvaluateHome', ['$scope', '$http', 'ajax', 'routerService', 'SecurityReportService', function ($scope, $http, ajax, routerService, SecurityReportService) {
+app.controller('SecurityEvaluateHome', ['$scope', '$stateParams', '$http', 'ajax', 'routerService', 'SecurityReportService', function ($scope, $stateParams, $http, ajax, routerService, SecurityReportService) {
     var backupData = {};        // 保存原始数据
     $scope.evaluateData = {};
     $scope.total = 0;
@@ -277,9 +277,9 @@ app.controller('SecurityEvaluateHome', ['$scope', '$http', 'ajax', 'routerServic
     }
 
     function getEvaluateData() {        // 获取评估数据
-        var apiHost=GetQueryString("apiHost") || "";
+        var apiHost = GetQueryString("apiHost") || "";
         ajax.get({
-            url: apiHost+'/security_reports/' + $scope.id,
+            url: apiHost+'/security_reports/' + $stateParams.id,
             success: function (data) {
                 data.template = JSON.parse(data.template);
                 var tmp = SecurityReportService.parseTemplate(data.template);

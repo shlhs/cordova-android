@@ -7,9 +7,9 @@
     </header>
     <div class="body-content" ng-cloak style="display: -webkit-box;-webkit-box-align: stretch;">
         <div class="left-panel">
-            <ul class="check-list">
-                <li class="check-item" ng-repeat="item in template" ng-class="{'active': currentIndex===$index}">
-                    <a class="mui-navigate-right" href="#" ng-click="chooseItem($index)">
+            <ul class="12pcheck-list" style="margin-top: 12px;">
+                <li class="check-item" ng-repeat="item in template" ng-class="{'active': currentIndex===$index}" style="padding: 8px 0">
+                    <a class="mui-navigate-right" ng-click="chooseItem($index)">
                         <i class="icon circle-grey"></i>
                         {{item.name}}
                     </a>
@@ -18,7 +18,7 @@
 
         </div>
         <div class="right-panel" style="-webkit-box-flex: 2;">
-            <h5 class="mui-text-center" style="padding: 4px;">{{currentItem.name}}</h5>
+            <h5 class="mui-text-center text-primary" style="padding: 4px;">{{currentItem.name}}</h5>
             <div style="padding: 0 8px;">
                 <ul class="check-box-list">
                     <li class="check-box-item" ng-repeat="item in currentItem.checklist">

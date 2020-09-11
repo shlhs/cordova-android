@@ -1,5 +1,5 @@
 
-<div class="page page-left" ng-controller="SecurityEvaluateHome">
+<div class="mui-page" ng-controller="SecurityEvaluateHome">
 
         <header class="mui-bar bg-header" style="z-index:1;" id="transparentHeader">
             <a class="mui-icon mui-icon-left-nav mui-pull-left text-white btn-back" ng-click="gotoPrevPage()"></a>
@@ -16,7 +16,7 @@
                                 <div style="position: absolute;text-align: center;width: 100%;font-size: 12px;top:18%;">{{'finished' | translate}}</div>
                             </div>
                         </div>
-                        <a href="#" class="mui-icon mui-icon-arrowright" ng-click="openPage('/templates/evaluate/security-evaluate-first-classify.html')"></a>
+                        <a class="mui-icon mui-icon-arrowright" ng-click="openPage('/templates/evaluate/security-evaluate-first-classify.html')"></a>
                     </div>
                     <ul class="footer-list">
                         <li><label class="title">{{'dts.type.fatal' | translate}}</label><label class="value">{{evaluateData.emergency}}</label> </li>

@@ -503,8 +503,9 @@ app.controller('EventListCtrl', ['$scope', 'scrollerService', 'userService', 'aj
 }]);
 
 
-app.controller('SiteDocsCtrl', ['$scope', 'ajax', 'platformService', function ($scope, ajax, platformService) {
-    var sn = GetQueryString('sn'), host = platformService.getCloudHost();
+app.controller('SiteDocsCtrl', ['$scope', '$stateParams', 'ajax', 'platformService', function ($scope, $stateParams, ajax, platformService) {
+    var sn = $stateParams.sn; //GetQueryString('sn')
+    var host = platformService.getCloudHost();
     $scope.docList = [];
     $scope.docLoading = false;
     $scope.loadingFailed = false;

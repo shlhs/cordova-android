@@ -6,10 +6,10 @@
         <a class="mui-action-menu mui-icon mui-pull-right" style="font-size: 16px;line-height: 28px;" ng-click="save()" ng-if="hasPermission && editable">{{'save' | translate}}</a>
     </header>
     <div class="body-content" ng-cloak style="display: -webkit-box;-webkit-box-align: stretch;">
-        <div class="left-panel">
-            <ul class="check-list">
-                <li class="check-item" ng-repeat="item in items" ng-class="{'active': $index===currentIndex}">
-                    <a class="mui-navigate-right" href="#" ng-click="chooseItem($index)">
+        <div class="left-panel" style="padding-top: 12px;">
+            <ul class="check-list" style="margin-top: 12px;">
+                <li class="check-item" ng-repeat="item in items" ng-class="{'active': $index===currentIndex}" style="padding: 8px 2px;">
+                    <a class="mui-navigate-right" ng-click="chooseItem($index)">
                         <i class="icon icon-16 icon-all-right" ng-if="item.status === 'success'"></i>
                         <i class="icon icon-16 icon-warning" ng-if="item.status === 'warning'"></i>
                         <i class="icon icon-16 circle-grey" ng-if="item.status === 'disabled'"></i>

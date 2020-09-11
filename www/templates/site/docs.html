@@ -1,79 +1,79 @@
 
-<style>
-    /*.mui-table-view-cell{*/
+<div class="mui-page" ng-controller="SiteDocsCtrl" ng-cloak>
+    <style>
+        /*.mui-table-view-cell{*/
         /*padding-right: 60px;*/
-    /*}*/
-    .body-content{
-        padding-left: 0px;
-        padding-right: 0px;
-    }
-    .mui-card{
-        margin: 6px 0;
-    }
-    .title{
-        margin: 0px 15px;
-        font-size: 15px;
-    }
-    .mui-table-view .mui-media-object{
-        width: 28px;
-        height: 28px;
-    }
-</style>
-<div class="mui-page page" ng-controller="SiteDocsCtrl" ng-cloak>
-<header class="mui-bar bg-header">
-    <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
-    <h1 class="mui-title">{{'menu.device.efile' | translate}}</h1>
-</header>
-<div class="body-content" ng-cloak>
-    <div style="height: 8px;"></div>
-    <div ng-repeat="group in groups" ng-if="!docLoading && !loadingFailed">
-        <div class="title">
-            {{group.name}}
-        </div>
-        <div class="mui-card">
-            <div class="mui-card-content">
-                <ul class="mui-table-view">
-                    <li class="mui-table-view-cell mui-media" ng-repeat="doc in group.docs">
-                        <i class="mui-media-object mui-pull-left icon icon-md {{doc.icon}}"></i>
-                        <div class="mui-media-body mui-ellipsis" ng-click="open(doc)">
-                            {{doc.name}}
-                            <p class="mui-ellipsis">
-                                {{doc.create_time}}
-                                <!-- <span class="mui-pull-right">{{doc.creator}}</span> -->
-                            </p>
-                        </div>
-                    </li>
-                </ul>
+        /*}*/
+        .body-content{
+            padding-left: 0px;
+            padding-right: 0px;
+        }
+        .mui-card{
+            margin: 6px 0;
+        }
+        .title{
+            margin: 0px 15px;
+            font-size: 15px;
+        }
+        .mui-table-view .mui-media-object{
+            width: 28px;
+            height: 28px;
+        }
+    </style>
+    <header class="mui-bar bg-header">
+        <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
+        <h1 class="mui-title">{{'menu.device.efile' | translate}}</h1>
+    </header>
+    <div class="body-content" ng-cloak>
+        <div style="height: 8px;"></div>
+        <div ng-repeat="group in groups" ng-if="!docLoading && !loadingFailed">
+            <div class="title">
+                {{group.name}}
+            </div>
+            <div class="mui-card">
+                <div class="mui-card-content">
+                    <ul class="mui-table-view bg-regular" style="margin-bottom: 10px;">
+                        <li class="mui-table-view-cell mui-media" ng-repeat="doc in group.docs">
+                            <i class="mui-media-object mui-pull-left icon icon-md {{doc.icon}}"></i>
+                            <div class="mui-media-body mui-ellipsis" ng-click="open(doc)">
+                                {{doc.name}}
+                                <p class="mui-ellipsis">
+                                    {{doc.create_time}}
+                                    <!-- <span class="mui-pull-right">{{doc.creator}}</span> -->
+                                </p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="page-alert-wrapper" ng-if="docLoading">
-        <div class="page-alert">
-            <img src="../../img/page-loading.gif" class="loading-img">
-            <div class="alert-text info">{{'loading' | translate}}...</div>
-        </div>
-    </div>
-    <div class="page-alert-wrapper" ng-if="!loadingFailed && !docLoading && !groups.length">
-        <div class="page-alert">
+        <div class="page-alert-wrapper" ng-if="docLoading">
             <div class="page-alert">
-                <i class="alert-icon nodata"></i>
-                <div class="alert-text info">{{'none menu.device.efile' | myTranslate}}</div>
+                <img src="../../img/page-loading.gif" class="loading-img">
+                <div class="alert-text info">{{'loading' | translate}}...</div>
+            </div>
+        </div>
+        <div class="page-alert-wrapper" ng-if="!loadingFailed && !docLoading && !groups.length">
+            <div class="page-alert">
+                <div class="page-alert">
+                    <i class="alert-icon nodata"></i>
+                    <div class="alert-text info">{{'none menu.device.efile' | myTranslate}}</div>
+                </div>
+            </div>
+        </div>
+        <div class="page-alert-wrapper" ng-if="loadingFailed">
+            <div class="page-alert">
+                <i class="alert-icon warning"></i>
+                <div class="alert-text info">{{'tip.load.failed.network' | translate}}</div>
+                <div class="alert-reload" ng-click="getDataList()">{{'reload' | translate}}</div>
             </div>
         </div>
     </div>
-    <div class="page-alert-wrapper" ng-if="loadingFailed">
-        <div class="page-alert">
-            <i class="alert-icon warning"></i>
-            <div class="alert-text info">{{'tip.load.failed.network' | translate}}</div>
-            <div class="alert-reload" ng-click="getDataList()">{{'reload' | translate}}</div>
+    <div id="slides" class="slides" style="display: none;">
+        <div class="img-container">
+            <div>
+                <img src="{{currentImage}}">
+            </div>
         </div>
     </div>
-</div>
-<div id="slides" class="slides" style="display: none;">
-    <div class="img-container">
-        <div>
-            <img src="{{currentImage}}">
-        </div>
-    </div>
-</div>
 </div>

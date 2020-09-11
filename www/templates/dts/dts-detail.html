@@ -261,7 +261,7 @@
             </div>
             <div ng-include="'/templates/task/task-update-history.html'"></div>
             <nav class="mui-bar mui-bar-tab bg-transparent task-btn-bottom" ng-if="actions.length" style="height: 40px;">
-                <a href="#" ng-repeat="action in actions">
+                <a ng-repeat="action in actions">
                     <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-btn-outlined mui-control-item task-btn"
                             ng-click="taskHandler.execute(action.id)" style="background-color: {{action.color}}">
                         {{action.id === TaskAction.Update ? ('defect.action.update' | translate) : action.name}}

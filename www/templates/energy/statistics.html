@@ -1,193 +1,162 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>用能统计</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta http-equiv="Access-Control-Allow-Origin" content="*">
-    <link rel="stylesheet" href="../../components/mui/css/mui.min.css">
-    <link rel="stylesheet" href="../../components/mui/css/mui.picker.min.css">
-    <link rel="stylesheet" href="../../css/my.css">
-    <link rel="stylesheet" type="text/css" href="../../js/lib/datatables/jquery.dataTables.min.css">
-    <script type="text/javascript" src="../../components/libs/jquery-2.1.4.min.js"></script>
-    <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
-    <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
-    <script type="text/javascript" src="../../components/angular-animate/angular-animate.js"></script>
-    <script type="text/javascript" src="../../components/angular-ui-router/release/stateEvents.min.js"></script>
-    <script type="text/javascript" src="/js/lib/angular-translate.min.js"></script>
-    <script type="text/javascript" src="../../js/app/utils.js"></script>
-    <script type="text/javascript" src="../../js/app/app.js"></script>
-    <script type="text/javascript" src="../../js/controller/energy.js"></script>
-</head>
-<body ng-app="myApp" ng-cloak ng-controller="EnergyStatisticsCtrl" class="box-vertical-center timeType-{{timeType.id}}" ng-cloak>
-<header class="mui-bar bg-header mui-segmented-control-vertical">
-    <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
-    <h1 class="mui-title">{{'menu.energy.stat' | translate}}</h1>
-</header>
-<div class="body-content">
-    <ul class="selector-group" style="background-color: transparent;padding: 0 10px;" ng-show="currentLabel && currentLabel.name !== ('支路' | translate)">
-        <ul class="time-type-group">
-            <li class="time-type" ng-repeat="type in timeTypeList" ng-click="onSelect('timeType', type)"
-                ng-class="{'active': type.id===timeType.id}" style="padding: 5px 0 2px 0;width: 65px;">{{type.name}}</li>
-        </ul>
-        <li class="selector-tab time-selector" style="padding: 4px 20px 4px 0;height: 28px;width: 50%;margin-left: 16px;">
-            <label>{{dateName}}</label>
-            <button style="position: absolute;top:0;width: 100%;height: 100%;left: 0;background-color: transparent;border: none;"
-                    id="datePicker"></button>
-        </li>
-    </ul>
-    <div ng-show="!isLoading && currentLabel">
-        <div ng-show="currentLabel.name === ('支路' | translate)" ng-controller="EnergyStatisticsZhiluCtrl">
-            <div ng-if="hasConfig">
-                <div class="energy-electric-card" style="margin-top: 0;">
-                    <div class="energy-electric-body">
-                        <i class="icon-media" style="background-image: url('/img/energy-day.png')"></i>
-                        <div class="content">
-                            <div class="now" ng-style="{width: isEnglish ? 'auto' : '40%'}">
-                                <label class="value">{{electricData.today}}</label>
-                                <label class="desp" ng-if="!isEnglish">本日{{currentCategory.costName}}({{unit}})</label>
-                                <label class="desp" ng-if="isEnglish">Today Consumption(({{unit}})</label>
-                            </div>
-                            <div class="history" ng-hide="isEnglish">
-                                <label class="value">{{electricData.yesterday}}</label>
-                                <label class="desp">昨日同期</label>
-                            </div>
-                            <div class="rate {{electricData.dayTrend}}">
-                                <i class="iconfont" ng-class="electricData.dayTrend === 'down' ? 'anticon-arrowdown' : 'anticon-arrow-up'"></i>{{electricData.dayRate}}%
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="progress" style="width: 100%;background-color: #EEEEEE;height: 8px;border-radius: 4px;margin-top: 6px;position: relative;">
-                            <div style="position: absolute;top:0; height: 8px;border-radius: 4px;background-color: #2ABB9B;width: {{getItemRate()}};"></div>
-                        </div>
-                        <div style="font-size: 12px;">
-                            <label>{{'占比' | translate}}&nbsp;&nbsp;{{getItemRate()}}</label>
-                            <label class="mui-pull-right">{{'总用能' | myTranslate}}&nbsp;&nbsp;{{todayTotalDegree}} {{unit}}</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="energy-electric-card">
-                    <div class="energy-electric-body">
-                        <i class="icon-media" style="background-image: url('/img/energy-month.png')"></i>
-                        <div class="content">
-                            <div class="now" ng-style="{width: isEnglish ? 'auto' : '40%'}">
-                                <label class="value">{{electricData.month}}</label>
-                                <label class="desp" ng-if="!isEnglish">本月{{currentCategory.costName}}(({{unit}})</label>
-                                <label class="desp" ng-if="isEnglish">Current Month Consumption(({{unit}})</label>
-                            </div>
-                            <div class="history" ng-hide="isEnglish">
-                                <label class="value">{{electricData.lastMonth}}</label>
-                                <label class="desp">上月同期</label>
-                            </div>
-                            <div class="rate {{electricData.monthTrend}}">
-                                <i class="iconfont" ng-class="electricData.monthTrend === 'down' ? 'anticon-arrowdown' : 'anticon-arrow-up'"></i>{{electricData.monthRate}}%
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card" style="padding: 0;margin-top: 6px;">
-                    <div class="card-header" style="padding-left: 12px;padding-bottom: 0;">
-                        <i class="iconfont anticon-zhihuiyongdian"></i>
-                        {{'today 用能' | myTranslate}}
-                    </div>
-                    <div id="zhilu_trend1" style="width: {{width}};height: 200px;"></div>
-                </div>
-                <div class="card" style="padding: 0;">
-                    <div class="card-header" style="padding-left: 12px;padding-bottom: 0;">
-                        <i class="iconfont anticon-shuju2"></i>{{'用能 trend' | myTranslate}}
-                        <ul class="time-type-group mui-pull-right">
-                            <li class="time-type" ng-repeat="type in timeTypes" ng-click="onSelectTimeType(type)"
-                                ng-class="{'active': type===timeType}">{{type}}</li>
-                        </ul>
-                    </div>
-                    <div class="card-content no-padding">
-                        <div id="zhilu_trend2" style="width: {{width}};height: 200px;"></div>
-                    </div>
-                </div>
-            </div>
-            <div ng-if="!hasConfig">
-                <div class="page-alert-wrapper">
-                    <div class="page-alert">
-                        <i class="alert-icon no-task"></i>
-                        <div class="alert-text info">当前没有配置{{categoryName + '-' + labelName}}</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div ng-show="currentLabel.name !== ('支路' | translate)" ng-controller="EnergyStatisticsOtherCtrl">
-            <div ng-if="hasConfig">
-                <div class="card" style="padding: 0;">
-                    <div class="card-header" style="padding-left: 12px;padding-bottom: 0;">
-                        <i class="iconfont anticon-energy-fenxiang"></i>{{isEnglish ? '' : labelName}} {{'用能 占比' | myTranslate}}
-                    </div>
-                    <div id="chart_pie1" style="width:  {{width}};height: 150px;" class="chart" ng-class="{'spin-loading': loadingStatus[1]}"></div>
 
-                </div>
-                <div class="card" style="padding: 0;">
-                    <div class="card-header" style="padding-left: 12px;padding-bottom: 0;">
-                        <i class="iconfont anticon-shuju11"></i>{{isEnglish ? '' : labelName}}{{'用能增幅前五名' | translate}}
+<div ng-controller="EnergyStatisticsCtrl" class="mui-page energy-page" ng-cloak>
+    <header class="mui-bar bg-header mui-segmented-control-vertical">
+        <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
+        <h1 class="mui-title">{{'menu.energy.stat' | translate}}</h1>
+    </header>
+    <div class="body-content">
+        <ul class="selector-group no-border" style="background-color: transparent;padding: 0 10px;" ng-show="currentLabel && currentLabel.name !== ('支路' | translate)">
+            <ul class="time-type-group">
+                <li class="time-type" ng-repeat="type in timeTypeList" ng-click="onSelect('timeType', type)"
+                    ng-class="{'active': type.id===timeType.id}" style="padding: 5px 0 2px 0;width: 65px;">{{type.name}}</li>
+            </ul>
+            <li class="selector-tab time-selector" style="padding: 4px 20px 4px 0;height: 28px;width: 50%;margin-left: 16px;">
+                <label>{{dateName}}</label>
+                <button style="position: absolute;top:0;width: 100%;height: 100%;left: 0;background-color: transparent;border: none;"
+                        id="datePicker"></button>
+            </li>
+        </ul>
+        <div ng-show="!isLoading && currentLabel">
+            <div ng-show="currentLabel.name === ('支路' | translate)" ng-controller="EnergyStatisticsZhiluCtrl">
+                <div ng-if="hasConfig">
+                    <div class="energy-electric-card" style="margin-top: 0;">
+                        <div class="energy-electric-body">
+                            <i class="icon-media" style="background-image: url('/img/energy-day.png')"></i>
+                            <div class="content">
+                                <div class="now" ng-style="{width: isEnglish ? 'auto' : '40%'}">
+                                    <label class="value">{{electricData.today}}</label>
+                                    <label class="desp" ng-if="!isEnglish">本日{{currentCategory.costName}}({{unit}})</label>
+                                    <label class="desp" ng-if="isEnglish">Today Consumption(({{unit}})</label>
+                                </div>
+                                <div class="history" ng-hide="isEnglish">
+                                    <label class="value">{{electricData.yesterday}}</label>
+                                    <label class="desp">昨日同期</label>
+                                </div>
+                                <div class="rate {{electricData.dayTrend}}">
+                                    <i class="iconfont" ng-class="electricData.dayTrend === 'down' ? 'anticon-arrowdown' : 'anticon-arrow-up'"></i>{{electricData.dayRate}}%
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="progress" style="width: 100%;background-color: #EEEEEE;height: 8px;border-radius: 4px;margin-top: 6px;position: relative;">
+                                <div style="position: absolute;top:0; height: 8px;border-radius: 4px;background-color: #2ABB9B;width: {{getItemRate()}};"></div>
+                            </div>
+                            <div style="font-size: 12px;">
+                                <label>{{'占比' | translate}}&nbsp;&nbsp;{{getItemRate()}}</label>
+                                <label class="mui-pull-right">{{'总用能' | myTranslate}}&nbsp;&nbsp;{{todayTotalDegree}} {{unit}}</label>
+                            </div>
+                        </div>
                     </div>
-                    <div id="chart_bar1" style="width:  {{width}};height: 150px;" class="chart" ng-class="{'spin-loading': loadingStatus[2]}"></div>
-                </div>
-                <div class="card" style="padding: 0;">
-                    <div class="card-header" style="padding-left: 12px;padding-bottom: 0;">
-                        <i class="iconfont anticon-shuju11"></i>{{isEnglish ? '' : labelName}}{{'用能前五名' | translate}}
+                    <div class="energy-electric-card">
+                        <div class="energy-electric-body">
+                            <i class="icon-media" style="background-image: url('/img/energy-month.png')"></i>
+                            <div class="content">
+                                <div class="now" ng-style="{width: isEnglish ? 'auto' : '40%'}">
+                                    <label class="value">{{electricData.month}}</label>
+                                    <label class="desp" ng-if="!isEnglish">本月{{currentCategory.costName}}(({{unit}})</label>
+                                    <label class="desp" ng-if="isEnglish">Current Month Consumption(({{unit}})</label>
+                                </div>
+                                <div class="history" ng-hide="isEnglish">
+                                    <label class="value">{{electricData.lastMonth}}</label>
+                                    <label class="desp">上月同期</label>
+                                </div>
+                                <div class="rate {{electricData.monthTrend}}">
+                                    <i class="iconfont" ng-class="electricData.monthTrend === 'down' ? 'anticon-arrowdown' : 'anticon-arrow-up'"></i>{{electricData.monthRate}}%
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div id="chart_bar2" style="width:  {{width}};height: 150px;" class="chart" ng-class="{'spin-loading': loadingStatus[3]}"></div>
-                </div>
-                <div class="card" style="padding: 0;">
-                    <div class="card-header" style="padding-left: 12px;padding-bottom: 0;position: absolute;">
-                        <i class="iconfont anticon-shuju11"></i>{{isEnglish ? '' : labelName}}{{chainRatioName}}
+                    <div class="card" style="padding: 0;margin-top: 6px;">
+                        <div class="card-header" style="padding-left: 12px;padding-bottom: 0;">
+                            <i class="iconfont anticon-zhihuiyongdian"></i>
+                            {{'today 用能' | myTranslate}}
+                        </div>
+                        <div id="zhilu_trend1" style="width: {{width}};height: 200px;"></div>
                     </div>
-                    <div id="chart_bar3" style="width:  {{width}};height: 180px;" class="chart" ng-class="{'spin-loading': loadingStatus[4]}"></div>
-                </div>
-                <div class="card" style="padding: 0;">
-                    <div class="card-header" style="padding-left: 12px;padding-bottom: 0;">
-                        <i class="iconfont anticon-shuju2"></i>{{isEnglish ? '' : labelName}}{{'用能 trend' | myTranslate}}
+                    <div class="card" style="padding: 0;">
+                        <div class="card-header" style="padding-left: 12px;padding-bottom: 0;">
+                            <i class="iconfont anticon-shuju2"></i>{{'用能 trend' | myTranslate}}
+                            <ul class="time-type-group mui-pull-right">
+                                <li class="time-type" ng-repeat="type in timeTypes" ng-click="onSelectTimeType(type)"
+                                    ng-class="{'active': type===timeType}">{{type}}</li>
+                            </ul>
+                        </div>
+                        <div class="card-content no-padding">
+                            <div id="zhilu_trend2" style="width: {{width}};height: 200px;"></div>
+                        </div>
                     </div>
-                    <div id="chart_bar4" style="width:  {{width}};height: 200px;" class="chart" ng-class="{'spin-loading': loadingStatus[5]}"></div>
+                </div>
+                <div ng-if="!hasConfig">
+                    <div class="page-alert-wrapper">
+                        <div class="page-alert">
+                            <i class="alert-icon no-task"></i>
+                            <div class="alert-text info">当前没有配置{{categoryName + '-' + labelName}}</div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div ng-if="!hasConfig">
-                <div class="page-alert-wrapper">
-                    <div class="page-alert">
-                        <i class="alert-icon no-task"></i>
-                        <div class="alert-text info">{{'tip.thereisno' | translate}} {{categoryName + '-' + labelName}}</div>
+            <div ng-show="currentLabel.name !== ('支路' | translate)" ng-controller="EnergyStatisticsOtherCtrl">
+                <div ng-if="hasConfig">
+                    <div class="card" style="padding: 0;">
+                        <div class="card-header" style="padding-left: 12px;padding-bottom: 0;">
+                            <i class="iconfont anticon-energy-fenxiang"></i>{{isEnglish ? '' : labelName}} {{'用能 占比' | myTranslate}}
+                        </div>
+                        <div id="chart_pie1" style="width:  {{width}};height: 150px;" class="chart" ng-class="{'spin-loading': loadingStatus[1]}"></div>
+
+                    </div>
+                    <div class="card" style="padding: 0;">
+                        <div class="card-header" style="padding-left: 12px;padding-bottom: 0;">
+                            <i class="iconfont anticon-shuju11"></i>{{isEnglish ? '' : labelName}}{{'用能增幅前五名' | translate}}
+                        </div>
+                        <div id="chart_bar1" style="width:  {{width}};height: 150px;" class="chart" ng-class="{'spin-loading': loadingStatus[2]}"></div>
+                    </div>
+                    <div class="card" style="padding: 0;">
+                        <div class="card-header" style="padding-left: 12px;padding-bottom: 0;">
+                            <i class="iconfont anticon-shuju11"></i>{{isEnglish ? '' : labelName}}{{'用能前五名' | translate}}
+                        </div>
+                        <div id="chart_bar2" style="width:  {{width}};height: 150px;" class="chart" ng-class="{'spin-loading': loadingStatus[3]}"></div>
+                    </div>
+                    <div class="card" style="padding: 0;">
+                        <div class="card-header" style="padding-left: 12px;padding-bottom: 0;position: absolute;">
+                            <i class="iconfont anticon-shuju11"></i>{{isEnglish ? '' : labelName}}{{chainRatioName}}
+                        </div>
+                        <div id="chart_bar3" style="width:  {{width}};height: 180px;" class="chart" ng-class="{'spin-loading': loadingStatus[4]}"></div>
+                    </div>
+                    <div class="card" style="padding: 0;">
+                        <div class="card-header" style="padding-left: 12px;padding-bottom: 0;">
+                            <i class="iconfont anticon-shuju2"></i>{{isEnglish ? '' : labelName}}{{'用能 trend' | myTranslate}}
+                        </div>
+                        <div id="chart_bar4" style="width:  {{width}};height: 200px;" class="chart" ng-class="{'spin-loading': loadingStatus[5]}"></div>
+                    </div>
+                </div>
+                <div ng-if="!hasConfig">
+                    <div class="page-alert-wrapper">
+                        <div class="page-alert">
+                            <i class="alert-icon no-task"></i>
+                            <div class="alert-text info">{{'tip.thereisno' | translate}} {{categoryName + '-' + labelName}}</div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="page-alert-wrapper" ng-if="!isLoading && !currentLabel">
-        <div class="page-alert">
-            <i class="alert-icon no-task"></i>
-            <div class="alert-text info">{{'energy.nosetting' | translate}}</div>
+        <div class="page-alert-wrapper" ng-if="!isLoading && !currentLabel">
+            <div class="page-alert">
+                <i class="alert-icon no-task"></i>
+                <div class="alert-text info">{{'energy.nosetting' | translate}}</div>
+            </div>
         </div>
-    </div>
-    <div class="page-alert-wrapper" ng-if="isLoading">
-        <div class="page-alert">
-            <img src="../../img/page-loading.gif" class="loading-img">
-            <div class="alert-text info">{{'loading' | translate}}...</div>
+        <div class="page-alert-wrapper" ng-if="isLoading">
+            <div class="page-alert">
+                <img src="../../img/page-loading.gif" class="loading-img">
+                <div class="alert-text info">{{'loading' | translate}}...</div>
+            </div>
         </div>
-    </div>
-    <div class="page-alert-wrapper" ng-if="loadingFailed">
-        <div class="page-alert">
-            <i class="alert-icon warning"></i>
-            <div class="alert-text info">{{'tip.load.failed.network' | translate}}</div>
-            <div class="alert-reload" ng-click="getDataList()">{{'reload' | translate}}</div>
+        <div class="page-alert-wrapper" ng-if="loadingFailed">
+            <div class="page-alert">
+                <i class="alert-icon warning"></i>
+                <div class="alert-text info">{{'tip.load.failed.network' | translate}}</div>
+                <div class="alert-reload" ng-click="getDataList()">{{'reload' | translate}}</div>
+            </div>
         </div>
     </div>
 </div>
-
-<script src="../../components/fastclick-master/lib/fastclick.js"></script>
-<script src="../../js/my/notify.js"></script>
-<script src="../../components/moment.min.js"></script>
-<script src="../../components/mui/js/mui.min.js"></script>
-<script src="../../components/mui/js/mui.picker.min.js"></script>
-<script src="../../components/echart/echarts.common.min.js"></script>
-<script type="text/javascript" src="../../js/echartsTheme.js"></script>
-</body>
-</html>

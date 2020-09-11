@@ -12,8 +12,8 @@ function openDeviceFromQR(data) {   //根据扫码结果打开设备详情
     }
 }
 
-app.controller('StaticDevicesHomeCtrl', ['$scope', 'ajax', 'routerService', function ($scope, ajax, routerService) {
-    var stationSn = GetQueryString("sn");
+app.controller('StaticDevicesHomeCtrl', ['$scope', '$stateParams', 'ajax', 'routerService', function ($scope, $stateParams, ajax, routerService) {
+    var stationSn = $stateParams.sn; // GetQueryString("sn");
     $scope.deviceDatas = [];
     $scope.isLoading = false;
     $scope.loadingFailed = false;

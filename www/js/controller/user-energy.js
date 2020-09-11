@@ -1,16 +1,3 @@
-var g_pvf_label = {
-    p: '峰',
-    f: '平',
-    v: '谷',
-    s: '尖'
-};
-var g_pvf_colors = {
-    'p': 'rgba(239, 150, 166, 1)',
-    'v': 'rgba(138, 212, 199, 1)',
-    'f': 'rgba(136, 169, 248, 1)',
-    's': 'rgba(254,139,106, 1)',
-};
-
 function EnergyFuncApi(scope, varDataService) {
     this.scope = scope;
     this.varDataApi = varDataService;
@@ -439,8 +426,8 @@ EnergyFuncApi.prototype.calcAvgMaxLoadAndTrend = function (dataList, month) {
 };
 
 // 能源管理基础控制，主要用于获取所有监测点，并显示设备显示页面
-app.controller('EnergyBaseCtrl', ['$scope', 'ajax', 'platformService', 'routerService', 'varDataService', function ($scope, ajax, platformService, routerService, varDataService) {
-    $scope.stationSn = $scope.stationSn || GetQueryString('sn');
+app.controller('EnergyBaseCtrl', ['$scope', '$stateParams', '$state', 'ajax', 'platformService', 'routerService', 'varDataService', function ($scope, $stateParams, $state, ajax, platformService, routerService, varDataService) {
+    $scope.stationSn = $stateParams.sn;
     $scope.stationName = $scope.stationName || GetQueryString('name');
     $scope.stationCapacity = $scope.capacity|| GetQueryString("capacity");
     $scope.devices = [];
@@ -594,7 +581,7 @@ app.controller('EnergyBaseCtrl', ['$scope', 'ajax', 'platformService', 'routerSe
                         $scope.$apply();
                     });
                 } else {
-                    var options = {type: 'date'};
+                    var options = {type: 'month'};
                     datePicker = new mui.DtPicker(options);
                     datePicker.show(function(rs) {
                         onMonthChange(rs.text);
@@ -1325,7 +1312,6 @@ app.controller('EnergyMaxDemandCtrl', ['$scope', 'varDataService', function ($sc
     function initDatePicker() {
         document.getElementById('datePicker1').addEventListener('tap', function() {
             // 去掉月的样式限制
-            $('body').removeClass('timeType-MONTH');
             if(startDatePicker) {
                 startDatePicker.show(function (rs) {
                     $scope.startDate = rs.text;
@@ -1343,7 +1329,6 @@ app.controller('EnergyMaxDemandCtrl', ['$scope', 'varDataService', function ($sc
             }
         }, false);
         document.getElementById('datePicker2').addEventListener('tap', function() {
-            $('body').removeClass('timeType-MONTH');
             if(endDatePicker) {
                 endDatePicker.show(function (rs) {
                     $scope.endDate = rs.text;
@@ -1363,7 +1348,6 @@ app.controller('EnergyMaxDemandCtrl', ['$scope', 'varDataService', function ($sc
     }
 
     function onDateChange() {
-        $('body').addClass('timeType-MONTH');
         paintDemandTrend();
     }
 

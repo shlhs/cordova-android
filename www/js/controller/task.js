@@ -193,7 +193,7 @@ app.service('Permission', ['userService', 'UserRole', function (userService, Use
     };
 }]);
 
-app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvider', 'platformService', 'ajax', 'routerService', '$myTranslate', function ($scope, $timeout, userService, appStoreProvider, platformService, ajax, routerService, $myTranslate) {
+app.controller('HomeCtrl', ['$scope', '$state', '$timeout', 'userService', 'appStoreProvider', 'platformService', 'ajax', 'routerService', '$myTranslate', function ($scope, $state, $timeout, userService, appStoreProvider, platformService, ajax, routerService, $myTranslate) {
     var role = userService.getUserRole();
     $scope.viewName = '';
     $scope.tabName = '';
@@ -222,6 +222,10 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
     var menuInited = false;     // 导航栏菜单是否初始化
 
     $scope.isEnglish = gIsEnglish;
+
+    $scope.openApp = function(app) {
+        $state.go('.' + app.sref, {sn: $scope.currentSite.sn});
+    };
 
     $scope.getDataList = function () {
         $scope.isLoading = true;
@@ -535,8 +539,8 @@ function isTodoTask(task, username, userRole) {
     return false;
 }
 
-app.controller('TaskBaseCtrl', ['$scope', 'ajax', 'userService', 'appStoreProvider', '$myTranslate', function ($scope, ajax, userService, appStoreProvider, $myTranslate) {
-    var stationSn = GetQueryString("sn");
+app.controller('TaskBaseCtrl', ['$scope', '$stateParams', 'ajax', 'userService', 'appStoreProvider', '$myTranslate', function ($scope, $stateParams, ajax, userService, appStoreProvider, $myTranslate) {
+    var stationSn = $stateParams.sn || GetQueryString("sn");
     var deviceSn = GetQueryString("device_sn");     // 如果设备sn不为空，则获取的是设备的运维记录
     $scope.pageTitle = deviceSn ? $myTranslate.instant('task.ops.services') : $myTranslate.instant('task.history');
     $scope.hasOpsAuth = appStoreProvider.hasOpsAuth();

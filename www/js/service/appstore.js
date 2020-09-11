@@ -17,6 +17,7 @@ var DEFAULT_MENUS = [
                 color: 'green',
                 templateUrl: '/templates/site/overview.html',
                 url: 'site-overview',
+                sref: 'overview', // ui-router跳转的链接
                 defaultChecked: true
             }, {
                 name: '画面',
@@ -26,6 +27,7 @@ var DEFAULT_MENUS = [
                 templateUrl: '/templates/site/monitor-list.html',
                 url: 'site-monitors',
                 sn: 'station-monitor/monitor-screen-v2',
+                sref: 'graphs',
                 defaultChecked: true
             }, {
                 name: '设备监测',
@@ -35,6 +37,7 @@ var DEFAULT_MENUS = [
                 templateUrl: '/templates/site/device-monitor-list.html',
                 url: 'device-monitor',
                 sn: 'station-monitor/device-monitor',
+                sref: 'monitorDevices',
                 defaultChecked: true
             },
             {
@@ -45,6 +48,7 @@ var DEFAULT_MENUS = [
                 templateUrl: '/templates/video-monitor/video-monitor.html',
                 url: 'video-monitor',
                 sn: 'station-monitor/video-monitor',
+                sref: 'videos',
                 defaultChecked: true
             },
             {
@@ -55,6 +59,7 @@ var DEFAULT_MENUS = [
                 templateUrl: '/templates/site/static-devices/device-home.html',
                 url: 'static-devices',
                 sn: 'station-monitor/device-documents',
+                sref: 'staticDevices',
                 defaultChecked: true && !gIsEnergyPlatform
             }, {
                 name: '月度报告',
@@ -64,6 +69,7 @@ var DEFAULT_MENUS = [
                 templateUrl: '/templates/site/reports.html',
                 url: 'monthly-report',
                 sn: 'station-monitor/month-report',
+                sref: 'reports',
                 defaultChecked: true && !gIsEnergyPlatform
             }, {
                 name: '电子档案',
@@ -73,6 +79,7 @@ var DEFAULT_MENUS = [
                 templateUrl: '/templates/site/docs.html',
                 url: 'site-documents',
                 sn: 'station-monitor/e-file',
+                sref: 'docs',
                 defaultChecked: true && !gIsEnergyPlatform
             }, {
                 name: '历史曲线',
@@ -82,6 +89,7 @@ var DEFAULT_MENUS = [
                 templateUrl: '/templates/site-monitor/data-line.html',
                 url: 'data-line',
                 sn: 'station-monitor/data-line',
+                sref: 'dataline',
                 defaultChecked: true && !gIsEnergyPlatform
             }, {
                 name: '历史报表',
@@ -91,6 +99,7 @@ var DEFAULT_MENUS = [
                 templateUrl: '/templates/site-monitor/data-history.html',
                 url: 'data-history',
                 sn: 'station-monitor/data-report-v2',
+                sref: 'dataHistory',
                 defaultChecked: true && !gIsEnergyPlatform
             }
         ]
@@ -116,17 +125,19 @@ var DEFAULT_MENUS = [
                 templateUrl: '/templates/dts/dts-list.html',
                 url: 'dts-list',
                 sn: 'ops-management/defect-tasks',
+                sref: 'dts',
                 defaultChecked: true,
                 role: ['OPS_OPERATOR', 'OPS_ADMIN']
             }, {
                 name: '安全评测',
                 key: 'menu.ops.security',
                 icon: 'app-security',
-                color: 'green',
+                color: 'orange',
                 templateUrl: '/templates/evaluate/evaluate-history.html',
                 sn: 'ops-management',
                 url: 'evaluate-security',
                 defaultChecked: true,
+                sref: 'security',
                 role: ['OPS_OPERATOR', 'OPS_ADMIN']
             }, {
                 name: '停电维护',
@@ -137,6 +148,7 @@ var DEFAULT_MENUS = [
                 sn: 'ops-management',
                 url: 'poweroff-maintenance',
                 defaultChecked: true,
+                sref: 'poweroff',
                 role: ['OPS_OPERATOR', 'OPS_ADMIN']
             }
         ]
@@ -148,10 +160,11 @@ var DEFAULT_MENUS = [
                 name: '用能统计',
                 key: 'menu.energy.stat',
                 icon: 'app-energy-statistics',
-                color: 'red',
+                color: 'cyan',
                 templateUrl: '/templates/energy/statistics.html',
                 url: 'energy-overview',
                 sn: 'energy/overview',
+                sref: 'energyStatistics',
                 defaultChecked: true
             }, {
                 name: '用能报表',
@@ -161,15 +174,17 @@ var DEFAULT_MENUS = [
                 templateUrl: '/templates/energy/energy-report.html',
                 url: 'energy-report',
                 sn: 'energy/report',
+                sref: 'energyReport',
                 defaultChecked: true
             }, {
                 name: '抄表',
                 key: 'menu.energy.meterreading',
                 icon: 'app-meterreading',
-                color: 'orange',
+                color: 'cyan',
                 templateUrl: '/templates/energy/meter-reading.html',
                 sn: 'energy/meter-reading',
                 url: 'energy-meter-reading',
+                sref: 'meterreading',
                 defaultChecked: true
             }
         ]
@@ -182,37 +197,43 @@ var DEFAULT_ENERGY_MENUS = [
         key: 'menu.energy.overview',
         icon: 'app-degree-overview',
         color: 'blue',
-        templateUrl: '/templates/energy/overview.html'
+        templateUrl: '/templates/energy/overview.html',
+        sref: 'energyOverview'
     }, {
         name: '电费分析',
         key: 'menu.energy.cost',
         icon: 'app-energy-statistics',
         color: 'cyan',
-        templateUrl: '/templates/energy/cost-analysis.html'
+        templateUrl: '/templates/energy/cost-analysis.html',
+        sref: 'energyCost'
     }, {
         name: '用电负荷',
         key: 'menu.energy.load',
         icon: 'app-load',
         color: 'cyan',
-        templateUrl: '/templates/energy/load-analysis.html'
+        templateUrl: '/templates/energy/load-analysis.html',
+        sref: 'energyLoad'
     }, {
         name: '最大需量',
         key: 'menu.energy.maxdemand',
         icon: 'app-max-demand',
         color: 'green',
-        templateUrl: '/templates/energy/max-demand.html'
+        templateUrl: '/templates/energy/max-demand.html',
+        sref: 'maxDemand'
     }, {
         name: '电能质量',
         key: 'menu.energy.quality.monitor',
         icon: 'app-quality',
         color: 'green',
-        templateUrl: '/templates/energy/quality-monitor.html'
+        templateUrl: '/templates/energy/quality-monitor.html',
+        sref: 'energyQuality'
     }, {
         name: '质量报告',
         key: 'menu.energy.quality.report',
         icon: 'app-quality-report',
         color: 'green',
-        templateUrl: '/templates/energy/quality-report.html'
+        templateUrl: '/templates/energy/quality-report.html',
+        sref: 'energyQualityReport'
     },
 ];
 
