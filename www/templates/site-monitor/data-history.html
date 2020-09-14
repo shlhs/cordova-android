@@ -1,6 +1,6 @@
-<div ng-cloak ng-controller="SiteHistoryReportCtrl" class="mui-page">
+<div ng-cloak ng-controller="SiteHistoryReportCtrl" class="mui-page energy-page">
     <header class="mui-bar bg-header mui-segmented-control-vertical">
-        <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
+        <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="history.back()"></a>
         <h1 class="mui-title">
             <label ng-if="currentReport !== null" class="dropdown-arrow">
                 {{currentReport.name}}
@@ -21,7 +21,7 @@
             </li>
             <drop-down-menu options="calcMethodList" on-select="onSelect" model-name="'calcMethod'" default-value="'MAX'" selected="calcMethod"></drop-down-menu>
         </ul>
-        <div style="position: absolute; top: 38px;bottom: 0;width: 100%;overflow: auto;padding-bottom: 10px;" class="data-table"
+        <div style="position: absolute; top: 38px;bottom: 0;width: 100%;overflow: auto;padding-bottom: 10px;"
              id="tableParent" site-history-repeat-finish ng-class="{'data-loading-spin': dataRefreshing}">
             <table id="siteHistoryTable" class="stripe row-border order-column dataTable no-footer">
                 <thead ng-if="hasGroup">

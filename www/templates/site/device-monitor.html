@@ -1,6 +1,6 @@
 <div class="mui-page" ng-controller="DeviceMonitorCtrl" ng-cloak>
 <header class="mui-bar bg-header">
-    <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
+    <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="history.back()"></a>
     <h1 class="mui-title">{{deviceName}}</h1>
     <a href="/templates/site/device-monitor/remote-control.html?device_sn={{deviceSn}}" ui-sref=".control({deviceSn: deviceSn})"
        class="mui-action-menu mui-icon mui-pull-right" style="font-size: 14px;line-height: 24px;" ng-if="canControl">{{'device.control.center' | translate}}</a>

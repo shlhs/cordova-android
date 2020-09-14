@@ -1,3 +1,5 @@
+'use strict';
+
 var DEFAULT_MENUS = [
     {
         name: '站点监控',
@@ -403,171 +405,6 @@ app.service('appStoreProvider', ['$translate', function ($translate) {
     this.hasOpsAuth = hasOpsAuth;      // 用户是否有运维权限
 }]);
 
-//
-// app.config(['appStoreProviderProvider', function (appStoreProvider) {
-//     appStoreProvider.setDefaultApps([
-//         {
-//             name: '站点监控',
-//             key: 'menu.parent.station',
-//             children: [
-//                 // {
-//                 //     name: '站点看板',
-//                 //     icon: 'icon-kanban',
-//                 //     templateUrl: '/templates/site/kanban.html',
-//                 //     url: 'site-kanban',
-//                 //     defaultChecked: true
-//                 // },
-//                 {
-//                     name: '站点总览',
-//                     key: 'menu.station.overview',
-//                     icon: 'icon-kanban',
-//                     templateUrl: '/templates/site/overview.html',
-//                     url: 'site-overview',
-//                     defaultChecked: true
-//                 }, {
-//                     name: '画面',
-//                     key: 'menu.monitor.screen',
-//                     icon: 'icon-monitor',
-//                     templateUrl: '/templates/site/monitor-list.html',
-//                     url: 'site-monitors',
-//                     sn: 'station-monitor/monitor-screen-v2',
-//                     defaultChecked: true
-//                 }, {
-//                     name: '设备监测',
-//                     key: 'menu.monitor.device',
-//                     icon: 'icon-device-monitor',
-//                     templateUrl: '/templates/site/device-monitor-list.html',
-//                     url: 'device-monitor',
-//                     sn: 'station-monitor/device-monitor',
-//                     defaultChecked: true
-//                 },
-//                 {
-//                     name: '视频监控',
-//                     key: 'menu.monitor.video',
-//                     icon: 'icon-video-monitor',
-//                     templateUrl: '/templates/video-monitor/video-monitor.html',
-//                     url: 'video-monitor',
-//                     sn: 'station-monitor/video-monitor',
-//                     defaultChecked: true
-//                 },
-//                 {
-//                     name: '设备档案',
-//                     key: 'menu.device.document',
-//                     icon: 'icon-archives',
-//                     templateUrl: '/templates/site/static-devices/device-home.html',
-//                     url: 'static-devices',
-//                     sn: 'station-monitor/device-documents',
-//                     defaultChecked: true && !gIsEnergyPlatform
-//                 }, {
-//                     name: '月度报告',
-//                     key: 'menu.station.report',
-//                     icon: 'icon-reports',
-//                     templateUrl: '/templates/site/reports.html',
-//                     url: 'monthly-report',
-//                     sn: 'station-monitor/month-report',
-//                     defaultChecked: true && !gIsEnergyPlatform
-//                 }, {
-//                     name: '电子档案',
-//                     key: 'menu.device.efile',
-//                     icon: 'icon-docs',
-//                     templateUrl: '/templates/site/docs.html',
-//                     url: 'site-documents',
-//                     sn: 'station-monitor/e-file',
-//                     defaultChecked: true && !gIsEnergyPlatform
-//                 }, {
-//                     name: '历史曲线',
-//                     key: 'menu.station.dataline',
-//                     icon: 'icon-history-line',
-//                     templateUrl: '/templates/site-monitor/data-line.html',
-//                     url: 'data-line',
-//                     sn: 'station-monitor/data-line',
-//                     defaultChecked: true && !gIsEnergyPlatform
-//                 }, {
-//                     name: '历史报表',
-//                     key: 'menu.station.history',
-//                     icon: 'icon-history-report',
-//                     templateUrl: '/templates/site-monitor/data-history.html',
-//                     url: 'data-history',
-//                     sn: 'station-monitor/data-report-v2',
-//                     defaultChecked: true && !gIsEnergyPlatform
-//                 }
-//             ]
-//         }, {
-//             name: '运维中心',
-//             key: 'menu.parent.ops',
-//             children: [
-//                 {
-//                     name: '服务申请',
-//                     key: 'menu.ops.create',
-//                     icon: 'icon-add-task',
-//                     templateUrl: '/templates/task/add-task.html',
-//                     url: 'add-task',
-//                     sn: 'ops-management/add-task',
-//                     defaultChecked: true,
-//                     role: ['USER']
-//                 }, {
-//                     name: '缺陷记录',
-//                     key: 'menu.ops.defect',
-//                     icon: 'icon-dashboard-dts',
-//                     templateUrl: '/templates/dts/dts-list.html',
-//                     url: 'dts-list',
-//                     sn: 'ops-management/defect-tasks',
-//                     defaultChecked: true,
-//                     role: ['OPS_OPERATOR', 'OPS_ADMIN']
-//                 }, {
-//                     name: '安全评测',
-//                     key: 'menu.ops.security',
-//                     icon: 'icon-security',
-//                     templateUrl: '/templates/evaluate/evaluate-history.html',
-//                     sn: 'ops-management',
-//                     url: 'evaluate-security',
-//                     defaultChecked: true,
-//                     role: ['OPS_OPERATOR', 'OPS_ADMIN']
-//                 }, {
-//                     name: '停电维护',
-//                     key: 'menu.ops.poweroff',
-//                     icon: 'icon-poweroff',
-//                     templateUrl: '/templates/maintenance-check/check-history.html',
-//                     sn: 'ops-management',
-//                     url: 'poweroff-maintenance',
-//                     defaultChecked: true,
-//                     role: ['OPS_OPERATOR', 'OPS_ADMIN']
-//                 }
-//             ]
-//         }, {
-//             name: '能源管理',
-//             key: 'menu.parent.energy',
-//             children: [
-//                 {
-//                     name: '用能统计',
-//                     key: 'menu.energy.stat',
-//                     icon: 'icon-energy-statistics',
-//                     templateUrl: '/templates/energy/statistics.html',
-//                     url: 'energy-overview',
-//                     sn: 'energy/overview',
-//                     defaultChecked: true
-//                 }, {
-//                     name: '用能报表',
-//                     key: 'menu.energy.dataline',
-//                     icon: 'icon-energy-history',
-//                     templateUrl: '/templates/energy/energy-report.html',
-//                     url: 'energy-report',
-//                     sn: 'energy/report',
-//                     defaultChecked: true
-//                 }, {
-//                     name: '抄表',
-//                     key: 'menu.energy.meterreading',
-//                     icon: 'icon-energy-reading',
-//                     templateUrl: '/templates/energy/meter-reading.html',
-//                     sn: 'energy/meter-reading',
-//                     url: 'energy-meter-reading',
-//                     defaultChecked: true
-//                 }
-//             ]
-//         }
-//     ]);
-// }]);
-
 app.controller('AppStoreCtrl', ['$scope', 'appStoreProvider', '$translate', function ($scope, appStoreProvider, $translate) {
     $scope.allApps = appStoreProvider.getAllApps();
     $scope.selectedApps = appStoreProvider.getSelectedApps();
@@ -604,7 +441,7 @@ app.controller('AppStoreCtrl', ['$scope', 'appStoreProvider', '$translate', func
                         item.selected = false;
                         return false;
                     }
-                })
+                });
             });
         } else {
             app.selected = true;

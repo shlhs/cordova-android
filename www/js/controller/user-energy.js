@@ -427,7 +427,7 @@ EnergyFuncApi.prototype.calcAvgMaxLoadAndTrend = function (dataList, month) {
 
 // 能源管理基础控制，主要用于获取所有监测点，并显示设备显示页面
 app.controller('EnergyBaseCtrl', ['$scope', '$stateParams', '$state', 'ajax', 'platformService', 'routerService', 'varDataService', function ($scope, $stateParams, $state, ajax, platformService, routerService, varDataService) {
-    $scope.stationSn = $stateParams.sn;
+    $scope.stationSn = $scope.stationSn || GetQueryString('sn');
     $scope.stationName = $scope.stationName || GetQueryString('name');
     $scope.stationCapacity = $scope.capacity|| GetQueryString("capacity");
     $scope.devices = [];
@@ -1506,8 +1506,6 @@ app.controller('EnergyMaxDemandCtrl', ['$scope', 'varDataService', function ($sc
         initDatePicker();
     }, 500);
 }]);
-
-const defaultVoltage = null;     // 默认额定相电压
 
 app.controller('EnergyQualityMonitorCtrl', ['$scope', 'varDataService', 'collectorService', function ($scope, varDataService, collectorService) {
     var codes = [];

@@ -12,7 +12,7 @@
         </div>
         <div><label class="title">{{ 'inspect.check.reference' | myTranslate }}：</label>{{item.reference_relation}} {{item.reference_value}}</div>
         <div ng-if="item.desp"><label class="title">{{ 'inspect.check.step.info' | myTranslate }}：</label>{{item.desp}}</div>
-        <div>
+        <div ng-if="showResult">
             <label class="title">{{'result' | myTranslate}}：</label>
             <label ng-if="!canEdit && item.pass === 1" class="text-normal">{{'inspect.result.normal' | translate}}</label>
             <label ng-if="!canEdit && item.pass === 2" class="text-danger">{{ 'inspect.result.abnormal' | translate}}</label>
@@ -21,11 +21,11 @@
                 <button class="item-pass" ng-class="{exception: item.pass === 2}" ng-click="setItemPass(item, 2)">{{ 'inspect.result.abnormal' | translate }}</button>
             </label>
         </div>
-        <div ng-if="item.pass !== 2">
+        <div ng-if="showResult && item.pass !== 2">
             <label class="title">{{'result description' | myTranslate}}：</label>
             <input placeholder="{{'please.input value' | myTranslate}}" ng-model="item.result_desp" ng-if="canEdit"><label ng-if="!canEdit">{{item.result_desp}}</label>
         </div>
-        <div ng-if="item.pass === 2">
+        <div ng-if="showResult && item.pass === 2">
             <label class="title">{{'inspect.result.unusual description' | myTranslate}}：</label>
             <input placeholder="{{'please describe abnormal appearance' | myTranslate}}" ng-model="item.result_desp" ng-if="canEdit">
             <label ng-if="!canEdit">{{item.result_desp}}</label>
@@ -43,18 +43,18 @@
         <span class="text-danger" ng-if="result.status === '2'">{{ 'inspect.result.abnormal' | translate }}</span>
     </span>
 </div>
-<div class="card" style="padding-top: 0;" ng-if="result.status">
+<div class="card" style="padding-top: 0;" ng-if="showResult">
     <div class="card-content">
         <div class="device-check-pass-result" ng-if="canEdit">
             <div ng-class="{'checked': result.status !== '2'}" ng-click="setDevicePass('1')">
                 <i class="radio"></i><label>{{ 'inspect.result.normal' | translate }}</label>
             </div>
-            <div ng-class="{'checked': result.status === '2'}" ng-click="setDevicePass('2')">
+            <div ng-class="{'checked danger': result.status === '2'}" ng-click="setDevicePass('2')">
                 <i class="radio"></i><label>{{ 'inspect.result.abnormal' | translate }}</label>
             </div>
         </div>
         <textarea rows="4" placeholder="{{canEdit ? ('inspect.check.device.desp' | translate) : ''}}" name="name" ng-model="result.desp" ng-disabled="!canEdit" required
-                  style="border: none;border-radius: 4px;font-size: 12px;padding: 8px;margin-top: 8px;"></textarea>
+                  style="border: none;border-radius: 4px;font-size: 12px;padding: 8px;margin-top: 8px;" ng-if="canEdit || result.desp"></textarea>
         <div style="font-size: 13px;font-weight: 600;margin: 6px 0 4px 0;">{{'device photos' | myTranslate}}</div>
         <image-uploader images="result.images" ng-if="canEdit"></image-uploader>
         <image-grid-list images="result.images" ng-if="!canEdit && result.images.length"></image-grid-list>

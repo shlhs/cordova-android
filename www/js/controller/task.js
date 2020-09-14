@@ -3272,6 +3272,7 @@ app.controller('TaskDeviceCheckCtrl', ['$scope', 'ajax', '$myTranslate', functio
     $scope.exception = 0;
     $scope.isLoading = false;
     $scope.expandItems = !$scope.canEdit;
+    $scope.showResult = [TaskStatus.Arrived, TaskStatus.ToClose, TaskStatus.Closed].indexOf($scope.taskData.stage_id) >= 0;
 
     $scope.onExpandItems = function () {
         $scope.expandItems = !$scope.expandItems;
@@ -3311,7 +3312,7 @@ app.controller('TaskDeviceCheckCtrl', ['$scope', 'ajax', '$myTranslate', functio
                 $scope.isLoading = false;
                 $scope.$apply();
             }
-        })
+        });
     }
 
     $scope.setItemPass = function (checkItem, pass) {
@@ -3323,11 +3324,11 @@ app.controller('TaskDeviceCheckCtrl', ['$scope', 'ajax', '$myTranslate', functio
     };
 
     $scope.saveDeviceResult = function () {
-        if ($scope.result.status === '2' && !$scope.result.desp) {
-            // 当设备状态设置为异常时，需要输入异常结果
-            $.notify.toast($myTranslate.instant('inspect.device.error.input.tip'));
-            return;
-        }
+        // if ($scope.result.status === '2' && !$scope.result.desp) {
+        //     // 当设备状态设置为异常时，需要输入异常结果
+        //     $.notify.toast($myTranslate.instant('inspect.device.error.input.tip'));
+        //     return;
+        // }
         var checkItems = [];
         $scope.checkItems.forEach(function (t) {
             checkItems.push({

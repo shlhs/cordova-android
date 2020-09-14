@@ -12,6 +12,7 @@ html,body{
 }
 .mui-page {
     background: @page-bg;
+    background-size: cover;
 }
 body, .page {
   background: @page-bg;
@@ -19,6 +20,7 @@ body, .page {
 }
 .page .body-content {
   background: @page-bg;
+    background-size: cover;
 }
 * {
     padding: 0;
@@ -3543,14 +3545,14 @@ header .mui-title .dropdown-arrow:after {
     position: absolute;
     top: 50%;
     left: 50%;
-    display: block;
     z-index: 10;
     border-radius: 50%;
-    line-height: 36px;
     margin-top: -15px;
     margin-left: -15px;
     cursor: pointer;
-    padding-left: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .ipc-wrapper .img .play .iconfont {
     font-size: 20px;

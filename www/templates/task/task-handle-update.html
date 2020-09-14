@@ -15,8 +15,8 @@
             </div>
             <div class="label" style="font-size: 14px;margin: 0 4px 4px 10px;">{{'photos' |translate}}</div>
             <image-uploader images="images" style="margin-left: 10px;"></image-uploader>
-            <div class="label" style="font-size: 14px;margin: 0 4px 4px 10px;" ng-if="true || audioVideoEnabled">{{'video' | translate}}</div>
-            <video-uploader video="videoUrl" on-update="onUpdateVideo" can-edit="true" ng-if="true || audioVideoEnabled" style="margin-left: 10px;"></video-uploader>
+            <div class="label" style="font-size: 14px;margin: 0 4px 4px 10px;" ng-if="audioVideoEnabled">{{'video' | translate}}</div>
+            <video-uploader video="videoUrl" on-update="onUpdateVideo" can-edit="true" ng-if="audioVideoEnabled" style="margin-left: 10px;"></video-uploader>
         </div>
     </div>
 </div>

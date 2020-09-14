@@ -905,23 +905,38 @@
 .device-check-pass-result>div.checked {
     color: @color-primary-light;
     border-color: @color-primary-light;
-}
-.device-check-pass-result>div.checked .radio {
-    color: @color-primary-light;
-    border-color: @color-primary-light;
-    position: relative;
-}
-.device-check-pass-result>div.checked .radio:before {
-    content: '';
-    width: 7px;
-    height: 4px;
-    transform: rotate(-45deg);
-    border: @color-primary-light 1px solid;
-    border-right: none;
-    border-top: none;
-    position: absolute;
-    left: 2px;
-    top: 2px;
+    .radio {
+        color: @color-primary-light;
+        border-color: @color-primary-light;
+        position: relative;
+
+        &:before {
+            content: '';
+            width: 7px;
+            height: 4px;
+            transform: rotate(-45deg);
+            border: @color-primary-light 1px solid;
+            border-right: none;
+            border-top: none;
+            position: absolute;
+            left: 2px;
+            top: 2px;
+        }
+    }
+
+    &.danger {
+        color: @red;
+        border-color: @red;
+
+        .radio {
+            color: @red;
+            border-color: @red;
+
+            &:before {
+                border-color: @red;
+            }
+        }
+    }
 }
 .task-detail-info-group{
     margin: 0;
@@ -1159,5 +1174,5 @@
     }
 }
 .inspect-device-tab {
-    background-color: @color-bg-regular;
+    background-color: @color-bg-primary;
 }

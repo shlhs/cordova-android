@@ -10,19 +10,6 @@
     <link rel="stylesheet" href="../components/mui/css/icons-extra.css">
     <link rel="stylesheet" href="../css/setting.css">
     <link rel="stylesheet" href="../css/animate.css">
-    <link rel="stylesheet" type="text/css" href="/js/lib/datatables/jquery.dataTables.min.css">
-    <script type="text/javascript" src="../components/libs/jquery-2.1.4.min.js"></script>
-    <script type="text/javascript" src="../components/angular/angular.min.js"></script>
-    <script type="text/javascript" src="../components/angular-ui-router/release/angular-ui-router.min.js"></script>
-    <script type="text/javascript" src="../components/angular-animate/angular-animate.js"></script>
-    <script type="text/javascript" src="../components/angular-ui-router/release/stateEvents.min.js"></script>
-    <script type="text/javascript" src="/js/lib/angular-translate.min.js"></script>
-    <!--<script type="text/javascript" src="/js/lib/angular-translate-loader-static-files.min.js"></script>-->
-    <script type="text/javascript" src="../js/app/utils.js"></script>
-    <script type="text/javascript" src="../js/app/app.js"></script>
-    <script type="text/javascript" src="../js/service/appstore.js"></script>
-    <script type="text/javascript" src="../js/service/common-service.js"></script>
-    <script type="text/javascript" src="../js/router/router.js"></script>
     <link rel="stylesheet" href="../components/mui/css/mui.min.css">
     <link rel="stylesheet" href="../components/mui/css/mui.picker.min.css">
     <link rel="stylesheet" href="../css/my.css">
@@ -80,10 +67,33 @@
         <li class="mui-table-view-cell"><a href="javascript:void(0)" ng-click="openDtsCreate()">{{'create defect' | myTranslate}}</a></li>
     </ul>
 </div>
+    <!--  build:js -->
+    <script type="text/javascript" src="../components/libs/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="../components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="../components/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script type="text/javascript" src="../components/angular-animate/angular-animate.js"></script>
+    <script type="text/javascript" src="../components/angular-ui-router/release/stateEvents.min.js"></script>
+    <script type="text/javascript" src="../lib/angular-translate.min.js"></script>
     <script src="../components/fastclick-master/lib/fastclick.js"></script>
-    <script src="../js/my/notify.js"></script>
+    <script src="../components/moment.min.js"></script>
+    <script src="../components/echart/echarts.min-3.x.js"></script>
+    <script src="../components/mui/js/mui.min.js"></script>
+    <script src="../components/mui/js/mui.picker.min.js"></script>
+    <script src="../components/slides-playing/js/jquery.slides.js"></script>
+    <script src="../lib/circleChart.es5.min.js"></script>
     <script src="../components/dropload-gh-pages/dist/dropload.min.js"></script>
-    <script src="../components/handlebars-v4.0.10.js"></script>
+    <script type="text/javascript" src="../lib/datatables/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="../lib/datatables/dataTables.fixedColumns.min.js"></script>
+    <script type="text/javascript" src="../lib/datatables/dataTables.fixedHeader.min.js"></script>
+    <!-- endbuild -->
+
+    <script src="../js/echartsTheme.js"></script>
+    <script src="../js/my/notify.js"></script>
+    <script type="text/javascript" src="../js/app/utils.js"></script>
+    <script type="text/javascript" src="../js/app/app.js"></script>
+    <script type="text/javascript" src="../js/service/appstore.js"></script>
+    <script type="text/javascript" src="../js/service/common-service.js"></script>
+    <script type="text/javascript" src="../js/router/router.js"></script>
     <script type="text/javascript" src="../js/controller/login.js"></script>
     <script type="text/javascript" src="../js/controller/task.js"></script>
     <script type="text/javascript" src="../js/controller/sites.js"></script>
@@ -93,45 +103,22 @@
     <script src="../js/controller/setting.js"></script>
     <script src="../js/controller/monitor.js"></script>
     <script src="../js/controller/kanban.js"></script>
-    <script src="../components/moment.min.js"></script>
-    <script src="../components/echart/echarts.min-3.x.js"></script>
-    <!--<script src="../components/echart/echarts.common.js"></script>-->
-    <script src="../components/mui/js/mui.min.js"></script>
-    <script src="../components/mui/js/mui.picker.min.js"></script>
-    <script type="text/javascript" src="/js/lib/datatables/jquery.dataTables.min.js"></script>
-    <script type="text/javascript" src="/js/lib/datatables/dataTables.fixedColumns.min.js"></script>
-    <script type="text/javascript" src="/js/lib/datatables/dataTables.fixedHeader.min.js"></script>
-    <script src="../../js/echartsTheme.js"></script>
-    <script type="text/javascript" src="/js/service/varData.js"></script>
-    <script type="text/javascript" src="/js/controller/kanban.js"></script>
-    <script type="text/javascript" src="/js/controller/monitor.js"></script>
-    <script type="text/javascript" src="/js/controller/device.js"></script>
-    <script type="text/javascript" src="/js/controller/ipc.js"></script>
-    <script type="text/javascript" src="/js/controller/site-monitor.js"></script>
-    <script type="text/javascript" src="/js/controller/site/security_evaluate.js"></script>
-    <script type="text/javascript" src="/js/controller/site/maintenance-checks.js"></script>
-    <script type="text/javascript" src="/js/controller/energy.js"></script>
-    <script type="text/javascript" src="/js/controller/static-devices.js"></script>
-    <script type="text/javascript" src="/js/controller/dts.js"></script>
-    <script type="text/javascript" src="/components/slides-playing/js/jquery.slides.js"></script>
-    <script src="/js/lib/circleChart.es5.min.js"></script>
-    <script src="/components/dropload-gh-pages/dist/dropload.min.js"></script>
-    <script id="grab-task-template" type="text/x-handlebars-template">
-        <div class="mui-popup mui-popup-in android-dialog" style="display: block;">
-            <div class="mui-popup-inner">
-                <div class="mui-popup-title">
-                    <label class="mui-ellipsis">{{name}}</label>
-                </div>
-                <div class="mui-popup-text">
-                    <h5><i class="icon icon-xs map"></i>{{station_address}}</h5>
-                    <h5><i class="icon icon-xs clock"></i> {{expect_complete_time}}前完成</h5>
-                </div>
-            </div>
-            <button type="button" class="mui-btn mui-btn-primary mui-btn-block" data-role="accept">接单</button>
-            <button type="button" class="mui-btn mui-btn-block" data-role="cancel">取消</button>
-        </div>
-        <div class="mui-popup-backdrop mui-active" style="display: block;"></div>
-    </script>
+    <script type="text/javascript" src="../js/service/varData.js"></script>
+    <script type="text/javascript" src="../js/controller/kanban.js"></script>
+    <script type="text/javascript" src="../js/controller/monitor.js"></script>
+    <script type="text/javascript" src="../js/controller/device.js"></script>
+    <script type="text/javascript" src="../js/controller/ipc.js"></script>
+    <script type="text/javascript" src="../js/controller/site-monitor.js"></script>
+    <script type="text/javascript" src="../js/controller/site/security_evaluate.js"></script>
+    <script type="text/javascript" src="../js/controller/site/maintenance-checks.js"></script>
+    <script type="text/javascript" src="../js/controller/energy.js"></script>
+    <script type="text/javascript" src="../js/controller/static-devices.js"></script>
+    <script type="text/javascript" src="../js/controller/dts.js"></script>
+    <!--<script src="../js/all-1599811107190.min.js"></script>-->
+
+    <!--<script src="../js/lib.js"></script>-->
+    <!--<script src="../js/app.js"></script>-->
+    <!-- endbuild -->
     <script>
 
         window.addEventListener('message', function(e) {

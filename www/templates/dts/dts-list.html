@@ -1,51 +1,6 @@
-
-
 <div class="mui-page" ng-controller="TaskBaseCtrl" ng-cloak>
-    <!--<style>-->
-        <!--html,-->
-        <!--body {-->
-            <!--height: 100%;-->
-            <!--overflow: hidden;-->
-        <!--}-->
-        <!--.mui-bar {-->
-            <!-- -webkit-box-shadow: none;-->
-            <!--box-shadow: none;-->
-        <!--}-->
-        <!--.mui-table-view.mui-grid-view .mui-table-view-cell .mui-media-body{-->
-            <!--height: 18px;-->
-        <!--}-->
-        <!--strong{-->
-            <!--height: 18px;-->
-            <!--display: inline-block;-->
-        <!--}-->
-        <!--.mui-bar-tab{-->
-            <!--box-shadow: none;-->
-            <!--background-color: transparent;-->
-        <!--}-->
-        <!--.mui-bar-tab>a{-->
-            <!--padding: 8px;-->
-        <!--}-->
-        <!--.mui-bar-tab>a>button{-->
-            <!--margin-bottom: 6px !important;-->
-        <!--}-->
-        <!--.device-list{-->
-            <!--margin-left: 88px;-->
-        <!--}-->
-        <!--.device-list .device{-->
-            <!--display: block;-->
-        <!--}-->
-        <!--.info-group>li{-->
-            <!--line-height: 24px;-->
-        <!--}-->
-        <!--.info-group .title {-->
-            <!--width: auto;-->
-        <!--}-->
-        <!--.info-group .value {-->
-            <!--margin-left: 0;-->
-        <!--}-->
-    <!--</style>-->
 <header class="mui-bar bg-header">
-    <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
+    <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="history.back()"></a>
     <h1 class="mui-title">{{'menu.ops.defect' | translate}}</h1>
     <a ng-click="openDtsCreatePage()" class="mui-action-menu mui-icon mui-pull-right"><i class="iconfont anticon-plus"></i></a>
 </header>

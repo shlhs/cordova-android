@@ -1707,6 +1707,9 @@ app.controller('EnergyStatisticsZhiluCtrl', ['$scope', 'ajax', 'platformService'
                 legend: {
                     data: [$myTranslate.instant('today'), $myTranslate.instant('yesterday')],
                     bottom: 5,
+                    left: 'right',
+                    top: 'bottom',
+                    right: 0,
                     textStyle: {
                         fontSize: 9,
                         rich: {
@@ -1864,7 +1867,9 @@ app.controller('EnergyStatisticsZhiluCtrl', ['$scope', 'ajax', 'platformService'
                 },
                 legend: {
                     data: labels,
-                    bottom: 5,
+                    // bottom: 5,
+                    left: 'right',
+                    right: 0,
                     textStyle: {
                         fontSize: 9,
                         rich: {

@@ -936,9 +936,9 @@ app.controller('KanbanCtrl', ['$scope', '$stateParams', 'ajax', '$timeout', func
 
 }]);
 
-app.controller('SiteOverviewCtrl', ['$scope', 'ajax', 'varDataService', '$myTranslate', function ($scope, ajax, varDataService, $myTranslate) {
-    $scope.sn = $scope.currentSite.sn; // GetQueryString('sn');
-    $scope.stationName = $scope.currentSite.name; // GetQueryString('name');
+app.controller('SiteOverviewCtrl', ['$scope', '$stateParams', 'ajax', 'varDataService', '$myTranslate', function ($scope, $stateParams, ajax, varDataService, $myTranslate) {
+    $scope.sn = $stateParams.sn; // $scope.currentSite.sn; // GetQueryString('sn');
+    // $scope.stationName = $scope.currentSite.name; // GetQueryString('name');
     var stationData = null;
     $scope.fuheLoading = true; // 负荷数据获取
     $scope.fuheError = null; // 负荷变量错误

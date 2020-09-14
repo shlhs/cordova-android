@@ -1,6 +1,6 @@
 <div ng-cloak ng-controller="AppStoreCtrl" class="mui-page app-store-page">
     <header class="mui-bar bg-header mui-segmented-control-vertical bg-transparent" ng-if="!isEditing">
-        <a class="mui-icon mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()" ng-if="!isEditing"></a>
+        <a class="mui-icon mui-icon-left-nav mui-pull-left text-white btn-back" onclick="history.back()" ng-if="!isEditing"></a>
         <h1 class="mui-title">{{'all apps' | myTranslate}}</h1>
     </header>
     <header class="mui-bar bg-header mui-segmented-control-vertical bg-transparent" ng-if="isEditing">
@@ -33,7 +33,7 @@
                 </li>
             </ul>
         </div>
-        <div style="padding: 6px 10px;font-size: 14px;">{{'all apps' | myTranslate}}</div>
+        <div style="padding: 6px 10px;font-size: 14px;" class="text-secondary">{{'all apps' | myTranslate}}</div>
         <div class="card round-card apps" ng-class="{'apps-selector': isEditing}" ng-repeat="appGroup in allApps" style="padding: 0;margin: 0;">
             <div style="padding: 10px 0 4px 12px;" class="card-title">{{appGroup.name}}</div>
             <ul class="mui-table-view mui-grid-view mui-grid-9 no-border app-grid-bg">

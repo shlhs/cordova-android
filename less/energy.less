@@ -299,7 +299,7 @@
     color: @red
 }
 .energy-realtime-values>.item .title {
-    color: @color-text-regular;
+    color: @color-text-primary;
     font-size: 12px;
 }
 .energy-realtime-values>.item .unit {
@@ -327,13 +327,13 @@
 .monitor-table th {
     color: @color-text-regular;
     font-weight: bold;
-    padding: 10px 0;
+    padding: 5px 0;
     text-align: center;
 }
 .monitor-table td {
     color: @color-text-secondary;
     font-size: 12px;
-    padding: 10px 0;
+    padding: 5px 0;
     text-align: center;
 }
 .monitor-table td.title {
@@ -362,8 +362,20 @@
     margin-bottom: 8px;
 }
 .report-card .header .title {
-    color:@color-text-primary;
+    color: @color-text-primary;
     font-size: 15px;
+    position: relative;
+
+    &:before {
+        content: '';
+        width: 3px;
+        height: 14px;
+        margin-right: 4px;
+        background-color: @color-primary;
+        display: inline-block;
+        float: left;
+        margin-top: 3px;
+    }
 }
 .report-card .report-list>.report-item {
     background-color: rgba(0, 0, 0, .1);

@@ -54,8 +54,7 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
         })
         .state('index.overview', { // 站点总览
             url: 'overview/:sn/',
-            templateUrl: '/templates/site/overview2.html',
-            controller: 'SiteOverviewCtrl',
+            templateUrl: '/templates/site/overview.html',
         })
         .state('index.graphs', { // 站点总览
             url: 'graphs/:sn/',

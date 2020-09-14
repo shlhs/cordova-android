@@ -661,7 +661,6 @@ app.controller('SiteReportsCtrl', ['$scope', '$stateParams', 'ajax', 'routerServ
     };
 
     $scope.openReport = function (name, link) {
-        // routerService.openPage($scope, '/templates/base-image-zoom.html', {link: link, name: name});
         window.open('/pdf-viewer/viewer.html?file=' + link, '_self', 'width:100%;height:100%;top:0;left:0;');
     };
 
