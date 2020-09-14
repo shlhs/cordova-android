@@ -20,7 +20,7 @@ var TaskTypes = {
     Tingsong: 16,   // 停送操作,
     Install: 17,    // 安装调试
 };
-var OpsTaskType = [2, 3, 4, 5, 7];
+var OpsTaskType = [1, 2, 3, 4, 5, 6, 7, 11, 12, 13, 14, 15, 16, 17];
 var DtsTaskType = [8, 9, 10];
 var TaskAction = {
     Create: 0,
@@ -1776,7 +1776,7 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
     }
 
     $scope.setReportId = function (reportId) {
-        $scope.taskData.report_id = reportId
+        $scope.taskData.report_id = reportId;
     };
 
     $scope.onToggleTaskDetail = function () {
@@ -1786,31 +1786,26 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
     $scope.gotoHandleTask = function () {       // 根据任务类型打开对应的操作界面
         var reportId = $scope.taskData.report_id;
         switch ($scope.taskData.task_type_id) {
-            case 1:     // 巡检任务
+            case TaskTypes.Security:     // 巡检任务
                 if (reportId) {
-                    var url = '/templates/evaluate/base_home.html?template=/templates/evaluate/security-evaluate-home.html&id=' + reportId;
+                    // var url = '/templates/evaluate/base_home.html?template=/templates/evaluate/security-evaluate-home.html&id=' + reportId;
+                    $state.go('task.securityRecord', {id: reportId});
                 } else {
-                    var url = '/templates/evaluate/base_home.html?template=/templates/evaluate/security-evaluate-first-classify.html&isCreate=1&taskId=' + $scope.taskData.id;
-                    if ($scope.taskData.station_sn) {
-                        url += '&stationSn=' + $scope.taskData.station_sn + "&stationName=" + $scope.taskData.station_name;
-                    }
+                    routerService.openPage($scope, '/templates/evaluate/security-evaluate-first-classify.html',
+                        {isCreate: true, stationSn: $scope.taskData.station_sn,
+                        stationName: $scope.taskData.station_name, taskId: $scope.taskData.id});
                 }
-                $window.location.href = url;
                 break;
-            case 6:     // 停电维护任务
-                var url = '/templates/maintenance-check/base_home.html?template=/templates/maintenance-check/check-one-record-home.html';
+            case TaskTypes.Poweroff:     // 停电维护任务
                 if (reportId) {
-                    url += '&id=' + reportId;
+                    routerService.openPage($scope, '/templates/maintenance-check/check-one-record-home.html', {id: reportId});
                 } else {
-                    url += '&isCreate=1&taskId=' + $scope.taskData.id;
-                    if ($scope.taskData.station_sn) {
-                        url += '&stationSn=' + $scope.taskData.station_sn + "&stationName=" + $scope.taskData.station_name;
-                    }
+                    routerService.openPage($scope, '/templates/maintenance-check/check-one-record-home.html',
+                        {isCreate: true, stationSn: $scope.taskData.station_sn, stationName: $scope.taskData.station_name, taskId: $scope.taskData.id});
                 }
-                $window.location.href = url;
                 break;
             default:
-                $state.go('.update')
+                $state.go('.update');
         }
     };
 

@@ -24,7 +24,7 @@
                     <li class="check-box-item" ng-repeat="item in currentItem.checklist">
                         <div class="name">
                             <label>{{item.name}}</label>
-                            <div class="mui-pull-right mui-checkbox">
+                            <div class="mui-pull-right mui-checkbox" ng-if="canEdit">
                                 <div>
                                     <input name="checkbox{{item.id}}" type="checkbox" ng-click="checkThis(item, 1)" ng-if="!item.value">
                                     <input name="checkbox{{item.id}}" type="checkbox" checked ng-click="checkThis(item, 0)" ng-if="item.value">

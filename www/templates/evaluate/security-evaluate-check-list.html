@@ -26,7 +26,7 @@
                     <li class="check-box-item" ng-repeat="item in checklist">
                         <div class="name" style="min-height: 40px;">
                             <label>{{item.name}}</label>
-                            <div class="mui-pull-right mui-radio">
+                            <div class="mui-pull-right mui-radio" ng-if="hasPermission && editable">
                                 <div><input name="radio{{$index}}" type="radio" ng-model="item.value" value="1" ng-click="checkThis(item)">{{'yes' | translate}}</div>
                                 <div><input name="radio{{$index}}" type="radio" ng-model="item.value" value="0" ng-click="checkThis(item)">{{'no' | translate}}</div>
                             </div>
