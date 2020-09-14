@@ -11,7 +11,6 @@
     <!--标准mui.css-->
     <link rel="stylesheet" href="../../components/mui/css/mui.min.css">
     <link rel="stylesheet" href="../../components/mui/css/mui.picker.min.css">
-    <link rel="stylesheet" href="../../components/libs/font-awesome-4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="../../css/my.css" />
     <link rel="stylesheet" href="../../css/icon.css" />
     <link rel="stylesheet" href="../../css/task.css" />
@@ -233,13 +232,7 @@
                             </li>
                             <div ng-if="requestPictures" style="padding: 0 12px;font-size: 13px;">
                                 <div>{{taskName}} {{ 'pictures' | translate }}</div>
-                                <ul class="image-list" style="padding: 0;">
-                                    <li class="image-item" ng-repeat="url in requestPictures" ng-click="showImageGallery(requestPictures, $index+1)">
-                                        <div class="content">
-                                            <img ng-src="{{url}}">
-                                        </div>
-                                    </li>
-                                </ul>
+                                <image-grid-list images="requestPictures" ng-if="requestPictures"></image-grid-list>
                             </div>
                         </ul>
                     </div>
@@ -258,24 +251,12 @@
                             <div style="font-size: 13px;">{{ 'task.repair.result' | translate }}：</div>
                             <div style="padding: 0 12px;">
                                 <div style="font-size: 13px;" class="text-secondary">{{handleResult.desp}}</div>
-                                <ul class="image-list" style="padding: 0;">
-                                    <li class="image-item" ng-repeat="url in handleResult.picture_list" ng-click="showImageGallery(handleResult.picture_list, $index+1)">
-                                        <div class="content">
-                                            <img ng-src="{{url}}">
-                                        </div>
-                                    </li>
-                                </ul>
+                                <image-grid-list images="handleResult.picture_list" ng-if="handleResult.picture_list"></image-grid-list>
                             </div>
                         </div>
                         <div ng-if="handleResult && taskData.task_type_id === TaskTypes.Xunjian">
                             <div style="font-size: 13px;">{{ 'task.signin' | translate }}：</div>
-                            <ul class="image-list" style="padding: 0;">
-                                <li class="image-item" ng-repeat="url in handleResult.picture_list" ng-click="showImageGallery(handleResult.picture_list, $index+1)">
-                                    <div class="content">
-                                        <img ng-src="{{url}}">
-                                    </div>
-                                </li>
-                            </ul>
+                            <image-grid-list images="handleResult.picture_list" ng-if="handleResult.picture_list"></image-grid-list>
                         </div>
                     </div>
                 </div>

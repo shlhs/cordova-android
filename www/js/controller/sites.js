@@ -31,13 +31,6 @@ app.directive('siteTreeView',[function(){
                 });
                 $event.stopPropagation();
             };
-            $scope.getItemIcon = function(item){
-                var isLeaf = $scope.isLeaf(item);
-                if(isLeaf){
-                    return 'fa fa-leaf';
-                }
-                return item.$$isExpend ? 'fa fa-minus': 'fa fa-plus';
-            };
             $scope.isLeaf = function(item){
                 return !item.is_group;
             };
@@ -214,13 +207,6 @@ app.controller('SiteTreeCtrl', ['$scope', function ($scope) {
             $event:$event
         });
         $event.stopPropagation();
-    };
-    $scope.getItemIcon = function(item){
-        var isLeaf = $scope.isLeaf(item);
-        if(isLeaf){
-            return 'fa fa-leaf';
-        }
-        return item.$$isExpend ? 'fa fa-minus': 'fa fa-plus';
     };
     $scope.isLeaf = function(item){
         return !item.is_group;

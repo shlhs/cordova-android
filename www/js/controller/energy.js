@@ -334,13 +334,6 @@ app.directive('energyConfigTree',[function(){
                 });
                 $event.stopPropagation();
             };
-            $scope.getItemIcon = function(item){
-                var isLeaf = $scope.isLeaf(item);
-                if(isLeaf){
-                    return 'fa fa-leaf';
-                }
-                return item.$$isExpend ? 'fa fa-minus': 'fa fa-plus';
-            };
             $scope.isLeaf = function(item){
                 return item.isLeaf;
             };

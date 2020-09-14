@@ -25,9 +25,9 @@ function setSystemLanguage(language) {
     }
 }
 
-app.run(function ($animate) {
+app.run(['$animate', function ($animate) {
     $animate.enabled(true);
-});
+}]);
 // app.config(['$locationProvider', function ($locationProvider) {
 //
 //
@@ -63,7 +63,7 @@ function loadTranslateFiles(forceLoad) { // 加载翻译文件，forceLoad：重
     return jsonData;
 }
 
-app.config(function ($translateProvider) {
+app.config(['$translateProvider', function ($translateProvider) {
 
     //// 不用static-file-loader，因为是json文件是异步加载的，会导致controller里的js的translate不生效的情况
     // $translateProvider.useStaticFilesLoader({
@@ -75,7 +75,7 @@ app.config(function ($translateProvider) {
     var json = loadTranslateFiles();
     $translateProvider.translations(LANGUAGE, json);
     $translateProvider.preferredLanguage(LANGUAGE);
-});
+}]);
 
 app.filter(
     'to_trusted', ['$sce', function ($sce) {
