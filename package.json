@@ -12,9 +12,7 @@
     }
   },
   "dependencies": {
-    "cordova-android": "^5.2.2",
-    "cordova-ios": "^4.5.3",
-    "cordova-plugin-whitelist": "1",
+   
     "gulp": "^3.9.1",
     "gulp-less": "^3.3.2",
     "gulp-webserver": "^0.9.1",
