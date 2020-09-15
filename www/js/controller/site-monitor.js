@@ -394,7 +394,7 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', '$stateParams', 'ajax', '$myTr
                         lineStyle: {
                             width: 0
                         },
-                        opacity: 0.3,
+                        opacity: 0.7,
                     }
                 },
                 data: chargeData,
@@ -403,7 +403,7 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', '$stateParams', 'ajax', '$myTr
                     itemStyle: {
                         normal: {
                             color: tempColor,
-                            opacity: 0.18,
+                            opacity: 0.9,
                         }
                     }
                 }
