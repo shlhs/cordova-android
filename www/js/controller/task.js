@@ -2768,7 +2768,24 @@ app.controller('TaskCreateCtrl', ['$scope', '$timeout', 'userService', 'routerSe
     if ($scope.role === 'OPS_ADMIN' || $scope.role === 'OPS_OPER') {
         opsCompanyId = Number.parseInt(userService.getCompanyId(), 10);
     }
+    var taskTypePicker = null;
+    var dtPicker = null;
+    var stationPicker = null;
 
+    $scope.$on('$destroy', function () {
+       if (taskTypePicker) {
+           taskTypePicker.dispose();
+           taskTypePicker = null;
+       }
+        if (stationPicker) {
+            stationPicker.dispose();
+            stationPicker = null;
+        }
+        if (dtPicker) {
+            dtPicker.dispose();
+            dtPicker = null;
+        }
+    });
     function init() {
         if ($scope.linkEventId && $scope.linkEventId !== '') {
             initLinkEvent();
@@ -2784,7 +2801,6 @@ app.controller('TaskCreateCtrl', ['$scope', '$timeout', 'userService', 'routerSe
             initStations();
         }
         initTaskTypeList();
-        initDatePicker();
         if ($scope.needResign) {
             initMembers();
         }
@@ -2796,12 +2812,12 @@ app.controller('TaskCreateCtrl', ['$scope', '$timeout', 'userService', 'routerSe
             idKey = 'id';
         }
         if (typeof (nameKey) === 'undefined') {
-            nameKey = 'name'
+            nameKey = 'name';
         }
         for (var i = 0; i < data.length; i++) {
             d = data[i];
-            d['value'] = d[idKey];
-            d['text'] = d[nameKey];
+            d.value = d[idKey];
+            d.text = d[nameKey];
         }
     }
 
@@ -2845,7 +2861,7 @@ app.controller('TaskCreateCtrl', ['$scope', '$timeout', 'userService', 'routerSe
                 }
                 _format(stations, 'sn');
                 // 初始化picker
-                var stationPicker = new mui.PopPicker();
+                stationPicker = new mui.PopPicker();
                 stationPicker.setData(stations);
                 var showUserPickerButton = document.getElementById('stationPicker');
                 showUserPickerButton.addEventListener('click', function (event) {
@@ -2909,7 +2925,7 @@ app.controller('TaskCreateCtrl', ['$scope', '$timeout', 'userService', 'routerSe
                 $scope.taskData.devices = [{id: device.id, sn: device.sn}];
                 history.back();
             }
-        })
+        });
     };
 
     function initTaskTypeList() {
@@ -2926,7 +2942,7 @@ app.controller('TaskCreateCtrl', ['$scope', '$timeout', 'userService', 'routerSe
                 _format(taskTypes);
 
                 //普通示例
-                var taskTypePicker = new mui.PopPicker();
+                taskTypePicker = new mui.PopPicker();
                 taskTypePicker.setData(taskTypes);
                 var taskTypeButton = document.getElementById('taskTypePicker');
                 taskTypeButton.addEventListener('click', function (event) {
@@ -2940,6 +2956,8 @@ app.controller('TaskCreateCtrl', ['$scope', '$timeout', 'userService', 'routerSe
                     });
                 }, false);
                 pickerI18n();
+
+                initDatePicker(); // 在这初始化，防止ng-cloak导致页面还没显示出来时，初始化失败
             },
             error: function () {
                 console.log('获取任务类型失败');
@@ -3004,26 +3022,22 @@ app.controller('TaskCreateCtrl', ['$scope', '$timeout', 'userService', 'routerSe
         var timeBtn = document.getElementById('expectedTime');
         if (timeBtn) {
             timeBtn.addEventListener('tap', function () {
-                var _self = this;
-                if (_self.picker) {
-                    _self.picker.show(function (rs) {
+                if (dtPicker) {
+                    dtPicker.show(function (rs) {
                         // 如果所选日期为今天，且已经是晚上18:00以后，则时间设置为23:59:59
                         $scope.taskData.expect_complete_time = rs.text + ' 20:00:00';
                         $scope.$apply();
                     });
                 } else {
-                    var options = {type: 'date'};
-                    var id = this.getAttribute('id');
+                    var options = {type: 'date', beginDate: new Date()};
                     /*
                      * 首次显示时实例化组件
                      * 示例为了简洁，将 options 放在了按钮的 dom 上
                      * 也可以直接通过代码声明 optinos 用于实例化 DtPicker
                      */
-                    _self.picker = new mui.DtPicker(options);
-                    _self.picker.show(function (rs) {
+                    dtPicker = new mui.DtPicker(options);
+                    dtPicker.show(function (rs) {
                         $scope.taskData.expect_complete_time = rs.text + " 20:00:00";
-                        // _self.picker.dispose();
-                        // _self.picker = null;
                         $scope.$apply();
                     });
                     datePickerI18n();

@@ -303,7 +303,7 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
                      * 示例为了简洁，将 options 放在了按钮的 dom 上
                      * 也可以直接通过代码声明 optinos 用于实例化 DtPicker
                      */
-                    dtPicker = new mui.DtPicker({type: 'date'});
+                    dtPicker = new mui.DtPicker({type: 'date', beginDate: new Date()});
                     dtPicker.show(function(rs) {
                         $scope.taskData.expect_complete_time = rs.text;
                         $scope.$apply();
@@ -466,7 +466,7 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
             success: function (res) {
                 $.notify.progressStop();
                 if (res.code === 201) {
-                    $.notify.info('submit successful');
+                    $.notify.info($myTranslate.instant('submit successful'));
                     if ($scope.isInPage) {
                         history.back();
                     }
