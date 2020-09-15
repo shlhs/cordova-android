@@ -421,6 +421,7 @@ app.controller('HomeCtrl', ['$scope', '$state', '$timeout', 'userService', 'appS
         routerService.openPage($scope, '/templates/site/site-select-page.html',
             {treeData: $scope.sitesTree, onSelect: $scope.chooseSite, selectedSn: $scope.currentSite.sn},
             {hidePrev: false});
+        // $state.go('.siteSelector', {treeData: $scope.sitesTree, onSelect: $scope.chooseSite, selectedSn: $scope.currentSite.sn});
     };
 
     function _getDefaultHomeMenu() {
@@ -1591,9 +1592,9 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
         $scope.$apply();
         stationLongitude = data.station_longitude;
         stationLatitude = data.station_latitude;
-        if (data.stage_id === TaskStatus.Competition && data.station_latitude && data.station_longitude) {
-            drawMap($scope.taskData);
-        }
+        // if (data.stage_id === TaskStatus.Competition && data.station_latitude && data.station_longitude) {
+        //     drawMap($scope.taskData);
+        // }
         formatTaskStatus();
         // if (DtsTaskType.indexOf(data.task_type_id) >= 0) {
         //     $scope.taskName = '缺陷';
@@ -1788,7 +1789,6 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
         switch ($scope.taskData.task_type_id) {
             case TaskTypes.Security:     // 巡检任务
                 if (reportId) {
-                    // var url = '/templates/evaluate/base_home.html?template=/templates/evaluate/security-evaluate-home.html&id=' + reportId;
                     $state.go('task.securityRecord', {id: reportId});
                 } else {
                     routerService.openPage($scope, '/templates/evaluate/security-evaluate-first-classify.html',
@@ -2268,6 +2268,9 @@ app.controller('CommonTaskEditAssignCtrl', ['$scope', '$timeout', 'ajax', functi
         time: false,
     };
 
+    var taskTypePicker = null;
+    var dtPicker = null;
+
     function init() {
         $timeout(function () {
             initDatePicker();
@@ -2303,9 +2306,8 @@ app.controller('CommonTaskEditAssignCtrl', ['$scope', '$timeout', 'ajax', functi
 
     function initDatePicker() {
         document.getElementById('expectedTime1').addEventListener('tap', function () {
-            var _self = this;
-            if (_self.picker) {
-                _self.picker.show(function (rs) {
+            if (dtPicker) {
+                dtPicker.show(function (rs) {
                     // 如果所选日期为今天，且已经是晚上18:00以后，则时间设置为23:59:59
                     $scope.expectTime = rs.text;
                     $scope.error.time = false;
@@ -2313,8 +2315,8 @@ app.controller('CommonTaskEditAssignCtrl', ['$scope', '$timeout', 'ajax', functi
                 });
             } else {
                 var options = {type: 'date', beginDate: new Date()};
-                _self.picker = new mui.DtPicker(options);
-                _self.picker.show(function (rs) {
+                dtPicker = new mui.DtPicker(options);
+                dtPicker.show(function (rs) {
                     $scope.expectTime = rs.text;
                     $scope.error.time = false;
                     $scope.$apply();
@@ -2336,7 +2338,7 @@ app.controller('CommonTaskEditAssignCtrl', ['$scope', '$timeout', 'ajax', functi
         }];
         var taskTypeButton = document.getElementById('taskTypePicker');
         if (taskTypeButton) {
-            var taskTypePicker = new mui.PopPicker();
+            taskTypePicker = new mui.PopPicker();
             taskTypePicker.setData(taskTypes);
             taskTypePicker.pickers[0].setSelectedIndex(task.task_type_id - 8); // 默认选中
             taskTypeButton.addEventListener('click', function (event) {
@@ -2460,6 +2462,17 @@ app.controller('CommonTaskEditAssignCtrl', ['$scope', '$timeout', 'ajax', functi
         // });
         $scope.submit(params);
     };
+
+    $scope.$on('$destroy', function () {
+       if (dtPicker) {
+           dtPicker.dispose();
+           dtPicker = null;
+       }
+       if (taskTypePicker) {
+           taskTypePicker.dispose();
+           taskTypePicker = null;
+       }
+    });
 }]);
 
 app.controller('TaskAssignCtrl', ['$scope', '$timeout', function ($scope, $timeout) {

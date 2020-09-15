@@ -7,22 +7,33 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta http-equiv="Access-Control-Allow-Origin" content="*">
-    <!--<link rel="stylesheet" href="../components/mui/css/icons-extra.css">-->
-    <!--<link rel="stylesheet" href="../css/setting.css">-->
-    <link rel="stylesheet" href="../css/login.css">
-    <link rel="stylesheet" href="../css/iconfont/iconfont.css">
+    <!--&lt;!&ndash; build.css &ndash;&gt;-->
+    <!--<link rel="stylesheet" href="../css/login.css">-->
+    <!--<link rel="stylesheet" href="../css/iconfont/iconfont.css">-->
+    <!--&lt;!&ndash; endbuild &ndash;&gt;-->
+
+    <!--build:css -->
+    <link rel="stylesheet" href="/components/mui/css/icons-extra.css">
+    <link rel="stylesheet" href="/css/setting.css">
+    <link rel="stylesheet" href="/css/animate.css">
+    <link rel="stylesheet" href="/components/mui/css/mui.min.css">
+    <link rel="stylesheet" href="/components/mui/css/mui.picker.min.css">
+    <link rel="stylesheet" href="/css/my.css">
+    <link rel="stylesheet" href="/css/icon.css">
+    <link rel="stylesheet" href="/css/task.css">
+    <link rel="stylesheet" href="/css/energy.css">
+    <link rel="stylesheet" href="/css/notify.css">
+    <link rel="stylesheet" href="/css/iconfont/iconfont.css">
+    <link rel="stylesheet" href="/css/login.css">
+    <!--endbuild -->
+    <!-- build:lib -->
     <script type="text/javascript" src="../components/libs/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="../components/angular/angular.min.js"></script>
     <script type="text/javascript" src="../components/angular-ui-router/release/angular-ui-router.min.js"></script>
     <script type="text/javascript" src="../components/angular-animate/angular-animate.js"></script>
     <script type="text/javascript" src="/lib/angular-translate.min.js"></script>
-    <!--<script type="text/javascript" src="/lib/angular-translate-loader-static-files.min.js"></script>-->
     <script type="text/javascript" src="../components/angular-ui-router/release/stateEvents.min.js"></script>
-    <script type="text/javascript" src="../js/app/utils.js"></script>
-    <script type="text/javascript" src="../lib/jwt/jsrsasign-all-min.js"></script>
-    <!--<script type="text/javascript" src="../lib/jwt/jwt-token.js"></script>-->
-    <script type="text/javascript" src="../js/app/app.js"></script>
-    <script type="text/javascript" src="../js/service/common-service.js"></script>
+    <!-- endbuild -->
 <body class="box-vertical-center" ng-app="myApp" ng-cloak ng-controller="LoginCtrl" ng-class="isDark ? 'dark-login' : 'light-login'">
     <img class="main-icon" src="../img/login/login-icon.png" ng-if="!isDark">
     <div style="color: rgba(255, 255, 255, 0.6);font-size: 25px;margin-top: 15%;" ng-if="isDark">欢迎使用</div>
@@ -49,8 +60,15 @@
             </div>
         </div>
     </div>
+    <script type="text/javascript" src="/config/config.js"></script>
+    <!-- build:js -->
+    <script type="text/javascript" src="../js/app/utils.js"></script>
+    <script type="text/javascript" src="../lib/jwt/jsrsasign-all-min.js"></script>
+    <script type="text/javascript" src="../js/app/app.js"></script>
+    <script type="text/javascript" src="../js/service/common-service.js"></script>
     <script src="../components/fastclick-master/lib/fastclick.js"></script>
     <script src="../js/my/notify.js"></script>
     <script type="text/javascript" src="../js/controller/login.js"></script>
+    <!-- endbuild -->
 </body>
 </html>

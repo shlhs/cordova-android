@@ -109,17 +109,18 @@ var DEFAULT_MENUS = [
         name: '运维中心',
         key: 'menu.parent.ops',
         children: [
+            // {
+            //     name: '服务申请',
+            //     key: 'menu.ops.create',
+            //     icon: 'icon-add-task',
+            //     color: 'orange',
+            //     templateUrl: '/templates/task/add-task.html',
+            //     url: 'add-task',
+            //     sn: 'ops-management/add-task',
+            //     defaultChecked: true,
+            //     role: ['USER']
+            // },
             {
-                name: '服务申请',
-                key: 'menu.ops.create',
-                icon: 'icon-add-task',
-                color: 'orange',
-                templateUrl: '/templates/task/add-task.html',
-                url: 'add-task',
-                sn: 'ops-management/add-task',
-                defaultChecked: true,
-                role: ['USER']
-            }, {
                 name: '缺陷记录',
                 key: 'menu.ops.defect',
                 icon: 'warning',
@@ -129,7 +130,7 @@ var DEFAULT_MENUS = [
                 sn: 'ops-management/defect-tasks',
                 sref: 'dts',
                 defaultChecked: true,
-                role: ['OPS_OPERATOR', 'OPS_ADMIN']
+                role: ['OPS_OPERATOR', 'OPS_ADMIN', 'USER']
             }, {
                 name: '安全评测',
                 key: 'menu.ops.security',

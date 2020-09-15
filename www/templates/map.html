@@ -8,9 +8,19 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
 
-    <!--标准mui.css-->
-    <link rel="stylesheet" href="../components/mui/css/mui.min.css">
-    <link rel="stylesheet" href="../css/my.css" />
+    <!--build:css -->
+    <link rel="stylesheet" href="/components/mui/css/icons-extra.css">
+    <link rel="stylesheet" href="/css/setting.css">
+    <link rel="stylesheet" href="/css/animate.css">
+    <link rel="stylesheet" href="/components/mui/css/mui.min.css">
+    <link rel="stylesheet" href="/components/mui/css/mui.picker.min.css">
+    <link rel="stylesheet" href="/css/my.css">
+    <link rel="stylesheet" href="/css/icon.css">
+    <link rel="stylesheet" href="/css/task.css">
+    <link rel="stylesheet" href="/css/energy.css">
+    <link rel="stylesheet" href="/css/notify.css">
+    <link rel="stylesheet" href="/css/iconfont/iconfont.css">
+    <!--endbuild -->
     <style>
 
         .icon{
@@ -28,10 +38,16 @@
         }
 
     </style>
-    <script type="text/javascript" src="../components/libs/jquery-2.1.4.min.js"></script>
-    <script type="text/javascript" src="../js/app/utils.js"></script>
-    <script type="text/javascript" src="../components/angular/angular.min.js"></script>
+    <!-- build:lib -->
+    <script type="text/javascript" src="/components/libs/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="/js/app/utils.js"></script>
+    <script type="text/javascript" src="/components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="/components/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script type="text/javascript" src="/components/angular-animate/angular-animate.js"></script>
+    <script type="text/javascript" src="/components/angular-ui-router/release/stateEvents.min.js"></script>
     <script type="text/javascript" src="/lib/angular-translate.min.js"></script>
+    <script type="text/javascript" src="/components/baidu/map/MarkerManager-1.2.min.js"></script>
+    <!-- endbuild -->
 </head>
 
 <body class="mui-android mui-android-5 mui-android-5-1 mui-android-5-1-1 mui-segmented-control-vertical" ng-app="myApp" ng-cloak>
@@ -50,54 +66,23 @@
         </div>
         <div style="position: fixed;bottom: 0px;width: 100%;text-align: center;" ng-if="enableNavigate">
             <button type="button" class="mui-btn mui-btn-primary mui-icon mui-btn-block " style="width: 50%;" ng-click="openThirdMap()">
-                <span style="position: relative;display: inline-block;line-height: 24px;"><i class="icon icon-20 icon-navigate mui-pull-left"></i>{{'navigate' | translate}}</span>
+                <span style="display: inline-block;line-height: 24px;"><i class="iconfont anticon-navigate mui-pull-left"></i>{{'navigate' | translate}}</span>
 
             </button>
         </div>
     </div>
 </div>
+<script type="text/javascript" src="/config/config.js"></script>
+<!-- build:js -->
+<script src="/js/my/notify.js"></script>
+<script type="text/javascript" src="/js/app/utils.js"></script>
+<script type="text/javascript" src="/js/app/app.js"></script>
+<script type="text/javascript" src="/js/service/common-service.js"></script>
+<!-- endbuild -->
 <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=ITbaaCqA7nMWRjEIycEpddoUW1AvZvRq"></script>
-<script type="text/javascript" src="../components/baidu/map/MarkerManager-1.2.min.js"></script>
-<script src="../components/fastclick-master/lib/fastclick.js"></script>
-<script src="../js/my/notify.js"></script>
 <script>
 
     $("#head_title").html(GetQueryString('name'));
-    var app = angular.module('myApp', ['pascalprecht.translate']);
-    var LANGUAGE = getStorageItem('LANGUAGE');
-
-    function loadTranslateFiles(language, forceLoad) { // 加载翻译文件，forceLoad：重新加载，否则从localStorage中读取
-        var jsonData = {};
-         if (!forceLoad) {
-             var data = localStorage.getItem(language + "_source");
-             if (data) {
-                 try {
-                     jsonData = JSON.parse(data);
-                     return jsonData;
-                 } catch (err) {}
-             }
-         }
-        var url = '/i18n/' + language + '.json';
-        $.ajax({
-            url: url,
-            async: false,
-            success: function (data) {
-                localStorage.setItem(language + "_source", JSON.stringify(data));
-                jsonData = data;
-            },
-            error: function (err) {
-                console.log(err);
-            }
-        });
-        return jsonData;
-    }
-    app.config(function ($translateProvider) {
-
-        // 使用ajax同步加载，避免js的translate先调用，但是json文件未加载，导致无法显示翻译文本的问题
-        var json = loadTranslateFiles(LANGUAGE);
-        $translateProvider.translations(LANGUAGE, json);
-        $translateProvider.preferredLanguage(LANGUAGE);
-    });
 
     app.controller('mapCtrl', ['$scope', '$translate', function ($scope, $translate) {
         var sn = GetQueryString('stationSn');

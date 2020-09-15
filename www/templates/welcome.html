@@ -7,10 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta http-equiv="Access-Control-Allow-Origin" content="*">
-    <!--<link rel="stylesheet" href="../components/mui/css/icons-extra.css">-->
-    <!--<link rel="stylesheet" href="../css/setting.css">-->
-    <!--<script type="text/javascript" src="../cordova.js"></script>-->
-    <!--<script type="text/javascript" src="../cordova_plugins.js"></script>-->
+    <!--build:lib-->
     <script type="text/javascript" src="../components/libs/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="../components/angular/angular.min.js"></script>
     <script type="text/javascript" src="/lib/angular-translate.min.js"></script>
@@ -19,9 +16,7 @@
     <script type="text/javascript" src="../components/angular-animate/angular-animate.js"></script>
     <script type="text/javascript" src="../components/angular-ui-router/release/stateEvents.min.js"></script>
     <script type="text/javascript" src="../lib/jwt/jsrsasign-all-min.js"></script>
-    <script type="text/javascript" src="../js/app/utils.js"></script>
-    <script type="text/javascript" src="../js/app/app.js"></script>
-    <script type="text/javascript" src="../js/service/common-service.js"></script>
+    <!-- endbuild -->
     <style>
         html,body{
             height: 100%;
@@ -96,12 +91,16 @@
     </div>
 </div>
 <div ng-controller="AutoLoginCtrl"></div>
-
+<script type="text/javascript" src="/config/config.js"></script>
+<!-- build:js -->
+<script type="text/javascript" src="../js/app/utils.js"></script>
+<script type="text/javascript" src="../js/app/app.js"></script>
+<script type="text/javascript" src="../js/service/common-service.js"></script>
 <script src="../components/fastclick-master/lib/fastclick.js"></script>
 <script src="../js/my/notify.js"></script>
 <script src="../components/dropload-gh-pages/dist/dropload.min.js"></script>
-<script src="../components/handlebars-v4.0.10.js"></script>
 <script type="text/javascript" src="../js/controller/login.js"></script>
+<!-- endbuild -->
 <script>
     $(function () {
         var screenHeight = window.screen.height;

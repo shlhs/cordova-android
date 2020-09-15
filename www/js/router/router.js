@@ -30,7 +30,6 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
         .state('index.setting', {
             url: 'setting/',
             templateUrl: '/templates/setting/setting.html'
-
         })
         .state('index.account', {
             url: 'account/',

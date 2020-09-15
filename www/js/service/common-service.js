@@ -421,7 +421,7 @@ app.directive('teamAndHandlerSelector',[function(){
             firstTitle: '@', // 第一页的描述
             secondTitle: '@', // 第二页的描述
         },
-        controller:['$scope', '$attrs', function($scope, $attrs){
+        controller:['$scope', '$attrs', function($scope, $attrs) {
             $scope.selectedTeam = null;
             $scope.isTeamSelector = true;   // true：选择班组，false：选择维修工
             var selected = [];           // 当点击了"确定"后，所选项就是最终选择的
@@ -686,7 +686,7 @@ app.directive('videoUploader', function () {
                 mediaService.removeFile($scope.video);
                 $scope.onUpdate(null);
                 return false;
-            }
+            };
        }]
    };
 });

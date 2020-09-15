@@ -19,7 +19,7 @@
                     <input name="digitalValue" type="radio" id="radio1" ng-checked="controlObj.value === '0'" ng-model="controlObj.value">
                 </div>
                 <label style="margin-top: 10px;" class="text-primary">{{'device.control.pwd.input' | translate}}</label>
-                <input placeholder=""{{'login.pwd.placeholder' | translate}}" autocomplete="new-password" style="font-size: 14px" type="password" ng-model="pwd" ng-change="onPwdChange(pwd)">
+                <input placeholder="{{'login.pwd.placeholder' | translate}}" autocomplete="new-password" style="font-size: 14px" type="password" ng-model="pwd" ng-change="onPwdChange(pwd)">
             </div>
             <div class="text-danger" ng-if="error" style="margin-top: 8px;text-align: left;font-size: 12px;">{{error}}</div>
         </div>

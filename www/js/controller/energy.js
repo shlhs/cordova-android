@@ -1431,7 +1431,6 @@ app.controller('EnergyStatisticsZhiluCtrl', ['$scope', 'ajax', 'platformService'
         currentItem = $scope.$parent.currentItem;
         varSns = distinctVarSns(currentItem.deviceVarSns);
         // 获取变量信息
-        recordPeriod = null;
         $scope.labelName = $scope.$parent.currentLabel.name;
         if ($scope.categoryName !== $scope.$parent.currentCategory.name) {
             $scope.categoryName = $scope.$parent.currentCategory.name;

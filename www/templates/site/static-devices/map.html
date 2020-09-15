@@ -7,19 +7,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <link rel="stylesheet" href="/components/mui/css/mui.min.css">
-    <link rel="stylesheet" href="/css/iconfont/iconfont.css">
+    <!--build:css -->
+    <link rel="stylesheet" href="/components/mui/css/icons-extra.css">
+    <link rel="stylesheet" href="/css/setting.css">
     <link rel="stylesheet" href="/css/animate.css">
+    <link rel="stylesheet" href="/components/mui/css/mui.min.css">
+    <link rel="stylesheet" href="/components/mui/css/mui.picker.min.css">
     <link rel="stylesheet" href="/css/my.css">
+    <link rel="stylesheet" href="/css/icon.css">
+    <link rel="stylesheet" href="/css/task.css">
+    <link rel="stylesheet" href="/css/energy.css">
+    <link rel="stylesheet" href="/css/notify.css">
+    <link rel="stylesheet" href="/css/iconfont/iconfont.css">
+    <!--endbuild -->
+
+    <!-- build:lib -->
+    <script type="text/javascript" src="/components/libs/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="/js/app/utils.js"></script>
     <script type="text/javascript" src="/components/angular/angular.min.js"></script>
-    <script type="text/javascript" src="/components/angular-animate/angular-animate.js"></script>
     <script type="text/javascript" src="/components/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script type="text/javascript" src="/components/angular-animate/angular-animate.js"></script>
     <script type="text/javascript" src="/components/angular-ui-router/release/stateEvents.min.js"></script>
-    <script type="text/javascript" src="/components/libs/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="/lib/angular-translate.min.js"></script>
-    <script type="text/javascript" src="/js/app/utils.js"></script>
-    <script type="text/javascript" src="/js/app/app.js"></script>
+    <script type="text/javascript" src="/components/baidu/map/MarkerManager-1.2.min.js"></script>
+    <!-- endbuild -->
 </head>
 <body ng-app="myApp" ng-cloak ng-controller="mapCtrl" class="device-map">
     <header class="mui-bar bg-header bg-transparent" style="box-shadow: none; z-index: 99;top: 6px;">
@@ -40,7 +51,7 @@
     </div>
     <div style="position: fixed;bottom: 0;width: 100%;text-align: center;display: none;" id="thirdMapBtn">
         <button type="button" class="btn" style="width: 50%;" ng-click="openThirdMap()">
-            <span style="display: inline-block"><i class="icon icon-20 icon-navigate" style="float: left;margin-top: 4px;"></i>{{'navigate' | translate}}</span>
+            <span style="display: inline-block"><i class="iconfont anticon-navigateR" style="float: left;margin-top: 4px;"></i>{{'navigate' | translate}}</span>
         </button>
     </div>
     <div class="control control-zoom">
@@ -58,9 +69,13 @@
         <div class="btn" ng-click="save()" ng-if="canEdit">{{'save' | translate}}</div>
     </div>
     <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=ITbaaCqA7nMWRjEIycEpddoUW1AvZvRq"></script>
-    <script type="text/javascript" src="/components/baidu/map/MarkerManager-1.2.min.js"></script>
-    <script src="/components/fastclick-master/lib/fastclick.js"></script>
+    <script type="text/javascript" src="/config/config.js"></script>
+    <!-- build:js -->
     <script src="/js/my/notify.js"></script>
+    <script type="text/javascript" src="/js/app/utils.js"></script>
+    <script type="text/javascript" src="/js/app/app.js"></script>
+    <script type="text/javascript" src="/js/service/common-service.js"></script>
+    <!-- endbuild -->
     <script>
 
         app.controller('mapCtrl', ['$scope', 'ajax', '$myTranslate', function ($scope, ajax, $myTranslate) {

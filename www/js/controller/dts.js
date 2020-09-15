@@ -58,8 +58,25 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
     if ($scope.needResign) {
         opsCompanyId = companyId;
     }
+    var dtPicker = null;
+    var taskTypePicker = null;
     var defectTypePicker = null;
     $scope.isEnglish = gIsEnglish;
+
+    $scope.$on('$destroy', function () {
+       if (defectTypePicker) {
+           defectTypePicker.dispose();
+           defectTypePicker = null;
+       }
+       if (taskTypePicker) {
+           taskTypePicker.dispose();
+           taskTypePicker = null;
+       }
+       if (dtPicker) {
+           dtPicker.dispose();
+           dtPicker = null;
+       }
+    });
 
     function init() {
         if ($scope.isForDevice) { // 如果只有设备sn，那么需要读取设备详情
@@ -197,7 +214,7 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
         }];
         var taskTypeButton = document.getElementById('taskTypePicker');
         if (taskTypeButton) {
-            var taskTypePicker = new mui.PopPicker();
+            taskTypePicker = new mui.PopPicker();
             taskTypePicker.setData(taskTypes);
             taskTypeButton.addEventListener('click', function(event) {
                 taskTypePicker.show(function(items) {
@@ -275,11 +292,9 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
         if (timeBtn) {
             timeBtn.addEventListener('tap', function() {
                 var _self = this;
-                if(_self.picker) {
-                    _self.picker.show(function (rs) {
+                if(dtPicker) {
+                    dtPicker.show(function (rs) {
                         $scope.taskData.expect_complete_time = rs.text;
-                        _self.picker.dispose();
-                        _self.picker = null;
                         $scope.$apply();
                     });
                 } else {
@@ -288,11 +303,9 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
                      * 示例为了简洁，将 options 放在了按钮的 dom 上
                      * 也可以直接通过代码声明 optinos 用于实例化 DtPicker
                      */
-                    _self.picker = new mui.DtPicker({type: 'date'});
-                    _self.picker.show(function(rs) {
+                    dtPicker = new mui.DtPicker({type: 'date'});
+                    dtPicker.show(function(rs) {
                         $scope.taskData.expect_complete_time = rs.text;
-                        _self.picker.dispose();
-                        _self.picker = null;
                         $scope.$apply();
                     });
                     datePickerI18n();
@@ -756,6 +769,8 @@ app.controller('DtsEditCtrl', ['$scope', '$timeout', 'ajax', '$myTranslate', fun
         id: task.task_type_id,
         name: task.task_type_name
     };
+    var taskTypePicker = null;
+    var dtPicker = null;
 
     function init() {
         $timeout(function () {
@@ -768,9 +783,8 @@ app.controller('DtsEditCtrl', ['$scope', '$timeout', 'ajax', '$myTranslate', fun
 
     function initDatePicker() {
         document.getElementById('expectedTime1').addEventListener('tap', function() {
-            var _self = this;
-            if(_self.picker) {
-                _self.picker.show(function (rs) {
+            if(dtPicker) {
+                dtPicker.show(function (rs) {
                     // 如果所选日期为今天，且已经是晚上18:00以后，则时间设置为23:59:59
                     $scope.expectTime = rs.text;
                     $scope.$apply();
@@ -783,8 +797,8 @@ app.controller('DtsEditCtrl', ['$scope', '$timeout', 'ajax', '$myTranslate', fun
                     startDate = new Date($scope.expectTime);
                 }
                 var options = {type: 'date', beginDate: startDate};
-                _self.picker = new mui.DtPicker(options);
-                _self.picker.show(function(rs) {
+                dtPicker = new mui.DtPicker(options);
+                dtPicker.show(function(rs) {
                     $scope.expectTime = rs.text;
                     $scope.$apply();
                 });
@@ -803,7 +817,7 @@ app.controller('DtsEditCtrl', ['$scope', '$timeout', 'ajax', '$myTranslate', fun
             value: 10,
             text: $myTranslate.instant('致命缺陷')
         }];
-        var taskTypePicker = new mui.PopPicker();
+        taskTypePicker = new mui.PopPicker();
         taskTypePicker.setData(taskTypes);
         var taskTypeButton = document.getElementById('taskTypePicker');
         taskTypePicker.pickers[0].setSelectedIndex(task.task_type_id - 8); // 默认选中
@@ -849,4 +863,15 @@ app.controller('DtsEditCtrl', ['$scope', '$timeout', 'ajax', '$myTranslate', fun
     $scope.cancel = function () {
         window.history.back();
     };
+
+    $scope.$on('$destroy', function () {
+       if (dtPicker) {
+           dtPicker.dispose();
+           dtPicker = null;
+       }
+       if (taskTypePicker) {
+           taskTypePicker.dispose();
+           taskTypePicker = null;
+       }
+    });
 }]);

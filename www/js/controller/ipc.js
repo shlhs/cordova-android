@@ -18,6 +18,7 @@ app.controller('VideoMonitorCtrl', ['$scope', '$stateParams', '$state', '$timeou
     $scope.isLoading = true;
     $scope.loadingFailed = false;
     $scope.listType = 'row';
+    $scope.playingIpc = null;
 
     $scope.getIpcList = function() {
         $scope.isLoading = true;
@@ -72,16 +73,18 @@ app.controller('VideoMonitorCtrl', ['$scope', '$stateParams', '$state', '$timeou
     };
 
     $scope.startPlay = function (ipc) {
-        ipc.startPlay = true;
+        // ipc.startPlay = true;
+        $scope.playingIpc = ipc;
     };
 
     $scope.pausePlay = function (ipcId) {
-        $scope.ipcs.forEach(function (ipc) {
-            if (ipc.id === ipcId) {
-                ipc.startPlay = false;
-                return false;
-            }
-        });
+        // $scope.ipcs.forEach(function (ipc) {
+        //     if (ipc.id === ipcId) {
+        //         ipc.startPlay = false;
+        //         return false;
+        //     }
+        // });
+        $scope.playingIpc = null;
         $scope.$apply();
     };
 

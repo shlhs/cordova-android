@@ -183,7 +183,9 @@ app.controller('SiteListCtrl', ['$scope', 'ajax', 'userService', 'appStoreProvid
     }
 }]);
 
-app.controller('SiteTreeCtrl', ['$scope', function ($scope) {
+app.controller('SiteTreeCtrl', ['$scope', '$stateParams', function ($scope, $stateParams) {
+    // $scope.selectedSn = $stateParams.selectedSn;
+    // $scope.onSelect = $stateParams.onSelect;
     $scope.showedTreeData = JSON.parse(JSON.stringify($scope.treeData));
 
     function setSearchKey(data) {
@@ -449,6 +451,10 @@ app.controller('EventListCtrl', ['$scope', 'scrollerService', 'userService', 'aj
     };
 
     $scope.getDataList();
+
+    $scope.openEventHistory = function () {
+        window.location.href = '/templates/site/closed-event-list.html?status=0&sn=' + $scope.sn;
+    };
 
     $scope.postCheckEventAction = function($event, eventId) {
         console.log("To check event: " + eventId);

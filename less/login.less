@@ -1,30 +1,32 @@
 //@import './theme/index.less';
-html,body{
-    font-family:SimHei,'Helvetica Neue',Arial,'Droid Sans',sans-serif;
-    padding: 0;
-    margin: 0;
-    position: relative;
-    height: 100%;
-    //width: 100%;
-    overflow: hidden;
-}
-.toast {
-    position: fixed;
-    bottom: 28px;
-    left: 0;
-    width: 100%;
-    text-align: center;
-
-    .msg {
-        border-radius: 4px;
-        color: #fff;
-        font-size: 14px;
-        display: inline-block;
-        padding: 4px 8px;
-    }
-
-}
+//html,body{
+//    font-family:SimHei,'Helvetica Neue',Arial,'Droid Sans',sans-serif;
+//    padding: 0;
+//    margin: 0;
+//    position: relative;
+//    height: 100%;
+//    //width: 100%;
+//    overflow: hidden;
+//}
+//.toast {
+//    position: fixed;
+//    bottom: 28px;
+//    left: 0;
+//    width: 100%;
+//    text-align: center;
+//
+//    .msg {
+//        border-radius: 4px;
+//        color: #fff;
+//        font-size: 14px;
+//        display: inline-block;
+//        padding: 4px 8px;
+//    }
+//
+//}
 .light-login {
+    display: block;
+
     .toast .msg {
         background: rgba(0,0,0,0.7);
     }
@@ -158,6 +160,7 @@ html,body{
     }
 }
 .dark-login {
+    display: block;
 
     background: url("../img/login-bg-dark.png") 50% no-repeat;
     background-size: cover;
@@ -185,7 +188,7 @@ html,body{
         border: none;
         border-radius: 10px;
         padding-left: 28px;
-        width: ~'calc(100% - 28px)';
+        //width: ~'calc(100% - 28px)';
         font-size: 18px;
         color: #FFF;
     }
@@ -231,6 +234,6 @@ html,body{
         position: absolute;
         right: 4px;
         padding: 8px;
-        bottom: 8px;
+        bottom: 18px;
     }
 }

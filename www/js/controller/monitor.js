@@ -99,6 +99,18 @@ app.controller('MonitorDetailCtrl', ['$scope', function ($scope) {
         window.removeEventListener('popstate', pageBackCallback);
     }
 
+    function postMessageToIframe (e) {
+        var frames = window.frames;
+        for(var i=0; i<frames.length; i++) {
+            frames[i].postMessage('Bearer' + (getStorageItem('accountToken') || ''), '*');
+        }
+    }
 
     window.addEventListener('popstate', pageBackCallback);
+    window.addEventListener('message', postMessageToIframe, false);
+
+    $scope.$on('$destroy', function () {
+        window.removeEventListener('message', postMessageToIframe);
+        window.removeEventListener('popstate', pageBackCallback);
+    });
 }]);

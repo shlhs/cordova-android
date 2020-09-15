@@ -2,20 +2,23 @@
 /**
  * Created by liucaiyun on 2017/5/4.
  */
+// var app = angular.module('myApp', ['ngAnimate', 'ui.router', 'ui.router.state.events', 'pascalprecht.translate']);
+// var loginExpireCheckEnable = false;       // 是否检查鉴权过期
+// var defaultPlatIpAddr = ''; // 平台默认ip，格式为：http://118.190.51.135
+// var defaultImgThumbHost = "";     // 如果为空则与 host一样
+// // var gQrDownloadUrl = defaultPlatIpAddr + ':8123/version/qr.png'; // 二维码下载链接
+// var gQrDownloadUrl = '/version/qr.png'; // 二维码下载链接
+// var gShowEnergyPage = false;     // 是否显示能效页面，不显示能效页面时运维人员会看到抢单页面
+// var gIsEnergyPlatform = false; // 是否是能源管理平台，是的话部分菜单默认不显示
+// var gEnableDeviceMap = true; // 是否显示设备档案地图
+// var LANGUAGE = 'zh-CN'; //如果需要根据手机系统来自动切换的话，使用：getStorageItem('LANGUAGE') || "zh-CN";
+// var gIsEnglish = LANGUAGE === 'en-US';
+// var gTheme = 'dark'; // 主题色 light/dark
+// var gShowRecheck = true; // 是否显示复测内容
+// var appName = GetQueryString('appName');
+
+
 var app = angular.module('myApp', ['ngAnimate', 'ui.router', 'ui.router.state.events', 'pascalprecht.translate']);
-var loginExpireCheckEnable = false;       // 是否检查鉴权过期
-var defaultPlatIpAddr = ''; // 平台默认ip，格式为：http://118.190.51.135
-var defaultImgThumbHost = "";     // 如果为空则与 host一样
-// var gQrDownloadUrl = defaultPlatIpAddr + ':8123/version/qr.png'; // 二维码下载链接
-var gQrDownloadUrl = '/version/qr.png'; // 二维码下载链接
-var gShowEnergyPage = false;     // 是否显示能效页面，不显示能效页面时运维人员会看到抢单页面
-var gIsEnergyPlatform = false; // 是否是能源管理平台，是的话部分菜单默认不显示
-var gEnableDeviceMap = false; // 是否显示设备档案地图
-var LANGUAGE = 'zh-CN'; //如果需要根据手机系统来自动切换的话，使用：getStorageItem('LANGUAGE') || "zh-CN";
-var gIsEnglish = LANGUAGE === 'en-US';
-var gTheme = 'dark'; // 主题色 light/dark
-var gShowRecheck = true; // 是否显示复测内容
-var appName = GetQueryString('appName');
 
 function setSystemLanguage(language) {
     if (language) {
@@ -103,9 +106,6 @@ app.filter('myTranslate', ['$myTranslate', function($myTranslate) { //可以注�
     return function(keys) {
         return $myTranslate.instant(keys);
     };
-}]);
-
-app.controller('MainCtrl', ['$scope', '$rootScope', 'userService', function ($scope, $rootScope, userService) {
 }]);
 
 app.controller('LoginExpireCtrl', ['$scope', 'userService', function ($scope, userService) {
@@ -488,12 +488,12 @@ app.service('routerService', ['$timeout', '$compile', function ($timeout, $compi
     };
 }]);
 
-app.directive('routePage', ['$log', 'routerService', function($log, routerService){
+app.directive('routePage', function(){
     return {
         restrict: 'E', // E = Element, A = Attribute, C = Class, M = Comment
         // templateUrl: '/templates/site/site-detail.html',
         replace: true,
-        controller: function($scope, $element){
+        controller: ['$scope', '$element', 'routerService', function($scope, $element, routerService){
             var pageData = routerService.getNextPage();
             var params = pageData.params, config=pageData.config;
             if (params){
@@ -505,47 +505,14 @@ app.directive('routePage', ['$log', 'routerService', function($log, routerServic
             {
                 routerService.addHistory($scope, $element);
             }
-        },
+        }],
         templateUrl: function (ele, attr) {
             return attr.template;
         },
         scope: true     // scope隔离
-
-        // compile: function(element, attributes) {
-        //     return {
-        //         pre: function preLink(scope, element, attributes) {
-        //             scope.sn = attributes.sn;
-        //         },
-        //         post: function postLink(scope, element, attributes) {
-        //             element.prevAll().hide();
-        //         }
-        //     };
-        // }
     };
-}]);
+});
 
-app.directive('rootPage', ['$log', 'routerService', function($log, routerService){
-    return {
-        restrict: 'E', // E = Element, A = Attribute, C = Class, M = Comment
-        replace: true,
-        templateUrl: function (ele, attr) {
-            return attr.template;
-        },
-        scope: true,     // scope隔离
-        controller: function ($scope, $element) {
-            var search = window.location.search.substring(1), params = search.split('&');
-            var index, param;
-            for (var i=0; i<params.length; i++){
-                param = params[i];
-                index = param.indexOf('=');
-                var key = param.substring(0, index), value = param.substring(index+1);
-                if (key !== 'template') {
-                    $scope[key] = decodeURIComponent(value);
-                }
-            }
-        }
-    };
-}]);
 // routerService end
 
 app.service('ajax', ['$rootScope', 'platformService', 'userService', 'routerService', function ($rootScope, platformService, userService, routerService) {

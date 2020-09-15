@@ -3,11 +3,11 @@
         <h1 class="mui-title">{{'all task.services' | myTranslate}}</h1>
         <a ng-click="toCreateTask()" class="mui-action-menu mui-icon mui-pull-right" ><i class="iconfont anticon-plus"></i></a>
     </header>
-    <div style="top:61px;padding-bottom: 50px;" class="body-content" id="taskListWrapper">
+    <div style="top:61px;margin-bottom: 56px;" class="body-content" id="taskListWrapper">
         <div class="filter-btn" ng-click="toggleFilter()">
             {{'filter' | translate}}<label class="iconfont anticon-filter" style="font-size: 13px;"></label>
         </div>
-        <div ng-include="'/templates/task/task-list-common.html'" style="margin-top: 38px;"></div>
+        <div ng-include="'/templates/task/task-list-common.html'" style="margin-top: 32px;"></div>
         <div class="dropdown-filter-wrapper" ng-if="showFilter">
             <div class="filter-mask" ng-click="toggleFilter(false)"></div>
             <div class="filter-inner">
