@@ -1,9 +1,9 @@
 <div ng-cloak ng-controller="AppStoreCtrl" class="mui-page app-store-page">
-    <header class="mui-bar bg-header mui-segmented-control-vertical bg-transparent" ng-if="!isEditing">
+    <header class="mui-bar bg-header mui-segmented-control-vertical" ng-if="!isEditing">
         <a class="mui-icon mui-icon-left-nav mui-pull-left btn-back" onclick="history.back()" ng-if="!isEditing"></a>
         <h1 class="mui-title">{{'all apps' | myTranslate}}</h1>
     </header>
-    <header class="mui-bar bg-header mui-segmented-control-vertical bg-transparent" ng-if="isEditing">
+    <header class="mui-bar bg-header mui-segmented-control-vertical" ng-if="isEditing">
         <a class="mui-icon mui-pull-left" style="font-size: 16px;top: 6px;" ng-if="isEditing" ng-click="toggleEdit()">{{'cancel' | translate}}</a>
         <h1 class="mui-title">{{'app.edit' | translate}}</h1>
         <a class="mui-action-menu mui-icon mui-pull-right" style="font-size: 16px;line-height: 28px;margin-right: 6px;" ng-click="onSave()">{{'save' | translate}}</a>

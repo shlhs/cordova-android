@@ -1,12 +1,4 @@
 
-function bodyScroll(ele) {
-    if (ele.scrollTop > 20) {
-        $('#transparentHeader').removeClass('bg-transparent');
-    } else {
-        $('#transparentHeader').addClass('bg-transparent');
-    }
-    console.log('scroll');
-}
 
 app.controller('SecurityBaseCtrl', ['$scope', '$compile', function ($scope, $compile) {
    function load() {
