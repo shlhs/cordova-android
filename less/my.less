@@ -36,7 +36,7 @@ body, .page {
     width: 100%;
     height: 100%;
     // background-color: rgb(245,245,245);
-    background-color: transparent;
+    // background-color: transparent;
 }
 * {
     padding: 0;
@@ -61,6 +61,11 @@ div {
 .mui-poppicker-header .mui-btn {
     background-color: @color-bg-regular;
     color: @color-text-primary;
+    border-color: @color-border-base;
+}
+.mui-poppicker-header .mui-btn-blue {
+    background-color: @color-bg-regular;
+    color: @mui-btn-color;
     border-color: @color-border-base;
 }
 .mui-poppicker-header .mui-btn.mui-poppicker-btn-ok {
@@ -100,7 +105,7 @@ div {
     background-color: @mui-picker-body;
 }
 .mui-btn, button, input[type=button], input[type=reset], input[type=submit] {
-    color: @color-text-primary;
+    color: @mui-btn-color;
 }
 .mui-dtpicker {
     border-top-color: @color-divider;
@@ -117,13 +122,14 @@ div {
     color: @color-text-secondary;
 }
 .mui-dtpicker-header .mui-btn {
-    background-color: rgba(91, 155, 174, 0.3);
-    color: @color-text-regular;
-    border-color: rgba(91, 155, 174, 0.3);
+    background-color: @color-bg-regular;
+    color: @color-text-primary;
+    border-color: fade(@mui-picker-body-btn-bg, 30);
 }
 .mui-dtpicker-header .mui-btn-blue {
     background-color: @btn-primary-bg;
     border-color: @btn-primary-border;
+    color: @mui-btn-color;
 }
 // 对话框
 .mui-popup-inner {
@@ -139,7 +145,7 @@ div {
     background: @input-bg;
 }
 .mui-table-view {
-    background-color: transparent;
+    background-color: @mui-table-view-bg;
     &:after{
         background-color: @color-border-light;
     }
@@ -321,11 +327,14 @@ header.bg-header{
     background: @page-header-bg-color;
     //background-size: cover;
     box-shadow: @page-header-box-shadow;
+    a{
+        color: @page-header-text-color;
+    }
 }
 header.mui-bar{
 	z-index: 0;
 	a{
-		color: @color-text-primary;
+		color: @page-header-text-color;
 	}
 }
 header .mui-action-menu.add-task {
@@ -371,17 +380,29 @@ nav.bg-footer .mui-tab-item{
     color: @color-text-reverse;
 }
 .bg-header .mui-action-back, .bg-header .mui-pull-left {
-    color: @color-text-secondary;
+    color: @page-header-text-color;
 }
-.mui-bar-nav{
-    background-color: @color-primary;
+// 站点切换页的header文本颜色,与普通header不同
+.site-select-page{
+    .bg-header{
+        h1, .mui-pull-left{
+            color: @select-station-header-text;
+        }
+    } 
 }
-.mui-bar-nav a{
-    color: @color-text-reverse;
-}
-.mui-bar-nav h1{
-    color: @color-text-reverse;
-}
+ 
+
+
+
+// .mui-bar-nav{
+//     background-color: @color-primary;
+// }
+// .mui-bar-nav a{
+//     color: @color-text-reverse;
+// }
+// .mui-bar-nav h1{
+//     color: @color-text-reverse;
+// }
 .white-header{
     background-color: @color-bg-regular;
     box-shadow: 0 0px 0px #ddd;
@@ -1032,16 +1053,16 @@ aside.light .mui-table-view-cell>a:not(.mui-btn){
 .mui-scroll{
     min-height: 100%;
 }
-.bg-header .text-white{
-    color: @color-text-reverse;
-}
+// .bg-header a{
+//     color: @page-header-text-color;
+// }
 /*    notify    */
 .mui-popup-backdrop.notify{
     background-color: transparent;
 }
 
 .mui-popup-backdrop.notify .mui-popup.mui-popup-in{
-    color: @color-text-reverse;
+    color: @page-header-text-color;
     background-color: @notify-bg;
     width: auto;
     display: block;
@@ -1670,21 +1691,21 @@ a:hover.slidesjs-stop {
     padding-bottom: 75%;
     margin: 0;
 }
-//.statics-card.bg-disabled{
+// .statics-card.bg-disabled{
 //    /*background-color: #bdbdbd;*/
 //    /*background-image: linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%);*/
 //    background-color: #E4E4E1;
 //    background-image: radial-gradient(at top center, rgba(255,255,255,0.03) 0%, rgba(0,0,0,0.03) 100%), linear-gradient(to top, rgba(255,255,255,0.1) 0%, rgba(143,152,157,0.60) 100%);
 //    background-blend-mode: normal, multiply;
-//}
-//.statics-card.bg-success{
+// }
+// .statics-card.bg-success{
 //    /*background-color: #61B460;*/
 //    background-image: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
-//}
-//.statics-card.bg-warning{
+// }
+// .statics-card.bg-warning{
 //    /*background-color: #ffa500;*/
 //    background-image: linear-gradient(-20deg, #fc6076 0%, #ff9a44 100%);
-//}
+// }
 .statics-card .container{
     position: absolute;
     width: 100%;
@@ -1692,7 +1713,7 @@ a:hover.slidesjs-stop {
 }
 .statics-card h5{
     padding: 16px 16px;
-    color: @color-text-reverse;
+    color: @color-white;
 }
 .statics-card .chart-container{
     width: 100%;
@@ -2750,7 +2771,7 @@ header.bg-warning{
 }
 .is-edit .add-property-btn {
     float: right;
-    color: #4bd299;
+    color: @color-primary;
     cursor: pointer;
 }
 .site-search-comp {
@@ -3004,7 +3025,7 @@ header.bg-warning{
     line-height: 32px;
     padding: 4px 0;
     background-color: @input-bg;
-    border: @input-bg 1px solid;
+    border: @input-border 1px solid;
     margin-bottom: 8px;
     padding-left: 8px;
     color: @color-text-primary;
@@ -3978,7 +3999,7 @@ table.dataTable tbody th, table.dataTable tbody td {
         background: @color-bg-regular;
     }
     tbody tr:nth-child(even) {
-        background: fade(@color-bg-regular, 20);
+        background: darken(@color-bg-regular, 2);
     }
     tr td:first-child {
         padding-left: 16px;
@@ -4154,7 +4175,7 @@ table.dataTable tbody th, table.dataTable tbody td {
 // 站点总览
 .overview-page {
     .summary-item {
-        color: @color-text-primary;
+        color: @color-text-reverse;
     }
     .card {
         .iconfont {
@@ -4319,4 +4340,14 @@ table.dataTable tbody th, table.dataTable tbody td {
 // 公共
 .border-bottom-base{
     border-bottom: 1px solid @color-border-base;
+}
+// 设备档案
+.static-device-detail-ctrl-page{
+    .body-content{
+        .device-detail-wrap{
+            .card{
+                background-color: transparent;
+            }
+        }
+    }
 }

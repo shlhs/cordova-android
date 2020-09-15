@@ -1,35 +1,102 @@
-@color-primary: #586bf3;
-@color-main: #007aff;
+@color-primary: #586BF3;
+@color-main: #586BF3;
+@color-primary-light: fade(@color-primary, 70); // 浅主体色
 
 @color-white: #fff;
 @color-black: #000;
 
-@color-success:   ;
-@color-warning: ;
-@color-danger: ;
+@color-blue: #007aff;
+@color-yellow: #faad14;
+@color-success: #1DDB9F;
+@color-warning: #FFB367;
+@color-danger: #FF6769;
 @color-info: ;
+@red: #FF6769;
+@orange: #FFB367;
 
-@color-bg-primary: #efeff4; //整体背景
-@color-bg-regular: #fff; //@color-white; // card
+@color-bg-primary: #f5f5f5; //整体背景
+@color-bg-regular: #fff;  // card 卡片背景
 @color-bg-reverse: #000;
 
 @color-text-primary: #000; // @color-black; //主要
 @color-text-regular: #333; // 常规
-@color-text-secondary: #999; // 次要
-@color-text-placeholder: ; // 占位
-@color-text-reverse: #fff; // 翻转色  如header中文字色
+@color-text-secondary: #666; // 次要 label
+@color-text-disabled: fade(#bbb, 75);
+@color-text-placeholder: #858587; // 占位
+@color-text-reverse: #f5f5f5; // 翻转色
+@color-text-link: @color-primary; // 链接文字颜色
+@color-text-input-value: @color-primary; // 输入/选中等文字颜色
 
-@color-border-base: ; //一级边框
-@color-border-light: ; // 二级
+
+@color-border-base: fade(#333, 30); //一级边框
+@color-border-light: fade(#007aff,18); // 二级
 @color-border-lighter: ; // 三级
 @color-border-extra-light: ; // 四级
+@table-td-border: #ddd;
+@table-bg-even: #f1f1f1;
+@table-bg-odd: #fff;
 
-@color-tabbar-text: #8d8c8f;
+@color-tabbar-text: #0f0;
 
-@color-bg-input-active: #eee;
+@input-bg: #fff;
+@input-border: #efefef;
+@input-bg-active: fade(#5B9BAE, 50);
 
-@page-header-bg-color: linear-gradient(to bottom right, #5667FC, #3DA1FE);  // 页面标题栏背景色
-@page-header-box-shadow: 0 0 1px rgba(0,0,0,.85);
-@page-body-white: #FFF;
+@color-echart-axis-label: #6b6b6b;
+@color-echart-axis-line: #e7eaed;
+@color-echart-axis-title-text: #333;
 
-@toast-bg: fade(#000, 70);
+@color-divider: rgba(230, 230, 230, 0.57);
+
+@color-header-btn-bg: rgba(11, 19, 43, 0.5); // home页头部按钮透明背景色
+
+@btn-primary-bg: #007aff; // 正常的按钮
+@btn-primary-border: #007aff;
+@btn-primary-height: 42px;
+@btn-disable-bg: fade(#007aff, 30);
+@btn-disable-border: fade(#007aff, 30);
+@btn-active-bg: #eee;       // 激活按钮背景色
+
+@nav-tab-color: #8d8c8f; // 首页菜单栏默认颜色
+@nav-tab-active-color: @color-primary; // 首页菜单栏选中颜色
+
+@mui-picker-bg: #eee;
+@mui-picker-body: #fff;
+@mui-picker-border: transparent;
+@mui-picker-body-btn-bg: #fff; // picker body中自定义按钮的颜色
+@mui-btn-color: #fff; //彩色背景时的白色文字
+@mui-table-view-bg: #fff;
+
+
+@page-header-bg-color: linear-gradient(to right, #566afc, #3ea0fe);
+@page-header-box-shadow: none;
+@page-header-text-color: #fff; // 一般头部文本色 a颜色
+@page-body-white: #fff; // 在.bg-white中使用
+
+@notify-bg: #4d7c8a; // submit时的 submitting、success、error提示背景色
+
+@toast-bg: #007aff;
+
+@task-icon-color-normal-1: #3ea0fe;
+@task-icon-color-normal-2: #5668fc;
+@task-icon-color-warning-1: #FDDF5B;
+@task-icon-color-warning-2: #FF913F;
+@task-icon-color-danger-1: #ff8675;
+@task-icon-color-danger-2: #FF6769;
+
+// 能效管理页面相关
+@energy-color-primary: #1DDB9F;
+@energy-card-bg: #fff;
+@energy-card-title-bg: #fff;
+@energy-card-title: @energy-color-primary;
+@page-bg: @color-bg-primary; // 页面背景图片  // 浅色主体无背景图
+
+@app-icon-color-green: linear-gradient(180deg, #0FD781 0%, #06CFAD 100%);
+@app-icon-color-blue: linear-gradient(180deg, #72A2FF 0%, #538EFF 100%);
+@app-icon-color-cyan: linear-gradient(180deg, #2DDAEE 0%, #1EC2D5 100%);
+@app-icon-color-orange: linear-gradient(180deg, #FDDF5B 0%, #FF913F 100%);
+@app-icon-color-red: linear-gradient(180deg, #FF7A7A 0%, #FF7A7A 100%);
+@app-icon-color-grey: linear-gradient(180deg, #E1E1E1 0%, #9E9E9E 100%);
+
+// 站点切换页header中的文本色
+@select-station-header-text: #000;

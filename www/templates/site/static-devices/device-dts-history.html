@@ -88,24 +88,23 @@
 </head>
 
 <body class="mui-android mui-android-5 mui-android-5-1 mui-android-5-1-1 mui-segmented-control-vertical" ng-app="myApp" ng-controller="TaskBaseCtrl" ng-cloak>
-    <div ng-controller="DeviceDtsListCtrl" id="taskListWrapper">
-    <header class="mui-bar bg-header">
-        <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
-        <h1 class="mui-title">{{'menu.ops.defect' | translate}}</h1>
-        <a ng-click="openDtsCreatePage()" class="mui-action-menu mui-icon mui-pull-right" ng-if="hasOpsAuth"><i class="iconfont anticon-plus"></i></a>
-    </header>
-    <div id="taskList" style="top:61px;" class="scroll-wrapper">
-        <div class="mui-scroll1" ng-if="!isLoading && !loadingFailed">
-            <ul class="mui-table-view mui-table-view-striped mui-table-view-condensed task-list no-out-border no-border" ng-if="tasks.length">
-                <li class="mui-table-view-cell mui-media task-item" ng-repeat="task in tasks"
-                    ng-click="openTask(task)" ng-class="{'closed': task.stage_id == TaskStatus.Closed}">
-                    <div class="main-body">
-                        <div class="mui-media-body task-main">
-                            <h4 class="mui-ellipsis task-title" style="margin-top: 0">
-                                <i class="task-icon iconfont anticon-task-{{task.iconClass}}"></i>
-                                <span class="task-type" ng-class="{'ergent': task.task_type_id===3}">{{task.task_type_name}}</span>
-                            </h4>
-                        </div>
+<div ng-controller="DeviceDtsListCtrl" id="taskListWrapper">
+<header class="mui-bar bg-header">
+    <a class="mui-icon  mui-icon-left-nav mui-pull-left btn-back" onclick="pageBack()"></a>
+    <h1 class="mui-title">{{'menu.ops.defect' | translate}}</h1>
+    <a ng-click="openDtsCreatePage()" class="mui-action-menu mui-icon mui-pull-right" ng-if="hasOpsAuth"><i class="iconfont anticon-plus"></i></a>
+</header>
+<div id="taskList" style="top:61px;" class="scroll-wrapper">
+    <div class="mui-scroll1" ng-if="!isLoading && !loadingFailed">
+        <ul class="mui-table-view mui-table-view-striped mui-table-view-condensed task-list no-out-border no-border" ng-if="tasks.length">
+            <li class="mui-table-view-cell mui-media task-item" ng-repeat="task in tasks"
+                ng-click="openTask(task)" ng-class="{'closed': task.stage_id == TaskStatus.Closed}">
+                <div class="main-body">
+                    <div class="mui-media-body task-main">
+                        <h4 class="mui-ellipsis task-title" style="margin-top: 0">
+                            <i class="task-icon iconfont anticon-task-{{task.iconClass}}"></i>
+                            <span class="task-type" ng-class="{'ergent': task.task_type_id===3}">{{task.task_type_name}}</span>
+                        </h4>
                     </div>
                     <div class="sub-body task-infos">
                         <p class="task-name">

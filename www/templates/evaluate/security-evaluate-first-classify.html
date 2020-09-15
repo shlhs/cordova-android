@@ -1,8 +1,8 @@
 <div ng-controller="SecurityEvaluateDetailCtrl" class="page page-left">
     <header class="mui-bar bg-header">
-        <a class="mui-icon mui-icon-left-nav mui-pull-left text-white btn-back" ng-click="goBack()"></a>
+        <a class="mui-icon mui-icon-left-nav mui-pull-left btn-back" ng-click="goBack()"></a>
         <h1 class="mui-title">{{'ops.security' | translate}}</h1>
-        <a class="mui-action-menu mui-icon mui-pull-right" style="font-size: 16px;line-height: 28px;color: #fff;" ng-click="save()" ng-if="hasPermission && editable">{{'save' | translate}}</a>
+        <a class="mui-action-menu mui-icon mui-pull-right" style="font-size: 16px;line-height: 28px;" ng-click="save()" ng-if="hasPermission && editable">{{'save' | translate}}</a>
     </header>
     <div class="body-content" ng-cloak>
 

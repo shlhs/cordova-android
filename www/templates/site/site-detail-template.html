@@ -3,7 +3,7 @@
         <div class="site-header">
             <header class="mui-bar bg-header bg-transparent">
                 <a class=" mui-pull-left site-popover" ng-click="openSiteSelectPage()" ng-show="sites.length > 1" ng-if="!isSiteDetail">{{'station.switch' | translate}}</a>
-                <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()" ng-if="isSiteDetail"></a>
+                <a class="mui-icon  mui-icon-left-nav mui-pull-left btn-back" onclick="pageBack()" ng-if="isSiteDetail"></a>
                 <h1 class="mui-title" style="font-size: 18px;left: 70px;right: 70px;">{{currentSite.name}}</h1>
                 <a class="mui-pull-right event-icon-link" href="/templates/site/event-list.html?sn={{currentSite.sn}}&name={{currentSite.name}}" ng-if="currentSite.sn">
                     <i class="iconfont anticon-event-alarm">

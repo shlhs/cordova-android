@@ -1,4 +1,4 @@
-var contrastColor = '#77A1D1';
+var contrastColor = 'rgba(0, 0, 0, .85)';
 var axisCommon = function() {
     return {
         axisLine: {
@@ -19,7 +19,7 @@ var axisCommon = function() {
         splitLine: {
             lineStyle: {
                 type: 'dashed',
-                color: '#13377B'
+                color: 'rgba(0, 0, 0, 0.3)'
             }
         },
         splitArea: {
@@ -31,18 +31,35 @@ var axisCommon = function() {
 };
 
 var colorPalette = [
-    '#304E86',
-    '#FE8061',
-    '#7986CB',
-    '#4CA2FF',
-    '#E4E4E4',
-    '#66BB6A',
-    '#41BED8',
-    '#20DBD5',
-    '#5B81ED',
-    '#F2E152',
-    '#F54C5E'
+    '#41bed8',
+    '#fde664',
+    '#9283ea',
+    '#3cd3cb',
+    '#fe7979',
+    '#f9b344',
+    '#46be8a',
+    '#579fe4',
+    '#f37c54',
+    '#3995ea'
 ];
+var g_pvf_label = {
+    p: '峰',
+    f: '平',
+    v: '谷',
+    s: '尖'
+};
+var g_pvf_colors = {
+    'p': 'rgba(239, 150, 166, 1)',
+    'v': 'rgba(138, 212, 199, 1)',
+    'f': 'rgba(136, 169, 248, 1)',
+    's': 'rgba(254,139,106, 1)',
+};
+var g_pvf_label_colors = {
+    'p': 'rgba(239, 150, 166, 1)',
+    'v': 'rgba(138, 212, 199, 1)',
+    'f': 'rgba(136, 169, 248, 1)',
+    's': 'rgba(254,139,106, 1)',
+};
 
 var echartThemeConfig = {
     color: colorPalette,
@@ -55,7 +72,7 @@ var echartThemeConfig = {
                 color: contrastColor
             },
             label: {
-                color: '#000'
+                color: '#FEFEFE'
             }
         }
     },
@@ -63,7 +80,8 @@ var echartThemeConfig = {
         textStyle: {
             color: contrastColor,
             fontSize: 13,
-        }
+        },
+        inactiveColor: '#FEFEFE'
     },
     title: {
         textStyle: {
@@ -139,7 +157,6 @@ var echartThemeConfig = {
         }
     },
     radar:{
-
         splitArea: {
             areaStyle: {
                 color: ['#23313F','#1B2834',],
@@ -147,15 +164,15 @@ var echartThemeConfig = {
         },
         axisLine: {
             lineStyle: {
-                color: contrastColor
+                color: '#000'
             }
         },
         splitLine: {
             lineStyle: {
-                color: '#7790A5'
+                color: '#000'
             }
         },
     },
 };
 
-echarts.registerTheme('custom', echartThemeConfig);
+echarts.registerTheme('custom', echartThemeConfig); // dark和light都设置主题色为custom，用gulp根据主题色将不同文件拷贝到index.js，html中引用index.js
