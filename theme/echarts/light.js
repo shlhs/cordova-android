@@ -1,4 +1,4 @@
-var contrastColor = 'rgba(0, 0, 0, .85)';
+var contrastColor = '#9a9a9a';
 var axisCommon = function() {
     return {
         axisLine: {
@@ -9,7 +9,8 @@ var axisCommon = function() {
         axisTick: {
             lineStyle: {
                 color: contrastColor
-            }
+            },
+            show: false,
         },
         axisLabel: {
             textStyle: {

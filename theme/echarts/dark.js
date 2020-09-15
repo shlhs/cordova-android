@@ -9,7 +9,8 @@ var axisCommon = function() {
         axisTick: {
             lineStyle: {
                 color: contrastColor
-            }
+            },
+            show: false,
         },
         axisLabel: {
             textStyle: {

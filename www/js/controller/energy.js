@@ -1698,22 +1698,16 @@ app.controller('EnergyStatisticsZhiluCtrl', ['$scope', 'ajax', 'platformService'
                 },
                 legend: {
                     data: [$myTranslate.instant('today'), $myTranslate.instant('yesterday')],
-                    bottom: 5,
-                    left: 'right',
                     top: 'bottom',
-                    right: 0,
                     textStyle: {
                         fontSize: 9,
-                        rich: {
-                            fonSize: 9
-                        }
                     }
                 },
                 grid: {
                     top: 20,
                     left: 10,
                     right: 20,
-                    bottom: 35,
+                    bottom: 25,
                     containLabel: true,
                 },
                 toolbox: {
@@ -1859,14 +1853,9 @@ app.controller('EnergyStatisticsZhiluCtrl', ['$scope', 'ajax', 'platformService'
                 },
                 legend: {
                     data: labels,
-                    // bottom: 5,
-                    left: 'right',
-                    right: 0,
+                    top: 'bottom',
                     textStyle: {
-                        fontSize: 9,
-                        rich: {
-                            fonSize: 9
-                        }
+                        fontSize: 9
                     }
                 },
                 grid: {
@@ -2088,7 +2077,7 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
                     },
                 ],
                 legend: {
-                    bottom: 5,
+                    top: 'bottom',
                     left: 'center',
                     show: false
                 },
@@ -2213,7 +2202,7 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
                 legend: {
                     show: false,
                     data: [],
-                    bottom: 0,
+                    top: 'bottom',
                 },
                 grid: {
                     top: 5,
@@ -2297,6 +2286,7 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
                 },
                 legend: {
                     data: [],
+                    top: 'bottom',
                     bottom: 5,
                 },
                 grid: {
@@ -2393,10 +2383,7 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
                     itemWidth: 12,
                     itemHeight: 8,
                     textStyle: {
-                        fontSize: 11,
-                        rich: {
-                            fonSize: 11
-                        }
+                        fontSize: 11
                     },
                     x: 'right'
                 },
@@ -2595,14 +2582,12 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
                 },
                 legend: {
                     data: labels,
+                    top: 'bottom',
                     bottom: 0,
                     itemWidth: 10,
                     itemHeight: 6,
                     textStyle: {
-                        fontSize: 9,
-                        rich: {
-                            fonSize: 9
-                        }
+                        fontSize: 9
                     }
                 },
                 grid: {

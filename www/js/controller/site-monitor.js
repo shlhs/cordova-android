@@ -218,13 +218,6 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', '$stateParams', 'ajax', '$myTr
                 },
                 scale: false
             },
-            {
-                // "axisLine": {
-                //     lineStyle: {
-                //         color: '#e7ecf1'
-                //     }
-                // },
-            }
         ];
         var group = $scope.trendGroups.find(function (item) {
             return item.id === groupId;
@@ -291,16 +284,6 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', '$stateParams', 'ajax', '$myTr
                 ri = data.data[0].time_keys[0].slice(8, 10); //针对最后一个点 为第二天0点 的特殊处理
             }
             yAxis[1]={
-                // "axisLine": {
-                //     lineStyle: {
-                //         color: '#e7ecf1'
-                //     }
-                // },
-                // axisLabel: {
-                //     textStyle: {
-                //         color: '#999999'
-                //     }
-                // },
                 splitLine: {
                     show: false,
                 },
@@ -470,8 +453,8 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', '$stateParams', 'ajax', '$myTr
             grid: {
                 left: 55,
                 right: 30,
-                top: 20,
-                bottom: 45,
+                top: 10,
+                bottom: 55,
             },
             tooltip: {
                 trigger: 'axis',
