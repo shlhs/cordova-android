@@ -28,7 +28,7 @@
 @color-text-input-value: @color-primary; // 输入/选中等文字颜色
 
 
-@color-border-base: fade(#333, 30); //一级边框
+@color-border-base: #e6e6e6; //一级边框
 @color-border-light: fade(#007aff,18); // 二级
 @color-border-lighter: ; // 三级
 @color-border-extra-light: ; // 四级
@@ -46,7 +46,7 @@
 @color-echart-axis-line: #e7eaed;
 @color-echart-axis-title-text: #333;
 
-@color-divider: rgba(230, 230, 230, 0.57);
+@color-divider: #efeff1;
 
 @color-header-btn-bg: rgba(11, 19, 43, 0.5); // home页头部按钮透明背景色
 
@@ -85,10 +85,19 @@
 @task-icon-color-danger-2: #FF6769;
 
 // 能效管理页面相关
-@energy-color-primary: #1DDB9F;
+@energy-color-primary: @color-primary;
 @energy-card-bg: #fff;
 @energy-card-title-bg: #fff;
 @energy-card-title: @energy-color-primary;
+@energy-color-value-primary: #FFF;
+@energy-color-value-secondary: #FFF;
+@energy-header-selector-bg-color: fade(#FFF, 40);
+@energy-quality-value-item-bg: #ECF0F9;
+@energy-header-bg-color: transparent;
+@energy-quality-report-sub-card-bg: #F2F4F5; // 电能质量报告小卡片背景色
+@energy-app-icon-bg: #ECF0F9; // 能效页面 app入口背景色
+@energy-home-top-bg: url(../img/site-title-bg@2x.png) no-repeat top left; // 能效首页上部分背景色
+
 @page-bg: @color-bg-primary; // 页面背景图片  // 浅色主体无背景图
 
 @app-icon-color-green: linear-gradient(180deg, #0FD781 0%, #06CFAD 100%);
