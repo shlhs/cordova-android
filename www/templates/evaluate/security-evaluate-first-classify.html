@@ -12,8 +12,8 @@
                     <li class="mui-table-view-cell" ng-repeat="item in template">
                         <a class="mui-navigate-right" ng-click="openPage('/templates/evaluate/security-evaluate-check-list.html', {group: item})">
                             <span class="mui-badge no-padding bg-transparent">
-                                <i class="icon icon-16 icon-all-right" ng-if="item.status === 'success'"></i>
-                                <i class="icon icon-16 icon-warning" ng-if="item.status === 'warning'"></i>
+                                <i class="iconfont anticon-check-circle-o color-success" ng-if="item.status === 'success'"></i>
+                                <i class="iconfont anticon-alert-circle color-warning" ng-if="item.status === 'warning'"></i>
                             </span>
                             {{item.name}}
                         </a>

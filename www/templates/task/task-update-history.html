@@ -12,7 +12,7 @@
                 <div class="time" ng-if="item.update_time"><span>{{ item.update_time }}</span></div>
                 <div class="timeline-content" ng-class="{'text-red': item.event=='refuse'}" ng-if="item.event != 'handle'">
                             <span class="handler" ng-class="{'is-msg': item.action_id == TaskAction.Comment}">
-                                <i class="icon icon-ms msg" ng-if="item.action_id == TaskAction.Comment"></i> {{item.handler_name}}
+                                <i class="iconfont anticon-chat" ng-if="item.action_id == TaskAction.Comment"></i> {{item.handler_name}}
                             </span>
                     {{(item.action_id==TaskAction.Comment ? item.desp : item.action_name) + (item.transfer_user ? ('to' | translate) : '')}}
                     <span ng-if="item.action_id == TaskAction.RECHECK">
