@@ -88,7 +88,7 @@
 <body class="" ng-app="myApp" ng-controller="TaskBaseCtrl" ng-cloak>
 <div ng-controller="TaskDetailCtrl" ng-cloak id="taskDetail">
     <header class="mui-bar bg-header">
-        <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
+        <a class="mui-icon  mui-icon-left-nav mui-pull-left btn-back" onclick="pageBack()"></a>
         <h1 class="mui-title">{{'defect detail' | myTranslate}}</h1>
         <a ng-click="gotoEditPage()"
            class="mui-action-menu mui-icon mui-pull-right" style="font-size: 14px;line-height: 24px;" ng-if="canEdit">{{'edit' | translate}}</a>

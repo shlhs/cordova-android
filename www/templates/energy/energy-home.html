@@ -4,7 +4,7 @@
         <div class="site-header energy-header" style="background-size: cover;">
             <header class="mui-bar bg-header bg-transparent" style="box-shadow: none;position: static;">
                 <a class=" mui-pull-left site-popover" ng-click="openSiteSelectPage()" ng-show="sites.length > 1" ng-if="!isSiteDetail">站点切换</a>
-                <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()" ng-if="isSiteDetail"></a>
+                <a class="mui-icon  mui-icon-left-nav mui-pull-left btn-back" onclick="pageBack()" ng-if="isSiteDetail"></a>
                 <h1 class="mui-title" ng-click="openDeviceSelector()"><label>{{currentDevice ? currentDevice.name : ''}}</label> </h1>
             </header>
         </div>

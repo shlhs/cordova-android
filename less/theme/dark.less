@@ -24,7 +24,7 @@
 @color-text-secondary: fade(#FAFAFA, 60); // 次要 label
 @color-text-disabled: fade(#bbb, 75);
 @color-text-placeholder: fade(#FEFEFE, 75); // 占位
-@color-text-reverse: #FEFEFE; // 翻转色  如header中文字色
+@color-text-reverse: #FEFEFE; // 翻转色
 @color-text-link: #1DDB9F; // 链接文字颜色
 @color-text-input-value: #1DDB9F; // 输入/选中等文字颜色
 
@@ -40,6 +40,7 @@
 @color-tabbar-text: #0f0;
 
 @input-bg: fade(#5B9BAE, 30);
+@input-border: fade(#5B9BAE, 30);
 @input-bg-active: fade(#5B9BAE, 50);
 
 @color-echart-axis-label: #6b6b6b;
@@ -64,16 +65,18 @@
 @mui-picker-body: #1A5772;
 @mui-picker-border: transparent;
 @mui-picker-body-btn-bg: #5B9BAE; // picker body中自定义按钮的颜色
+@mui-btn-color: #fff;
+@mui-table-view-bg: transparent;
 
 @page-header-bg-color: fade(#5B9BAE, 30);
 @page-header-box-shadow: none;
+@page-header-text-color: #fff;
 @page-body-white: transparent; // 在.bg-white中使用
 
 @notify-bg: #4d7c8a; // submit时的 submitting、success、error提示背景色
 
 @toast-bg: #5B9BAE;
-// 颜色值需要全部用16进制来表示，
-//  目前生成js变量 只匹配了16禁止的颜色值
+
 @task-icon-color-normal-1: #2DDAEE;
 @task-icon-color-normal-2: #1EC2D5;
 @task-icon-color-warning-1: #FDDF5B;
@@ -94,3 +97,6 @@
 @app-icon-color-orange: linear-gradient(180deg, #FDDF5B 0%, #FF913F 100%);
 @app-icon-color-red: linear-gradient(180deg, #FF7A7A 0%, #FF7A7A 100%);
 @app-icon-color-grey: linear-gradient(180deg, #E1E1E1 0%, #9E9E9E 100%);
+
+// 站点切换页header中的文本色
+@select-station-header-text: #fff;
