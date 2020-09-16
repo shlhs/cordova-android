@@ -583,6 +583,7 @@
     font-size: 12px;
     margin-top: -8px;
     padding: 4px 0;
+    width: calc(100% - 115px)
 }
 .task-create-rows input {
     position: absolute;
@@ -768,7 +769,7 @@
     clear: both;
 }
 .filter-body .group .items .item {
-    width: calc(33% - 12px);
+    min-width: calc(33% - 12px);
     text-align: center;
     float: left;
     margin-bottom: 11px;
@@ -780,6 +781,7 @@
     display: inline-block;
     margin-right: 12px;
     font-size: 12px;
+    padding: 0 4px;
 }
 .filter-body .group .items .item.checked {
     border-color: #659CFF;
@@ -951,10 +953,17 @@
 .task-detail-info-group .icon{
     margin-right: 4px;
 }
+.english .task-detail-info-group .title {
+    width: auto;
+}
+.english .task-detail-info-group .value {
+    padding-left: 0;
+    float: right;
+}
 
 .teams-selector {
     overflow-y: auto;
-    height: 100%;
+    height: calc(100% - 30px);
     padding-bottom: 10px;
 }
 .teams-selector >div {

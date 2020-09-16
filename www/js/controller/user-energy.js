@@ -765,7 +765,7 @@ function paintAvgLoadTrendByDay(chartId, times, datas) {
 // 能源管理
 app.controller('EnergyHomeCtrl', ['$scope', 'ajax', 'platformService', 'varDataService', function ($scope, ajax, platformService, varDataService) {
 
-    $scope.selectedApps = defaultEnergyMenus;
+    $scope.selectedApps = DEFAULT_ENERGY_MENUS;
     $scope.degreeVarSn = null;     // 设备的电度变量sn
     $scope.currentMonthData = {};
     var energyApi = new EnergyFuncApi($scope, varDataService);

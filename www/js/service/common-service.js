@@ -349,7 +349,7 @@ app.directive('handlersSelector',[function(){
         restrict: 'E',
         templateUrl: '/templates/task/selector/handler-selector.html',
         scope: {
-            title: '=',     // 选择框的标题，默认为：请选择运维工
+            title: '@',     // 选择框的标题，默认为：请选择运维工
             defaultUsers: '=',       // 默认选中的账号
             users: '=',
             callback: '=',
@@ -425,8 +425,8 @@ app.directive('teamAndHandlerSelector',[function(){
             callback: '=',
             visible: '=',
             onHide: '=',
-            firstTitle: '=', // 第一页的描述
-            secondTitle: '=', // 第二页的描述
+            firstTitle: '@', // 第一页的描述
+            secondTitle: '@', // 第二页的描述
         },
         controller:['$scope', '$attrs', function($scope, $attrs){
             $scope.selectedTeam = null;

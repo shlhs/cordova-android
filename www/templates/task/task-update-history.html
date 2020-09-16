@@ -1,23 +1,23 @@
 <div class="card" ng-if="taskData.stage_id !== TaskStatus.Competition">
-    <div class="card-header" style="font-size: 14px;">工单操作记录：
+    <div class="card-header" style="font-size: 14px;">{{ 'task.update.records' | translate}}：
         <a ng-click="onToggleUpdateRecord()" style="color: rgb(96, 181, 255)">
-            <label ng-if="updateRecordsVisible">收起<i class="mui-icon mui-icon-arrowup" style="font-size: 14px;"></i></label>
-            <label ng-if="!updateRecordsVisible">展开<i class="mui-icon mui-icon-arrowdown" style="font-size: 14px;"></i></label>
+            <label ng-if="updateRecordsVisible">{{ 'collapse' | translate }}<i class="mui-icon mui-icon-arrowup" style="font-size: 14px;"></i></label>
+            <label ng-if="!updateRecordsVisible">{{ 'expand' | translate}}<i class="mui-icon mui-icon-arrowdown" style="font-size: 14px;"></i></label>
         </a>
     </div>
     <ul class="timeline-vertical" ng-if="updateRecordsVisible">
         <li class="timeline-one" ng-repeat="item in history" ng-class="{'active': $index == 0}">
-            <span class="time-icon"  ng-class="{'handle-item': item.action_name=='更新进展'}" ng-if="item.action_id != TaskAction.Comment"></span>
+            <span class="time-icon"  ng-class="{'handle-item': item.action_id==TaskAction.Update}" ng-if="item.action_id != TaskAction.Comment"></span>
             <div class="timeline-body">
                 <div class="time" ng-if="item.update_time"><span>{{ item.update_time }}</span></div>
                 <div class="timeline-content" ng-class="{'text-red': item.event=='refuse'}" ng-if="item.event != 'handle'">
                             <span class="handler" ng-class="{'is-msg': item.action_id == TaskAction.Comment}">
                                 <i class="icon icon-ms msg" ng-if="item.action_id == TaskAction.Comment"></i> {{item.handler_name}}
                             </span>
-                    {{(item.action_id==TaskAction.Comment ? item.desp : item.action_name) + (item.transfer_user ? '给' : '')}}
+                    {{(item.action_id==TaskAction.Comment ? item.desp : item.action_name) + (item.transfer_user ? ('to' | translate) : '')}}
                     <span ng-if="item.action_id == TaskAction.RECHECK">
-                        <span ng-if="item.recheck_pass" class="text-normal">通过</span>
-                        <span ng-if="!item.recheck_pass" class="text-danger">未通过</span>
+                        <span ng-if="item.recheck_pass" class="text-normal">{{'recheck.pass' | translate}}</span>
+                        <span ng-if="!item.recheck_pass" class="text-danger">{{'recheck.nopass' | translate}}</span>
                     </span>
                     <span ng-if="item.transfer_user" class="handler">{{item.transfer_user_name}}</span>
                 </div>

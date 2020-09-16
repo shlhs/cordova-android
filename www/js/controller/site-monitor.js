@@ -22,7 +22,7 @@ var g_pvf_label_colors = {
     's': 'rgba(254,139,106, 1)',
 };
 // 历史曲线
-app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', function ($scope, ajax) {
+app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', '$myTranslate', function ($scope, ajax, $myTranslate) {
     var stationSn = GetQueryString("sn");
     var deviceChargeSettingF = null;    // 设备用电电价配置
     var deviceChargeSettingR = null;    // 设备发电电价配置
@@ -30,20 +30,20 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', function ($scope, ajax
     var stationPfvSettingR = null;     // 发电电价
     $scope.timeTypeList = [{
         id: 'DAY',
-        name: '按日'
+        name: $myTranslate.instant('select.daily')
     }, {
         id: 'MONTH',
-        name: '按月'
+        name: $myTranslate.instant('select.monthly')
     }, {
         id: 'YEAR',
-        name: '按年'
+        name: $myTranslate.instant('select.yearly')
     }];
     $scope.calcMethodList= [{
         id: 'MAX',
-        name: '所有值'
+        name: $myTranslate.instant("value.all")
     }];
-    $scope.calcMethod = {id: 'MAX', name: '最大值'};
-    $scope.timeType = {id: 'DAY', name: '按日'};
+    $scope.calcMethod = {id: 'MAX', name: $myTranslate.instant("value.all")};
+    $scope.timeType = {id: 'DAY', name: $myTranslate.instant("select.daily")};
     $scope.trendGroups = [];
     $scope.picker = null;
     $scope.screenWidth = window.screen.width;
@@ -56,26 +56,28 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', function ($scope, ajax
         initDatePicker();
     };
 
-    $scope.onSelect = function (key, value, name) {
+    $scope.onSelect = function (key, item) {
+        var value = item.id;
+        var name = item.name;
         if (key === 'timeType') {
             if (value === 'DAY') {
                 $scope.calcMethodList = [{
                     id: 'MAX',
-                    name: '所有值'
+                    name: $myTranslate.instant("value.all")
                 }];
             } else {
                 $scope.calcMethodList = [{
                     id: 'AVG',
-                    name: '平均值'
+                    name: $myTranslate.instant("value.avg")
                 }, {
                     id: 'ACCU',
-                    name: '累计值'
+                    name: $myTranslate.instant("value.accu")
                 }, {
                     id: 'MAX',
-                    name: '最大值'
+                    name: $myTranslate.instant("value.max")
                 }, {
                     id: 'MIN',
-                    name: '最小值'
+                    name: $myTranslate.instant("value.min")
                 }];
             }
             refreshDateShowName();
@@ -133,6 +135,7 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', function ($scope, ajax
                     }, 50);
                     // refreshData();
                 });
+                datePickerI18n();
             }
         }, false);
     }
@@ -390,19 +393,19 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', function ($scope, ajax
             var tempColor = 'gray';
             var tempLabelColor = 'gray';
             if(tempPfv === 'p') {
-                tempName = '峰';
+                tempName = $myTranslate.instant('峰');
                 tempColor = g_pvf_colors.p;
                 tempLabelColor = g_pvf_label_colors.p;
             } else if(tempPfv === 'f') {
-                tempName = '平';
+                tempName = $myTranslate.instant('平');
                 tempColor = g_pvf_colors.f;
                 tempLabelColor = g_pvf_label_colors.f;
             } else if(tempPfv === 'v') {
-                tempName = '谷';
+                tempName = $myTranslate.instant('谷');
                 tempColor = g_pvf_colors.v;
                 tempLabelColor = g_pvf_label_colors.v;
             } else if(tempPfv === 's') {
-                tempName = '尖';
+                tempName = $myTranslate.instant('尖');
                 tempColor = g_pvf_colors.s;
                 tempLabelColor = g_pvf_label_colors.s;
             }
@@ -640,26 +643,26 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', function ($scope, ajax
 
 // 历史报表
 var siteHistoryTableScrollHeight = 154;
-app.controller('SiteHistoryReportCtrl', ['$scope', '$compile', 'ajax', function ($scope, $compile, ajax) {
+app.controller('SiteHistoryReportCtrl', ['$scope', '$compile', 'ajax', '$myTranslate', function ($scope, $compile, ajax, $myTranslate) {
 
     var stationSn = GetQueryString("sn");
     $scope.timeTypeList = [{
         id: 'DAY',
-        name: '日报'
+        name: $myTranslate.instant('report.daily')
     }, {
         id: 'MONTH',
-        name: '月报'
+        name: $myTranslate.instant('report.monthly')
     }, {
         id: 'YEAR',
-        name: '年报'
+        name: $myTranslate.instant('report.yearly')
     }];
     $scope.calcMethodList = [{
         id: 'MAX',
-        name: '瞬时值'
+        name: $myTranslate.instant('value.instant')
     }];
     var currentDay = moment().format('YYYY-MM-DDTHH:mm:ss.000') + 'Z';
     $scope.calcMethod = $scope.calcMethodList[0];
-    $scope.timeType = {id: 'DAY', name: '日报'};
+    $scope.timeType = {id: 'DAY', name: $myTranslate.instant('report.daily')};
     $scope.reportGroups = [];
     $scope.currentReport = null;
     $scope.reportDataInfo = [];
@@ -698,6 +701,7 @@ app.controller('SiteHistoryReportCtrl', ['$scope', '$compile', 'ajax', function 
                     getDataInfoOfReport();
                     $scope.$apply();
                 });
+                datePickerI18n();
             }
         }, false);
     }
@@ -751,6 +755,7 @@ app.controller('SiteHistoryReportCtrl', ['$scope', '$compile', 'ajax', function 
                             }
                         });
                     }, false);
+                    pickerI18n();
                     // 默认选择第一个报告
                     onSelectReport(report);
                 }
@@ -758,7 +763,7 @@ app.controller('SiteHistoryReportCtrl', ['$scope', '$compile', 'ajax', function 
             },
             error: function () {
                 $scope.isLoading = false;
-                $.notify.error('获取数据失败');
+                $.notify.error($myTranslate.instant('get data failed'));
             }
         });
     }
@@ -770,14 +775,14 @@ app.controller('SiteHistoryReportCtrl', ['$scope', '$compile', 'ajax', function 
             // 名字中含有"月"，默认显示月报表
             $scope.timeType = {
                 id: 'MONTH',
-                name: '月报'
+                name: $myTranslate.instant('report.monthly')
             };
             $scope.calcMethodList = [{
                 id: 'MAX',
-                name: '最大值'
+                name: $myTranslate.instant('value.max')
             }, {
                 id: 'AVG',
-                name: '平均值'
+                name: $myTranslate.instant('value.avg')
             }];
             $scope.calcMethod = $scope.calcMethodList[0];
             refreshDateShowName();
@@ -785,11 +790,11 @@ app.controller('SiteHistoryReportCtrl', ['$scope', '$compile', 'ajax', function 
             // 默认显示日报表
             $scope.timeType = {
                 id: 'DAY',
-                name: '日报'
+                name: $myTranslate.instant('report.daily')
             };
             $scope.calcMethodList = [{
                 id: 'MAX',
-                name: '瞬时值'
+                name: $myTranslate.instant("value.instant")
             }];
             $scope.calcMethod = $scope.calcMethodList[0];
             refreshDateShowName();
@@ -798,7 +803,7 @@ app.controller('SiteHistoryReportCtrl', ['$scope', '$compile', 'ajax', function 
             if ($scope.timeType.id !== 'DAY') {     // 只有月报、年报才有最大值
                 $scope.calcMethod = {
                     id: 'MAX',
-                    name: '最大值'
+                    name: $myTranslate.instant('value.max')
                 };
             }
         }
@@ -808,24 +813,26 @@ app.controller('SiteHistoryReportCtrl', ['$scope', '$compile', 'ajax', function 
         $scope.$apply();
     }
 
-    $scope.onSelect = function (key, value, name) {
+    $scope.onSelect = function (key, item) {
+        var value = item.id;
+        var name = item.name;
         if (key === 'timeType') {
             if (value === 'DAY') {
                 $scope.calcMethodList = [{
                     id: 'MAX',
-                    name: '瞬时值'
+                    name: $myTranslate.instant('value.instant')
                 }];
                 $scope.calcMethod = $scope.calcMethodList[0];
             } else {
                 $scope.calcMethodList = [{
                     id: 'MAX',
-                    name: '最大值'
+                    name: $myTranslate.instant('value.max')
                 }, {
                     id: 'AVG',
-                    name: '平均值'
+                    name: $myTranslate.instant('value.avg')
                 }];
                 // 如果上一次也是选最大或平均值，则保持不变
-                if ($scope.calcMethod.name !== '最大值' && $scope.calcMethod.name !== '平均值') {
+                if ($scope.calcMethod.name !== $myTranslate.instant('value.max') && $scope.calcMethod.name !== $myTranslate.instant('value.avg')) {
                     $scope.calcMethod = $scope.calcMethodList[0];
                 }
             }
@@ -1055,16 +1062,21 @@ app.controller('SiteHistoryReportCtrl', ['$scope', '$compile', 'ajax', function 
             if (timeType === 'DAY') {
                 var hour = t.slice(11, 13);
                 if (hour === '00') {
-                    timeKeys.push('24时');
+                    // timeKeys.push('24时');
+                    timeKeys.push(getHour(24));
                 } else if (t.substring(8, 10) > currentDay.substring(8, 10)) {
-                    timeKeys.push('次日' + t.slice(11, 13) + '时');
+                    timeKeys.push($myTranslate.instant('次日') + ' ' + getHour(t.slice(11, 13)));
                 } else {
-                    timeKeys.push(t.slice(11, 13) + '时');
+                    // timeKeys.push(t.slice(11, 13) + '时');
+                    timeKeys.push(getHour(parseInt(t.slice(11, 13))));
                 }
             } else if (timeType === 'MONTH') {
-                timeKeys.push(parseInt(t.slice(8, 10)) + '日');
+                // timeKeys.push(parseInt(t.slice(8, 10)) + '日');
+                // timeKeys.push(getDay(parseInt(t.slice(8, 10))));
+                timeKeys.push(t.slice(5, 10));
             } else if (timeType === 'YEAR') {
-                timeKeys.push(parseInt(t.slice(5, 7)) + '月');
+                // timeKeys.push(parseInt(t.slice(5, 7)) + '月');
+                timeKeys.push(getMonth(parseInt(t.slice(5, 7)) - 1, true));
             }
         });
         // 根据配置统计数据，只有按日统计时需要
@@ -1120,7 +1132,7 @@ app.controller('SiteHistoryReportCtrl', ['$scope', '$compile', 'ajax', function 
             });
             // 按groupNames进行排序
             var headerRow1 = [{
-                name: '时间',
+                name: $myTranslate.instant('time'),
                 rowSpan: 2
             }];
             var sorted = [];
@@ -1163,7 +1175,7 @@ app.controller('SiteHistoryReportCtrl', ['$scope', '$compile', 'ajax', function 
             tableHeader[1] = tableVarHeader;
         } else {
             tableVarHeader.unshift({
-                name: '时间'
+                name: $myTranslate.instant('time')
             });
             tableHeader.push(tableVarHeader);
         }
@@ -1182,9 +1194,9 @@ app.controller('SiteHistoryReportCtrl', ['$scope', '$compile', 'ajax', function 
             // 如果配置了时间段，那么会增加一列
             $scope.hasTimeSlot = true;
             if (hasGroup) {
-                tableHeader[0].unshift({name: '分段', rowSpan: 2});
+                tableHeader[0].unshift({name: $myTranslate.instant('section'), rowSpan: 2});
             } else {
-                tableHeader[0].unshift({name: '分段'});
+                tableHeader[0].unshift({name: $myTranslate.instant('section')});
             }
             // 如果时段中出现跨天，那么分为两个时段
             setting.timeSlots.forEach(function (timeSlot) {
@@ -1227,16 +1239,16 @@ app.controller('SiteHistoryReportCtrl', ['$scope', '$compile', 'ajax', function 
                            var name = '';
                            switch (method) {
                                case 'sum':
-                                   name = '累计值';
+                                   name = $myTranslate.instant('value.accu');
                                    break;
                                case 'max':
-                                   name = '最大值';
+                                   name = $myTranslate.instant('value.max');
                                    break;
                                case 'min':
-                                   name = '最小值';
+                                   name = $myTranslate.instant('value.min');
                                    break;
                                case 'avg':
-                                   name = '平均值';
+                                   name = $myTranslate.instant('value.avg');
                                    break;
                            }
                            // 将统计数据加入到对应行

@@ -2,7 +2,7 @@
 /**
  * Created by liucaiyun on 2017/5/4.
  */
-var app = angular.module('myApp', ['ngAnimate', 'ui.router', 'ui.router.state.events']);
+var app = angular.module('myApp', ['ngAnimate', 'ui.router', 'ui.router.state.events', 'pascalprecht.translate']);
 var loginExpireCheckEnable = false;       // 是否检查鉴权过期
 var defaultPlatIpAddr = "http://47.102.97.113";     // 纪年
 var defaultImgThumbHost = "";     // 如果为空则与 host一样
@@ -10,6 +10,18 @@ var defaultImgThumbHost = "";     // 如果为空则与 host一样
 var gQrDownloadUrl = '/version/qr.png'; // 二维码下载链接
 var gShowEnergyPage = false;     // 是否显示能效页面，不显示能效页面时运维人员会看到抢单页面
 var gIsEnergyPlatform = false; // 是否是能源管理平台，是的话部分菜单默认不显示
+var gEnableDeviceMap = true; // 是否显示设备档案地图
+var LANGUAGE = 'zh-CN'; //如果需要根据手机系统来自动切换的话，使用：getStorageItem('LANGUAGE') || "zh-CN";
+var gIsEnglish = LANGUAGE === 'en-US';
+var gShowRecheck = true; // 是否显示复测内容
+
+function setSystemLanguage(language) {
+    if (language) {
+        LANGUAGE = language;
+        gIsEnglish = LANGUAGE === 'en-US';
+        setStorageItem('LANGUAGE', language);
+    }
+}
 
 app.run(function ($animate) {
     $animate.enabled(true);
@@ -23,13 +35,73 @@ app.run(function ($animate) {
 //     });
 // }]);
 
+function loadTranslateFiles(forceLoad) { // 加载翻译文件，forceLoad：重新加载，否则从localStorage中读取
+    var jsonData = {};
+    if (!forceLoad) {
+        var data = localStorage.getItem(LANGUAGE + "_source");
+        if (data) {
+            try {
+                jsonData = JSON.parse(data);
+                return jsonData;
+            } catch (err) {}
+        }
+    }
+    var url = '/i18n/' + LANGUAGE + '.json';
+    $.ajax({
+        url: url,
+        async: false,
+        success: function (data) {
+            localStorage.setItem(LANGUAGE + "_source", JSON.stringify(data));
+            jsonData = data;
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    });
+    return jsonData;
+}
+
+app.config(function ($translateProvider) {
+
+    //// 不用static-file-loader，因为是json文件是异步加载的，会导致controller里的js的translate不生效的情况
+    // $translateProvider.useStaticFilesLoader({
+    //     prefix: '../../i18n/',
+    //     suffix: '.json'
+    // });
+
+    // 使用ajax同步加载，避免js的translate先调用，但是json文件未加载，导致无法显示翻译文本的问题
+    var json = loadTranslateFiles();
+    $translateProvider.translations(LANGUAGE, json);
+    $translateProvider.preferredLanguage(LANGUAGE);
+});
+
 app.filter(
     'to_trusted', ['$sce', function ($sce) {
         return function (text) {
             return $sce.trustAsHtml(text);
-        }
+        };
     }]
 );
+
+app.service("$myTranslate", ['$translate', function ($translate) {
+    this.instant = function (keys) {
+        var tmpKeys = keys.split(' ');
+        var words = [];
+        tmpKeys.forEach(function (key) {
+            words.push($translate.instant(key));
+        });
+        if (gIsEnglish) {
+            return words.join(' ');
+        }
+        return words.join('');
+    };
+}]);
+
+app.filter('myTranslate', ['$myTranslate', function($myTranslate) { //可以注入依赖
+    return function(keys) {
+        return $myTranslate.instant(keys);
+    };
+}]);
 
 app.controller('MainCtrl', ['$scope', '$rootScope', 'userService', function ($scope, $rootScope, userService) {
 }]);
@@ -65,6 +137,7 @@ app.service('userService', ['$rootScope', function ($rootScope) {
                 permissions.push(perm.authrity_name);
             });
             setStorageItem('permissions', permissions.join(','));
+            this.permissions = permissions;
         }
         setStorageItem('company', '');
         this.username = user.account;
@@ -114,6 +187,14 @@ app.service('userService', ['$rootScope', function ($rootScope) {
             return null;
         }
         return user.user_groups[0].name;
+    };
+
+    this.getPermissions = function () {
+        const permission = getStorageItem('permissions');
+        if (permission) {
+            return permission.split(',');
+        }
+        return [];
     };
 
     this.getUsername = function () {
@@ -174,11 +255,34 @@ app.service('userService', ['$rootScope', function ($rootScope) {
     this.username = this.getUsername();
     this.password = this.getPassword();
     this.company = this.getCompany();
+    this.permissions = this.getPermissions();
 
     $rootScope.permission = {canEditTask: this.getUserRole() != UserRole.Normal && this.getUserRole() != UserRole.OpsOperator};
 }]);
 
+app.service('authService', ['userService', function (userService) {
+
+    function isHaveTheAuthority(authority) {
+        var permissions = userService.getPermissions();
+
+        return (permissions.indexOf(authority) >= 0);
+    }
+
+    this.canConfigStation = function (stationSn) {
+        return isHaveTheAuthority('ROLE_SUPERUSER') || isHaveTheAuthority('ROLE_OPS_ADMIN') || isHaveTheAuthority('ROLE_MANAGER') || (isHaveTheAuthority('ROLE_OPS_OPERATOR') && isHaveTheAuthority('STATION_EDIT_'+stationSn));
+    };
+
+    this.canControlStation = function (stationSn) {
+        return isHaveTheAuthority('ROLE_OPS_ADMIN') || (isHaveTheAuthority('ROLE_OPS_OPERATOR') && isHaveTheAuthority('STATION_W_'+stationSn));
+    };
+}]);
+
 app.service('platformService', function () {
+
+    this.setLanguage = function () {
+        setStorageItem('LANGUAGE', LANGUAGE);
+    };
+
     this.addPlatform = function (username, platform) {
         if (!platform){
             return;
@@ -250,7 +354,7 @@ app.service('platformService', function () {
     };
 
     this.getAuthHost = function () {
-        return this.host + ":8096/v1"
+        return this.host + ":8096/v1";
     };
 
     this.getImageThumbHost = function () {      // 获取图片压缩服务的地址
@@ -260,7 +364,7 @@ app.service('platformService', function () {
         }
         if (this.host)
         {
-            return this.host + ":8888/unsafe"
+            return this.host + ":8888/unsafe";
         }
         return null;
     };
@@ -317,17 +421,11 @@ app.service('routerService', ['$timeout', '$compile', function ($timeout, $compi
         if (!pageLength){
             return;
         }
-        // 如果前一个页面被隐藏了，则显示前一个页面
+        // 显示前一个页面，排除掉 mui-popover组建内容
         if (pageLength>1){
-            if (pages[pageLength - 2]) {
-                if (pages[pageLength - 2].config.hidePrev) {
-                    pages[pageLength - 2].ele.show();
-                }
-            }
-        } else if (pages.length > 0){
-            if (pages[0].config.hidePrev) {
-                pages[0].ele.prevAll().show();
-            }
+            pages[pageLength - 2].ele.not('.mui-popover').show();
+        }else{
+            pages[0].ele.prevAll().not('.mui-popover').show();
         }
         var item = pages[currentIndex], element=item.ele;
         element.addClass('ng-leave');
@@ -478,10 +576,23 @@ app.service('ajax', ['$rootScope', 'platformService', 'userService', 'routerServ
     var host = platformService.host;
     $rootScope.host = host;
     var username = userService.getUsername(), password = userService.getPassword();
+    var tzOffset = localStorage.getItem('tzOffset');
 
     $rootScope.user = null;
 
     var expireNotified = false;     // 是否已通知用户注册过期
+
+    if (!tzOffset) {
+        tzOffset = new Date().getTimezoneOffset();
+    }
+
+    this.setTzOffset = function (station) {
+        tzOffset = new Date().getTimezoneOffset();
+        if (station.time_zone) {
+            tzOffset = station.time_zone;
+        }
+        setStorageItem('tzOffset', tzOffset);
+    };
 
     $rootScope.getCompany = function(callback) {
         $.ajax({
@@ -530,7 +641,9 @@ app.service('ajax', ['$rootScope', 'platformService', 'userService', 'routerServ
         var headers = $.extend({
             Authorization: userService.getAccountToken(),
             credentials: 'include',
-            mode: 'cors'
+            mode: 'cors',
+            'Accept-LANGUAGE': LANGUAGE,
+            'Tz-Offset': tzOffset,
         }, option.headers);
         option = $.extend({}, {timeout: 30000}, option);
         const errorFunc = option.error;
@@ -901,7 +1014,8 @@ app.directive('dropDownMenu', function () {
                     if ($scope.options[i].id === id) {
                         $scope.selected = $scope.options[i];
                         $scope.toggle();
-                        $scope.onSelect($scope.modelName, $scope.selected.id, $scope.selected.name);
+                        // $scope.onSelect($scope.modelName, $scope.selected.id, $scope.selected.name);
+                        $scope.onSelect($scope.modelName, $scope.options[i]);
                         return false;
                     }
                 }

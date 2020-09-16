@@ -1,22 +1,22 @@
 <div class="page page-down" ng-controller="DtsEditCtrl" style="background-color: #FFF;">
     <header class="mui-bar mui-bar-transparent mui-segmented-control-vertical" style=" -webkit-box-shadow: none;box-shadow: none;position: relative;">
-        <a class="mui-icon mui-pull-left mui-control-item" style="font-size: 18px;margin-left: 6px;color: #9e9e9e;top:5px;" ng-click="cancel()">取消</a>
-        <h1 class="mui-title" style="font-weight: 400;">缺陷修改</h1>
-        <a class="mui-icon mui-action-menu mui-pull-right mui-control-item" style="font-size: 18px;margin-right: 6px;top:5px;" ng-click="submitAndBack()">确认</a>
+        <a class="mui-icon mui-pull-left mui-control-item" style="font-size: 16px;margin-left: 6px;color: #9e9e9e;top:5px;" ng-click="cancel()">{{'cancel' | translate}}</a>
+        <h1 class="mui-title" style="font-weight: 400;">{{'defect edit' | myTranslate}}</h1>
+        <a class="mui-icon mui-action-menu mui-pull-right mui-control-item" style="font-size: 16px;margin-right: 6px;top:5px;" ng-click="submitAndBack()">{{'submit' | translate}}</a>
     </header>
     <div class="mui-content" style="background-color: #FFF;">
         <div class="mui-input-group task-create-rows dts-create-rows" style="padding: 0 12px;">
             <div class="mui-input-row" ng-if="task.is_defect">
-                <label class="label">缺陷等级<span style="color:red">*</span></label>
-                <input type="text" name="taskTypeName" ng-model="taskType.name" placeholder="选择缺陷等级" required>
-                <button id="taskTypePicker" class="mui-btn mui-btn-block" type="button">&nbsp; </button>
+                <label class="label" style="width: auto;">{{'dts.level' | translate}}<span style="color:red">*</span></label>
+                <input type="text" name="taskTypeName" ng-model="taskType.name" placeholder="{{'please.select dts.type' | myTranslate}}" required>
+                <button id="taskTypePicker" class="mui-btn mui-btn-block" type="button" style="position: absolute;right: 0;">&nbsp; </button>
             </div>
             <div class="mui-input-row">
-                <label class="label" style="width: 120px;">计划解决时间<span style="color:red">*</span></label>
-                <input type="text" name="expectTime" ng-model="expectTime" placeholder="请选择计划解决时间">
+                <label class="label" style="width: auto;">{{'defect.expecttime' | translate}}<span style="color:red">*</span></label>
+                <input type="text" name="expectTime" ng-model="expectTime" placeholder="{{'please.select defect.expecttime' | myTranslate}}">
                 <button type="button" id='expectedTime1' class="btn mui-btn mui-btn-block" style="position: absolute;left: 120px;"></button>
                 <div class="error" ng-if="error.time">
-                    请选择计划解决时间
+                    {{'please.select defect.expecttime' | myTranslate}}
                 </div>
             </div>
         </div>

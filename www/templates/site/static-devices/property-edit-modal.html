@@ -2,15 +2,15 @@
     <div class="mui-popup property-editor-popup" style="display: block;opacity: 1;">
         <div class="mui-popup-inner">
             <div class="form-group">
-                <label>属性名称</label>
+                <label>{{'property name' | myTranslate}}</label>
                 <input ng-model="title">
-                <label>属性值</label>
+                <label>{{'property value' | myTranslate}}</label>
                 <input ng-model="value">
             </div>
         </div>
         <div class="mui-popup-buttons">
-            <span class="mui-popup-button" onclick="history.back()" style="color: #848484;">取消</span>
-            <span class="mui-popup-button" ng-click="confirm(title, value)" style="color: #439AF2;">确认</span>
+            <span class="mui-popup-button" onclick="history.back()" style="color: #848484;">{{'cancel' |translate}}</span>
+            <span class="mui-popup-button" ng-click="confirm(title, value)" style="color: #439AF2;">{{'confirm' | translate }}</span>
         </div>
     </div>
     <div class="mui-popup-backdrop mui-active" style="display: block;"></div>

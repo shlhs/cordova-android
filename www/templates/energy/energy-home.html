@@ -69,12 +69,12 @@
             </div>
             <div class="no-station" ng-if="!isLoading && !stationSn" style="text-align: center;height: {{contentHeight - 170}}px;">
                 <i class="alert-icon"></i>
-                <label class="alert-info">未配置站点，<a ng-click="getDataList()">重新加载</a></label>
+                <label class="alert-info">未配置站点，<a ng-click="getDataList()">{{'reload' | translate}}</a></label>
             </div>
             <div class="page-alert-wrapper" ng-if="isLoading" style="background-color: #fff;height: {{contentHeight-220}}px;">
                 <div class="page-alert">
                     <img src="../../img/page-loading.gif" class="loading-img">
-                    <div class="alert-text info">正在加载...</div>
+                    <div class="alert-text info">{{'loading' | translate}}...</div>
                 </div>
             </div>
         </div>

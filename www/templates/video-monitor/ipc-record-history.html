@@ -1,7 +1,7 @@
 <div class="page page-left" ng-controller="IpcRecordHistoryCtrl">
     <header class="mui-bar bg-header header-bg-light">
         <a class="mui-icon  mui-icon-left-nav mui-pull-left btn-back" onclick="history.back()"></a>
-        <h1 class="mui-title">巡检记录</h1>
+        <h1 class="mui-title">{{'video.snapshots' | translate}}</h1>
     </header>
     <div class="mui-content" style="background-color: #fff;">
         <div ng-if="!isLoading">
@@ -11,7 +11,7 @@
                     <div class="mui-media-body mui-ellipsis" style="display: -webkit-box; -webkit-box-orient: vertical; -webkit-box-pack: center;height: 42px;">
                         <label>
                             {{record.createTime}}
-                            <span ng-if="record.status !== '0'" class="mui-pull-right" style="font-size: 12px;color: #aaa;">正在保存({{record.downCount}}/{{record.allCount}})</span>
+                            <span ng-if="record.status !== '0'" class="mui-pull-right" style="font-size: 12px;color: #aaa;">{{'saving' | translate}}({{record.downCount}}/{{record.allCount}})</span>
                         </label>
                         <p class="mui-ellipsis">{{record.name}}</p>
                     </div>
@@ -22,21 +22,21 @@
             <div class="page-alert">
                 <div class="page-alert">
                     <i class="alert-icon nodata"></i>
-                    <div class="alert-text info">无远程巡检记录</div>
+                    <div class="alert-text info">{{'video.snapshots.nodata' | translate}}</div>
                 </div>
             </div>
         </div>
         <div class="page-alert-wrapper" ng-if="isLoading">
             <div class="page-alert">
                 <img src="../../img/page-loading.gif" class="loading-img">
-                <div class="alert-text info">正在加载...</div>
+                <div class="alert-text info">{{'loading' | translate}}...</div>
             </div>
         </div>
         <div class="page-alert-wrapper" ng-if="loadingFailed">
             <div class="page-alert">
                 <i class="alert-icon warning"></i>
-                <div class="alert-text info">加载失败，请检查网络</div>
-                <div class="alert-reload" ng-click="getRecords()">重新加载</div>
+                <div class="alert-text info">{{'tip.load.failed.network' | translate}}</div>
+                <div class="alert-reload" ng-click="getRecords()">{{'reload' | translate}}</div>
             </div>
         </div>
     </div>
