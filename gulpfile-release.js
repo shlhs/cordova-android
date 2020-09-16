@@ -132,7 +132,6 @@ gulp.task('compress-js', function () {
         folder.src + 'lib/datatables/jquery.dataTables.min.js',
         folder.src + 'lib/datatables/dataTables.fixedColumns.min.js',
         folder.src + 'lib/datatables/dataTables.fixedHeader.min.js',
-        folder.src + 'lib/circleChart.es5.min.js',
         folder.src + 'lib/imagesloaded-master/imagesloaded.pkgd.min.js'
     ])
         .pipe(concat(libFileName))

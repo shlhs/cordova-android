@@ -348,19 +348,19 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', '$stateParams', 'ajax', '$myTr
             var tempLabelColor = 'gray';
             if(tempPfv === 'p') {
                 tempName = $myTranslate.instant('峰');
-                tempColor = g_pvf_colors.p;
+                tempColor = g_pvf_colors_opacity.p;
                 tempLabelColor = g_pvf_label_colors.p;
             } else if(tempPfv === 'f') {
                 tempName = $myTranslate.instant('平');
-                tempColor = g_pvf_colors.f;
+                tempColor = g_pvf_colors_opacity.f;
                 tempLabelColor = g_pvf_label_colors.f;
             } else if(tempPfv === 'v') {
                 tempName = $myTranslate.instant('谷');
-                tempColor = g_pvf_colors.v;
+                tempColor = g_pvf_colors_opacity.v;
                 tempLabelColor = g_pvf_label_colors.v;
             } else if(tempPfv === 's') {
                 tempName = $myTranslate.instant('尖');
-                tempColor = g_pvf_colors.s;
+                tempColor = g_pvf_colors_opacity.s;
                 tempLabelColor = g_pvf_label_colors.s;
             }
             var now = new Date();
@@ -397,13 +397,24 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', '$stateParams', 'ajax', '$myTr
                         opacity: 0.7,
                     }
                 },
+                lineStyle: {
+                    opacity: 1,
+                    normal: {
+                        opacity: 1
+                    }
+                },
                 data: chargeData,
                 markArea: {
                     data: markAreaData,
                     itemStyle: {
                         normal: {
                             color: tempColor,
-                            opacity: 0.9,
+                            // opacity: 0.3,
+                        }
+                    },
+                    label: {
+                        normal: {
+                            color: tempLabelColor
                         }
                     }
                 }
