@@ -282,8 +282,12 @@ app.controller('SecurityEvaluateHome', ['$scope', '$stateParams', '$http', 'ajax
             }
         });
     }
-    $scope.openPage = function(template, params, config){
-        routerService.openPage($scope, template, params, config);
+    $scope.openDetail = function(){
+        routerService.openPage($scope, '/templates/evaluate/security-evaluate-first-classify.html', null, {
+            onClose: function () {
+                $scope.refresh();
+            }
+        });
     };
 
     $scope.refresh = function() {       // 刷新数据
@@ -331,9 +335,9 @@ function ($scope, $http, ajax, userService, routerService, SecurityReportService
     };
 
     $scope.gotoPrevPage = function () {     // 提示是否保存
-        if ($scope.$parent.refresh) {
-            $scope.$parent.refresh();
-        }
+        // if ($scope.$parent.refresh) {
+        //     $scope.$parent.refresh();
+        // }
         if (routerService.hasNoHistory()) {
             pageBack();
         } else {

@@ -1,21 +1,4 @@
 "use strict";
-/**
- * Created by liucaiyun on 2017/5/4.
- */
-// var app = angular.module('myApp', ['ngAnimate', 'ui.router', 'ui.router.state.events', 'pascalprecht.translate']);
-// var loginExpireCheckEnable = false;       // 是否检查鉴权过期
-// var defaultPlatIpAddr = ''; // 平台默认ip，格式为：http://118.190.51.135
-// var defaultImgThumbHost = "";     // 如果为空则与 host一样
-// // var gQrDownloadUrl = defaultPlatIpAddr + ':8123/version/qr.png'; // 二维码下载链接
-// var gQrDownloadUrl = '/version/qr.png'; // 二维码下载链接
-// var gShowEnergyPage = false;     // 是否显示能效页面，不显示能效页面时运维人员会看到抢单页面
-// var gIsEnergyPlatform = false; // 是否是能源管理平台，是的话部分菜单默认不显示
-// var gEnableDeviceMap = true; // 是否显示设备档案地图
-// var LANGUAGE = 'zh-CN'; //如果需要根据手机系统来自动切换的话，使用：getStorageItem('LANGUAGE') || "zh-CN";
-// var gIsEnglish = LANGUAGE === 'en-US';
-// var gTheme = 'dark'; // 主题色 light/dark
-// var gShowRecheck = true; // 是否显示复测内容
-// var appName = GetQueryString('appName');
 
 
 var app = angular.module('myApp', ['ngAnimate', 'ui.router', 'ui.router.state.events', 'pascalprecht.translate']);
@@ -399,7 +382,7 @@ app.service('routerService', ['$timeout', '$compile', function ($timeout, $compi
         // 显示前一个页面，排除掉 mui-popover组建内容
         if (pageLength>1){
             pages[pageLength - 2].ele.not('.mui-popover').show();
-        }else{
+        } else{
             pages[0].ele.prevAll().not('.mui-popover').show();
         }
         var item = pages[currentIndex], element=item.ele;
@@ -411,6 +394,9 @@ app.service('routerService', ['$timeout', '$compile', function ($timeout, $compi
         element[0].addEventListener('webkitAnimationEnd', _animateEnd);
         function _animateEnd() {
             element.remove();
+            if (item && item.config && item.config.onClose) {
+                item.config.onClose();
+            }
         }
     });
 
@@ -453,6 +439,12 @@ app.service('routerService', ['$timeout', '$compile', function ($timeout, $compi
         element[0].addEventListener('webkitAnimationEnd', _animationEnd);
     };
 
+    /**
+     * @param config参数：
+     *          hidePrev：是否隐藏前一个页面
+     *          addHistory：是否加到location.history中，false的话，则取代当前页面
+     *          onClose：页面关闭的回调
+     */
     this.openPage = function (scope, templateUrl, params, config) {
         var html = "<route-page template=" + templateUrl;
         this._setNextPage(params, config);

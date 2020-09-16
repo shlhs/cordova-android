@@ -15,12 +15,12 @@
                                 <div style="position: absolute;text-align: center;width: 100%;font-size: 12px;top:18%;">{{'finished' | translate}}</div>
                             </div>
                         </div>
-                        <a class="mui-icon mui-icon-arrowright" ng-click="openPage('/templates/evaluate/security-evaluate-first-classify.html')"></a>
+                        <a class="mui-icon mui-icon-arrowright" ng-click="openDetail()"></a>
                     </div>
                     <ul class="footer-list">
-                        <li><label class="title">{{'dts.type.fatal' | translate}}</label><label class="value">{{evaluateData.emergency}}</label> </li>
-                        <li><label class="title">{{'dts.type.serious' | translate}}</label><label class="value">{{evaluateData.serious}}</label> </li>
-                        <li><label class="title">{{'dts.type.general' | translate}}</label><label class="value">{{evaluateData.normal}}</label> </li>
+                        <li><label class="title text-secondary">{{'dts.type.fatal' | translate}}</label><label class="value color-danger">{{evaluateData.emergency}}</label> </li>
+                        <li><label class="title text-secondary">{{'dts.type.serious' | translate}}</label><label class="value color-warning">{{evaluateData.serious}}</label> </li>
+                        <li><label class="title text-secondary">{{'dts.type.general' | translate}}</label><label class="value">{{evaluateData.normal}}</label> </li>
                     </ul>
                 </div>
             </div>
