@@ -3,7 +3,7 @@
         <a class="mui-icon" onclick="history.back()" style="font-size: 16px;margin-top: 6px;margin-left: 6px;">{{ 'cancel' | translate }}</a>
         <h1 class="mui-title">{{'devices' | translate}}</h1>
     </header>
-    <div class="body-content" ng-cloak style="top: 60px;">
+    <div class="body-content bg-white" ng-cloak style="top: 60px;">
         <ul class="no-border static-device-list" style="margin-top: 0;" ng-style="{'padding-bottom': canHandle ? '48px' : '10px'}">
             <li class="box-horizontal box-vertical-middle mui-navigate-right" ng-repeat="record in device_record" ng-click="openDeviceCheckPage(record)">
                 <div class="device-body box-horizontal box-vertical-middle">

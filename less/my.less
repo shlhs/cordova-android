@@ -140,7 +140,7 @@ div {
     color: @color-primary;
 }
 .mui-popup-input input {
-    border: 1px solid @input-bg;
+    border: 1px solid @input-border;
     border-radius: 0;
     background: @input-bg;
 }
@@ -566,7 +566,7 @@ header.mui-bar{
     box-sizing: border-box;
 }
 .upload-item .image-uploader{
-    border: @color-text-secondary 1px solid;
+    border: @input-border 1px solid;
     position: relative;
     display: block;
     width: 100%;
@@ -580,7 +580,7 @@ header.mui-bar{
     height: 70%;
     top:15%;
     left: ~'calc(50% - 1px)';
-    background-color: @color-text-secondary;
+    background-color: @input-border;
     display: inline-block;
 }
 .upload-item .image-uploader:after{
@@ -590,7 +590,7 @@ header.mui-bar{
     width: 70%;
     top: ~'calc(50% - 1px)';
     left: 15%;
-    background-color: @color-text-secondary;
+    background-color: @input-border;
     display: inline-block;
 }
 .image-uploader.no-image {
@@ -868,6 +868,7 @@ aside.light .mui-table-view-cell>a:not(.mui-btn){
     margin-top: 10px;
     font-size: 14px;
     display: block;
+    text-align: center;
 }
 .header-icon{
     background-size: cover;
@@ -967,7 +968,7 @@ aside.light .mui-table-view-cell>a:not(.mui-btn){
     display: block;
     background-size: cover;
     background-repeat: no-repeat;
-    // padding-top: 35%; // 父元素过宽 图标和文字重叠
+    line-height: 64px;
     font-style: normal;
     font-size: 60px;
     color: @color-text-secondary;
@@ -1068,6 +1069,7 @@ aside.light .mui-table-view-cell>a:not(.mui-btn){
 }
 .mui-popup-backdrop.notify .mui-popup-icon .mui-icon{
     font-size: 80px;
+    color: #FAFAFA;
 }
 .mui-popup-backdrop.notify .mui-popup-icon .mui-icon.mui-icon-info {
      font-size: 48px;
@@ -1094,6 +1096,7 @@ aside.light .mui-table-view-cell>a:not(.mui-btn){
 }
 .mui-popup-backdrop.notify .mui-popup-inner.has-text .mui-popup-text{
     display: block;
+    color: #FAFAFA;
 }
 /*****   notify   ****/
 .dev-status-circle{
