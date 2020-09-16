@@ -14,23 +14,23 @@ var src = {
 };
 
 // 生成
-var build = {
-    path: './build',
-    html: './build/',
-    css: ['./build/style/', './build/usr/style'],
-    js: ['./build/script', './build/script/'],
-    images: ['./build/images', './build/usr/images'],
-    lib: './build/lib'
-};
-gulp.src(['www/*', 'node_modules/*']);
+// var build = {
+//     path: './build',
+//     html: './build/',
+//     css: ['./build/style/', './build/usr/style'],
+//     js: ['./build/script', './build/script/'],
+//     images: ['./build/images', './build/usr/images'],
+//     lib: './build/lib'
+// };
+// gulp.src(['www/*', 'node_modules/*']);
 
-gulp.task('js',['jscs', 'jshint'],function(){
-    return gulp
-        .src('./www/**/*.js', {base:'./www/'})
-        .pipe(uglify())
-        .pipe(gulp.dest('./build/'));
+// gulp.task('js',['jscs', 'jshint'],function(){
+//     return gulp
+//         .src('./www/**/*.js', {base:'./www/'})
+//         .pipe(uglify())
+//         .pipe(gulp.dest('./build/'));
 
-});
+// });
 
 gulp.task('webserver', function(){
     gulp.src(['www', 'node_modules'])
