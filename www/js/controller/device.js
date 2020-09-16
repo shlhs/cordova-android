@@ -684,7 +684,7 @@ app.controller('DeviceMonitorListCtrl', ['$scope', 'ajax', 'platformService', fu
     $scope.getDataList();
 }]);
 
-app.controller('DeviceMonitorCtrl', ['$scope', 'ajax', 'appStoreProvider', 'userService', 'platformService', '$myTranslate', function ($scope, ajax, appStoreProvider, userService, platformService, $myTranslate) {
+app.controller('DeviceMonitorCtrl', ['$scope', 'ajax', 'appStoreProvider', 'authService', 'platformService', '$myTranslate', function ($scope, ajax, appStoreProvider, authService, platformService, $myTranslate) {
     $scope.isLoading = true;
     $scope.stationSn = GetQueryString('stationSn');
     $scope.deviceSn=GetQueryString('deviceSn');
@@ -694,7 +694,7 @@ app.controller('DeviceMonitorCtrl', ['$scope', 'ajax', 'appStoreProvider', 'user
     $scope.analogLabel = $myTranslate.instant('var.analog');
     $scope.digitalLabel = $myTranslate.instant('var.digital');
 
-    $scope.canControl = userService.getUserRole() === UserRole.OpsAdmin || userService.getUserRole() === UserRole.OpsOperator;  // 能效模式不能远程控制
+    $scope.canControl = authService.canControlStation($scope.stationSn);  // 能效模式不能远程控制
     $scope.secondOptions = {};
     $scope.secondOptions[$scope.realtimeLabel] = [];
     $scope.secondOptions[$scope.historyLabel] = [];

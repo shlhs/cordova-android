@@ -137,6 +137,7 @@ app.service('userService', ['$rootScope', function ($rootScope) {
                 permissions.push(perm.authrity_name);
             });
             setStorageItem('permissions', permissions.join(','));
+            this.permissions = permissions;
         }
         setStorageItem('company', '');
         this.username = user.account;
@@ -186,6 +187,14 @@ app.service('userService', ['$rootScope', function ($rootScope) {
             return null;
         }
         return user.user_groups[0].name;
+    };
+
+    this.getPermissions = function () {
+        const permission = getStorageItem('permissions');
+        if (permission) {
+            return permission.split(',');
+        }
+        return [];
     };
 
     this.getUsername = function () {
@@ -246,8 +255,26 @@ app.service('userService', ['$rootScope', function ($rootScope) {
     this.username = this.getUsername();
     this.password = this.getPassword();
     this.company = this.getCompany();
+    this.permissions = this.getPermissions();
 
     $rootScope.permission = {canEditTask: this.getUserRole() != UserRole.Normal && this.getUserRole() != UserRole.OpsOperator};
+}]);
+
+app.service('authService', ['userService', function (userService) {
+
+    function isHaveTheAuthority(authority) {
+        var permissions = userService.getPermissions();
+
+        return (permissions.indexOf(authority) >= 0);
+    }
+
+    this.canConfigStation = function (stationSn) {
+        return isHaveTheAuthority('ROLE_SUPERUSER') || isHaveTheAuthority('ROLE_OPS_ADMIN') || isHaveTheAuthority('ROLE_MANAGER') || (isHaveTheAuthority('ROLE_OPS_OPERATOR') && isHaveTheAuthority('STATION_EDIT_'+stationSn));
+    };
+
+    this.canControlStation = function (stationSn) {
+        return isHaveTheAuthority('ROLE_OPS_ADMIN') || (isHaveTheAuthority('ROLE_OPS_OPERATOR') && isHaveTheAuthority('STATION_W_'+stationSn));
+    };
 }]);
 
 app.service('platformService', function () {
