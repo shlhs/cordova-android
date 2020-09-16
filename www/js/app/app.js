@@ -373,8 +373,7 @@ app.service('platformService', function () {
     };
 
     this.getIpcServiceHost = function () {
-        // return this.host + ':8095/v1';
-        return 'http://114.215.90.83:8095/v1';
+        return this.host + ':8095/v1';
     };
 
     this.getMediaHost = function () {
