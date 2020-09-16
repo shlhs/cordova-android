@@ -111,7 +111,7 @@ gulp.task('build-js', function () {
 gulp.task('compress-js', function () {
     console.log('start compress-js');
     gulp.src([
-        folder.componentSrc + 'libs/jquery-2.1.4.min.js',
+        folder.src + 'lib/jquery-3.5.0.min.js',
         folder.componentSrc + 'angular/angular.min.js',
         folder.componentSrc + 'angular-ui-router/release/angular-ui-router.min.js',
         folder.componentSrc + 'angular-animate/angular-animate.js',
