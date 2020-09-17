@@ -438,7 +438,7 @@ app.controller('EnergyBaseCtrl', ['$scope', '$stateParams', '$state', 'ajax', 'p
     };
     $scope.screenWidth = window.screen.width;
     $scope.contentHeight = window.screen.height - 60;
-    $scope.isLoading = true;
+    $scope.isLoading = $scope.stationSn ? true : false;
     $scope.selectedDate = moment();
     $scope.showDateName = $scope.selectedDate.format('YYYY.MM');
     $scope.isCurrentMonth = true;       // 所选月份是否当前月份

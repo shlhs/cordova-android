@@ -52,19 +52,25 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
             controller: 'PasswordCtrl'
         })
         .state('index.overview', { // 站点总览
-            url: 'overview/:sn/',
+            url: 'overview/?sn',
             templateUrl: '/templates/site/overview.html',
+            onEnter: function () {
+                console.log('onEnter');
+            },
+            onExit: function () {
+                console.log('onExit');
+            }
         })
         .state('index.graphs', { // 站点总览
-            url: 'graphs/:sn/',
+            url: 'graphs/?sn',
             templateUrl: '/templates/site/monitor-list.html',
         })
         .state('index.monitorDevices', { // 设备监控
-            url: 'monitor-devices/:sn/',
+            url: 'monitor-devices/?sn',
             templateUrl: '/templates/site/device-monitor-list.html',
         })
         .state('index.monitorDevices.detail', { // 设备监控详情
-            url: 'detail/:deviceSn/',
+            url: 'detail/?deviceSn',
             templateUrl: '/templates/site/device-monitor.html',
             params: {
                 deviceSn: null,
@@ -80,11 +86,11 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
             }
         })
         .state('index.staticDevices', { // 设备档案
-            url: 'static-devices/:sn',
+            url: 'static-devices/?sn',
             templateUrl: '/templates/site/static-devices/device-home.html',
         })
         .state('index.videos', { // 视频监控
-            url: 'videos/:sn/',
+            url: 'videos/?sn',
             templateUrl: '/templates/video-monitor/video-monitor.html',
         })
         .state('index.videos.records', { // 视频巡检记录
@@ -92,31 +98,31 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
             templateUrl: '/templates/video-monitor/ipc-record-history.html',
         })
         .state('index.videos.records.detail', { // 视频巡检详情
-            url: 'detail/:id/',
+            url: 'detail/?id',
             templateUrl: '/templates/video-monitor/ipc-pic-record-detail.html',
         })
         .state('index.reports', { // 月度报告
-            url: 'reports/:sn/',
+            url: 'reports/?sn',
             templateUrl: '/templates/site/reports.html',
         })
         .state('index.docs', { // 电子档案
-            url: 'docs/:sn/',
+            url: 'docs/?sn',
             templateUrl: '/templates/site/docs.html',
         })
         .state('index.dataline', { // 历史曲线
-            url: 'dataline/:sn/',
+            url: 'dataline/?sn',
             templateUrl: '/templates/site-monitor/data-line.html',
         })
         .state('index.dataHistory', { // 历史报表
-            url: 'data-history/:sn/',
+            url: 'data-history/?sn',
             templateUrl: '/templates/site-monitor/data-history.html',
         })
         .state('index.security', { // 安全评测
-            url: 'security/:sn/',
+            url: 'security/?sn',
             templateUrl: '/templates/evaluate/evaluate-history.html',
         })
         .state('index.security.record', { // 安全评测单个记录
-            url: 'record/:id/',
+            url: 'record?id',
             templateUrl: '/templates/evaluate/security-evaluate-home.html',
         })
         .state('index.security.record.detail', { // 安全评测单个记录
@@ -124,19 +130,19 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
             templateUrl: '/templates/evaluate/security-evaluate-first-classify.html',
         })
         .state('index.poweroff', { // 停电维护
-            url: 'poweroff/:sn/',
+            url: 'poweroff/?sn',
             templateUrl: '/templates/maintenance-check/check-history.html',
         })
         .state('index.energyStatistics', { // 用能统计
-            url: 'energy-statistics/:sn/',
+            url: 'energy-statistics/?sn',
             templateUrl: '/templates/energy/statistics.html',
         })
         .state('index.energyReport', { // 用能报表
-            url: 'energy-report/:sn/',
+            url: 'energy-report/?sn',
             templateUrl: '/templates/energy/energy-report.html',
         })
         .state('index.meterreading', { // 抄表
-            url: 'meterreading/:sn/',
+            url: 'meterreading/?sn',
             templateUrl: '/templates/energy/meter-reading.html',
         })
         .state('index.allApp', { // 应用中心
@@ -144,34 +150,34 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
             templateUrl: '/templates/app-store/app-store.html',
         })
         .state('index.dts', {
-            url: 'dts-list/:sn/',
+            url: 'dts-list/?sn',
             templateUrl: '/templates/dts/dts-list.html'
         })
     ;
     // 能效管理
     $stateProvider
         .state('index.energyOverview', { // 用能统计
-            url: 'energy-overview/:sn/',
+            url: 'energy-overview/?sn',
             templateUrl: '/templates/energy/overview.html',
         })
         .state('index.energyCost', { // 电费分析
-            url: 'energy-cost/:sn/',
+            url: 'energy-cost/?sn',
             templateUrl: '/templates/energy/cost-analysis.html',
         })
         .state('index.energyLoad', { // 负荷统计
-            url: 'energy-load/:sn/',
+            url: 'energy-load/?sn',
             templateUrl: '/templates/energy/load-analysis.html',
         })
         .state('index.maxDemand', { // 最大需量
-            url: 'max-demand/:sn/',
+            url: 'max-demand/?sn',
             templateUrl: '/templates/energy/max-demand.html',
         })
         .state('index.energyQuality', { // 电能质量
-            url: 'energy-overview/:sn/',
+            url: 'energy-overview/?sn',
             templateUrl: '/templates/energy/quality-monitor.html',
         })
         .state('index.energyQualityReport', { // 电能质量报告
-            url: 'energy-overview/:sn/',
+            url: 'energy-overview/?sn',
             templateUrl: '/templates/energy/quality-report.html',
         })
     ;

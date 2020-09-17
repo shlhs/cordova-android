@@ -227,45 +227,79 @@ app.controller('SecurityEvaluateHome', ['$scope', '$stateParams', '$http', 'ajax
 
     // 画进度
     function drawProgress(progress) {
-        if (!progress) {    //
-            $("#evaluateChart").circleChart({
-                color: "#ffffff",
-                backgroundColor: "#e6e6e6",
-                widthRatio: 0.1, // 进度条宽度
-                size: Math.round($("#evaluateChart").parent().parent().height()*0.8),
-                value: 100,
-                startAngle: 175,
-                speed: 1,
-                textSize: 36,
-                relativeTextSize: 14,
-                animation: "easeInOutCubic",
-                text: 0,
-                onDraw: function(el, circle) {
-                    circle.text("0%"); // 根据value修改text
-                }
-            });
-        } else {
-            var color = '#F44336';  // warning的颜色
-            if ($scope.evaluateData.status === 'success') {
-                color = '#26A69A';
-            }
-            $("#evaluateChart").circleChart({
-                color: color,
-                backgroundColor: "rgba(255,255,255,0.5)",
-                widthRatio: 0.1, // 进度条宽度
-                size: Math.round($("#evaluateChart").parent().parent().height()*0.8),
-                value: progress,
-                startAngle: 175,
-                speed: 2000,
-                textSize: 36,
-                relativeTextSize: 14,
-                animation: "easeInOutCubic",
-                text: 0,
-                onDraw: function(el, circle) {
-                    circle.text(Math.round(circle.value) + "%"); // 根据value修改text
-                }
-            });
+        var color = $scope.evaluateData.status === 'success' ? ['#0FD781', '#06CFAD'] : ['#fc6076', '#ff9a44'];
+        if (!progress) {
+            color = ['#ccc', '#ccc'];
         }
+        var option = {
+            title: [{
+                text: '已完成',
+                x: 'center',
+                top: '25%',
+                textStyle: {
+                    color: color[0],
+                    fontSize: 12,
+                }
+            }, {
+                text: progress + '%',
+                x: 'center',
+                top: '36%',
+                textStyle: {
+                    fontSize: 18,
+                    color: color[0],
+                },
+            }],
+            polar: {
+                radius: ['80%', '90%'],
+                center: ['50%', '50%'],
+            },
+            angleAxis: {
+                max: 100,
+                show: false,
+            },
+            radiusAxis: {
+                type: 'category',
+                show: true,
+                axisLabel: {
+                    show: false,
+                },
+                axisLine: {
+                    show: false,
+
+                },
+                axisTick: {
+                    show: false
+                },
+            },
+            series: [
+                {
+                    name: '',
+                    type: 'bar',
+                    roundCap: true,
+                    barWidth: 6,
+                    showBackground: true,
+                    backgroundStyle: {
+                        // color: 'rgba(66, 66, 66, .3)',
+                    },
+                    data: [progress],
+                    coordinateSystem: 'polar',
+
+                    itemStyle: {
+                        normal: {
+                            color: new echarts.graphic.LinearGradient(0, 1, 0, 0, [{
+                                offset: 0,
+                                color: color[0]
+                            }, {
+                                offset: 1,
+                                color: color[1]
+                            }]),
+                        }
+                    }
+
+                },
+            ]
+        };
+        echarts.init(document.getElementById('evaluateChart')).setOption(option);
     }
 
     function getEvaluateData() {        // 获取评估数据

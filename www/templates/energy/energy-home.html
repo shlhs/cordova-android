@@ -44,22 +44,24 @@
                     </ul>
                 </div>
             </div>
-            <div style="height: calc(100% - 170px)" ng-show="!isLoading && currentDevice && !degreeVarSn">
-                <div class="no-station" style="text-align: center;">
+            <div class="bg-white" style="height: calc(100% - 170px)" ng-show="!isLoading && stationSn && currentDevice && !degreeVarSn">
+                <div class="no-station" style="text-align: center; padding-top: 25%;">
                     <i class="alert-icon"></i>
                     <label class="alert-info">监测点未配置电度变量，无法读取数据</label>
                 </div>
             </div>
-            <div style="height: {{contentHeight - 170}}px;" ng-show="!isLoading && !currentDevice">
-                <div class="no-station" style="text-align: center;">
+            <div class="bg-white" style="height: {{contentHeight - 170}}px;" ng-show="!isLoading && stationSn && !currentDevice">
+                <div class="no-station" style="text-align: center; padding-top: 25%;">
                     <i class="alert-icon"></i>
                     <label class="alert-info">站点未配置用电监测点</label>
                 </div>
             </div>
-            <div class="no-station" ng-if="!isLoading && !stationSn" style="text-align: center;height: {{contentHeight - 170}}px;">
-                <i class="alert-icon"></i>
-                <label class="alert-info">未配置站点，<a ng-click="getDataList()">{{'reload' | translate}}</a></label>
-            </div>
+            <div class="bg-white" style="height: calc(100% - 170px)" ng-if="!isLoading && !stationSn">
+                <div class="no-station" style="padding-top: 25%;">
+                        <i class="alert-icon"></i>
+                        <label class="alert-info">未配置站点，<a ng-click="getDataList()">{{'reload' | translate}}</a></label>
+                    </div>
+                </div>
             <div class="page-alert-wrapper" ng-if="isLoading" style="height: {{contentHeight-220}}px;">
                 <div class="page-alert">
                     <img src="../../img/page-loading.gif" class="loading-img">
