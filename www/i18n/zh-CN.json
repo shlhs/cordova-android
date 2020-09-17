@@ -235,7 +235,7 @@
   "staticdevice.ops.list": "运维记录",
   "staticdevice.param.click.tip": "点击对应属性进行编辑",
 
-  "ops.security.header": "设备安全技术评测记录",
+  "ops.security.header": "设备安全评测记录",
   "ops.security": "设备安全技术评测",
   "ops.security.level.urgent": "紧急",
   "ops.security.level.serious": "重大",
