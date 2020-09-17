@@ -144,14 +144,14 @@ app.controller('StaticDeviceSubListCtrl', ['$scope', 'ajax', function ($scope, a
 var OpsTaskType = [1, 2, 3, 4, 5, 6, 7, 11];
 
 
-app.controller('StaticDeviceDetailCtrl', ['$scope', 'ajax', 'routerService', 'platformService', 'userService', function ($scope, ajax, routerService, platformService, userService) {
+app.controller('StaticDeviceDetailCtrl', ['$scope', 'ajax', 'routerService', 'platformService', 'authService', function ($scope, ajax, routerService, platformService, authService) {
     $scope.device = {};
     $scope.showTab = 'info';
     $scope.isPC = IsPC();
     $scope.opsTaskCount = 0;        // 运维个数
     $scope.unhandledDtsCount = 0;   // 未解决缺陷个数
     $scope.closedDtsCount = 0;      // 已关闭缺陷个数
-    $scope.canEdit = userService.getUserRole().indexOf('OPS') >= 0 && !$scope.disableEdit;
+    $scope.canEdit = authService.canConfigStation($scope.stationSn) && !$scope.disableEdit; //  userService.getUserRole().indexOf('OPS') >= 0 && !$scope.disableEdit;
     var TaskStatus = {ToAccept: 1, ToAssign: 2, Accepted: 3, ToClose: 4, Closed: 5, Competition: 6, Coming: 7, Arrived: 8};
 
     function init() {
