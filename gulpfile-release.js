@@ -71,7 +71,7 @@ gulp.task('clone-less', function () {
     return gulp.src('less/**').pipe(gulp.dest(`${folder.tmp}less`));
 });
 
-gulp.task('less-to-css', function (cb) {
+gulp.task('less-to-css', function () {
     const root = folder.tmp;
     const lessCopy = gulp.src('less/**/*.less').pipe(gulp.dest(`${root}less`));
     const cssCopy = gulp.src('less/**/*.css').pipe(gulp.dest(`${root}css`));
