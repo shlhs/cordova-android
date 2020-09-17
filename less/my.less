@@ -913,6 +913,14 @@ aside.light .mui-table-view-cell>a:not(.mui-btn){
     right: 25px;
     height: 50px;
 }
+
+.member-page{
+    .top-base{
+        padding-top: 56%;
+        background: @member-page-bg;
+    }
+}
+
 .account-info .name {
     font-size: 18px;
     color: @color-white;
@@ -920,8 +928,8 @@ aside.light .mui-table-view-cell>a:not(.mui-btn){
 .account-info .role {
     margin-left: 6px;
     border-radius: 11px;
-    border: fade(@color-primary, 55) 1px solid;
-    color: @color-primary;
+    border: @color-white 1px solid;
+    color: @color-white;
     font-size: 12px;
     padding: 0 10px;
     text-align: center;
@@ -2064,7 +2072,7 @@ header.bg-warning{
             width: 100%;
             height: 100%;
             content: '';
-            background-image: linear-gradient(rgba(0, 0, 0, .2),rgba(0, 0, 0, .6));
+            background: @home-site-img-mask;
         }
     }
 }
