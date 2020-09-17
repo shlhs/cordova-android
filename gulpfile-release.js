@@ -3,6 +3,7 @@ const gulp = require('gulp'), //本地安装gul所用到的地方
     less = require('gulp-less'),
     del = require('del'),
     webserver = require('gulp-webserver'),
+    fs = require('fs'),
     autoprefixer = require('gulp-autoprefixer'); //补全浏览器前缀
 const concat = require('gulp-concat');
 // 压缩html代码
@@ -27,6 +28,7 @@ const cleanCss = require('gulp-clean-css');
 const htmlReplace = require('gulp-html-replace');
 const htmlMin = require('gulp-htmlmin');
 const sequence = require('run-sequence');
+const PipeQueue = require('pipe-queue');
 
 //根据自己开发的实际需求自行设置， src放开发文件， dist是打包压缩后的导出目录
 const folder = {
@@ -35,6 +37,8 @@ const folder = {
     tmp: 'dist/tmp/',
     componentSrc: 'www/components/'
 };
+
+const themeType = 'dark';
 
 function getFileName() {
     const chars = '01234567890abcdefghijklmnopqrstuvwxyz';
@@ -58,31 +62,56 @@ const cssFileName = randomFileName + '.min.css';
 const connect = require("gulp-connect");
 
 gulp.task('compress-img', function () {
-    console.log('start compress-img');
     gulp.src(folder.src + "img/**")
         .pipe(imageMin())
         .pipe(gulp.dest(folder.dist + "img/"));
 });
 
+gulp.task('clone-less', function () {
+    return gulp.src('less/**').pipe(gulp.dest(`${folder.tmp}less`));
+});
+
+gulp.task('less-to-css', function (cb) {
+    const root = folder.tmp;
+    const lessCopy = gulp.src('less/**/*.less').pipe(gulp.dest(`${root}less`));
+    const cssCopy = gulp.src('less/**/*.css').pipe(gulp.dest(`${root}css`));
+    const $queue = new PipeQueue();
+    $queue.when(lessCopy, cssCopy).then(function (next, concat) {
+        const text = `@import './${themeType}.less';`;
+        fs.writeFileSync(`${root}less/theme/index.less`, text, 'utf-8');
+
+        const stream = gulp.src([`${root}less/**/*.less`, `!${root}less/theme/*.less`])
+            .pipe(less())
+            .pipe(autoprefixer({
+                overrideBrowserslist: ['> 1%', 'last 2 versions', 'Firefox ESR'],
+                cascade: false
+            }))
+            .pipe(gulp.dest(`${folder.tmp}css`));
+        stream.on('end', next);
+    }).end(function () {
+        console.log("end");
+    });
+    return $queue.promise();
+});
+
 gulp.task('compress-css', function () {
-    console.log('start components-css');
 
     gulp.src(folder.src + "components/mui/fonts/**")
         .pipe(gulp.dest(folder.dist + "fonts/"));
 
     return gulp.src([
         folder.componentSrc + 'mui/css/icons-extra.css',
-        folder.src + 'css/setting.css',
-        folder.src + 'css/animate.css',
+        folder.tmp + 'css/setting.css',
+        folder.tmp + 'css/animate.css',
         folder.componentSrc + 'mui/css/mui.min.css',
         folder.componentSrc + 'mui/css/mui.picker.min.css',
-        folder.src + 'css/iconfont/iconfont.css',
-        folder.src + 'css/my.css',
-        folder.src + 'css/notify.css',
-        folder.src + 'css/icon.css',
-        folder.src + 'css/task.css',
-        folder.src + 'css/energy.css',
-        folder.src + 'css/login.css'
+        folder.tmp + 'css/iconfont/iconfont.css',
+        folder.tmp + 'css/my.css',
+        folder.tmp + 'css/notify.css',
+        folder.tmp + 'css/icon.css',
+        folder.tmp + 'css/task.css',
+        folder.tmp + 'css/energy.css',
+        folder.tmp + 'css/login.css'
     ])
         .pipe(cleanCss())
         .pipe(concat(cssFileName))
@@ -98,6 +127,10 @@ gulp.task('build-js', function () {
     console.log('start build-js');
     gulp.src(folder.src + "config/config.js")
         .pipe(gulp.dest(folder.dist + "config/"));
+    // 设置echarts主题色: 将对应主题色js文件拷贝到index.js，html引用 theme/echarts/index.js
+    gulp.src([`theme/echarts/${themeType}.js`])
+        .pipe(concat('echartsTheme.js'))
+        .pipe(gulp.dest(`${folder.tmp}/js`));
     const step = gulp.src(folder.src + "js/**/*.js")
         .pipe(connect.reload())
         .pipe(babel({
@@ -180,21 +213,24 @@ gulp.task('clone-other', function () {
     gulp.src([folder.src + 'version/**']).pipe(gulp.dest(folder.dist + 'version'));
     gulp.src([folder.src + 'i18n/**']).pipe(gulp.dest(folder.dist + 'i18n'));
     gulp.src([folder.componentSrc + 'mui/fonts/**']).pipe(gulp.dest(folder.dist + 'fonts'));
+
+    // 图片
+    gulp.src([`theme/img/${themeType}/**`])
+        .pipe(gulp.dest(`${folder.dist}img`));
 });
 
 gulp.task('clean-before', function () {
     console.log('clean old dist folder');
-    del([folder.dist]);
+    return del([folder.dist]);
 });
 
 gulp.task('clean-after', function () {
     console.log('clean tmp folder after release');
-    del([folder.tmp]);
+    return del([folder.tmp]);
 });
 
 gulp.task('release', function (callback) {     // 发布: gulp release
-    // sequence('html', 'htmlReplace', "js", "compressAllJs", "compressAllCss", callback);      // 同步运行
-    sequence('clean-before', 'compress-css', "build-js", "compress-js", 'compress-img', 'clone-other', 'html-replace', 'clean-after', function () {
+    return sequence('clean-before', 'less-to-css', 'compress-css', "build-js", "compress-js", 'compress-img', 'clone-other', 'html-replace', 'clean-after', function () {
         console.log('runsequence finish');
     });      // 同步运行
 });
@@ -214,6 +250,5 @@ gulp.task("run-release", function () {
 
 // 发布时，先运行： gulp release，  将资源文件进行打包
 // 再运行： gulp run-release  启动webserver进行测试，根目录为 dist
-
 
 
