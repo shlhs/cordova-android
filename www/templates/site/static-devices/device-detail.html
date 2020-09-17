@@ -7,15 +7,15 @@
     <ul class="vertical-tabs" style="position: absolute; top: 50px;height: 70px;width: 100%;">
         <li class="tab" ng-click="gotoOpsList()">
             <span class="value">{{opsTaskCount}}</span>
-            <span class="name">运维次数</span>
+            <span class="name">{{'staticdevice.count.ops' | translate}}</span>
         </li>
         <li class="tab" ng-click="gotoDtsList('doing')">
             <span class="value">{{unhandledDtsCount}}</span>
-            <span class="name">未解决缺陷</span>
+            <span class="name">{{'staticdevice.count.defects.unresolved' | translate}}</span>
         </li>
         <li class="tab" ng-click="gotoDtsList('finish')">
             <span class="value">{{closedDtsCount}}</span>
-            <span class="name">已解决缺陷</span>
+            <span class="name">{{'staticdevice.count.defects.resolved' | translate}}</span>
         </li>
     </ul>
     <div class="mui-content" ng-include="'/templates/site/static-devices/device-info-detail.html'" style="top: 120px;background-color: #fff;">

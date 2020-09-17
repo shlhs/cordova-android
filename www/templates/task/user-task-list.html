@@ -1,11 +1,11 @@
 <div ng-controller="TaskListCtrl">
     <header class="mui-bar bg-header">
-        <h1 class="mui-title">所有服务</h1>
+        <h1 class="mui-title">{{'all task.services' | myTranslate}}</h1>
         <a ng-click="toCreateTask()" class="mui-action-menu mui-icon mui-pull-right" ><i class="header-icon white icon-add"></i></a>
     </header>
     <div style="top:61px;padding-bottom: 50px;" class="mui-content" id="taskListWrapper">
         <div class="filter-btn" ng-click="toggleFilter()">
-            筛选<label class="iconfont anticon-filter" style="font-size: 13px;"></label>
+            {{'filter' | translate}}<label class="iconfont anticon-filter" style="font-size: 13px;"></label>
         </div>
         <div ng-include="'/templates/task/task-list-common.html'" style="margin-top: 38px;"></div>
         <div class="dropdown-filter-wrapper" ng-if="showFilter">
@@ -21,8 +21,8 @@
                     </div>
                 </div>
                 <div class="filter-footer">
-                    <div class="btn default" ng-click="clearFilter()">重置</div>
-                    <div class="btn primary" ng-click="confirmFilter()">查询</div>
+                    <div class="btn default" ng-click="clearFilter()">{{'reset' | translate}}</div>
+                    <div class="btn primary" ng-click="confirmFilter()">{{'query' | translate}}</div>
                 </div>
             </div>
         </div>

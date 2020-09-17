@@ -20,7 +20,7 @@ app.controller('SecurityBaseCtrl', ['$scope', '$compile', function ($scope, $com
    load();
 }]);
 
-app.service('SecurityReportService', ['userService', 'ajax', function (userService, ajax) {
+app.service('SecurityReportService', ['userService', 'ajax', '$myTranslate', function (userService, ajax, $myTranslate) {
     function _parseSecurityTemplate(template) {
 
         function evaluateItem(path, item) {
@@ -85,9 +85,9 @@ app.service('SecurityReportService', ['userService', 'ajax', function (userServi
             result.status = 'warning';
         }
         result.unqualifiedList.forEach(function (t) {
-            if (t.name === '紧急') {
+            if (t.name === $myTranslate.instant('ops.security.level.urgent')) {
                 emergency += 1;
-            } else if (t.name === '重大') {
+            } else if (t.name === $myTranslate.instant('ops.security.level.serious')) {
                 serious += 1;
             } else {
                 normal += 1;
@@ -123,12 +123,12 @@ app.service('SecurityReportService', ['userService', 'ajax', function (userServi
                 },
                 success: function (data) {
                     $.notify.progressStop();
-                    $.notify.info("保存成功");
+                    $.notify.info($myTranslate.instant('save successful'));
                     successCallback && successCallback(data);
                 },
                 error: function (xhr, status, error) {
                     $.notify.progressStop();
-                    $.notify.error('保存失败');
+                    $.notify.error($myTranslate.instant('save failed'));
                 }
             });
         } else {
@@ -147,7 +147,7 @@ app.service('SecurityReportService', ['userService', 'ajax', function (userServi
                 },
                 success: function (data) {
                     $.notify.progressStop();
-                    $.notify.info("保存成功");
+                    $.notify.info($myTranslate.instant('save successful'));
 
                     // 调用Android接口
                     window.android && window.android.onJsCallbackForPrevPage('setTaskReportId', data.id);
@@ -155,7 +155,7 @@ app.service('SecurityReportService', ['userService', 'ajax', function (userServi
                 },
                 error: function (xhr, status, error) {
                     $.notify.progressStop();
-                    $.notify.error('保存失败');
+                    $.notify.error($myTranslate.instant('save failed'));
                 }
             });
         }
@@ -168,6 +168,7 @@ app.controller('SecurityHistoryCtrl', ['$scope', 'routerService', 'ajax', functi
     $scope.history = [];
     $scope.isLoading = false;
     $scope.loadingFailed = false;
+    $scope.isEnglish = gIsEnglish;
 
     $scope.createOneRecord = function () {
         $scope.openPage('/templates/evaluate/security-evaluate-first-classify.html', {isCreate: true, stationSn: sn,
@@ -234,45 +235,79 @@ app.controller('SecurityEvaluateHome', ['$scope', '$http', 'ajax', 'routerServic
 
     // 画进度
     function drawProgress(progress) {
-        if (!progress) {    //
-            $("#evaluateChart").circleChart({
-                color: "#ffffff",
-                backgroundColor: "#e6e6e6",
-                widthRatio: 0.1, // 进度条宽度
-                size: Math.round($("#evaluateChart").parent().parent().height()*0.8),
-                value: 100,
-                startAngle: 175,
-                speed: 1,
-                textSize: 36,
-                relativeTextSize: 14,
-                animation: "easeInOutCubic",
-                text: 0,
-                onDraw: function(el, circle) {
-                    circle.text("0%"); // 根据value修改text
-                }
-            });
-        } else {
-            var color = '#F44336';  // warning的颜色
-            if ($scope.evaluateData.status === 'success') {
-                color = '#26A69A';
-            }
-            $("#evaluateChart").circleChart({
-                color: color,
-                backgroundColor: "rgba(255,255,255,0.5)",
-                widthRatio: 0.1, // 进度条宽度
-                size: Math.round($("#evaluateChart").parent().parent().height()*0.8),
-                value: progress,
-                startAngle: 175,
-                speed: 2000,
-                textSize: 36,
-                relativeTextSize: 14,
-                animation: "easeInOutCubic",
-                text: 0,
-                onDraw: function(el, circle) {
-                    circle.text(Math.round(circle.value) + "%"); // 根据value修改text
-                }
-            });
+        var color = $scope.evaluateData.status === 'success' ? ['#26A69A', '#26A69A'] : ['#F44336', '#F44336'];
+        if (!progress) {
+            color = ['#ccc', '#ccc'];
         }
+        var option = {
+            title: [{
+                text: '已完成',
+                x: 'center',
+                top: '25%',
+                textStyle: {
+                    color: '#FFF',
+                    fontSize: 12,
+                }
+            }, {
+                text: progress + '%',
+                x: 'center',
+                top: '36%',
+                textStyle: {
+                    fontSize: 18,
+                    color: '#FFF',
+                },
+            }],
+            polar: {
+                radius: ['80%', '90%'],
+                center: ['50%', '50%'],
+            },
+            angleAxis: {
+                max: 100,
+                show: false,
+            },
+            radiusAxis: {
+                type: 'category',
+                show: true,
+                axisLabel: {
+                    show: false,
+                },
+                axisLine: {
+                    show: false,
+
+                },
+                axisTick: {
+                    show: false
+                },
+            },
+            series: [
+                {
+                    name: '',
+                    type: 'bar',
+                    roundCap: true,
+                    barWidth: 6,
+                    showBackground: true,
+                    backgroundStyle: {
+                        color: 'rgba(255,255,255,0.5)',
+                    },
+                    data: [progress],
+                    coordinateSystem: 'polar',
+
+                    itemStyle: {
+                        normal: {
+                            color: new echarts.graphic.LinearGradient(0, 1, 0, 0, [{
+                                offset: 0,
+                                color: color[0]
+                            }, {
+                                offset: 1,
+                                color: color[1]
+                            }]),
+                        }
+                    }
+
+                },
+            ]
+        };
+        echarts.init(document.getElementById('evaluateChart')).setOption(option);
     }
 
     function getEvaluateData() {        // 获取评估数据

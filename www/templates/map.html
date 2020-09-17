@@ -31,12 +31,13 @@
     <script type="text/javascript" src="../components/libs/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="../js/app/utils.js"></script>
     <script type="text/javascript" src="../components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="/js/lib/angular-translate.min.js"></script>
 </head>
 
 <body class="mui-android mui-android-5 mui-android-5-1 mui-android-5-1-1 mui-segmented-control-vertical" ng-app="myApp">
 <header class="mui-bar bg-header">
     <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
-    <h1 class="mui-title" id="head_title">站点位置</h1>
+    <h1 class="mui-title" id="head_title">{{'station.location' | translate}}</h1>
 </header>
 <div>
     <div class="mui-content bg-white" style="padding: 0" ng-class="{'page-bottom': canHandle}" ng-controller="mapCtrl" ng-cloak>
@@ -49,7 +50,7 @@
         </div>
         <div style="position: fixed;bottom: 0px;width: 100%;text-align: center;" ng-if="enableNavigate">
             <button type="button" class="mui-btn mui-btn-primary mui-icon mui-btn-block " style="width: 50%;" ng-click="openThirdMap()">
-                <span style="position: relative;display: inline-block;line-height: 24px;"><i class="icon icon-20 icon-navigate mui-pull-left"></i>导航</span>
+                <span style="position: relative;display: inline-block;line-height: 24px;"><i class="icon icon-20 icon-navigate mui-pull-left"></i>{{'navigate' | translate}}</span>
 
             </button>
         </div>
@@ -62,8 +63,43 @@
 <script>
 
     $("#head_title").html(GetQueryString('name'));
-    var app = angular.module('myApp', []);
-    app.controller('mapCtrl', function ($scope) {
+    var app = angular.module('myApp', ['pascalprecht.translate']);
+    var LANGUAGE = getStorageItem('LANGUAGE');
+
+    function loadTranslateFiles(language, forceLoad) { // 加载翻译文件，forceLoad：重新加载，否则从localStorage中读取
+        var jsonData = {};
+         if (!forceLoad) {
+             var data = localStorage.getItem(language + "_source");
+             if (data) {
+                 try {
+                     jsonData = JSON.parse(data);
+                     return jsonData;
+                 } catch (err) {}
+             }
+         }
+        var url = '/i18n/' + language + '.json';
+        $.ajax({
+            url: url,
+            async: false,
+            success: function (data) {
+                localStorage.setItem(language + "_source", JSON.stringify(data));
+                jsonData = data;
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+        return jsonData;
+    }
+    app.config(function ($translateProvider) {
+
+        // 使用ajax同步加载，避免js的translate先调用，但是json文件未加载，导致无法显示翻译文本的问题
+        var json = loadTranslateFiles(LANGUAGE);
+        $translateProvider.translations(LANGUAGE, json);
+        $translateProvider.preferredLanguage(LANGUAGE);
+    });
+
+    app.controller('mapCtrl', ['$scope', '$translate', function ($scope, $translate) {
         var sn = GetQueryString('stationSn');
 
         $scope.siteData = {};
@@ -90,11 +126,11 @@
                     if (data.longitude && data.latitude) {
                         drawMap(data);
                     } else {
-                        $.notify.toast('无法获取站点位置');
+                        $.notify.toast($translate.instant('station.noaddress'));
                     }
                 },
                 error: function (a, b, c) {
-                    $.notify.error('获取站点信息失败');
+                    $.notify.error($translate.instant('station.getdetail.failed'));
                     console.log('login fail');
                 }
             });
@@ -163,7 +199,7 @@
             }
         };
         getSite();
-    });
+    }]);
 
 
 

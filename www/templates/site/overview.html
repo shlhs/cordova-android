@@ -22,6 +22,7 @@
     <!--<script type="text/javascript" src="components/ui-router-extras/release/ct-ui-router-extras.js"></script>-->
     <script type="text/javascript" src="../../components/angular-animate/angular-animate.js"></script>
     <script type="text/javascript" src="../../components/angular-ui-router/release/stateEvents.min.js"></script>
+    <script type="text/javascript" src="/js/lib/angular-translate.min.js"></script>
     <script type="text/javascript" src="../../js/app/utils.js"></script>
     <script type="text/javascript" src="../../js/app/app.js"></script>
     <script type="text/javascript" src="../../js/controller/sites.js"></script>
@@ -80,29 +81,29 @@
 <body class="box-vertical-center" ng-app="myApp">
 <header class="mui-bar bg-header mui-segmented-control-vertical">
     <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
-    <h1 class="mui-title">站点总览</h1>
+    <h1 class="mui-title">{{'station overview' | myTranslate}}</h1>
     <!--<a onclick="showTopMenu()" class="mui-action-menu mui-icon mui-pull-right" ><i class="header-icon white icon-add"></i></a>-->
 </header>
 <!--<div ng-include="'../../templates/top-menu.html'"></div>-->
 <div class="mui-content" ng-cloak ng-controller="SiteOverviewCtrl">
     <ul class="mui-row summary-list" style="padding-top:6px;">
         <li class="mui-col-xs-6 mui-col-sm-6 summary-item" style="background-color: #8f79ff">
-            <span class="title mui-ellipsis">实时负荷</span>
+            <span class="title mui-ellipsis">{{ 'station.realtime.load' | translate }}</span>
             <h4 class="value">{{realtimeLoad}}<span class="unit">kW</span> </h4>
         </li>
         <li class="mui-col-xs-6 mui-col-sm-6 summary-item" style="background-color: #41aafb">
-            <span class="title mui-ellipsis">今日用电量</span>
+            <span class="title mui-ellipsis">{{'station.degree.today' | translate}}</span>
             <h4 class="value">{{todayDegree}}<span class="unit">kWh</span> </h4>
         </li>
         <li class="mui-col-xs-6 mui-col-sm-6 summary-item" style="background-color: #4e75fa">
-            <span class="title mui-ellipsis">本月用电量</span>
+            <span class="title mui-ellipsis">{{'station.degree.thismonth' | translate}}</span>
             <h4 class="value">{{monthDegree}}<span class="unit">kWh</span> </h4>
         </li>
     </ul>
     <div class="card">
         <div class="card-header border">
             <i class="iconfont anticon-shuju2" style="color: #007aff;"></i>
-            今日负荷趋势
+            {{ 'station.load.trend.today' | translate }}
         </div>
         <div class="card-content">
             <div style="height: 150px;" id="loadChart" class="chart" ng-class="{'spin-loading': fuheLoading}">
@@ -115,7 +116,7 @@
     <div class="card">
         <div class="card-header border">
             <i class="iconfont anticon-energy-fenxiang" style="color: #007aff;"></i>
-            本月用电占比
+            {{'station.pfv.ratio.month' | translate}}
         </div>
         <div class="card-content">
             <div style="height: 140px;" id="electricPie" class="chart" ng-class="{'spin-loading': electricLoading}">
@@ -128,7 +129,7 @@
     <div class="card">
         <div class="card-header border">
             <i class="iconfont anticon-shuju11" style="color: #007aff;"></i>
-            本月用电趋势
+            {{ 'station.electric.trend.month' | translate }}
         </div>
         <div class="card-content">
             <div style="height: 150px;" id="electricChart" class="chart" ng-class="{'spin-loading': electricLoading}">

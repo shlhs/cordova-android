@@ -83,7 +83,6 @@ var apiLocation = {
     start: function (cb) {
         this.callback = cb;
         window.android && window.android.startLocation();
-        cb(121.366648,31.142033);
     },
     setLocation: function (longtitude, latitude, error) {
         if (this.callback){
@@ -350,4 +349,82 @@ function fillVacancyAndSumTrendData(startTime, endTime, queryPeriod, multiDatas,
         time_keys: fullTimeKeys,
         datas: sumDatas,
     };
+}
+
+
+// abbreviation = true： 中文返回：01月，02月。 英文返回： Jan, Feb
+// abbreviation = false： 中文返回：01月，02月。 英文返回： January, February
+// month取值范围： 0 ~ 11
+function getMonth(month, abbreviation) {
+    if (!gIsEnglish) {
+        return moment().set('month', month).format('M月');
+    }
+    if (abbreviation) {
+        return moment().set('month', month).format('MMM');
+    }
+    return moment().set('month', month).format('MMMM');
+}
+
+// day取值范围： 1 ~ 31
+function getDay(day) {
+    if (typeof day === 'string') {
+        day = Number.parseInt(day);
+    }
+    var tmp = moment().set('month', 6).set('date', day);
+    if (gIsEnglish) {
+        return tmp.format('Do');
+    }
+    return tmp.format('D日');
+}
+
+/**
+ * 返回星期几的中/英文
+ * @param weekday 0为周一，6为周日
+ * @param abbreviation true返回格式为：Mo，Tu，=false返回格式为：Monday
+ * @return {string} 中文返回：周一、周二， 英文根据abbreviation返回全称或简称
+ */
+function getWeekday(weekday, abbreviation) {
+    if (gIsEnglish) {
+        return moment().weekday(weekday % 7).format(abbreviation ? 'dd' : 'dddd');
+    }
+    var cndays = ['一', '二', '三', '四', '五', '六', '日'];
+    return `${cndays[weekday % 7]}`;
+}
+
+// 中文返回： YYYY年M月D日，英文返回： February 1st 2020
+function formatToFullDate(time) {
+    if (gIsEnglish) {
+        return time.format('MMMM Do YYYY');
+    }
+    return time.format('YYYY年M月D日');
+}
+
+function getHour(hour) {
+    if (gIsEnglish) {
+        return hour + ':00';
+    }
+    return hour + "时";
+}
+
+// mui picker插件国际化
+function pickerI18n() {
+    if (!gIsEnglish) {
+        return;
+    }
+    $('.mui-poppicker-btn-cancel').html('Cancel');
+    $('.mui-poppicker-btn-ok').html('Confirm');
+}
+
+function datePickerI18n() {
+    if (!gIsEnglish) {
+        return;
+    }
+    var $parent = $(".mui-dtpicker");
+    $parent.find('[data-id="btn-cancel"]').html('Cancel');
+    $parent.find('[data-id="btn-ok"]').html('Confirm');
+    $parent.find('[data-id="title-y"]').html('YEAR');
+    $parent.find('[data-id="title-m"]').html('MONTH');
+    $parent.find('[data-id="title-d"]').html('DAY');
+    $parent.find('[data-id="title-h"]').html('HOUR');
+    $parent.find('[data-id="title-i"]').html('MINUTE');
 }

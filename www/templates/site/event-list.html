@@ -20,6 +20,7 @@
     <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
     <script type="text/javascript" src="../../components/angular-animate/angular-animate.js"></script>
     <script type="text/javascript" src="../../components/angular-ui-router/release/stateEvents.min.js"></script>
+    <script type="text/javascript" src="/js/lib/angular-translate.min.js"></script>
     <script type="text/javascript" src="../../js/app/utils.js"></script>
     <script type="text/javascript" src="../../js/app/app.js"></script>
     <script type="text/javascript" src="../../js/service/appstore.js"></script>
@@ -42,9 +43,9 @@
 <body class="box-vertical-center" ng-app="myApp" ng-controller="EventListCtrl">
     <header class="mui-bar bg-header">
         <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
-        <h1 class="mui-title">事件列表</h1>
+        <h1 class="mui-title">{{'menu.events' | translate}}</h1>
         <a class="mui-action-menu mui-icon mui-pull-right" style="font-size: 14px;line-height: 28px;color: #fff;margin-right: 6px;"
-           href="/templates/site/closed-event-list.html?status=0&sn={{sn}}">历史事件</a>
+           href="/templates/site/closed-event-list.html?status=0&sn={{sn}}">{{'event.history' | translate}}</a>
     </header>
     <div class="mui-content" ng-cloak>
         <div class="scroll-wrapper" id="events" ng-if="!loadingFailed">
@@ -60,8 +61,8 @@
                             {{e.info}}
                         </div>
                         <div style="font-size: 13px;">
-                            <a class="event-task" ng-click="goToCreateTaskHtml($event, e)" ng-if="hasOpsAuth">发布任务</a>
-                            <a class="close" ng-click="postCheckEventAction($event, e.id)">确认</a>
+                            <a class="event-task" ng-click="goToCreateTaskHtml($event, e)" ng-if="hasOpsAuth">{{'event.submitorder' | translate}}</a>
+                            <a class="close" ng-click="postCheckEventAction($event, e.id)">{{'confirm' | translate}}</a>
                             <div style="clear: both"></div>
                         </div>
                     </li>
@@ -69,7 +70,7 @@
                 <div class="page-alert-wrapper" ng-if="!events.length && !eventLoading && !loadingFailed">
                     <div class="page-alert">
                         <i class="alert-icon nodata-info"></i>
-                        <div class="alert-text info">当前无事件</div>
+                        <div class="alert-text info">{{'none alarm' | myTranslate}}</div>
                     </div>
                 </div>
             </div>
@@ -77,14 +78,14 @@
         <div class="page-alert-wrapper" ng-if="eventLoading">
             <div class="page-alert">
                 <img src="../../img/page-loading.gif" class="loading-img">
-                <div class="alert-text info">正在加载...</div>
+                <div class="alert-text info">{{'loading' | translate}}...</div>
             </div>
         </div>
         <div class="page-alert-wrapper" ng-if="loadingFailed">
             <div class="page-alert">
                 <i class="alert-icon warning"></i>
-                <div class="alert-text info">加载失败，请检查网络</div>
-                <div class="alert-reload" ng-click="getDataList()">重新加载</div>
+                <div class="alert-text info">{{'tip.load.failed.network' | translate}}</div>
+                <div class="alert-reload" ng-click="getDataList()">{{'reload' | translate}}</div>
             </div>
         </div>
     </div>
