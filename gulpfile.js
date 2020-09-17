@@ -10,7 +10,7 @@ const concat = require('gulp-concat');
 require('./gulpfile-release.js');
 
 // 配置主题色： light/dark
-const themeType = 'dark';
+const themeType = 'light';
 
 const root = 'www';
 
@@ -53,11 +53,11 @@ gulp.task('theme', async function () {
 // reset css文件夹
 gulp.task('reset:css', ['theme'], async function () {
     await del([`${root}/css/**`, `${root}/css/iconfont`]);
-    await fs.mkdir(`${root}/css/iconfont`, function (err) {
-        if (err) {
-            console.log('目录创建失败', err);
-        }
-    })
+    // await fs.mkdir(`${root}/css/iconfont`, function (err) {
+    //     if (err) {
+    //         console.log('目录创建失败', err);
+    //     }
+    // })
 })
 
 
