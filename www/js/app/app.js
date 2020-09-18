@@ -383,7 +383,11 @@ app.service('platformService', function () {
     };
 
     this.getIpcServiceHost = function () {
-        return this.host + ':8095/v1';
+        if (defaultIpcHost) {
+            return defaultIpcHost + ':8095/v1';
+        } else {
+            return this.host + ':8095/v1';
+        }
     };
 
     this.getMediaHost = function () {
