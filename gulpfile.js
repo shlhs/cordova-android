@@ -7,10 +7,13 @@ const gulp = require('gulp'), //本地安装gul所用到的地方
     autoprefixer = require('gulp-autoprefixer'); //补全浏览器前缀
 const concat = require('gulp-concat');
 
+
+const config = require('./www/config/config');
+
+const themeType = config.gTheme;
+
 require('./gulpfile-release.js');
 
-// 配置主题色： light/dark
-const themeType = 'light';
 
 const root = 'www';
 
@@ -98,8 +101,9 @@ gulp.task('default', ['less', 'themeStatic', 'watch', 'webserver']);
 
 
 /**
- * 更改主题色配置之后
- * > gulp update:theme
+ * 开发：
+ *  www/config/config.js中更改主题色之后
+ * > gulp update:theme 
  * > gulp
  */
 
