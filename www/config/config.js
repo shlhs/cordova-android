@@ -1,4 +1,4 @@
-var gTheme = 'dark'; // 主题色 light/dark
+var gTheme = 'light'; // 主题色 light/dark
 
 var loginExpireCheckEnable = false;       // 是否检查鉴权过期
 var defaultPlatIpAddr = ''; // 平台默认ip，格式为：http://118.190.51.135
@@ -12,3 +12,6 @@ var LANGUAGE = 'zh-CN'; //如果需要根据手机系统来自动切换的话，
 var gIsEnglish = LANGUAGE === 'en-US';
 var gShowRecheck = true; // 是否显示复测内容
 var appName = ''; // 应用名称
+
+
+exports.gTheme = gTheme;
