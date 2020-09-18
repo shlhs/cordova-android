@@ -37,7 +37,7 @@ const folder = {
     src: "www/",
     dist: 'dist/',
     tmp: 'dist/tmp/',
-    componentSrc: 'www/components/'
+    lib: 'www/lib/'
 };
 
 
@@ -99,15 +99,15 @@ gulp.task('less-to-css', function () {
 
 gulp.task('compress-css', function () {
 
-    gulp.src(folder.src + "components/mui/fonts/**")
+    gulp.src(folder.lib + "mui/fonts/**")
         .pipe(gulp.dest(folder.dist + "fonts/"));
 
     return gulp.src([
-        folder.componentSrc + 'mui/css/icons-extra.css',
+        folder.lib + 'mui/css/icons-extra.css',
         folder.tmp + 'css/setting.css',
         folder.tmp + 'css/animate.css',
-        folder.componentSrc + 'mui/css/mui.min.css',
-        folder.componentSrc + 'mui/css/mui.picker.min.css',
+        folder.lib + 'mui/css/mui.min.css',
+        folder.lib + 'mui/css/mui.picker.min.css',
         folder.tmp + 'css/iconfont/iconfont.css',
         folder.tmp + 'css/my.css',
         folder.tmp + 'css/notify.css',
@@ -151,28 +151,25 @@ gulp.task('build-js', function () {
 gulp.task('compress-js', function () {
     console.log('start compress-js');
     gulp.src([
-        folder.src + 'lib/jquery-3.5.0.min.js',
-        folder.componentSrc + 'angular/angular.min.js',
-        folder.componentSrc + 'angular-ui-router/release/angular-ui-router.min.js',
-        folder.componentSrc + 'angular-animate/angular-animate.js',
-        folder.componentSrc + 'angular-ui-router/release/stateEvents.min.js',
-        folder.src + 'lib/angular-translate.min.js',
-        folder.componentSrc + 'fastclick-master/lib/fastclick.js',
-        folder.componentSrc + 'dropload-gh-pages/dist/dropload.min.js',
-        folder.componentSrc + 'moment.min.js',
-        folder.componentSrc + 'echart/echarts.min-3.x.js',
-        folder.componentSrc + 'mui/js/mui.min.js',
-        folder.componentSrc + 'mui/js/mui.picker.min.js',
-        folder.componentSrc + 'me-lazyimg-master/me-lazyimg.js',
-        folder.componentSrc + 'slides-playing/js/jquery.slides.js',
-        // folder.componentSrc + 'pinch-zoom-js/dist/underscore.js',
-        // folder.componentSrc + 'pinch-zoom-js/dist/pinch-zoom.js',
-        folder.componentSrc + 'baidu/map/MarkerManager-1.2.min.js',
-        folder.src + 'lib/jwt/jsrsasign-all-min.js',
-        folder.src + 'lib/datatables/jquery.dataTables.min.js',
-        folder.src + 'lib/datatables/dataTables.fixedColumns.min.js',
-        folder.src + 'lib/datatables/dataTables.fixedHeader.min.js',
-        folder.src + 'lib/imagesloaded-master/imagesloaded.pkgd.min.js'
+        folder.lib + 'jquery-3.5.0.min.js',
+        folder.lib + 'angular/angular.min.js',
+        folder.lib + 'angular-ui-router/release/angular-ui-router.min.js',
+        folder.lib + 'angular-animate/angular-animate.js',
+        folder.lib + 'angular-ui-router/release/stateEvents.min.js',
+        folder.lib + 'angular-translate.min.js',
+        folder.lib + 'fastclick-master/lib/fastclick.js',
+        folder.lib + 'dropload-gh-pages/dist/dropload.min.js',
+        folder.lib + 'moment.min.js',
+        folder.lib + 'echart/echarts.min-3.x.js',
+        folder.lib + 'mui/js/mui.min.js',
+        folder.lib + 'mui/js/mui.picker.min.js',
+        folder.lib + 'me-lazyimg-master/me-lazyimg.js',
+        folder.lib + 'slides-playing/js/jquery.slides.js',
+        folder.lib + 'baidu/map/MarkerManager-1.2.min.js',
+        folder.lib + 'jwt/jsrsasign-all-min.js',
+        folder.lib + 'datatables/jquery.dataTables.min.js',
+        folder.lib + 'datatables/dataTables.fixedColumns.min.js',
+        folder.lib + 'datatables/dataTables.fixedHeader.min.js',
     ])
         .pipe(concat(libFileName))
         // .pipe(gulp.dest('build/tmp'))
@@ -197,8 +194,8 @@ gulp.task('compress-js', function () {
         .pipe(connect.reload());
 
     gulp.src([folder.tmp + 'js/router/router.js']).pipe(gulp.dest(folder.dist + 'js/router'));
-    gulp.src([folder.src + 'lib/ys7/ezuikit-1.3.min.js']).pipe(gulp.dest(folder.dist + 'lib/ys7'));
-    gulp.src([folder.tmp + 'js/app/utils.js']).pipe(gulp.dest(folder.dist + 'js/app'));
+    gulp.src([folder.lib + 'ys7/ezuikit-1.3.min.js']).pipe(gulp.dest(folder.dist + 'lib/ys7'));
+    gulp.src([folder.lib + 'easy-player/easy-player-element.min.js']).pipe(gulp.dest(folder.dist + 'lib/easy-player'));
 });
 
 gulp.task('html-replace', function () {
@@ -220,7 +217,7 @@ gulp.task('clone-other', function () {
     gulp.src([folder.src + 'pdf-viewer/**']).pipe(gulp.dest(folder.dist + 'pdf-viewer'));
     gulp.src([folder.src + 'version/**']).pipe(gulp.dest(folder.dist + 'version'));
     gulp.src([folder.src + 'i18n/**']).pipe(gulp.dest(folder.dist + 'i18n'));
-    gulp.src([folder.componentSrc + 'mui/fonts/**']).pipe(gulp.dest(folder.dist + 'fonts'));
+    gulp.src([folder.lib + 'mui/fonts/**']).pipe(gulp.dest(folder.dist + 'fonts'));
 
     // 图片
     gulp.src([`theme/img/${themeType}/**`])
