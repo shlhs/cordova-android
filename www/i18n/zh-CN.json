@@ -156,7 +156,7 @@
   "defect.ops.person.empty": "请指定消缺人员",
   "defect.expecttime": "计划消缺时间",
   "defect.recheck": "复测",
-  "defect.recheck.team": "复测人员",
+  "defect.recheck.team": "复测班组",
   "defect.recheck.person": "复测人员",
   "defect.recheck.persion.empty": "不指定复测人员则无复测流程",
   "defect.name.voice": "语音描述",

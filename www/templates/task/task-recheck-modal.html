@@ -1,6 +1,6 @@
 <div class="page page-down" id="handlePage" ng-controller="TaskRecheckCtrl" style="background-color: #FFF;">
-    <header class="mui-bar mui-bar-transparent mui-segmented-control-vertical" style=" -webkit-box-shadow: none;box-shadow: none;position: relative;">
-        <a class="mui-icon mui-pull-left mui-control-item" style="font-size: 16px;margin-left: 6px;color: #9e9e9e;top:5px;" ng-click="cancel()">{{'cancel' | translate}}</a>
+    <header class="mui-bar mui-bar-transparent bg-header" style=" -webkit-box-shadow: none;box-shadow: none;position: relative;">
+        <a class="mui-icon mui-pull-left mui-control-item" style="font-size: 16px;margin-left: 6px;top:5px;" ng-click="cancel()">{{'cancel' | translate}}</a>
         <h1 class="mui-title" style="font-weight: 400;">{{'recheck.result.submit' | translate}}</h1>
         <a class="mui-icon mui-action-menu mui-pull-right mui-control-item" style="font-size: 16px;margin-right: 6px;top:5px;" ng-click="submitAndBack()">{{'submit' | translate}}</a>
     </header>
@@ -17,18 +17,18 @@
                     </label>
                 </div>
             </div>
-            <div class="label" style="color: #333;font-size: 14px;margin: 8px 4px 4px 4px;">{{'recheck.result.desp' | translate}}</div>
+            <div class="label" style="font-size: 14px;margin: 8px 4px 4px 4px;">{{'recheck.result.desp' | translate}}</div>
             <div>
-                <textarea rows="3" placeholder="{{'task.update.desp.placeholder' | translate}}..." name="description" ng-model="description" style="background-color: #F9F9F9;"></textarea>
+                <textarea rows="3" placeholder="{{'task.update.desp.placeholder' | translate}}..." name="description" ng-model="description"></textarea>
             </div>
             <div class="mui-input-group task-create-rows dts-create-rows create-form">
                 <div class="mui-input-row" ng-if="audioVideoEnabled">
                     <label class="label" style="width: auto;">{{'voice' | translate}}</label>
                     <audio-recorder audio="audioUrl" duration="audioDuration" on-update="onUpdateVoice" can-edit="true" class="right-placeholder"></audio-recorder>
                 </div>
-                <div class="label" style="color: #333;font-size: 14px;margin: 0 4px 4px 4px;">{{'photos' | translate}}</div>
+                <div class="label" style="font-size: 14px;margin: 0 4px 4px 4px;">{{'photos' | translate}}</div>
                 <image-uploader images="images"></image-uploader>
-                <div class="label" style="color: #333;font-size: 14px;margin: 0 4px 4px 4px;" ng-if="audioVideoEnabled">{{'video' | translate}}</div>
+                <div class="label" style="font-size: 14px;margin: 0 4px 4px 4px;" ng-if="audioVideoEnabled">{{'video' | translate}}</div>
                 <video-uploader video="videoUrl" on-update="onUpdateVideo" can-edit="true" ng-if="audioVideoEnabled"></video-uploader>
 
             </div>

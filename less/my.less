@@ -91,10 +91,6 @@ div {
 .mui-dtpicker, .mui-poppicker {
     background-color: @mui-picker-bg;
 }
-.mui-btn-blue, .mui-btn-primary, input[type=submit] {
-    background-color: @color-primary;
-    border-color: @color-primary;
-}
 .mui-popover {
     background-color: @mui-picker-body;
 }
@@ -106,6 +102,10 @@ div {
 }
 .mui-btn, button, input[type=button], input[type=reset], input[type=submit] {
     color: @color-white;
+}
+.mui-btn-blue, .mui-btn-primary, input[type=submit] {
+    background-color: @color-primary;
+    border-color: @color-primary;
 }
 .mui-dtpicker {
     border-top-color: @color-divider;
@@ -3813,8 +3813,8 @@ table.dataTable tbody th, table.dataTable tbody td {
 }
 .modal .modal-body {
     border-radius: 10px;
-    background: rgba(235,240,244,1);
-    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+    background: @mui-picker-body;
+    //box-shadow: 0 5px 20px @mui-picker-body;
     z-index: 1;
     padding: 12px 0;
     min-width: 150px;
@@ -3823,7 +3823,7 @@ table.dataTable tbody th, table.dataTable tbody td {
     padding: 0 20px;
 }
 .modal .modal-footer {
-    border-top: 1px solid #ccc;
+    border-top: 1px solid @color-divider;
     padding: 0 20px;
 }
 .video .play {

@@ -5,3 +5,4 @@ www/js/echartsTheme.js
 dist/
 build/
 platforms/
+less/theme/index.less

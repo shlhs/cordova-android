@@ -97,6 +97,7 @@ app.controller('MonitorDetailCtrl', ['$scope', function ($scope) {
         window.android && window.android.setScreenOrient("PORTRAIT");
         $("#iframe").remove();
         window.removeEventListener('popstate', pageBackCallback);
+        window.removeEventListener('message', postMessageToIframe);
     }
 
     function postMessageToIframe (e) {
@@ -109,8 +110,8 @@ app.controller('MonitorDetailCtrl', ['$scope', function ($scope) {
     window.addEventListener('popstate', pageBackCallback);
     window.addEventListener('message', postMessageToIframe, false);
 
-    $scope.$on('$destroy', function () {
-        window.removeEventListener('message', postMessageToIframe);
-        window.removeEventListener('popstate', pageBackCallback);
-    });
+    // $scope.$on('$destroy', function () {
+    //     window.removeEventListener('message', postMessageToIframe);
+    //     window.removeEventListener('popstate', pageBackCallback);
+    // });
 }]);

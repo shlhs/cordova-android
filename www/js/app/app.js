@@ -408,9 +408,9 @@ app.service('routerService', ['$timeout', '$compile', function ($timeout, $compi
         }
         // 显示前一个页面，排除掉 mui-popover组建内容
         if (pageLength>1){
-            pages[pageLength - 2].ele.not('.mui-popover').show();
+            pages[pageLength - 2].ele.not('.mui-popover').not('script').show();
         } else{
-            pages[0].ele.prevAll().not('.mui-popover').show();
+            pages[0].ele.prevAll().not('.mui-popover').not('script').show();
         }
         var item = pages[currentIndex], element=item.ele;
         element.addClass('ng-leave');

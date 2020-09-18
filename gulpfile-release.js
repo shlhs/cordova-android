@@ -141,6 +141,10 @@ gulp.task('build-js', function () {
     return step.pipe(gulp.dest(folder.tmp + "js"));
 });
 
+/**
+ * 将www/components和www/lib下的文件打包成libv1.0.js。如果后续库文件新增或减少，则升级文件名中的V1.0
+ * 将www/js中的文件打包成 xxxx.js。 xxxx为每次编辑时新生成的随机文件名
+ */
 gulp.task('compress-js', function () {
     console.log('start compress-js');
     gulp.src([
@@ -196,6 +200,7 @@ gulp.task('compress-js', function () {
 
 gulp.task('html-replace', function () {
     console.log('start html-replace');
+    gulp.src(folder.src + 'index.html').pipe(gulp.dest(folder.dist));
     return gulp.src(folder.src + 'templates/**')
         .pipe(htmlReplace({
             lib: ['/js/' + libFileName],

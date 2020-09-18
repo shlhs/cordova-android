@@ -137,29 +137,6 @@
 <script type="text/javascript" src="/js/controller/static-devices.js"></script>
 <script type="text/javascript" src="/js/controller/dts.js"></script>
 <!-- endbuild -->
-<script>
-
-    mui.init({
-        swipeBack:true //启用右滑关闭功能
-    });
-    document.getElementsByClassName('mui-switch')[0].addEventListener('toggle', function(event) {
-        var scope = $('div[ng-controller="TaskCreateCtrl"]').scope();
-        //event.detail.isActive 可直接获取当前状态
-        if (event.detail.isActive){ //开关打开，为抢单任务
-            var handlerBtn = document.getElementById('handlerPicker');
-            handlerBtn.disabled = true;
-            $(handlerBtn.parentNode).addClass('disabled');
-            scope.toggleTaskType();
-            // 抢单任务没有责任人
-
-        } else{
-            var handlerBtn = document.getElementById('handlerPicker');
-            handlerBtn.disabled = false;
-            $(handlerBtn.parentNode).removeClass('disabled');
-            scope.toggleTaskType();
-        }
-    });
-</script>
 </body>
 
 </html>
