@@ -41,7 +41,7 @@ gulp.task('webserver', async function () {
 
 
 
-// 设置主题色
+// 设置主题色  替换iconfont文件夹
 gulp.task('theme', async function () {
     const text = `@import './${themeType}.less';`;
     fs.writeFile('less/theme/index.less', text, 'utf-8', function (err) {
@@ -49,26 +49,14 @@ gulp.task('theme', async function () {
             console.log('写入文件失败:', err);
         }
     });
-});
-
-
-
-// reset css文件夹
-gulp.task('reset:css', ['theme'], async function () {
     await del([`${root}/css/**`, `${root}/css/iconfont`]);
-    // await fs.mkdir(`${root}/css/iconfont`, function (err) {
-    //     if (err) {
-    //         console.log('目录创建失败', err);
-    //     }
-    // })
-})
+    gulp.src('less/iconfont/**').pipe(gulp.dest(`${root}/css/iconfont`));
+});
 
 
 // less转css
 gulp.task('less', async function () {
-    gulp.src('less/iconfont/**').pipe(gulp.dest(`${root}/css/iconfont`));
     gulp.src('less/*.css').pipe(gulp.dest(`${root}/css`));
-
     await gulp.src(['./less/**/*.less', '!less/theme/*.less'])
         .pipe(less())
         .pipe(autoprefixer({
@@ -95,15 +83,12 @@ gulp.task('watch', async function () {
     gulp.watch([`less/**/*.less`], ['less']);
 });
 
-gulp.task('update:theme', ['reset:css']);
-
-gulp.task('default', ['less', 'themeStatic', 'watch', 'webserver']);
+gulp.task('default', ['theme', 'less', 'themeStatic', 'watch', 'webserver']);
 
 
 /**
  * 开发：
- *  www/config/config.js中更改主题色之后
- * > gulp update:theme 
+ *  www/config/config.js中更改主题色之后, 重启服务
  * > gulp
  */
 
