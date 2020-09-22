@@ -30,8 +30,6 @@ const htmlMin = require('gulp-htmlmin');
 const sequence = require('run-sequence');
 const PipeQueue = require('pipe-queue');
 
-const config = require('./www/config/config');
-
 //根据自己开发的实际需求自行设置， src放开发文件， dist是打包压缩后的导出目录
 const folder = {
     src: "www/",
@@ -41,7 +39,7 @@ const folder = {
 };
 
 
-const themeType = config.gTheme;
+const themeType = global.gTheme;
 
 function getFileName() {
     const chars = '01234567890abcdefghijklmnopqrstuvwxyz';

@@ -13,5 +13,3 @@ var gIsEnglish = LANGUAGE === 'en-US';
 var gShowRecheck = true; // 是否显示复测内容
 var appName = ''; // 应用名称
 
-
-exports.gTheme = gTheme;

@@ -1,3 +1,5 @@
+global.gTheme = 'light'; // light/dark
+
 // 导入工具包 require('node_modules里对应模块')
 const fs = require('fs');
 const gulp = require('gulp'), //本地安装gul所用到的地方
@@ -7,10 +9,7 @@ const gulp = require('gulp'), //本地安装gul所用到的地方
     autoprefixer = require('gulp-autoprefixer'); //补全浏览器前缀
 const concat = require('gulp-concat');
 
-
-const config = require('./www/config/config');
-
-const themeType = config.gTheme;
+const themeType = global.gTheme;
 
 require('./gulpfile-release.js');
 
