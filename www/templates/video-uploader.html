@@ -1,0 +1,20 @@
+<div class="image-item video-item">
+    <div class="video" ng-style="itemStyle" ng-click="startPlay($index)" ng-if="video">
+        <div class="content">
+            <div style="background-color: rgba(0,0,0,0.7);height: 100%;">
+                <div class="iconfont anticon-play play"></div>
+            </div>
+            <div class="close" ng-if="canEdit">
+                <img src="/img/dark/32X32/close.png" ng-click="remove($event)"
+                     style="width: 16px;height: 16px;margin: 4px 0 0 4px;display: inline-block;background: #f50202;border-radius: 50%;position: absolute;right: -5px;top: -5px;padding: 2px;">
+            </div>
+        </div>
+    </div>
+    <div class="upload-item content" ng-style="{{itemStyle}}" ng-if="!video && canEdit">
+        <div class="content">
+            <div class="image-uploader" ng-click="startCapture()">
+                <div class="add-btn"></div>
+            </div>
+        </div>
+    </div>
+</div>
