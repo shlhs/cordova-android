@@ -1,3 +1,6 @@
+
+global.gTheme = 'light'; // light/dark
+
 // 导入工具包 require('node_modules里对应模块')
 const fs = require('fs');
 const gulp = require('gulp'), //本地安装gul所用到的地方
@@ -7,13 +10,9 @@ const gulp = require('gulp'), //本地安装gul所用到的地方
     autoprefixer = require('gulp-autoprefixer'); //补全浏览器前缀
 const concat = require('gulp-concat');
 
-
-const config = require('./www/config/config');
-
-const themeType = config.gTheme;
-
 require('./gulpfile-release.js');
 
+const themeType = global.gTheme;
 
 const root = 'www';
 
@@ -88,7 +87,9 @@ gulp.task('default', ['theme', 'less', 'themeStatic', 'watch', 'webserver']);
 
 /**
  * 开发：
- *  www/config/config.js中更改主题色之后, 重启服务
+ * > gulp
+ * 更改主体色： 
+ *  config/config.js和本文件首行更改后（改两处）， 重启服务
  * > gulp
  */
 
