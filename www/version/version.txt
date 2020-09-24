@@ -2,10 +2,10 @@
 	"versionCode": 220,
 	"versionName": "2.2.0",
 	"description": "",
-	"downloadUrl": "http://139.196.243.82:8123/version/release-2.2.0.apk",
+	"downloadUrl": "http://139.196.243.82:8123/version/release.apk",
 	"isLaunched": true,
 	"isGatedLaunch": true,
 	"forceUpdate": false,
 	"whiteList": ["zoujian"],
-	"webVersion": "20200527 17:10"
+	"webVersion": "20200924 14:32"
 }
