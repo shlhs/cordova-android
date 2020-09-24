@@ -1,4 +1,3 @@
-
 "use strict";
 /**
  * Created by liucaiyun on 2017/7/20.
@@ -13,11 +12,33 @@ var TaskTypes = {
     NormalDts: 8,   // 一般缺陷
     SeriousDts: 9,  // 严重缺陷
     FatalDts: 10,   // 致命缺陷
-    Xunjian: 11
+    Xunjian: 11,    // 巡检
+    Xunshi: 12,     // 巡视
+    Baodian: 13,    // 保电
+    YufangTest: 14, // 预防试验
+    Xiaoque: 15,    // 消缺
+    Tingsong: 16,   // 停送操作,
+    Install: 17,    // 安装调试
 };
-var OpsTaskType = [2, 3, 4, 5, 7];
+var OpsTaskType = [1, 2, 3, 4, 5, 6, 7, 11, 12, 13, 14, 15, 16, 17];
 var DtsTaskType = [8, 9, 10];
-var TaskAction = {Create: 0, Accept: 1, Refuse: 2, Assign: 3, Go: 4, Apply: 5, Reject: 6, Close: 7, Comment: 8, Grab: 9, Arrive: 10, Update: 11, Transfer: 12, Cancel: 13};
+var TaskAction = {
+    Create: 0,
+    Accept: 1,
+    Refuse: 2,
+    Assign: 3,
+    Go: 4,
+    Apply: 5,
+    Reject: 6,
+    Close: 7,
+    Comment: 8,
+    Grab: 9,
+    Arrive: 10,
+    Update: 11,
+    Transfer: 12,
+    Cancel: 13,
+    RECHECK: 20
+};
 var TaskStatus = {ToAccept: 1, ToAssign: 2, Accepted: 3, ToClose: 4, Closed: 5, Competition: 6, Coming: 7, Arrived: 8};
 var TaskSource = {Repaire: 1, Event: 2, Inspect: 3};
 var TaskActionName = {
@@ -47,115 +68,109 @@ var TaskActionName = {
     12: '转给他人',
     13: {
         name: '撤单',
-        color: '#f0ad4e'
+        color: '#ff9800'
     },
+    20: '复测'
 };
-function formatTaskHistoryDesp(taskHistory) {     // 根据任务的action_id处理任务描述
-    switch (taskHistory.action_id){
-        case TaskAction.Apply:
-            taskHistory.action_name = '处理完成，请求关闭任务';
-            taskHistory.desp = null;
-            break;
-        case TaskAction.Close:
-            taskHistory.action_name = '关闭任务';
-            taskHistory.desp = null;
-            break;
-        case TaskAction.Accept:
-        case TaskAction.Create:
-            taskHistory.desp = null;
-            break;
-        case TaskAction.Reject:
-            taskHistory.action_name = '驳回关闭请求';
-            break;
-        case TaskAction.Go:
-            taskHistory.action_name = '已出发';
-            break;
-        case TaskAction.Arrive:
-            taskHistory.action_name = '已到达';
-            break;
-    }
-}
 
 function formatTaskStatusName(task) {   // 根据任务状态转换任务描述
+    var userAccount = gUserAccount;
     var stage = task.stage, status = '';
-    switch (task.stage_id){
-        case TaskStatus.Closed:
-            if (task.finish_time) {
-                if (task.has_comment) {
-                    stage = '已完成';
-                } else {
-                    stage = '待评价';
-                }
-            } else {
-                stage = '已撤单';
-            }
-            break;
-        case TaskStatus.ToClose:
-            stage = '待审批';
-            break;
-        case TaskStatus.ToAccept:
-            stage = '待接单';
-            break;
-        case TaskStatus.ToAssign:
-            stage = '待指派';
-            break;
-        case TaskStatus.Competition:
-            stage = '待抢单';
-            break;
-        default:
-            if (task.task_type_id === TaskTypes.Xunjian) {
-                stage = '待巡检';
-            } else {
-                stage = '待处理';
-            }
+    var userIsCurrentHandler = accountInHandlers(userAccount, task.current_handler);
+    var userIsRechecker = accountInHandlers(userAccount, task.recheck_handlers);
+    task.recheck_stage_name = '';
+    if (task.stage_id !== TaskStatus.Closed && userIsRechecker) {
+        if (!userIsCurrentHandler || task.stage_id === TaskStatus.ToClose) { // 如果用户是复测人，但不是处理人，且任务不处于待审批状态，则只显示 复测 状态
+            stage = '';
+        }
+        task.recheck_stage_name = gIsEnglish ? 'To retest' : '待复测';
     }
-    task.stage_name = stage;
+    task.stage_name = task.stage;
     task.status = status;
     task.isToStart = task.create_time.substring(0, 16) > new Date().Format('yyyy-MM-dd HH:mm');      // 任务待开始
+    // 任务图标
+    var icon = 'other';
+    switch (task.task_type_id) {
+        case TaskTypes.NormalDts:
+            icon = 'defect';
+            break;
+        case TaskTypes.SeriousDts:
+            icon = 'defect warning';
+            break;
+        case TaskTypes.FatalDts:
+            icon = 'defect danger';
+            break;
+        case TaskTypes.Jianxiu:
+            icon = 'jianxiu';
+            break;
+        case TaskTypes.Qiangxiu:
+            icon = 'qiangxiu danger';
+            break;
+        case TaskTypes.Poweroff:
+            icon = 'poweroff';
+            break;
+        case TaskTypes.Baoyang:
+            icon = 'baoyang';
+            break;
+        case TaskTypes.Xunjian:
+        case TaskTypes.Xunshi:
+            icon = 'inspect';
+            break;
+    }
+    task.iconClass = icon;
     return task;
 }
 
 function sortByUpdateTime(t1, t2) {
     // 排序顺序：待处理、待审核、已关闭。 相同状态下按更新时间排序
-    if (t1.last_modified_time > t2.last_modified_time){
+    if (t1.last_modified_time > t2.last_modified_time) {
         return -1;
     }
-    if (t1.last_modified_time === t2.last_modified_time){
+    if (t1.last_modified_time === t2.last_modified_time) {
         return 0;
     }
     return 1;
 }
+
 function sortByCreateTime(t1, t2) {
-    if (t1.create_time > t2.create_time){
+    if (t1.create_time > t2.create_time) {
         return -1;
     }
-    if (t1.create_time === t2.create_time){
+    if (t1.create_time === t2.create_time) {
         return 0;
     }
     return 1;
 }
+
 function formatExpiredTime(t) {     // 格式化截止时间，只有日期没有时间
-    var day = new Date().getDate(), month=new Date().getMonth()+1, year = new Date().getFullYear();
+    var day = new Date().getDate(), month = new Date().getMonth() + 1, year = new Date().getFullYear();
     var m = parseInt(t.substring(5, 7)), d = parseInt(t.substring(8, 10)), y = parseInt(t.substring(0, 4));
-    if (m === month && d === day){
+    if (m === month && d === day) {
         return '今日';
     }
-    if ((m === month && d === (day+1)) || (d === 1 && m === (month-1)) || (m===1 && d===1 && y===(year-1))){
+    if ((m === month && d === (day + 1)) || (d === 1 && m === (month - 1)) || (m === 1 && d === 1 && y === (year - 1))) {
         return '明日';
     }
     return t.substring(5, 10);
 }
 
 function formatUpdateTime(t) {      // 格式化更新时间，有日期和时间
-    var day = new Date().getDate(), month=new Date().getMonth()+1, year = new Date().getFullYear();
+    var day = new Date().getDate(), month = new Date().getMonth() + 1, year = new Date().getFullYear();
     var m = parseInt(t.substring(5, 7)), d = parseInt(t.substring(8, 10)), y = parseInt(t.substring(0, 4));
-    if (m === month && d === day){
+    if (m === month && d === day) {
         return '今日 ' + t.substring(11, 16);
     }
-    if ((m === month && d === (day-1)) || (d === 1 && m === (month-1)) || (m===1 && d===1 && y===(year-1))){
+    if ((m === month && d === (day - 1)) || (d === 1 && m === (month - 1)) || (m === 1 && d === 1 && y === (year - 1))) {
         return '昨日 ' + t.substring(11, 16);
     }
     return t.substring(5, 16);
+}
+
+function accountInHandlers(account, handlers) {
+    if (!handlers) {
+        return false;
+    }
+    return handlers.split(',').indexOf(account) >= 0;
 }
 
 app.constant('TaskAction', TaskAction);
@@ -165,14 +180,20 @@ app.constant('UserRole', UserRole);
 app.service('Permission', ['userService', 'UserRole', function (userService, UserRole) {      // 权限服务
     var role = userService.getUserRole();
 
-    this.task = {'canView': role !== UserRole.Normal, 'canEdit': role === UserRole.OpsAdmin || role === UserRole.OpsOperator};
+    this.task = {
+        'canView': role !== UserRole.Normal,
+        'canEdit': role === UserRole.OpsAdmin || role === UserRole.OpsOperator
+    };
 
     this.refresh = function () {
-        this.task = {'canView': role !== UserRole.Normal, 'canEdit': role === UserRole.OpsAdmin || role === UserRole.OpsOperator};
+        this.task = {
+            'canView': role !== UserRole.Normal,
+            'canEdit': role === UserRole.OpsAdmin || role === UserRole.OpsOperator
+        };
     };
 }]);
 
-app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvider', 'platformService', 'ajax', 'routerService', function ($scope, $timeout, userService, appStoreProvider, platformService, ajax, routerService) {
+app.controller('HomeCtrl', ['$scope', '$state', '$timeout', 'userService', 'appStoreProvider', 'platformService', 'ajax', 'routerService', '$myTranslate', function ($scope, $state, $timeout, userService, appStoreProvider, platformService, ajax, routerService, $myTranslate) {
     var role = userService.getUserRole();
     $scope.viewName = '';
     $scope.tabName = '';
@@ -185,33 +206,43 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
     $scope.popup_visible = false;
     $scope.searchSiteResult = [];
     $scope.role = userService.getUserRole();
+    $scope.navMenus = [_getDefaultHomeMenu()];
     if (gShowEnergyPage) {
-        $scope.navMenus = [_getDefaultHomeMenu(), _getEnergyMenu(), _getTaskTodoMenu()];
-    } else if ($scope.role === 'OPS_ADMIN' || $scope.role === 'OPS_OPERATOR') {
-        $scope.navMenus = [_getDefaultHomeMenu(), _getGrabTasksMenu(), _getTaskTodoMenu()];
-    } else {
-        // 普通用户或平台管理员，不能看到抢单页
-        $scope.navMenus = [_getDefaultHomeMenu(), _getTaskTodoMenu()];
+        $scope.navMenus.push(_getEnergyMenu());
+    }
+    if (platformService.platHasOpsFunc()) {
+        if ($scope.role === 'OPS_ADMIN' || $scope.role === 'OPS_OPERATOR') {
+            $scope.navMenus.push(_getGrabTasksMenu());
+            $scope.navMenus.push(_getTaskTodoMenu());
+        } else if ($scope.role === 'USER') {
+            // 普通用户或平台管理员，不能看到抢单页
+            $scope.navMenus.push(_getTaskTodoMenu());
+        }
     }
     var menuInited = false;     // 导航栏菜单是否初始化
+
+    $scope.isEnglish = gIsEnglish;
+
+    $scope.openApp = function(app) {
+        $state.go('.' + app.sref, {sn: $scope.currentSite.sn});
+    };
 
     $scope.getDataList = function () {
         $scope.isLoading = true;
         ajax.get({
             url: "/stations",
-            success: function(result) {
+            success: function (result) {
                 $scope.isLoading = false;
                 var sites = [];
                 var stationSns = [];
                 result.forEach(function (s) {
-                    var width = window.screen.width, height=Math.round(width/2);
+                    var width = window.screen.width, height = Math.round(width / 2);
                     if (s.photo_src_link) {
                         s.site_image = platformService.getImageUrl(width, height, platformService.getCloudHost() + s.photo_src_link);
                     } else {
                         s.site_image = '/img/site-default.png';
                     }
-                    if (!s.is_group)
-                    {
+                    if (!s.is_group) {
                         s.search_key = s.name.toLowerCase() + ' ' + s.sn.toLowerCase();
                         stationSns.push(s.sn);
                     }
@@ -230,7 +261,7 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
                 }
                 $scope.$apply();
             },
-            error: function (a,b,c) {
+            error: function (a, b, c) {
                 $scope.isLoading = false;
                 $.notify.error('获取站点列表失败');
                 console.log('get fail');
@@ -257,19 +288,19 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
         }
     }
 
-    $scope.refreshAllSiteStatus = function() {      // 获取站点详情
+    $scope.refreshAllSiteStatus = function () {      // 获取站点详情
         if (!$scope.sites.length) {
             return;
         }
         ajax.get({
             url: "/stations/details",
-            success: function(result) {
+            success: function (result) {
                 $scope.isLoading = false;
                 var sites = $scope.sites;
                 result.forEach(function (s) {
                     _formatSiteStatus(s);
                     s.events_amount = s.unclosed_envet_amount > 99 ? '99+' : s.unclosed_envet_amount;
-                    for (var i=0; i<sites.length; i++) {
+                    for (var i = 0; i < sites.length; i++) {
                         if (sites[i].sn === s.station.sn) {
                             delete s['station'];
                             $.extend(sites[i], s);
@@ -282,7 +313,7 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
                 $scope.isLoading = false;
                 $scope.$apply();
             },
-            error: function (a,b,c) {
+            error: function (a, b, c) {
                 $scope.isLoading = false;
                 // $.notify.error('获取站点列表失败');
                 console.log('get fail');
@@ -291,12 +322,12 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
         });
     };
 
-    $scope.refreshStationStatus = function(sn) {
+    $scope.refreshStationStatus = function (sn) {
         ajax.get({
             url: "/stations/details/" + sn,
-            success: function(result) {
+            success: function (result) {
                 _formatSiteStatus(result);
-                for (var i=0; i<$scope.sites.length; i++) {
+                for (var i = 0; i < $scope.sites.length; i++) {
                     if ($scope.sites[i].sn === sn) {
                         $.extend($scope.sites[i], {
                             events_amount: result.unclosed_envet_amount > 99 ? '99+' : result.unclosed_envet_amount,
@@ -314,7 +345,7 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
         });
     };
 
-    $scope.updateAppList = function() {
+    $scope.updateAppList = function () {
         $scope.selectedApps = appStoreProvider.getSelectedApps();
         $scope.$apply();
     };
@@ -347,10 +378,10 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
     };
 
     $scope.showPopover = function () {
-        $scope.popup_visible=true;
+        $scope.popup_visible = true;
     };
     $scope.closePopover = function () {
-        $scope.popup_visible=false;
+        $scope.popup_visible = false;
     };
 
     $scope.chooseSite = function (site) {
@@ -358,6 +389,7 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
             $scope.currentSite = site;
             $scope.searchSiteResult = $scope.sites;
             localStorage.setItem("currentSite", JSON.stringify(site));
+            ajax.setTzOffset(site);
             $scope.closePopover();
             $scope.$broadcast('onSiteChange', site);
         }
@@ -366,10 +398,10 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
     function getCurrentSite() {
         var sites = $scope.sites;
         var siteStr = localStorage.getItem("currentSite");
-        if (siteStr){
+        if (siteStr) {
             // 检查站点是否在当前站点中
             var site = JSON.parse(siteStr);
-            for (var i=0; i<sites.length; i++) {
+            for (var i = 0; i < sites.length; i++) {
                 if (sites[i].sn === site.sn) {
                     $scope.currentSite = sites[i];
                     $scope.$broadcast('onSiteChange', sites[i]);
@@ -387,29 +419,33 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
     $scope.openSiteSelectPage = function () {
         $scope.refreshAllSiteStatus();
         routerService.openPage($scope, '/templates/site/site-select-page.html',
-            {treeData: $scope.sitesTree, onSelect: $scope.chooseSite, selectedSn: $scope.currentSite.sn})
+            {treeData: $scope.sitesTree, onSelect: $scope.chooseSite, selectedSn: $scope.currentSite.sn},
+            {hidePrev: false});
+        // $state.go('.siteSelector', {treeData: $scope.sitesTree, onSelect: $scope.chooseSite, selectedSn: $scope.currentSite.sn});
     };
 
     function _getDefaultHomeMenu() {
         return {
             id: 'sites',
-            name: '首页',
+            name: $myTranslate.instant('tab.home'),
             templateUrl: '/templates/site/site-home.html',
             icon: 'nav-sites'
         };
     }
+
     function _getEnergyMenu() {
         return {
             id: 'energy_mgmt',
-            name: '能效管理',
+            name: $myTranslate.instant('tab.energy'),
             templateUrl: '/templates/energy/energy-home.html',
             icon: 'nav-energy'
         };
     }
+
     function _getGrabTasksMenu() {
         return {
             id: 'grab_tasks',
-            name: '抢单',
+            name: $myTranslate.instant('tab.competition'),
             templateUrl: '/templates/task/task-competition-list.html',
             icon: 'nav-task-grab'
         };
@@ -419,28 +455,29 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
         if (role === 'OPS_ADMIN' || role === 'OPS_OPERATOR') {
             return {
                 id: 'my_tasks',
-                name: '我的待办',
+                name: $myTranslate.instant('tab.om'),
                 templateUrl: '/templates/task/task-todo-list.html',
                 icon: 'nav-all-tasks'
             };
         } else if (role === 'USER') {
             return {
                 id: 'my_tasks',
-                name: '我的服务',
+                name: $myTranslate.instant('tab.om'),
                 templateUrl: '/templates/task/user-task-list.html',
-                icon: 'nav-service'
+                icon: 'nav-all-tasks'
             };
         }
         return null;
     }
+
     $scope.chooseNav = function ($event, tabId) {
         $event && $event.preventDefault();
         if (tabId === $scope.tabName) {
             return;
         }
         $scope.tabName = tabId;
-        var element=angular.element('#' + tabId).children().first(), scope = element.scope();
-        if (scope && scope.getDataList && !element.data('inited')){
+        var element = angular.element('#' + tabId).children().first(), scope = element.scope();
+        if (scope && scope.getDataList && !element.data('inited')) {
             scope.getDataList();
             element.data('inited', true);
         } else {
@@ -471,6 +508,16 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
         }
     }
 
+    $scope.openTaskCreate = function () {
+        mui('#taskPopover').popover('hide', document.getElementById('taskAddBtn'));
+        window.location.href = "/templates/task/add-task.html";
+    };
+
+    $scope.openDtsCreate = function () {
+        mui('#taskPopover').popover('hide', document.getElementById('taskAddBtn'));
+        window.location.href = "/templates/dts/dts-create.html";
+    };
+
     $scope.$on('$onMenuUpdate', function (event, opsEnabled, menuSns) {
         updateMenus(opsEnabled);
     });
@@ -478,8 +525,12 @@ app.controller('HomeCtrl', ['$scope', '$timeout', 'userService', 'appStoreProvid
 }]);
 
 function isTodoTask(task, username, userRole) {
-    if (task.stage_id !== TaskStatus.Closed && task.current_handler){
-        if (task.current_handler.split(',').indexOf(username) >= 0) {
+    if (task.stage_id !== TaskStatus.Closed) {
+        if (task.current_handler && task.current_handler.split(',').indexOf(username) >= 0) {
+            return true;
+        }
+        // 复测只有在提交审核之前才能算作是待办
+        if (task.stage_id !== TaskStatus.Closed && task.recheck_handlers && task.recheck_handlers.split(',').indexOf(username) >= 0) {
             return true;
         }
     } else if (task.stage_id === TaskStatus.Closed && task.finish_time && !task.has_comment && userRole === 'USER') {
@@ -489,16 +540,19 @@ function isTodoTask(task, username, userRole) {
     return false;
 }
 
-app.controller('TaskBaseCtrl', ['$scope', 'ajax', 'userService', 'appStoreProvider', function ($scope, ajax, userService, appStoreProvider) {
-    var stationSn = GetQueryString("sn");
+app.controller('TaskBaseCtrl', ['$scope', '$stateParams', 'ajax', 'userService', 'appStoreProvider', '$myTranslate', function ($scope, $stateParams, ajax, userService, appStoreProvider, $myTranslate) {
+    var stationSn = $stateParams.sn || GetQueryString("sn");
     var deviceSn = GetQueryString("device_sn");     // 如果设备sn不为空，则获取的是设备的运维记录
-    $scope.pageTitle = deviceSn ? '运维记录' : '所有任务';
+    $scope.pageTitle = deviceSn ? $myTranslate.instant('task.ops.services') : $myTranslate.instant('task.history');
     $scope.hasOpsAuth = appStoreProvider.hasOpsAuth();
+    $scope.isEnglish = gIsEnglish;
     var map = null;
     $scope.openTask = function (task) {
         if (deviceSn && task.task_type_id === TaskTypes.Xunjian) {
             // 如果是查看单个设备的巡检任务，那么进入特殊的巡检页面
             location.href = '/templates/task/xunjian-device-detail.html?id=' + task.id + '&device_sn=' + deviceSn;
+        } else if (task.is_defect) {
+            location.href = '/templates/dts/dts-detail.html?id=' + task.id + '&taskType=' + task.task_type_id;
         } else {
             location.href = '/templates/task/task-detail.html?id=' + task.id + '&taskType=' + task.task_type_id;
         }
@@ -506,7 +560,7 @@ app.controller('TaskBaseCtrl', ['$scope', 'ajax', 'userService', 'appStoreProvid
 
     $scope.taskTimeout = function (task) {
         // 如果任务已关闭或已提交审核，则认为已完成
-        if (task.stage_id === TaskStatus.Closed || task.stage_id === TaskStatus.ToClose){
+        if (task.stage_id === TaskStatus.Closed || task.stage_id === TaskStatus.ToClose) {
             return false;
         }
         var today = new Date().Format('yyyy-MM-dd HH:mm:ss.S');
@@ -520,74 +574,74 @@ app.controller('TaskBaseCtrl', ['$scope', 'ajax', 'userService', 'appStoreProvid
     };
 
     var companyId = userService.getTaskCompanyId();
-    $scope.commonPostAction = function(taskId, actionType, description, images, cb) {
+    $scope.commonPostAction = function (taskId, actionType, description, images, cb) {
         var data = {};
-        if (description){
+        if (description) {
             data.description = description;
         }
-        if (images && images.length){
+        if (images && images.length) {
             data['pictures'] = images;
         }
         $.notify.progressStart();
         ajax.post({
             url: '/opstasks/' + companyId + '/' + taskId + '/actions?action_type=' + actionType,
             data: JSON.stringify(data),
-            contentType:"application/json",
+            contentType: "application/json",
             headers: {
                 Accept: "application/json"
             },
             timeout: 30000,
             success: function (data) {
                 $.notify.progressStop();
-                $.notify.info('操作成功');
+                $.notify.info();
                 cb && cb(data);
             },
             error: function (data) {
                 $.notify.progressStop();
                 console.log('post action fail');
-                $.notify.error('操作失败');
+                $.notify.error($myTranslate.instant('submit failed'));
             }
         });
     };
 
-    $scope.commonPostActionWithParams = function(taskId, actionType, params, cb) {
+    $scope.commonPostActionWithParams = function (taskId, actionType, params, cb) {
         $.notify.progressStart();
         ajax.post({
             url: '/opstasks/' + companyId + '/' + taskId + '/actions?action_type=' + actionType,
             data: params ? JSON.stringify(params) : '{}',
-            contentType:"application/json",
+            contentType: "application/json",
             headers: {
                 Accept: "application/json"
             },
             timeout: 30000,
             success: function (data) {
                 $.notify.progressStop();
-                $.notify.info('操作成功');
+                $.notify.info($myTranslate.instant('submit successful'));
                 cb && cb(data);
             },
             error: function (data) {
                 $.notify.progressStop();
                 console.log('post action fail');
-                $.notify.error('操作失败');
+                $.notify.error($myTranslate.instant('submit failed'));
             }
         });
     };
 
-    $scope.getDriveDistance = function(start, stationPosition, cb) {        // 获取实际开车的距离
-        if (null === map){
+    $scope.getDriveDistance = function (start, stationPosition, cb) {        // 获取实际开车的距离
+        if (null === map) {
             map = new BMap.Map("map");          // 创建地图实例
         }
         var driving = new BMap.DrivingRoute(map, {
             renderOptions: {
-                map   : map,
-                panel : "results",
+                map: map,
+                panel: "results",
                 autoViewport: true
             },
             onSearchComplete: function (result) {
-                if (result && result.getPlan(0)){
+                if (result && result.getPlan(0)) {
                     var distance = parseFloat(result.getPlan(0).getDistance());
                     cb && cb(distance);
-                }else{
+                } else {
                     cb && cb(null); // 不存在路径
                 }
             }
@@ -597,11 +651,17 @@ app.controller('TaskBaseCtrl', ['$scope', 'ajax', 'userService', 'appStoreProvid
     };
 
     $scope.getStraightDistance = function (startPosint, endLocation) {
-        if (null === map){
+        if (null === map) {
             map = new BMap.Map("map");          // 创建地图实例
         }
         var end = new BMap.Point(endLocation.longitude, endLocation.latitude);
         return map.getDistance(startPosint, end);
+    };
+
+    $scope.callPhone = function (phone) {
+        if (phone && window.android && window.android.callPhone) {
+            window.android.callPhone(phone);
+        }
     };
 
     $scope.checkActuallyArrived = function (taskId, siteLongitude, siteLatitude, cb) {
@@ -655,33 +715,35 @@ app.controller('TaskBaseCtrl', ['$scope', 'ajax', 'userService', 'appStoreProvid
         if (!user) {
             return '';
         }
-        return user.name + (user.phone ? '/' + user.phone : '');
+        return user.name;
     };
+
+    $scope.isEnglish = gIsEnglish;
 }]);
 
 app.controller('CompetitionTaskListCtrl', ['$scope', '$rootScope', 'scrollerService', 'userService', 'ajax', function ($scope, $rootScope, scrollerService, userService, ajax) {
     $scope.tasks = [];
     var opsTeams = [];
     $scope.toAcceptUsers = [];      // 抢单时能选的其他运维工
-    $scope.isLoading = true;
+    $scope.isLoading = false;
     $scope.userPickerVisible = false;
     var userAccount = userService.getUser().account;
     var companyId = userService.getCompanyId();
 
     moment.locale('en', {
-        relativeTime : {
+        relativeTime: {
             future: "in %s",
-            past:   "%s前",
-            s:  "秒",
-            m:  "1分钟",
+            past: "%s前",
+            s: "秒",
+            m: "1分钟",
             mm: "%d分钟",
-            h:  "1小时",
+            h: "1小时",
             hh: "%d小时",
-            d:  "1天",
+            d: "1天",
             dd: "%d天",
-            M:  "1个月",
+            M: "1个月",
             MM: "%d个月",
-            y:  "1年",
+            y: "1年",
             yy: "%d年"
         }
     });
@@ -693,31 +755,58 @@ app.controller('CompetitionTaskListCtrl', ['$scope', '$rootScope', 'scrollerServ
     }
 
     function getTeamAndUsers() {
+        $scope.isLoading = true;
         ajax.get({
             url: '/OpsTeams?company_id=' + companyId + '&with_user=true',
             success: function (teams) {
                 opsTeams = teams;
+                // 如果当前用户存在运维班组中，则请求数据列表
+                var inTeam = false;
+                for (var i = 0; i < teams.length; i++) {
+                    var team = teams[i];
+                    if (team.users) {
+                        for (var j = 0; j < team.users.length; j++) {
+                            if (team.users[j].account === userAccount) {
+                                inTeam = true;
+                                break;
+                            }
+                        }
+                        if (inTeam) {
+                            break;
+                        }
+                    }
+                }
+                if (inTeam) {
+                    $scope.getTaskDatas();
+                } else {
+                    $scope.isLoading = false;
+                }
+                $scope.$apply();
+            },
+            error: function () {
+                $scope.isLoading = false;
+                $scope.$apply();
             }
         });
     }
 
     // 计算距离
     function getAllDistance(taskList) {
-        if (!taskList || !taskList.length){
+        if (!taskList || !taskList.length) {
             return;
         }
         // 先找到配置了位置的站点
         var needCalcStations = {};
         taskList.forEach(function (t) {
-           if (needCalcStations[t]) {
-               return;
-           }
-           if (t.station_latitude) {
-               needCalcStations[t.station_sn] = {
-                   latitude: t.station_latitude,
-                   longitude: t.station_longitude
-               };
-           }
+            if (needCalcStations[t]) {
+                return;
+            }
+            if (t.station_latitude) {
+                needCalcStations[t.station_sn] = {
+                    latitude: t.station_latitude,
+                    longitude: t.station_longitude
+                };
+            }
         });
 
         if (Object.keys(needCalcStations).length === 0) {       // 不需要计算距离
@@ -726,11 +815,11 @@ app.controller('CompetitionTaskListCtrl', ['$scope', '$rootScope', 'scrollerServ
         // 先获取自己的位置
         apiLocation.start(function (longitude, latitude) {
             // 列表页计算直线距离即可
-             if (!longitude || !latitude){
-                 return;
-             }
+            if (!longitude || !latitude) {
+                return;
+            }
             var start = new BMap.Point(longitude, latitude);
-             // 先做坐标转换
+            // 先做坐标转换
             var convertor = new BMap.Convertor();
             var pointArr = [start];
             convertor.translate(pointArr, 3, 5, function (data) {
@@ -739,9 +828,8 @@ app.controller('CompetitionTaskListCtrl', ['$scope', '$rootScope', 'scrollerServ
                     // 计算直线距离
                     var location = needCalcStations[stationSn];
                     var distance = $scope.getStraightDistance(startPoint, needCalcStations[stationSn]);
-                    if (distance)
-                    {
-                        var strDis = distance > 1000 ? ((distance/1000).toFixed(2) + 'km') : (Number.parseInt(distance) + 'm');
+                    if (distance) {
+                        var strDis = distance > 1000 ? ((distance / 1000).toFixed(2) + 'km') : (Number.parseInt(distance) + 'm');
                         // 设置所有同一个站点的任务的距离
                         taskList.forEach(function (t) {
                             if (t.station_sn === stationSn) {
@@ -754,11 +842,13 @@ app.controller('CompetitionTaskListCtrl', ['$scope', '$rootScope', 'scrollerServ
             });
         });
     }
-    $scope.getDataList = function() {
+
+    $scope.getTaskDatas = function () {
         scrollerService.initScroll('#competition_tasks_scroller', $scope.getDataList);
         if (!companyId) {
             return;
         }
+        $scope.isLoading = true;
         ajax.get({
             url: "/opstasks/competition",
             data: {
@@ -771,13 +861,13 @@ app.controller('CompetitionTaskListCtrl', ['$scope', '$rootScope', 'scrollerServ
                     $scope.$apply();
                     return;
                 }
-                for (var i in result){
+                for (var i in result) {
                     formatTaskStatusName(formatTime(result[i]));
                 }
                 $scope.tasks = result;
                 $scope.tasks.sort(sortByCreateTime);
                 $scope.$apply();
-                getAllDistance(result);
+                // getAllDistance(result);
             },
             error: function (a, b, c) {
                 $scope.isLoading = false;
@@ -786,11 +876,14 @@ app.controller('CompetitionTaskListCtrl', ['$scope', '$rootScope', 'scrollerServ
             }
         });
     };
+    $scope.getDataList = function () {
+        getTeamAndUsers();
+    };
 
     $scope.afterGrabTask = function (taskData) {
-        for (var i in $scope.tasks){
+        for (var i in $scope.tasks) {
             var task = $scope.tasks[i];
-            if (parseInt(task.id) === parseInt(taskData.id)){
+            if (parseInt(task.id) === parseInt(taskData.id)) {
                 // 从任务列表中删除
                 $scope.tasks.splice(i, 1);
                 // 给我的待办增加一条
@@ -806,7 +899,7 @@ app.controller('CompetitionTaskListCtrl', ['$scope', '$rootScope', 'scrollerServ
     $scope.onClickGrab = function ($event, task) {
         $event.stopPropagation();
         var users = [];
-        for (var i=0; i<opsTeams.length; i++) {
+        for (var i = 0; i < opsTeams.length; i++) {
             if (opsTeams[i].id === task.operator_team) {
                 opsTeams[i].users.forEach(function (user) {
                     if (user.account !== userAccount) {
@@ -825,7 +918,7 @@ app.controller('CompetitionTaskListCtrl', ['$scope', '$rootScope', 'scrollerServ
         $scope.userPickerVisible = false;
     };
 
-    $scope.postGrabTask = function(users) {
+    $scope.postGrabTask = function (users) {
         const accounts = [];
         users.forEach(function (user) {
             accounts.push(user.account);
@@ -841,50 +934,103 @@ app.controller('CompetitionTaskListCtrl', ['$scope', '$rootScope', 'scrollerServ
         });
     };
 
-    setTimeout(function () {
-        getTeamAndUsers();
-    }, 1000);
+    // setTimeout(function () {
+    //     getTeamAndUsers();
+    // }, 1000);
 }]);
 
-app.controller('TaskTodoListCtrl', ['$scope', '$rootScope', 'scrollerService', 'userService', 'ajax', 'TaskStatus', function ($scope, $rootScope, scrollerService, userService, ajax, TaskStatus) {
+app.controller('TaskTodoListCtrl', ['$scope', '$rootScope', 'scrollerService', 'userService', 'ajax', 'TaskStatus', '$myTranslate', function ($scope, $rootScope, scrollerService, userService, ajax, TaskStatus, $myTranslate) {
     var allTasks = [];
     var username = userService.user.account;
+    var userRole = userService.getUserRole();
     $scope.TaskStatus = TaskStatus;
     $scope.tasks = [];
     $scope.showType = 'todo';    // all, open, closed, todo
     $scope.isLoading = true;
     $scope.loadingFailed = false;
     $scope.todoCount = 0;
+    $scope.title = $myTranslate.instant('tab.todo');
 
-    $scope.getDataList = function() {
+    if (userRole !== 'OPS_OPERATOR' && userRole !== 'OPS_ADMIN') {
+        $scope.title = $myTranslate.instant('tab.om');
+    }
+
+    $scope.getDataList = function () {
         scrollerService.initScroll("#taskList", $scope.getDataList);
         $scope.isLoading = true;
         $scope.loadingFailed = false;
 
         ajax.get({
             url: "/opstasks",
-            data:{
+            data: {
                 handler: username,
+                rechecker: username,
                 page_size: 100,
                 page_index: 0,
                 s_echo: 0
             },
-            success: function(result) {
+            success: function (result) {
                 $scope.isLoading = false;
                 allTasks = result;
-                allTasks.sort(sortByUpdateTime);
                 var task = null;
-                var current = new Date().Format('yyyy-MM-dd HH:mm');
-                for (var i in allTasks){
+                var current = new Date().Format('yyyy-MM-dd');
+                for (var i in allTasks) {
                     task = allTasks[i];
                     formatTaskStatusName(task);
                     task.isTimeout = $scope.taskTimeout(task);
-                    task.isToStart = task.create_time.substring(0,16) > current;      // 任务待开始
+                    task.isToStart = task.create_time.substring(0, 10) > current;      // 任务待开始
+                    task.expect_complete_time = task.expect_complete_time ? task.expect_complete_time.substring(0, 10) : null;
+                    task.next_recheck_time = task.next_recheck_time ? task.next_recheck_time.substring(0, 10) : null;
+                    var sortTime = task.expect_complete_time;
+                    if (task.next_recheck_time && (!sortTime || task.next_recheck_time < task.expect_complete_time)) {
+                        sortTime = task.next_recheck_time;
+                    }
+                    if (task.expect_complete_time) {
+                        if (task.expect_complete_time < current) {
+                            task.expect_time_timeout = true;
+                        } else if (task.expect_complete_time === current) {
+                            task.expect_complete_time = $myTranslate.instant('today');
+                        }
+                    }
+                    if (task.next_recheck_time) {
+                        if (task.next_recheck_time < current) {
+                            task.next_recheck_timeout = true;
+                        } else if (task.next_recheck_time === current) {
+                            task.next_recheck_time = $myTranslate.instant('today');
+                        }
+                    }
+                    task.sortTime = sortTime;
                 }
+                allTasks.sort(function (t1, t2) {
+                    // 如果工单处于待指派状态，则优先级比较高
+                    if (t1.stage_id === TaskStatus.ToAssign && t2.stage_id !== TaskStatus.ToAssign) {
+                        return -1;
+                    } else if (t1.stage_id !== TaskStatus.ToAssign && t2.stage_id === TaskStatus.ToAssign) {
+                        return 1;
+                    } else if (t1.stage_id === TaskStatus.ToAssign && t2.stage_id === TaskStatus.ToAssign) { // 如果两个都处于待指派状态，则先提交的在前
+                        return t1.create_time < t2.create_time;
+                    }
+                    if (t1.sortTime && t2.sortTime) {
+                        if (t1.sortTime < t2.sortTime) {
+                            return -1;
+                        }
+                        if (t1.sortTime > t2.sortTime) {
+                            return 1;
+                        }
+                        return 0;
+                    } else if (t1.sortTime && t1.sortTime <= current) {
+                        return -1;
+                    } else if (t2.sortTime && t2.sortTime <= current) {
+                        return 1;
+                    }
+                    // 如果sortTime都为空，则比较last_modified_time
+                    return sortByUpdateTime(t1, t2);
+                });
+
                 $scope.changeTaskType(null, $scope.showType);
                 $scope.$apply();
             },
-            error: function (a,b,c) {
+            error: function (a, b, c) {
                 $scope.isLoading = false;
                 $scope.loadingFailed = true;
                 $scope.$apply();
@@ -896,8 +1042,8 @@ app.controller('TaskTodoListCtrl', ['$scope', '$rootScope', 'scrollerService', '
         // 查找任务是否存在
         formatTaskStatusName(taskData);
         var exist = false;
-        for (var i in allTasks){
-            if (allTasks[i].id === taskData.id){
+        for (var i in allTasks) {
+            if (allTasks[i].id === taskData.id) {
                 // 如果责任人不是当前用户，则从列表中删除
                 if (isTodoTask(taskData, username)) {
                     allTasks[i] = taskData;
@@ -908,7 +1054,7 @@ app.controller('TaskTodoListCtrl', ['$scope', '$rootScope', 'scrollerService', '
                 break;
             }
         }
-        if (!exist && isTodoTask(taskData, username)){        // 如果不存在，则加入到最前面
+        if (!exist && isTodoTask(taskData, username)) {        // 如果不存在，则加入到最前面
             allTasks.unshift(taskData);
         }
         // allTasks.sort(sortByUpdateTime);
@@ -920,30 +1066,30 @@ app.controller('TaskTodoListCtrl', ['$scope', '$rootScope', 'scrollerService', '
         console.log('change type');
         var showTasks = [], task = null, todoCount = 0;
 
-        if (type === 'all'){
+        if (type === 'all') {
             showTasks = allTasks;
         }
-        else if (type === 'closed'){
-            for(var i in allTasks){
+        else if (type === 'closed') {
+            for (var i in allTasks) {
                 task = allTasks[i];
-                if (task.stage_id === TaskStatus.Closed){
+                if (task.stage_id === TaskStatus.Closed) {
                     showTasks.push(task);
                 }
             }
         }
-        else if (type === 'todo'){
-            for(var i in allTasks){
+        else if (type === 'todo') {
+            for (var i in allTasks) {
                 task = allTasks[i];
-                if (isTodoTask(task, username)){
+                if (isTodoTask(task, username)) {
                     showTasks.push(task);
                 }
             }
             $scope.todoCount = showTasks.length;
         }
-        else{
-            for (var i in allTasks){
+        else {
+            for (var i in allTasks) {
                 task = allTasks[i];
-                if (task.stage_id !== TaskStatus.Closed){
+                if (task.stage_id !== TaskStatus.Closed) {
                     showTasks.push(task);
                 }
             }
@@ -957,11 +1103,12 @@ app.controller('TaskTodoListCtrl', ['$scope', '$rootScope', 'scrollerService', '
     };
 
     $scope.toCreateTask = function () {
-        window.location.href = '/templates/task/add-task.html';
+        // window.location.href = '/templates/task/add-task.html';
+        mui('#taskPopover').popover('toggle', document.getElementById('taskAddBtn'));
     };
 }]);
 
-app.controller('TaskListCtrl', ['$scope', '$rootScope', 'scrollerService', 'userService', 'ajax', 'UserRole', function ($scope, $rootScope, scrollerService, userService, ajax, UserRole) {
+app.controller('TaskListCtrl', ['$scope', '$rootScope', 'scrollerService', 'userService', 'ajax', 'UserRole', '$myTranslate', function ($scope, $rootScope, scrollerService, userService, ajax, UserRole, $myTranslate) {
     $scope.TaskStatus = TaskStatus;
     $scope.TaskTypes = TaskTypes;
     $scope.tasks = [];
@@ -971,96 +1118,96 @@ app.controller('TaskListCtrl', ['$scope', '$rootScope', 'scrollerService', 'user
     $scope.todoCount = 0;
     var deviceSn = GetQueryString("device_sn");     // 如果设备sn不为空，则获取的是设备的运维记录
     $scope.isDeviceOps = deviceSn ? true : false;
-    $scope.pageTitle = deviceSn ? '运维记录' : '所有任务';
+    $scope.pageTitle = deviceSn ? $myTranslate.instant('task.ops.services') : $myTranslate.instant('task.history');
     var role = userService.getUserRole();
     var userAccount = userService.getUser().account;
     var requestFilterParams = null;
     $scope.showFilter = false;
     var defaultFilterItems = [
         {
-          key: 'creater',
-          items: [{
-              id: 'creater_my',
-              name: '我报修的',
-              value: userAccount
-          }],
-          userRole: [UserRole.Normal]
+            key: 'creater',
+            items: [{
+                id: 'creater_my',
+                name: $myTranslate.instant('task.mycreate'),
+                value: userAccount
+            }],
+            userRole: [UserRole.Normal]
         },
         {
-            title: '状态',
+            title: $myTranslate.instant('status'),
             key: 'stage',
             items: [{
                 id: 'stage_finished',
-                name: '已完成',
+                name: $myTranslate.instant('finished'),
                 value: [TaskStatus.Closed]
             }, {
                 id: 'stage_unfinished',
-                name: '未完成',
+                name: $myTranslate.instant('unfinished'),
                 value: [TaskStatus.ToAssign, TaskStatus.ToAccept, TaskStatus.Accepted, TaskStatus.Coming, TaskStatus.Arrived]
             }]
         }, {
-            title: '来源',
+            title: $myTranslate.instant('task.source'),
             key: 'source',
             items: [{
                 id: 'source_repair',
-                name: '报修',
+                name: $myTranslate.instant('task.new'),
                 value: TaskSource.Repaire
             }, {
                 id: 'source_inspect',
-                name: '巡检',
+                name: $myTranslate.instant('inspection'),
                 value: TaskSource.Inspect
             }, {
                 id: 'source_event',
-                name: '告警',
+                name: $myTranslate.instant('alarm'),
                 value: TaskSource.Event
             }]
         }, {
-            title: '类型',
+            title: $myTranslate.instant('type'),
             key: 'task_type',
             items: [{
                 id: 'type_xunjian',
-                name: '巡检',
+                name: $myTranslate.instant('巡检'),
                 value: TaskTypes.Xunjian
             }, {
                 id: 'type_qiangxiu',
-                name: '抢修',
+                name: $myTranslate.instant('抢修'),
                 value: TaskTypes.Qiangxiu
             }, {
                 id: 'type_jianxiu',
-                name: '检修',
+                name: $myTranslate.instant('检修'),
                 value: TaskTypes.Jianxiu
             }, {
                 id: 'type_dts',
-                name: '缺陷',
+                name: $myTranslate.instant('缺陷'),
                 value: [TaskTypes.NormalDts, TaskTypes.SeriousDts, TaskTypes.FatalDts]
             }, {
                 id: 'type_baoyang',
-                name: '保养',
+                name: $myTranslate.instant('保养'),
                 value: TaskTypes.Baoyang
             }, {
+                id: 'type_other',
+                name: $myTranslate.instant('其他'),
+                value: [TaskTypes.Other, 12, 13, 14, 15, 16, 17]
+            }, {
                 id: 'type_security',
-                name: '安全评测',
+                name: $myTranslate.instant('安全评测'),
                 value: TaskTypes.Security
             }, {
                 id: 'type_poweroff',
-                name: '停电维护',
+                name: $myTranslate.instant('停电维护'),
                 value: TaskTypes.Poweroff
-            }, {
-                id: 'type_other',
-                name: '其他',
-                value: TaskTypes.Other
             }]
         }
     ];
     $scope.filterItems = [];
     defaultFilterItems.forEach(function (item) {
-       if (item.userRole) {
-           if (item.userRole.indexOf(role) >= 0) {
-               $scope.filterItems.push(item);
-           }
-       } else {
-           $scope.filterItems.push(item);
-       }
+        if (item.userRole) {
+            if (item.userRole.indexOf(role) >= 0) {
+                $scope.filterItems.push(item);
+            }
+        } else {
+            $scope.filterItems.push(item);
+        }
     });
     $scope.selectedFilter = {};     // 确定选中的
     $scope.tmpSelectedFilter = {};      // 在确定选中前，记录选中状态的
@@ -1119,7 +1266,7 @@ app.controller('TaskListCtrl', ['$scope', '$rootScope', 'scrollerService', 'user
         return 0;
     }
 
-    $scope.getDataList = function(filterParams) {
+    $scope.getDataList = function (filterParams) {
         scrollerService.initScroll("#taskList", $scope.getDataList);
         $scope.isLoading = true;
         $scope.loadingFailed = false;
@@ -1128,14 +1275,14 @@ app.controller('TaskListCtrl', ['$scope', '$rootScope', 'scrollerService', 'user
         if (deviceSn) {
             url = "/staticdevices/opstasks/" + deviceSn + '?types=' + OpsTaskType.join(',');
         } else if (role === 'USER') {  // 如果是用户的话，所有任务取的是所有站点的任务
-             var stationSns = [];
-             $scope.sites.map(function (s) {
-                 if (!s.is_group) {
-                     stationSns.push(s.sn);
-                 }
-             });
-             url = '/opstasks?station=' + stationSns.join(',');
-             // 筛选
+            var stationSns = [];
+            $scope.sites.map(function (s) {
+                if (!s.is_group) {
+                    stationSns.push(s.sn);
+                }
+            });
+            url = '/opstasks?station=' + stationSns.join(',');
+            // 筛选
         } else if (role === 'OPS_OPERATOR') {
             // 如果是运维工，则显示处理过的所有任务
             url = "/opstasks/history/" + companyId;
@@ -1153,11 +1300,11 @@ app.controller('TaskListCtrl', ['$scope', '$rootScope', 'scrollerService', 'user
         ajax.get({
             url: url,
             data: params,
-            success: function(result) {
+            success: function (result) {
                 $scope.isLoading = false;
                 var tasks = result.aaData ? result.aaData : result, task = null;
                 var currentTime = new Date().Format('yyyy-MM-dd HH:mm');
-                for (var i in tasks){
+                for (var i in tasks) {
                     task = tasks[i];
                     formatTaskStatusName(task);
                     // 如果是设备巡检记录的话，处理设备状态
@@ -1172,7 +1319,7 @@ app.controller('TaskListCtrl', ['$scope', '$rootScope', 'scrollerService', 'user
                         task.expect_complete_time = task.expect_complete_time.substring(0, 16);
                     }
                     if (task.finish_time) {
-                        task.finish_time = task.finish_time.substring(0,16);
+                        task.finish_time = task.finish_time.substring(0, 16);
                     }
                     task.last_modified_time = task.last_modified_time.substring(0, 16);
                     task.isToStart = false; // 任务待启动
@@ -1197,7 +1344,7 @@ app.controller('TaskListCtrl', ['$scope', '$rootScope', 'scrollerService', 'user
                 $scope.tasks = tasks;
                 $scope.$apply();
             },
-            error: function (a,b,c) {
+            error: function (a, b, c) {
                 $scope.isLoading = false;
                 $scope.loadingFailed = true;
                 $scope.$apply();
@@ -1208,14 +1355,14 @@ app.controller('TaskListCtrl', ['$scope', '$rootScope', 'scrollerService', 'user
     $scope.updateTask = function (taskData) {
         // 查找任务是否存在
         var exist = false;
-        for (var i in $scope.tasks){
+        for (var i in $scope.tasks) {
             if ($scope.tasks[i].id === taskData.id) {
                 $scope.tasks[i] = taskData;
                 exist = true;
                 break;
             }
         }
-        if (!exist){        // 如果不存在，则加入到最前面
+        if (!exist) {        // 如果不存在，则加入到最前面
             $scope.tasks.unshift(taskData);
         }
         // $scope.tasks.sort(sortFunc);
@@ -1249,6 +1396,7 @@ function notifyPrevPageToUpdateTask(taskData) {
     window.android && window.android.onJsCallbackForPrevPage('updateTask', JSON.stringify(data));
 
 }
+
 function updateTask(strArgs) {  // json格式的参数， {data: taskData}
     var taskData = JSON.parse(strArgs);
     // 更新到“我的待办”
@@ -1282,7 +1430,7 @@ function onAndroidCb_updateDeviceRecord(strRecord) {
     }
 }
 
-app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformService', '$window', 'ajax', 'routerService', function ($scope, $state, userService, platformService, $window, ajax, routerService) {
+app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformService', '$window', 'ajax', 'routerService', '$myTranslate', function ($scope, $state, userService, platformService, $window, ajax, routerService, $myTranslate) {
     $scope.TaskAction = TaskAction;
     $scope.TaskStatus = TaskStatus;
     $scope.TaskSource = TaskSource;
@@ -1295,17 +1443,19 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
     $scope.host = platformService.getCloudHost();
     $scope.updateRecordsVisible = false;    // 是否显示操作历史
     $scope.requestPictures = null;        // 报修前图片
+    $scope.createRecord = null;
     $scope.handleResult = null;           // 维修结果，{desp: '', picture_list: []}
     $scope.inspectUploadImages = [];        // 巡检签到的照片
+    var userRole = userService.getUserRole();
     var taskType = GetQueryString("taskType");
     if (taskType) {
         taskType = parseInt(taskType);
     }
-    $scope.taskName = DtsTaskType.indexOf(taskType) >= 0 ? '缺陷' : (taskType === TaskTypes.Xunjian ? '巡检' : '工单');
+    $scope.taskName = DtsTaskType.indexOf(taskType) >= 0 ? $myTranslate.instant('defect') : (taskType === TaskTypes.Xunjian ? $myTranslate.instant('inspection') : $myTranslate.instant('task.order'));
     var companyId = userService.getCompanyId(); // 用户所在公司，运维公司或用户公司
     var opsCompanyId = null;            // 任务所在运维公司
 
-    var id = GetQueryString('id'), username=userService.username;
+    var id = GetQueryString('id'), username = userService.username;
     $scope.taskData = {};
     $scope.taskComment = null;
     var commentActionIndex = -1;     //
@@ -1320,8 +1470,12 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
     $scope.assignPickerVisible = false;     // 是否显示指派的对话框
     $scope.acceptPickerVisible = false;     // 是否显示接单时的对话框，可用于选择一起接单的维修工
     $scope.transferPickerVisible = false;     // 是否显示转单时的对话框，可用于选择一起接单的维修工
+    $scope.recheckResult = null; // 复测结果
+    $scope.taskDetailVisible = false; // 工单详情是否显示，缺陷单可用
+    $scope.canEdit = false; // 是否可以编辑
+    $scope.isSubmitting = false; // 正在提交动作
     var map = null, stationLongitude, stationLatitude;
-    var innerPageQuery=null,historyState = [];    // 浏览器历史状态
+    var innerPageQuery = null, historyState = [];    // 浏览器历史状态
     $scope.actions = [];
 
     var userAccount = userService.getUser().account;
@@ -1333,11 +1487,11 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
             success: function (data) {
                 opsCompanyId = data.company_id;
                 updateTaskInfo(data);
-
+                taskCanEdit(data);
                 // 如果是抢单任务，需要读取同组内其他人的信息，以便接单时选择其他人协助
-                if (data.operator_team) {
+                if (data.operator_team && !data.current_handler) {
                     ajax.get({
-                        url: '/OpsTeams/' + data.operator_team + '?with_user=true',
+                        url: '/OpsTeams/' + data.operator_team + '?with_user=true&with_permission=false',
                         success: function (res) {
                             $scope.toAcceptUsers = [];
                             res.users.forEach(function (user) {
@@ -1348,10 +1502,7 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
                         }
                     });
                 }
-                // mother_task_id不为空，说明该任务是由巡检任务创建的缺陷，需要通知巡检任务更新设备状态
-                // if (GetQueryString('mother_task_id')) {
-                //     window.android && window.android.onJsCallbackForPrevPage('onAndroidCb_updateDeviceRecord', JSON.stringify(task.device_record[0]));
-                // }
+                getTaskHistory();
                 getAvailableActions(data);
                 if (data.stage_id === TaskStatus.Closed) {
                     ajax.get({
@@ -1370,42 +1521,52 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
                 }
             },
             error: function (a, b, c) {
-                console.log('get task detail fail');
-                $.notify.error('读取数据失败');
-            }};
+                $.notify.error('get data failed');
+            }
+        };
         ajax.get(option);
     }
-    
+
     function getAvailableActions(task) {
         // 获取用户当前可执行的操作
         ajax.get({
             url: '/opstasks/' + companyId + '/' + task.id + '/action_candidates',
             success: function (res) {
-                $scope.actions = [];
+                var actions = [];
                 var actionIdSort = [TaskAction.Grab, TaskAction.Assign, TaskAction.Accept, TaskAction.Transfer, TaskAction.Refuse,
                     TaskAction.Go, TaskAction.Arrive, TaskAction.Update, TaskAction.Apply, TaskAction.Close, TaskAction.Cancel];
                 res.forEach(function (action, i) {
                     var obj = TaskActionName[action.id];
-                    var name = obj.name || obj;
-                    var color = obj.color || '#03a9f4';
+                    var name = action.name;
+                    var color = obj.color;
                     if (action.id === TaskAction.Update && task.task_type_id === TaskTypes.Xunjian) {
-                        name = '去检查';
+                        name = $myTranslate.instant('task.action.checkdevice');
                     }
-                    $scope.actions.push({
+                    actions.push({
                         id: action.id,
                         name: name,
                         color: color
                     });
                 });
                 // 按actionIdSort的顺序对action进行排序
-                $scope.actions.sort(function (a1, a2) {
+                actions.sort(function (a1, a2) {
                     var index1 = actionIdSort.indexOf(a1.id);
                     var index2 = actionIdSort.indexOf(a2.id);
                     return index1 - index2;
                 });
+                $scope.actions = actions;
                 $scope.$apply();
             }
         });
+    }
+
+    function taskCanEdit(taskData) {
+        // 未关闭跌缺陷单，管理员有权限编辑
+        if (userRole === UserRole.OpsAdmin && taskData.is_defect && (taskData.stage_id !== TaskStatus.ToClose && taskData.stage_id !== TaskStatus.Closed)) {
+            $scope.canEdit = true;
+        } else {
+            $scope.canEdit = false;
+        }
     }
 
     getTaskDetail();
@@ -1418,7 +1579,7 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
         $scope.taskData = formatTaskStatusName(data);
         $scope.taskData.expect_complete_time = data.expect_complete_time ? data.expect_complete_time.substring(0, 16) : '';
         $scope.taskData.isToStart = $scope.taskData.create_time.substring(0, 16) > new Date().Format('yyyy-MM-dd HH:mm');      // 任务待开始
-
+        data.is_closed = data.stage_id === TaskStatus.ToClose || data.stage_id === TaskStatus.Closed;
         // 如果是待接单状态，则需要设置接单时需要选择的其他运维工的账号
         if ($scope.taskData.stage_id === TaskStatus.ToAccept) {
             $scope.toAcceptUsers = [];
@@ -1431,34 +1592,33 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
         $scope.$apply();
         stationLongitude = data.station_longitude;
         stationLatitude = data.station_latitude;
-        getTaskHistory();
-        if (data.stage_id === TaskStatus.Competition && data.station_latitude && data.station_longitude){
-            drawMap($scope.taskData);
-        }
+        // if (data.stage_id === TaskStatus.Competition && data.station_latitude && data.station_longitude) {
+        //     drawMap($scope.taskData);
+        // }
         formatTaskStatus();
-        if (DtsTaskType.indexOf(data.task_type_id) >= 0) {
-            $scope.taskName = '缺陷';
-        } else if (data.source === TaskSource.Inspect) {
-            $scope.taskName = '巡检';
-        } else {
-            $scope.taskName = '报修';
-        }
+        // if (DtsTaskType.indexOf(data.task_type_id) >= 0) {
+        //     $scope.taskName = '缺陷';
+        // } else if (data.source === TaskSource.Inspect) {
+        //     $scope.taskName = '巡检';
+        // } else {
+        //     $scope.taskName = '报修';
+        // }
+        $scope.taskName = data.source_name;
     }
 
     function drawMap(taskData) {
-        if (!map)
-        {
+        if (!map) {
             map = new BMap.Map("map");
         }          // 创建地图实例
         // 导航
         var driving = new BMap.DrivingRoute(map, {
             renderOptions: {
-                map   : map,
-                panel : "results",
+                map: map,
+                panel: "results",
                 autoViewport: true
             },
             onSearchComplete: function (result) {
-                if (result){
+                if (result) {
                     $scope.distance = result.getPlan(0).getDistance();
                     $scope.$apply();
                 }
@@ -1468,21 +1628,22 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
         map.centerAndZoom(end, 12);
         map.enableScrollWheelZoom();
         var marker = new BMap.Marker(end);
-        var mgr = new BMapLib.MarkerManager(map,{
+        var mgr = new BMapLib.MarkerManager(map, {
             maxZoom: 15,
             trackMarkers: true
         });
-        mgr.addMarker(marker,1, 15);
+        mgr.addMarker(marker, 1, 15);
         mgr.showMarkers();
 
     }
 
     function formatTaskStatus() {   // 将任务状态转成适合页面显示的格式
-        var taskData = $scope.taskData, stageId = taskData.stage_id, activeIndex=0, finishIndex=0, progress=0, canHandle = false;
-        if (isTodoTask(taskData, username) || taskData.stage_id == TaskStatus.Competition){
+        var taskData = $scope.taskData, stageId = taskData.stage_id, activeIndex = 0, finishIndex = 0, progress = 0,
+            canHandle = false;
+        if (isTodoTask(taskData, username) || taskData.stage_id === TaskStatus.Competition) {
             canHandle = true;
         }
-        switch (stageId){
+        switch (stageId) {
             case TaskStatus.Coming:
                 progress = 18;
                 break;
@@ -1511,7 +1672,6 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
         $scope.recountCheckedDevices();
         // 设置巡检的阶段
         $scope.xunjianStage = '';
-        var stageId= taskData.stage_id;
         if (taskData.task_type_id === TaskTypes.Xunjian) {
             switch (stageId) {
                 case TaskStatus.Arrived:
@@ -1539,12 +1699,12 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
     }
 
     function formatActions(historyList) {      // 将操作历史格式化成界面显示
-        var formattedList = [], taskData=$scope.taskData;
+        var formattedList = [], taskData = $scope.taskData;
         var record = null;
         var handleResult = null;
-        for (var i=0; i<historyList.length; i++){
+        var recheckResult = null;
+        for (var i = 0; i < historyList.length; i++) {
             record = historyList[i];
-            formatTaskHistoryDesp(record);
             formattedList.push(record);
             if (record.picture_list && record.picture_list.length) {
                 var pictures = [];
@@ -1554,25 +1714,47 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
                 record.picture_list = pictures;
             }
             // 记录工单的报修图片和维修结果
-            if (!handleResult && record.action_id === TaskAction.Update && (record.desp || record.picture_list.length)) {
+            if (!handleResult && record.action_id === TaskAction.Update) {
                 handleResult = record;
                 $scope.handleResult = record;
             }
-            if (!$scope.requestPictures && record.action_id === TaskAction.Create && record.picture_list && record.picture_list.length) {
+            if (!$scope.requestPictures && record.action_id === TaskAction.Create) {
                 $scope.requestPictures = record.picture_list;
+                $scope.createRecord = record;
+            }
+            if (!recheckResult && record.action_id === TaskAction.RECHECK) {
+                recheckResult = record;
             }
         }
         $scope.handleResult = handleResult;
+        $scope.recheckResult = recheckResult;
         $scope.history = formattedList;
         if (taskData.stage_id === TaskStatus.ToAccept || taskData.stage_id === TaskStatus.ToAssign) {
             setTimeout(initMembers, 200);
         }
     }
 
-    $scope.postAction = function(actionType, description, images, cb) {
+    $scope.postAction = function (actionType, description, images, cb) {
+        $scope.isSubmitting = true;
         $scope.commonPostAction(id, actionType, description, images, function (data) {
             refreshAfterPostAction(data);
             cb && cb(data);
+            $scope.isSubmitting = false;
+        });
+    };
+
+    $scope.postActionWithParams = function (actionType, params, cb) {
+        $scope.isSubmitting = true;
+        $scope.commonPostActionWithParams(id, actionType, params, function (data) {
+            refreshAfterPostAction(data);
+            cb && cb(data);
+            $scope.isSubmitting = false;
+        });
+    };
+
+    $scope.gotoEditPage = function () {     // 打开编辑页
+        routerService.openPage($scope, '/templates/dts/dts-edit.html', {
+            task: $scope.taskData
         });
     };
 
@@ -1582,7 +1764,7 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
             success: function (data) {
                 console.log('get task history success');
                 var history = data;
-                if (data.length){
+                if (data.length) {
                     $scope.lastHistory = history[0];
                 }
                 formatActions(history);
@@ -1595,37 +1777,35 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
     }
 
     $scope.setReportId = function (reportId) {
-        $scope.taskData.report_id = reportId
+        $scope.taskData.report_id = reportId;
+    };
+
+    $scope.onToggleTaskDetail = function () {
+        $scope.taskDetailVisible = !$scope.taskDetailVisible;
     };
 
     $scope.gotoHandleTask = function () {       // 根据任务类型打开对应的操作界面
         var reportId = $scope.taskData.report_id;
         switch ($scope.taskData.task_type_id) {
-            case 1:     // 巡检任务
+            case TaskTypes.Security:     // 巡检任务
                 if (reportId) {
-                    var url = '/templates/evaluate/base_home.html?template=/templates/evaluate/security-evaluate-home.html&id=' + reportId;
+                    $state.go('task.securityRecord', {id: reportId});
                 } else {
-                    var url = '/templates/evaluate/base_home.html?template=/templates/evaluate/security-evaluate-first-classify.html&isCreate=1&taskId=' + $scope.taskData.id;
-                    if ($scope.taskData.station_sn){
-                        url += '&stationSn=' + $scope.taskData.station_sn + "&stationName=" + $scope.taskData.station_name;
-                    }
+                    routerService.openPage($scope, '/templates/evaluate/security-evaluate-first-classify.html',
+                        {isCreate: true, stationSn: $scope.taskData.station_sn,
+                        stationName: $scope.taskData.station_name, taskId: $scope.taskData.id});
                 }
-                $window.location.href = url;
                 break;
-            case 6:     // 停电维护任务
-                var url = '/templates/maintenance-check/base_home.html?template=/templates/maintenance-check/check-one-record-home.html';
+            case TaskTypes.Poweroff:     // 停电维护任务
                 if (reportId) {
-                    url += '&id=' + reportId;
+                    routerService.openPage($scope, '/templates/maintenance-check/check-one-record-home.html', {id: reportId});
                 } else {
-                    url += '&isCreate=1&taskId=' + $scope.taskData.id;
-                    if ($scope.taskData.station_sn){
-                        url += '&stationSn=' + $scope.taskData.station_sn + "&stationName=" + $scope.taskData.station_name;
-                    }
+                    routerService.openPage($scope, '/templates/maintenance-check/check-one-record-home.html',
+                        {isCreate: true, stationSn: $scope.taskData.station_sn, stationName: $scope.taskData.station_name, taskId: $scope.taskData.id});
                 }
-                $window.location.href = url;
                 break;
             default:
-                $state.go('.update')
+                $state.go('.update');
         }
     };
 
@@ -1653,7 +1833,7 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
     };
 
     $scope.taskHandler = {
-        execute : function (actionId) {
+        execute: function (actionId) {
             switch (actionId) {
                 case TaskAction.Grab:
                     this.grabTask();
@@ -1698,6 +1878,9 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
                 case TaskAction.Comment:        // 评价
                     this.commentTask();
                     break;
+                case TaskAction.RECHECK:   // 复测
+                    this.startRecheck();
+                    break;
                 default:
                     break;
             }
@@ -1706,15 +1889,33 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
             $scope.acceptPickerVisible = !$scope.acceptPickerVisible;
         },
         cancelTask: function () {       // 撤单
-            var btnArray = ['取消', '确定'];
-            mui.prompt('请输入撤单原因：', '', '撤销该工单', btnArray, function(e) {
+            var btnArray = [$myTranslate.instant('cancel'), $myTranslate.instant('confirm')];
+            mui.prompt($myTranslate.instant('task.tip.reason.revoke'), '', $myTranslate.instant('revoke thisorder'), btnArray, function (e) {
                 if (e.index === 1) {     // 是
                     $scope.postAction(TaskAction.Cancel, e.value);
                 }
             });
         },
         assignHandlers: function () {       // 指定责任人
-            $scope.assignPickerVisible = !$scope.assignPickerVisible;
+            if ([TaskTypes.NormalDts, TaskTypes.FatalDts, TaskTypes.SeriousDts].indexOf($scope.taskData.task_type_id) >= 0) { // 缺陷
+                routerService.openPage($scope, '/templates/task/task-assign-modal.html', {
+                    task: $scope.taskData,
+                    teams: $scope.teams,
+                    onSuccess: function (data) {
+                        $scope.recheckResult = data;
+                        if (comment.pictures) {
+                            var pictureList = [];
+                            data.pictures.split(',').forEach(function (url) {
+                                pictureList.push(platformService.getCloudHost() + url);
+                            });
+                            $scope.recheckResult.picture_list = pictureList;
+                        }
+                        $scope.$apply();
+                    }
+                });
+            } else { // 非缺陷
+                $scope.assignPickerVisible = !$scope.assignPickerVisible;
+            }
         },
         transferHandler: function () {      // 转单
             $scope.transferPickerVisible = !$scope.transferPickerVisible;
@@ -1725,8 +1926,8 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
                 $scope.acceptPickerVisible = !$scope.acceptPickerVisible;
             } else {
                 // 如果只有一个，则直接确认
-                var btnArray = ['取消', '是'];
-                mui.confirm('是否接受该任务？', '接受该任务', btnArray, function(e) {
+                var btnArray = [$myTranslate.instant('cancel'), $myTranslate.instant('confirm')];
+                mui.confirm($myTranslate.instant('task.tip.desp.accept'), $myTranslate.instant("accept thisorder"), btnArray, function (e) {
                     if (e.index === 1) {     // 是
                         $scope.onAccept([]);
                     }
@@ -1734,8 +1935,8 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
             }
         },
         refuseTaskAssign: function () {     // 拒绝任务分配
-            var btnArray = ['取消', '确定'];
-            mui.prompt('请输入拒绝原因：', '', '拒绝该任务', btnArray, function(e) {
+            var btnArray = [$myTranslate.instant('cancel'), $myTranslate.instant('refuse')];
+            mui.prompt($myTranslate.instant('task.tip.reason.refuse'), '', $myTranslate.instant('refuse thisorder') + "?", btnArray, function (e) {
                 if (e.index === 1) {     // 是
                     $scope.postAction(TaskAction.Refuse, e.value);
                 }
@@ -1744,7 +1945,7 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
         gotoSpot: function () {     // 去现场
             if ($scope.taskData.isToStart) {
                 // 任务待开始，无法操作
-                $.notify.toast('任务还未开始，无法操作');
+                $.notify.toast($myTranslate.instant('task.action.setoff.nostart'));
             } else {
                 $scope.postAction(TaskAction.Go);
             }
@@ -1754,47 +1955,47 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
                 $scope.postAction(action);
             });
         },
-        showHandlePage: function(query, actionIndex) {        // 打开任务处理页面
+        showHandlePage: function (query, actionIndex) {        // 打开任务处理页面
             var $page = $(query);
             $page.attr('class', 'inner-page down-to-up');
             commentActionIndex = actionIndex;
             innerPageQuery = query;
         },
         requestTaskComplete: function () {     // 请求关闭任务
-            var btnArray = ['取消', '确定'];
+            var btnArray = [$myTranslate.instant('cancel'), $myTranslate.instant('confirm')];
             // 如果是巡检任务，检查设备检查情况，如果设备检查没有完成，提示用户
-            var description = '确认任务已完成吗？';
-            var title = "提交给负责人审核";
+            var description = $myTranslate.instant('task.action.report.desp2');
+            var title = $myTranslate.instant('task.action.report.desp');
             if ($scope.taskData.task_type_id === TaskTypes.Xunjian && $scope.checkedDeviceCount < $scope.taskData.device_record.length) {
-                description = '设备检查未完成，确认提交吗？';
+                description = $myTranslate.instant('inspect.tip.report.notcomplete');
             }
-            mui.confirm(description, title, btnArray, function(e) {
+            mui.confirm(description, title, btnArray, function (e) {
                 if (e.index === 1) {     // 是
                     // 如果用户提交了签到照片，则需要先提交一次更新记录，再提交审核
                     if ($scope.inspectUploadImages && $scope.inspectUploadImages.length) {
                         $scope.postAction(TaskAction.Update, null, $scope.inspectUploadImages, function () {
-                            $scope.postAction(TaskAction.Apply, "提交任务审核");
+                            $scope.postAction(TaskAction.Apply, $myTranslate.instant('task.action.report.desp'));
                         });
                     } else {
-                        $scope.postAction(TaskAction.Apply, "提交任务审核");
+                        $scope.postAction(TaskAction.Apply, $myTranslate.instant('task.action.report.desp'));
                     }
 
                 }
             });
         },
         rejectApply: function () {
-            var btnArray = ['取消', '驳回'];
-            mui.prompt('请输入驳回原因：', '', '驳回关闭请求', btnArray, function(e) {
+            var btnArray = [$myTranslate.instant('cancel'), $myTranslate.instant('reject')];
+            mui.prompt($myTranslate.instant('task.tip.reason.reject'), '', $myTranslate.instant('task.tip.desp.reject'), btnArray, function (e) {
                 if (e.index === 1) {     // 是
                     $scope.postAction(TaskAction.Reject, e.value);
                 }
             });
         },
         closeTask: function () {        // 关闭任务
-            var btnArray = ['取消', '关闭'];
-            mui.confirm('即将关闭任务', '关闭任务', btnArray, function(e) {
+            var btnArray = [$myTranslate.instant('cancel'), $myTranslate.instant('close task.order')];
+            mui.confirm($myTranslate.instant('task.action.close.desp'), $myTranslate.instant('close thisorder'), btnArray, function (e) {
                 if (e.index === 1) {     // 是
-                    $scope.postAction(TaskAction.Close, "关闭任务");
+                    $scope.postAction(TaskAction.Close, $myTranslate.instant('close thisorder'));
                 }
             });
         },
@@ -1814,21 +2015,38 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
                     $scope.$apply();
                 }
             });
+        },
+        startRecheck: function () {     // 复测
+            routerService.openPage($scope, '/templates/task/task-recheck-modal.html', {
+                taskId: id,
+                onSuccess: function (data) {
+                    $scope.recheckResult = data;
+                    if (comment.pictures) {
+                        var pictureList = [];
+                        data.pictures.split(',').forEach(function (url) {
+                            pictureList.push(platformService.getCloudHost() + url);
+                        });
+                        $scope.recheckResult.picture_list = pictureList;
+                    }
+                    $scope.$apply();
+                }
+            });
         }
     };
 
     $scope.getScoreDesp = function () {
         switch ($scope.taskComment.score) {
             case 1:
-                return '很差';
+                return $myTranslate.instant("terrible");
             case 2:
-                return '差';
+                return $myTranslate.instant('bad');
             case 3:
-                return '一般';
+                return $myTranslate.instant('normal');
             case 4:
-                return '很好';
+                return $myTranslate.instant('good');
             case 5:
-                return '非常好';
+                return $myTranslate.instant('excellent');
+            default:
                 return '';
         }
     };
@@ -1843,7 +2061,7 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
     };
 
     $scope.openMap = function () {
-        location.href='/templates/map.html?id=' + $scope.taskData.id + '&name=' + $scope.taskData.station_name + '&stationSn=' + $scope.taskData.station_sn;
+        location.href = '/templates/map.html?id=' + $scope.taskData.id + '&name=' + $scope.taskData.station_name + '&stationSn=' + $scope.taskData.station_sn;
     };
 
     $scope.gotoDeviceHandlerPage = function () {
@@ -1854,7 +2072,7 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
                 canHandle: $scope.canHandle && $scope.taskData.stage_id === TaskStatus.Arrived,
                 recountFunc: $scope.recountCheckedDevices
             }, {
-                hidePrev: false
+                hidePrev: true
             }
         );
     };
@@ -1869,14 +2087,14 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
     function initMembers() {
 
         ajax.get({
-            url: '/OpsTeams?company_id=' + opsCompanyId + '&with_user=true',
+            url: '/OpsTeams?company_id=' + opsCompanyId + '&with_user=true&with_permission=false',
             success: function (data) {
                 $scope.teams = data;
                 if ($scope.taskData.stage_id === TaskStatus.ToAccept) {
                     $scope.toTransferUsers = [];
                     var teamId = $scope.taskData.operator_team;
                     // 可转单的人范围：任务当前运维班组，除自己以外的人
-                    for (var i=0; i<data.length; i++) {
+                    for (var i = 0; i < data.length; i++) {
                         if (data[i].id === teamId) {
                             data[i].users.forEach(function (user) {
                                 if (user.account !== userAccount) {
@@ -1962,6 +2180,7 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
     function refreshAfterPostAction(data) {
         // 提交完操作后，更新数据及页面，data为post action的应答，即最新的task信息
         $scope.taskData = formatTaskStatusName(data);
+        taskCanEdit($scope.taskData);
         // 调用Android接口
         notifyPrevPageToUpdateTask(data);
         formatTaskStatus();
@@ -1996,31 +2215,474 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
         $scope.exceptionDeviceCount = exceptionCount;
     };
 
-    $scope.gotoDevice = function(deviceData){
-        routerService.openPage($scope, '/templates/site/static-devices/device-detail.html', {device_sn: deviceData.device_sn, disableEdit: true});
+    $scope.gotoDevice = function (deviceData) {
+        routerService.openPage($scope, '/templates/site/static-devices/device-detail.html', {
+            device_sn: deviceData.device_sn,
+            disableEdit: true
+        });
     };
 }]);
 
-app.controller('TaskHandlerUpload', ['$scope', '$timeout', function ($scope, $timeout) {
-    $scope.images = [];
-    $scope.description = '';
 
-    $scope.submitAndBack = function() {   //上传描述和图片
-        if (!$scope.description && !$scope.images.length){
-            mui.alert('评论与图片不能同时为空', '无法提交', function() {
+// 工单指派、缺陷单修改公共页面的控制器
+app.controller('CommonTaskEditAssignCtrl', ['$scope', '$timeout', 'ajax', function ($scope, $timeout, ajax) {
+    var task = $scope.task;
+    $scope.showRecheck = gShowRecheck;
+    $scope.isDefect = task.is_defect;
+    $scope.expectTime = task.expect_complete_time ? task.expect_complete_time.substring(0, 10) : null;
+    $scope.taskType = {
+        id: task.task_type_id,
+        name: task.task_type_name
+    };
+    $scope.selectedTeam = null;
+    $scope.selectedTeamUsers = []; // 所选的分组的所有运维工
+    $scope.selectedUsers = []; // 如果是待指派，则维修人为
+    $scope.teamVisible = false; // 显示分组选择
+    $scope.handlerVisible = false;  // 显示用户选择
+    if (task.stage_id !== TaskStatus.ToAssign) {
+        if (task.operator_team) {
+            $scope.selectedTeam = {
+                id: task.operator_team,
+                name: task.operator_team_name
+            };
+            $scope.selectedUsers = task.current_handler_users;
+        }
+    }
+
+    // 复测班组和人员选择
+    $scope.selectedRecheckTeam = task.recheck_team ? {
+        id: task.recheck_team,
+        name: task.recheck_team_name
+    } : null;
+    $scope.selectedRecheckTeamUsers = [];
+    $scope.selectedRecheckUsers = task.recheck_team ? task.recheck_users : [];
+    $scope.recheckTeamVisible = false;
+    $scope.recheckHandlerVisible = false;
+
+    $scope.teamInited = false;
+    $scope.error = {
+        team: false,
+        handler: false,
+        recheckTeam: false,
+        recheckHandler: true,
+        time: false,
+    };
+
+    var taskTypePicker = null;
+    var dtPicker = null;
+
+    function init() {
+        $timeout(function () {
+            initDatePicker();
+            initTaskTypeList();
+
+            ajax.get({
+                url: '/OpsTeams?company_id=' + task.company_id + '&with_user=true',
+                success: function (data) {
+                    $scope.teams = data;
+                    if ($scope.selectedTeam) {
+                        for (var i = 0; i < data.length; i++) {
+                            if (data[i].id === $scope.selectedTeam.id) {
+                                $scope.selectedTeamUsers = data[i].users;
+                                break;
+                            }
+                        }
+                    }
+                    if ($scope.selectedRecheckTeam) {
+                        for (var i = 0; i < data.length; i++) {
+                            if (data[i].id === $scope.selectedRecheckTeam.id) {
+                                $scope.selectedRecheckTeamUsers = data[i].users;
+                                break;
+                            }
+                        }
+                    }
+                    $scope.teamInited = true;
+                }
             });
+        }, 500);
+    }
+
+    init();
+
+    function initDatePicker() {
+        document.getElementById('expectedTime1').addEventListener('tap', function () {
+            if (dtPicker) {
+                dtPicker.show(function (rs) {
+                    // 如果所选日期为今天，且已经是晚上18:00以后，则时间设置为23:59:59
+                    $scope.expectTime = rs.text;
+                    $scope.error.time = false;
+                    $scope.$apply();
+                });
+            } else {
+                var options = {type: 'date', beginDate: new Date()};
+                dtPicker = new mui.DtPicker(options);
+                dtPicker.show(function (rs) {
+                    $scope.expectTime = rs.text;
+                    $scope.error.time = false;
+                    $scope.$apply();
+                });
+            }
+        }, false);
+    }
+
+    function initTaskTypeList() {
+        var taskTypes = [{
+            value: 8,
+            text: '一般缺陷'
+        }, {
+            value: 9,
+            text: '严重缺陷'
+        }, {
+            value: 10,
+            text: '致命缺陷'
+        }];
+        var taskTypeButton = document.getElementById('taskTypePicker');
+        if (taskTypeButton) {
+            taskTypePicker = new mui.PopPicker();
+            taskTypePicker.setData(taskTypes);
+            taskTypePicker.pickers[0].setSelectedIndex(task.task_type_id - 8); // 默认选中
+            taskTypeButton.addEventListener('click', function (event) {
+                taskTypePicker.show(function (items) {
+                    $scope.taskType = {
+                        id: items[0].value,
+                        name: items[0].text
+                    };
+                    $scope.$apply();
+                });
+            }, false);
+        }
+    }
+
+    $scope.toggleTeamSelector = function () {
+        $scope.teamVisible = !$scope.teamVisible;
+    };
+
+    $scope.toggleHandlerSelector = function () {
+        $scope.handlerVisible = !$scope.handlerVisible;
+    };
+
+    $scope.onSelectedTeam = function (team) {
+        if (team) {
+            if ($scope.selectedTeam && $scope.selectedTeam.id !== team.id) {
+                $scope.selectedUsers = [];
+            }
+            $scope.selectedTeam = team;
+            $scope.selectedTeamUsers = team.users;
+        } else {
+            $scope.selectedTeam = null;
+            $scope.selectedTeamUsers = [];
+            $scope.selectedUsers = [];
+        }
+        // $scope.toggleTeamSelector();
+        $scope.error.team = false;
+    };
+
+    $scope.onSelectedUsers = function (users) {
+        $scope.selectedUsers = users;
+        // $scope.toggleHandlerSelector();
+        $scope.error.handler = false;
+    };
+
+    // 复测班组、人员选择
+    $scope.toggleRecheckTeamSelector = function () {
+        $scope.recheckTeamVisible = !$scope.recheckTeamVisible;
+    };
+
+    $scope.toggleRecheckHandlerSelector = function () {
+        $scope.recheckHandlerVisible = !$scope.recheckHandlerVisible;
+    };
+
+    $scope.onSelectedRecheckTeam = function (team) {
+        if (team) {
+            if ($scope.selectedRecheckTeam && $scope.selectedRecheckTeam.id !== team.id) {
+                $scope.selectedRecheckUsers = []; // 清除原来的选择
+            }
+            $scope.selectedRecheckTeam = team;
+            $scope.selectedRecheckTeamUsers = team.users;
+        } else {
+            $scope.selectedRecheckTeam = null;
+            $scope.selectedRecheckTeamUsers = [];
+            $scope.selectedRecheckUsers = []; // 清楚原来的选择
+        }
+        // $scope.toggleRecheckTeamSelector();
+        $scope.error.recheckTeam = false;
+    };
+
+    $scope.onSelectedRecheckUsers = function (users) {
+        $scope.selectedRecheckUsers = users;
+        // $scope.toggleRecheckHandlerSelector();
+        if (!users || !users.length) {
+            $scope.error.recheckHandler = true;
+        } else {
+            $scope.error.recheckHandler = false;
+        }
+    };
+
+    $scope.callPhone = function (phone) {
+        if (phone && window.android && window.android.callPhone) {
+            window.android.callPhone(phone);
+        }
+    };
+
+    $scope.cancel = function () {
+        window.history.back();
+    };
+
+    $scope.submitAndBack = function () {   //上传描述和图片
+        $scope.error = {
+            team: $scope.selectedTeam === null,
+            handler: $scope.selectedUsers.length === 0,
+            time: $scope.expectTime === null,
+        };
+        if ($scope.error.team || $scope.error.handler || $scope.error.time) {
             return;
         }
-        $scope.postAction(TaskAction.Update, $scope.description, $scope.images, function () {       // 上传成功，清空本次信息
+        var handlers = [];
+        $scope.selectedUsers.forEach(function (user) {
+            handlers.push(user.account);
+        });
+        var params = {
+            transfer_user: handlers.join(','),
+            operator_team: $scope.selectedTeam.id,
+            expect_complete_time: $scope.expectTime + ' 20:00:00'
+        };
+        var recheckAccount = [];
+        if ($scope.selectedRecheckUsers && $scope.selectedRecheckUsers.length) {
+            $scope.selectedRecheckUsers.forEach(function (user) {
+                recheckAccount.push(user.account)
+            });
+            params.recheck_team = $scope.selectedRecheckTeam.id;
+            params.recheck_handlers = recheckAccount.join(',');
+        }
+        params.task_type = $scope.taskType.id;
+        // $scope.postActionWithParams(TaskAction.Assign, params, function () {
+        //     $timeout(function () {
+        //         $scope.cancel();
+        //     }, 500);
+        // });
+        $scope.submit(params);
+    };
+
+    $scope.$on('$destroy', function () {
+       if (dtPicker) {
+           dtPicker.dispose();
+           dtPicker = null;
+       }
+       if (taskTypePicker) {
+           taskTypePicker.dispose();
+           taskTypePicker = null;
+       }
+    });
+}]);
+
+app.controller('TaskAssignCtrl', ['$scope', '$timeout', function ($scope, $timeout) {
+    $scope.pageName = '指派处理人';
+
+    $scope.submit = function (params) {   //上传描述和图片
+        $scope.postActionWithParams(TaskAction.Assign, params, function () {
             $timeout(function () {
-                $scope.cancel();
+                history.back();
             }, 500);
         });
     };
+}]);
 
-   $scope.cancel = function () {
-       window.history.back();
-   };
+app.controller('TaskHandlerUpload', ['$scope', '$timeout', 'mediaService', function ($scope, $timeout, mediaService) {
+    $scope.images = [];
+    $scope.description = '';
+    $scope.audioUrl = null;
+    $scope.audioDuration = null;
+    $scope.videoUrl = null;
+    $scope.audioVideoEnabled = window.android && window.android.captureVideo;
+
+    function checkAndUploadVideoAndAudio(outputParam) { // 如果检测到有视频或语音，先上传得到链接后，写入outputParam，再调用callback进行提交
+        function uploadFinish() {
+            $scope.postActionWithParams(TaskAction.Update, outputParam, function () {
+                $timeout(function () {
+                    $scope.cancel();
+                }, 500);
+            });
+        }
+
+        $.notify.progressStart();
+
+        function uploadVideo() {
+            if ($scope.videoUrl) {
+                if ($scope.videoUrl.indexOf("http") !== 0) {
+                    mediaService.uploadVideo($scope.videoUrl, function (res) {
+                        if (res.code === 0) {
+                            $scope.videoUrl = res.data;
+                            outputParam.video_src = res.data;
+                            $scope.$apply();
+                            uploadFinish();
+                        } else {
+                            $.notify.progressStop();
+                            $.notify.error('上传视频失败');
+                        }
+                    });
+                } else {
+                    outputParam.video_src = $scope.videoUrl;
+                    uploadFinish();
+                }
+            } else {
+                uploadFinish();
+            }
+        }
+
+        if ($scope.audioUrl) {
+            if ($scope.audioUrl.indexOf('http') !== 0) {
+                mediaService.uploadAudio($scope.audioUrl, function (res) {
+                    if (res.code === 0) {
+                        $scope.audioUrl = res.data;
+                        outputParam.voice_src = $scope.audioUrl;
+                        outputParam.voice_duration = $scope.audioDuration;
+                        $scope.$apply();
+                        uploadVideo();
+                    } else {
+                        $.notify.progressStop();
+                        $.notify.error('上传语音失败');
+                    }
+                });
+            } else {
+                outputParam.voice_src = $scope.audioUrl;
+                outputParam.voice_duration = $scope.audioDuration;
+                uploadVideo();
+            }
+        } else {
+            uploadVideo();
+        }
+    }
+
+    $scope.onUpdateVoice = function (url, duration) {
+        $scope.audioUrl = url;
+        $scope.audioDuration = duration;
+    };
+
+    $scope.onUpdateVideo = function (url) {
+        $scope.videoUrl = url;
+    };
+
+    $scope.submitAndBack = function () {   //上传描述和图片
+        if (!$scope.description && !$scope.audioUrl) {
+            mui.alert('请用文字或语音进行说明', '无法提交', function () {
+            });
+            return;
+        }
+        var postParam = {};
+        if ($scope.description) {
+            postParam.description = $scope.description;
+        }
+        if ($scope.images && $scope.images.length) {
+            postParam['pictures'] = $scope.images;
+        }
+        checkAndUploadVideoAndAudio(postParam);
+    };
+
+    $scope.cancel = function () {
+        window.history.back();
+    };
+}]);
+
+app.controller('TaskRecheckCtrl', ['$scope', '$timeout', 'mediaService', '$myTranslate', function ($scope, $timeout, mediaService, $myTranslate) {
+    $scope.recheckPass = true;
+    $scope.images = [];
+    $scope.description = '';
+    $scope.audioUrl = null;
+    $scope.audioDuration = null;
+    $scope.videoUrl = null;
+    $scope.audioVideoEnabled = window.android && window.android.captureVideo;
+
+    $scope.onUpdateVoice = function (url, duration) {
+        $scope.audioUrl = url;
+        $scope.audioDuration = duration;
+    };
+
+    $scope.onUpdateVideo = function (url) {
+        $scope.videoUrl = url;
+    };
+
+    $scope.setRecheckPass = function (pass) {
+        $scope.recheckPass = pass;
+    };
+
+    function checkAndUploadVideoAndAudio(outputParam) { // 如果检测到有视频或语音，先上传得到链接后，写入outputParam，再调用callback进行提交
+        function uploadFinish() {
+            $scope.postActionWithParams(TaskAction.RECHECK, outputParam, function () {
+                $timeout(function () {
+                    $scope.cancel();
+                }, 500);
+            });
+        }
+
+        $.notify.progressStart();
+
+        function uploadVideo() {
+            if ($scope.videoUrl) {
+                if ($scope.videoUrl.indexOf("http") !== 0) {
+                    mediaService.uploadVideo($scope.videoUrl, function (res) {
+                        if (res.code === 0) {
+                            $scope.videoUrl = res.data;
+                            outputParam.video_src = res.data;
+                            $scope.$apply();
+                            uploadFinish();
+                        } else {
+                            $.notify.progressStop();
+                            $.notify.error($myTranslate.instant('upload video failed'));
+                        }
+                    });
+                } else {
+                    outputParam.video_src = $scope.videoUrl;
+                    uploadFinish();
+                }
+            } else {
+                uploadFinish();
+            }
+        }
+
+        if ($scope.audioUrl) {
+            if ($scope.audioUrl.indexOf('http') !== 0) {
+                mediaService.uploadAudio($scope.audioUrl, function (res) {
+                    if (res.code === 0) {
+                        $scope.audioUrl = res.data;
+                        outputParam.voice_src = $scope.audioUrl;
+                        outputParam.voice_duration = $scope.audioDuration;
+                        $scope.$apply();
+                        uploadVideo();
+                    } else {
+                        $.notify.progressStop();
+                        $.notify.error($myTranslate.instant('upload voice failed'));
+                    }
+                });
+            } else {
+                outputParam.voice_src = $scope.audioUrl;
+                outputParam.voice_duration = $scope.audioDuration;
+                uploadVideo();
+            }
+        } else {
+            uploadVideo();
+        }
+    }
+
+    $scope.submitAndBack = function () {   //上传描述和图片
+        if (!$scope.recheckPass && !$scope.description && !$scope.audioUrl) {
+            mui.alert($myTranslate.instant('recheck.result.desp.empty'), $myTranslate.instant('recheck.submit.error'), function () {
+            });
+            return;
+        }
+        var data = {};
+        if ($scope.description) {
+            data.description = $scope.description;
+        }
+        if ($scope.images && $scope.images.length) {
+            data['pictures'] = $scope.images;
+        }
+        data.recheck_pass = $scope.recheckPass;
+        checkAndUploadVideoAndAudio(data);
+    };
+
+    $scope.cancel = function () {
+        window.history.back();
+    };
 }]);
 
 app.controller('TaskGalleryCtrl', ['$scope', '$stateParams', '$timeout', function ($scope, $stateParams, $timeout) {
@@ -2029,7 +2691,7 @@ app.controller('TaskGalleryCtrl', ['$scope', '$stateParams', '$timeout', functio
     $scope.images = $stateParams.images;
     $scope.show = false;
 
-    $scope.deleteImage = function() {       // 删除图片
+    $scope.deleteImage = function () {       // 删除图片
         var index = $("#slides .slidesjs-pagination a.active").parent().index();
         if (index < 0) {
             index = 0;
@@ -2040,7 +2702,7 @@ app.controller('TaskGalleryCtrl', ['$scope', '$stateParams', '$timeout', functio
 
 
     function initSlider() {
-        if ($scope.images.length>1){
+        if ($scope.images.length > 1) {
 
             var slide = $("#slides");
             slide.slidesjs({
@@ -2075,7 +2737,7 @@ app.controller('TaskCloseRejectCtrl', ['$scope', function ($scope) {      //驳�
     };
 }]);
 
-app.controller('TaskCreateCtrl', ['$scope', '$timeout', 'userService', 'routerService', 'ajax', function ($scope, $timeout, userService, routerService, ajax) {
+app.controller('TaskCreateCtrl', ['$scope', '$timeout', 'userService', 'routerService', 'ajax', '$myTranslate', function ($scope, $timeout, userService, routerService, ajax, $myTranslate) {
     $scope.stationName = null;
     $scope.taskTypeName = null;
     $scope.operatorTeam = null;
@@ -2096,6 +2758,7 @@ app.controller('TaskCreateCtrl', ['$scope', '$timeout', 'userService', 'routerSe
     var staticDevices = [];
     var stations = [];
     var currentStation = null;
+    $scope.isEnglish = gIsEnglish;
 
     $scope.taskData = {
         events: [],
@@ -2105,8 +2768,26 @@ app.controller('TaskCreateCtrl', ['$scope', '$timeout', 'userService', 'routerSe
     if ($scope.role === 'OPS_ADMIN' || $scope.role === 'OPS_OPER') {
         opsCompanyId = Number.parseInt(userService.getCompanyId(), 10);
     }
+    var taskTypePicker = null;
+    var dtPicker = null;
+    var stationPicker = null;
+
+    $scope.$on('$destroy', function () {
+       if (taskTypePicker) {
+           taskTypePicker.dispose();
+           taskTypePicker = null;
+       }
+        if (stationPicker) {
+            stationPicker.dispose();
+            stationPicker = null;
+        }
+        if (dtPicker) {
+            dtPicker.dispose();
+            dtPicker = null;
+        }
+    });
     function init() {
-        if($scope.linkEventId && $scope.linkEventId !== '') {
+        if ($scope.linkEventId && $scope.linkEventId !== '') {
             initLinkEvent();
             // 读取站点信息
             ajax.get({
@@ -2115,12 +2796,11 @@ app.controller('TaskCreateCtrl', ['$scope', '$timeout', 'userService', 'routerSe
                     $scope.stationName = data.name;
                     $scope.$apply();
                 }
-            })
+            });
         } else {
             initStations();
-        }   
+        }
         initTaskTypeList();
-        initDatePicker();
         if ($scope.needResign) {
             initMembers();
         }
@@ -2128,16 +2808,16 @@ app.controller('TaskCreateCtrl', ['$scope', '$timeout', 'userService', 'routerSe
 
     function _format(data, idKey, nameKey) {
         var d = null;
-        if (typeof (idKey) === 'undefined'){
+        if (typeof (idKey) === 'undefined') {
             idKey = 'id';
         }
-        if (typeof (nameKey) === 'undefined'){
-            nameKey = 'name'
+        if (typeof (nameKey) === 'undefined') {
+            nameKey = 'name';
         }
-        for(var i=0; i<data.length; i++){
+        for (var i = 0; i < data.length; i++) {
             d = data[i];
-            d['value'] = d[idKey];
-            d['text'] = d[nameKey];
+            d.value = d[idKey];
+            d.text = d[nameKey];
         }
     }
 
@@ -2145,23 +2825,23 @@ app.controller('TaskCreateCtrl', ['$scope', '$timeout', 'userService', 'routerSe
         ajax.get({
             url: '/events/' + $scope.linkEventId,
             success: function (data) {
-                $scope.taskData.name  = data.info;
+                $scope.taskData.name = data.info;
                 // $scope.stationName = data.station_name;
                 $scope.deviceName = data.device_name;
                 $scope.taskData.station_sn = data.station_sn;
-                $scope.taskData.events.push({"id": $scope.linkEventId });
-                $scope.taskData.devices.push({"id": data.device_id });
+                $scope.taskData.events.push({"id": $scope.linkEventId});
+                $scope.taskData.devices.push({"id": data.device_id});
                 if (data.station_sn) {
                     getDevices({sn: data.station_sn});
                 }
                 $scope.$apply();
             },
-            error: function(){
-                console.log('获取事件信息失败: '+$scope.linkEventId);
+            error: function () {
+                console.log('获取事件信息失败: ' + $scope.linkEventId);
             }
         });
     }
-    
+
     function initStations() {
         ajax.get({
             url: '/stations',
@@ -2172,32 +2852,47 @@ app.controller('TaskCreateCtrl', ['$scope', '$timeout', 'userService', 'routerSe
                         stations.push(d);
                     }
                 });
+                if (stations.length === 1) { // 用户只有一个站点，则无需让用户选择站点
+                    $scope.taskData.station_sn = stations[0].sn;
+                    $scope.stationName = stations[0].name;
+                    document.getElementById('stationFormItem').remove();
+                    getDevices({sn: stations[0].sn}); // 获取报修设备
+                    return;
+                }
                 _format(stations, 'sn');
                 // 初始化picker
-                var stationPicker = new mui.PopPicker();
+                stationPicker = new mui.PopPicker();
                 stationPicker.setData(stations);
                 var showUserPickerButton = document.getElementById('stationPicker');
-                showUserPickerButton.addEventListener('click', function(event) {
-                    stationPicker.show(function(items) {
-                        $scope.taskData.station_sn = items[0].value;
-                        $scope.stationName = items[0].text;
-                        getDevices(items[0]);
-                        $scope.$apply();
-                        // 切换站点后，如果运维公诉不一样，需要重新刷新责任人列表
-                        for (var i=0; i<stations.length; i++) {
-                            if (stations[i].sn === items[0].value) {
-                                currentStation = stations[i];
-                                if (opsCompanyId !== currentStation.ops_company_id) {
-                                    opsCompanyId = currentStation.ops_company_id;
-                                    initMembers(opsCompanyId);
+                showUserPickerButton.addEventListener('click', function (event) {
+                    if (!stations.length) {
+                        $.notify.toast('您未配置任何站点，请联系管理员');
+                        return;
+                    }
+                    stationPicker.show(function (items) {
+                        if ($scope.taskData.station_sn !== items[0].value) { // 站点切换后，才重新获取信息
+                            $scope.taskData.station_sn = items[0].value;
+                            $scope.stationName = items[0].text;
+                            getDevices(items[0]);
+                            $scope.$apply();
+
+                            // 切换站点后，如果运维公诉不一样，需要重新刷新责任人列表
+                            for (var i = 0; i < stations.length; i++) {
+                                if (stations[i].sn === items[0].value) {
+                                    currentStation = stations[i];
+                                    if (opsCompanyId !== currentStation.ops_company_id) {
+                                        opsCompanyId = currentStation.ops_company_id;
+                                        initMembers(opsCompanyId);
+                                    }
+                                    break;
                                 }
-                                break;
                             }
                         }
                     });
                 }, false);
+                pickerI18n();
             },
-            error: function(){
+            error: function () {
                 console.log('获取站点列表失败');
             }
         });
@@ -2218,6 +2913,10 @@ app.controller('TaskCreateCtrl', ['$scope', '$timeout', 'userService', 'routerSe
     }
 
     $scope.openDeviceSelector = function () {
+        if (!$scope.taskData.station_sn) {
+            $.notify.toast('请先选择站点');
+            return;
+        }
         // 打开设备选择页面
         routerService.openPage($scope, '/templates/site/device-tree/device-select-page.html', {
             deviceDatas: staticDevices,
@@ -2226,9 +2925,9 @@ app.controller('TaskCreateCtrl', ['$scope', '$timeout', 'userService', 'routerSe
                 $scope.taskData.devices = [{id: device.id, sn: device.sn}];
                 history.back();
             }
-        })
+        });
     };
-    
+
     function initTaskTypeList() {
         ajax.get({
             url: '/opstasks/task_types',
@@ -2243,11 +2942,11 @@ app.controller('TaskCreateCtrl', ['$scope', '$timeout', 'userService', 'routerSe
                 _format(taskTypes);
 
                 //普通示例
-                var taskTypePicker = new mui.PopPicker();
+                taskTypePicker = new mui.PopPicker();
                 taskTypePicker.setData(taskTypes);
                 var taskTypeButton = document.getElementById('taskTypePicker');
-                taskTypeButton.addEventListener('click', function(event) {
-                    taskTypePicker.show(function(items) {
+                taskTypeButton.addEventListener('click', function (event) {
+                    taskTypePicker.show(function (items) {
                         $scope.taskTypeName = items[0].text;
                         $scope.taskData.task_type_id = items[0].value;
                         $scope.$apply();
@@ -2256,6 +2955,9 @@ app.controller('TaskCreateCtrl', ['$scope', '$timeout', 'userService', 'routerSe
                         //return false;
                     });
                 }, false);
+                pickerI18n();
+
+                initDatePicker(); // 在这初始化，防止ng-cloak导致页面还没显示出来时，初始化失败
             },
             error: function () {
                 console.log('获取任务类型失败');
@@ -2269,7 +2971,7 @@ app.controller('TaskCreateCtrl', ['$scope', '$timeout', 'userService', 'routerSe
 
     $scope.showHandlerSelector = function () {    // 显示维修工选择框
         if (!$scope.operatorTeam) {
-            $.notify.toast('请先选择维修班组');
+            $.notify.toast($myTranslate.instant('task.tip.teamfirst'));
         } else {
             $scope.handlerVisible = !$scope.handlerVisible;
         }
@@ -2304,45 +3006,44 @@ app.controller('TaskCreateCtrl', ['$scope', '$timeout', 'userService', 'routerSe
     };
 
     $scope.onSelectedUsers = function (users) {
-      var accounts = [];
-      var handlerNames = '';
-      users.forEach(function (user) {
-          accounts.push(user.account);
-          handlerNames+= user.name + (user.phone ? '/' + user.phone : '') + '\n';
-      });
-      $scope.taskData.current_handler = accounts.join(',');
-      $scope.handlerVisible = false;
-      $scope.handlerName = handlerNames;
-      $scope.handlerRowSpan = users.length || 1;
+        var accounts = [];
+        var handlerNames = '';
+        users.forEach(function (user) {
+            accounts.push(user.account);
+            handlerNames += user.name + (user.phone ? '/' + user.phone : '') + '\n';
+        });
+        $scope.taskData.current_handler = accounts.join(',');
+        $scope.handlerVisible = false;
+        $scope.handlerName = handlerNames;
+        $scope.handlerRowSpan = users.length || 1;
     };
 
     function initDatePicker() {
-
-        document.getElementById('expectedTime').addEventListener('tap', function() {
-            var _self = this;
-            if(_self.picker) {
-                _self.picker.show(function (rs) {
-                    $scope.taskData.expect_complete_time = rs.text + ':00';
-                    $scope.$apply();
-                });
-            } else {
-                var optionsJson = this.getAttribute('data-options') || '{}';
-                var options = JSON.parse(optionsJson);
-                var id = this.getAttribute('id');
-                /*
-                 * 首次显示时实例化组件
-                 * 示例为了简洁，将 options 放在了按钮的 dom 上
-                 * 也可以直接通过代码声明 optinos 用于实例化 DtPicker
-                 */
-                _self.picker = new mui.DtPicker(options);
-                _self.picker.show(function(rs) {
-                    $scope.taskData.expect_complete_time = rs.text + ":00";
-                    // _self.picker.dispose();
-                    // _self.picker = null;
-                    $scope.$apply();
-                });
-            }
-        }, false);
+        var timeBtn = document.getElementById('expectedTime');
+        if (timeBtn) {
+            timeBtn.addEventListener('tap', function () {
+                if (dtPicker) {
+                    dtPicker.show(function (rs) {
+                        // 如果所选日期为今天，且已经是晚上18:00以后，则时间设置为23:59:59
+                        $scope.taskData.expect_complete_time = rs.text + ' 20:00:00';
+                        $scope.$apply();
+                    });
+                } else {
+                    var options = {type: 'date', beginDate: new Date()};
+                    /*
+                     * 首次显示时实例化组件
+                     * 示例为了简洁，将 options 放在了按钮的 dom 上
+                     * 也可以直接通过代码声明 optinos 用于实例化 DtPicker
+                     */
+                    dtPicker = new mui.DtPicker(options);
+                    dtPicker.show(function (rs) {
+                        $scope.taskData.expect_complete_time = rs.text + " 20:00:00";
+                        $scope.$apply();
+                    });
+                    datePickerI18n();
+                }
+            }, false);
+        }
     }
 
     // $scope.handlerIsInvalid = function (form) {
@@ -2356,9 +3057,9 @@ app.controller('TaskCreateCtrl', ['$scope', '$timeout', 'userService', 'routerSe
         var taskData = $scope.taskData;
         var devices = [];
         taskData.devices.forEach(function (d) {
-           if (d.id) {
-               devices.push(d);
-           }
+            if (d.id) {
+                devices.push(d);
+            }
         });
         taskData.devices = devices;
         taskData.company_id = opsCompanyId;
@@ -2376,13 +3077,13 @@ app.controller('TaskCreateCtrl', ['$scope', '$timeout', 'userService', 'routerSe
             data: JSON.stringify(taskData),
             success: function (data) {
                 $.notify.progressStop();
-                $.notify.info('创建成功');
+                $.notify.info($myTranslate.instant('submit successful'));
                 $timeout(function () {
                     window.location.href = 'task-detail.html?finishPage=1&id=' + data.id;       // 设置finish=1，这样在Android端在打开新页面时，会将当前页finish掉
                 }, 800);
             }, error: function () {
                 $.notify.progressStop();
-                $.notify.error('创建失败');
+                $.notify.error($myTranslate.instant('submit failed'));
                 console.log('error');
             }
         });
@@ -2390,15 +3091,15 @@ app.controller('TaskCreateCtrl', ['$scope', '$timeout', 'userService', 'routerSe
 
     $scope.toggleTaskType = function () {
         isGrabTask = !isGrabTask;
-        if (isGrabTask){
+        if (isGrabTask) {
             $scope.handlerName = null;
             $scope.taskData.current_handler = null;
             $scope.$apply();
         }
     };
 
-    $scope.submitForm = function() {
-        if($scope.myForm.$invalid){
+    $scope.submitForm = function () {
+        if ($scope.myForm.$invalid) {
             console.log('form invalid');
         } else {
             $scope.createTask();
@@ -2409,7 +3110,7 @@ app.controller('TaskCreateCtrl', ['$scope', '$timeout', 'userService', 'routerSe
 }]);
 
 // 巡检所有设备处理页面
-app.controller('TaskDevicesHandlerCtrl',['$scope', 'routerService', 'ajax',  function ($scope, routerService, ajax) {
+app.controller('TaskDevicesHandlerCtrl', ['$scope', 'routerService', 'ajax', '$myTranslate', function ($scope, routerService, ajax, $myTranslate) {
     var taskId = $scope.task.id;
     $scope.device_record = $scope.task.device_record;
     $scope.checkedSns = [];
@@ -2484,7 +3185,7 @@ app.controller('TaskDevicesHandlerCtrl',['$scope', 'routerService', 'ajax',  fun
 
     $scope.addRecord = function () {
         if ($scope.checkedSns.length === 0) {
-            $.notify.toast('请至少选择一个设备', 1000);
+            $.notify.toast($myTranslate.instant('atleastone'), 1000);
             return;
         }
 
@@ -2492,23 +3193,23 @@ app.controller('TaskDevicesHandlerCtrl',['$scope', 'routerService', 'ajax',  fun
 
     $scope.setStatusOk = function () {
         if ($scope.checkedSns.length === 0) {
-            $.notify.toast('请至少选择一个设备', 1000);
+            $.notify.toast($myTranslate.instant('atleastone'), 1000);
             return;
         }
         $scope.isSubmitting = true;
         ajax.post({
             url: '/opstasks/' + taskId + '/setDevicesPass?device_sns=' + $scope.checkedSns,
-            contentType:"application/json",
+            contentType: "application/json",
             headers: {
                 Accept: "application/json"
             },
             success: function (response) {
                 $scope.isSubmitting = false;
-                $.notify.toast('设置成功', 1000);
+                $.notify.toast($myTranslate.instant('submit successful'), 1000);
                 $scope.device_record.forEach(function (r) {
                     if (r.checked) {
                         r.status = '1';
-                        r.status_name = '正常';
+                        r.status_name = $myTranslate.instant('inspect.result.normal');
                         r.className = "normal";
                         $scope.checkDevice(null, r.device_sn);
                     }
@@ -2526,11 +3227,7 @@ app.controller('TaskDevicesHandlerCtrl',['$scope', 'routerService', 'ajax',  fun
 
     $scope.openDtsPage = function () {
         if ($scope.checkedSns.length === 0) {
-            $.notify.toast('请选择一个设备再提交', 1000);
-            return;
-        }
-        if ($scope.checkedSns.length > 1) {
-            $.notify.toast('只能选择一个设备提交', 1000);
+            $.notify.toast($myTranslate.instant('defect.submit.device.atleast'), 1000);
             return;
         }
         var record = null;
@@ -2540,20 +3237,21 @@ app.controller('TaskDevicesHandlerCtrl',['$scope', 'routerService', 'ajax',  fun
                 return false;
             }
         });
-        routerService.openPage($scope, '/templates/task/dts-create-from-task.html', {
-            task_id: $scope.task.id,
-            station_sn: $scope.task.station_sn,
-            device_sn: record.device_sn,
-            path: record.device.path,
-            name: record.device.name,
-            isInPage: true
-        });
-        // location.href = '/templates/dts/dts-create.html?task_id=' + $scope.task.id + '&station_sn=' + $scope.task.station_sn +
-        //     '&device_sn=' + record.device_sn + '&path=' + record.device.path + '&name=' + record.device.name;
+        // routerService.openPage($scope, '/templates/task/dts-create-from-task.html', {
+        //     task_id: $scope.task.id,
+        //     station_sn: $scope.task.station_sn,
+        //     device_sns: $scope.checkedSns,
+        //     // isInPage: true
+        // });
+        location.href = '/templates/dts/dts-create.html?task_id=' + $scope.task.id + '&station_sn=' + $scope.task.station_sn +
+            '&device_sns=' + $scope.checkedSns;
     };
 
-    $scope.gotoDevice = function(deviceData){
-        routerService.openPage($scope, '/templates/site/static-devices/device-detail.html', {device_id: deviceData.id, device_sn: deviceData.sn});
+    $scope.gotoDevice = function (deviceData) {
+        routerService.openPage($scope, '/templates/site/static-devices/device-detail.html', {
+            device_id: deviceData.id,
+            device_sn: deviceData.sn
+        });
         return false;
     };
 
@@ -2563,7 +3261,7 @@ app.controller('TaskDevicesHandlerCtrl',['$scope', 'routerService', 'ajax',  fun
                 r.status = deviceRecord.status;
                 r.desp = deviceRecord.desp;
                 r.photo_links = deviceRecord.photo_links;
-                r.status_name = '有缺陷';
+                r.status_name = $myTranslate.instant('inspect.result.uncheck');
                 r.className = "danger";
                 $scope.checkDevice(null, deviceRecord.device_sn);
                 return false;
@@ -2573,7 +3271,11 @@ app.controller('TaskDevicesHandlerCtrl',['$scope', 'routerService', 'ajax',  fun
     };
 
     $scope.openDeviceCheckPage = function (device) {
-        routerService.openPage($scope, '/templates/task/inspect-device-check.html', {device: device, taskData: $scope.taskData, canEdit: $scope.canHandle});
+        routerService.openPage($scope, '/templates/task/inspect-device-check.html', {
+            device: device,
+            taskData: $scope.taskData,
+            canEdit: $scope.canHandle
+        });
         return false;
     };
 
@@ -2581,7 +3283,7 @@ app.controller('TaskDevicesHandlerCtrl',['$scope', 'routerService', 'ajax',  fun
 }]);
 
 // 巡检单个设备的处理页面
-app.controller('TaskDeviceCheckCtrl', ['$scope', 'ajax', function ($scope, ajax) {
+app.controller('TaskDeviceCheckCtrl', ['$scope', 'ajax', '$myTranslate', function ($scope, ajax, $myTranslate) {
     var taskId = $scope.taskData.id;
     var deviceSn = $scope.device.device_sn;
     $scope.deviceName = $scope.device.device_name;
@@ -2591,8 +3293,8 @@ app.controller('TaskDeviceCheckCtrl', ['$scope', 'ajax', function ($scope, ajax)
     $scope.checked = 0;
     $scope.exception = 0;
     $scope.isLoading = false;
-    $scope.enableSubmitDts = false;
     $scope.expandItems = !$scope.canEdit;
+    $scope.showResult = [TaskStatus.Arrived, TaskStatus.ToClose, TaskStatus.Closed].indexOf($scope.taskData.stage_id) >= 0;
 
     $scope.onExpandItems = function () {
         $scope.expandItems = !$scope.expandItems;
@@ -2632,7 +3334,7 @@ app.controller('TaskDeviceCheckCtrl', ['$scope', 'ajax', function ($scope, ajax)
                 $scope.isLoading = false;
                 $scope.$apply();
             }
-        })
+        });
     }
 
     $scope.setItemPass = function (checkItem, pass) {
@@ -2644,11 +3346,11 @@ app.controller('TaskDeviceCheckCtrl', ['$scope', 'ajax', function ($scope, ajax)
     };
 
     $scope.saveDeviceResult = function () {
-        if ($scope.result.status === '2' && !$scope.result.desp) {
-            // 当设备状态设置为异常时，需要输入异常结果
-            $.notify.toast('请输入设备异常描述');
-            return;
-        }
+        // if ($scope.result.status === '2' && !$scope.result.desp) {
+        //     // 当设备状态设置为异常时，需要输入异常结果
+        //     $.notify.toast($myTranslate.instant('inspect.device.error.input.tip'));
+        //     return;
+        // }
         var checkItems = [];
         $scope.checkItems.forEach(function (t) {
             checkItems.push({
@@ -2673,66 +3375,30 @@ app.controller('TaskDeviceCheckCtrl', ['$scope', 'ajax', function ($scope, ajax)
                 Accept: "application/json"
             },
             success: function (response) {
-                if ($scope.enableSubmitDts) {
-                    submitDts();
-                } else {
-                    $.notify.progressStop();
-                    $.notify.info('结果已保存', 500);
-                }
+                $.notify.progressStop();
+                $.notify.info($myTranslate.instant('save successful'), 500);
                 Object.assign($scope.device, param);
                 $scope.recountFunc();       // 重新计算设备检查个数
+                setTimeout(function () {
+                    history.back();
+                }, 500);
                 $scope.$apply();
             },
             error: function () {
                 $.notify.progressStop();
-                $.notify.error('保存巡检结果失败');
+                $.notify.error($myTranslate.instant('save failed'));
             }
         });
     };
 
     $scope.setDevicePass = function (pass) {
-      $scope.result.status = pass;
+        $scope.result.status = pass;
     };
-
-    $scope.setEnableDtsSubmit = function () {
-        $scope.enableSubmitDts = !$scope.enableSubmitDts;
-    };
-
-    function submitDts() {
-        // 默认提交成dts单
-        $.notify.progressStart();
-        var opsCompanyId = $scope.taskData.company_id;
-        var param = {
-            devices: [{sn: deviceSn, label1_value: 1, name: $scope.deviceName}],
-            source: TaskSource.Inspect,
-            task_type_id: TaskTypes.NormalDts,
-            station_sn: $scope.taskData.station_sn,
-            name: $scope.result.desp,
-            pictures: $scope.deviceImages,
-            mother_task_id: taskId
-        };
-        ajax.post({
-            url: '/opstasks',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            contentType: 'application/json',
-            data: JSON.stringify(param),
-            success: function (data) {
-                $.notify.progressStop();
-                $.notify.info('保存巡检结果及创建缺陷单成功');
-            }, error: function () {
-                $.notify.progressStop();
-                $.notify.error('创建缺陷单失败');
-            }
-        });
-        $scope.enableSubmitDts = false;
-    }
 
     getDeviceCheckItems();
 }]);
 
-app.controller('DeviceXunjianTaskDetailCtrl', ['$scope', 'ajax', 'platformService', 'routerService', 'userService', function ($scope, ajax, platformService, routerService, userService) {
+app.controller('DeviceXunjianTaskDetailCtrl', ['$scope', 'ajax', 'platformService', 'routerService', 'userService', '$myTranslate', function ($scope, ajax, platformService, routerService, userService, $myTranslate) {
     var taskId = GetQueryString("id");
     var deviceSn = GetQueryString("device_sn");
     $scope.isLoading = true;
@@ -2740,6 +3406,7 @@ app.controller('DeviceXunjianTaskDetailCtrl', ['$scope', 'ajax', 'platformServic
     $scope.checkResult = {};
     $scope.device = {};
     var companyId = userService.getCompanyId();
+
     function getTaskDetail(id) {
 
         ajax.get({
@@ -2756,13 +3423,13 @@ app.controller('DeviceXunjianTaskDetailCtrl', ['$scope', 'ajax', 'platformServic
                             r.images = images;
                         }
                         if (r.status === '1') {
-                            r.status_name = '正常';
+                            r.status_name = $myTranslate.instant('inspect.result.normal');
                             r.className = 'normal';
                         } else if (r.status === '2') {
-                            r.status_name = '异常';
+                            r.status_name = $myTranslate.instant('inspect.result.abnormal');
                             r.className = 'danger';
                         } else {
-                            r.status_name = "待巡检";
+                            r.status_name = $myTranslate.instant('inspect.result.uncheck');
                             r.className = "undo";
                         }
                         $scope.device = r;
@@ -2776,7 +3443,7 @@ app.controller('DeviceXunjianTaskDetailCtrl', ['$scope', 'ajax', 'platformServic
             },
             error: function (a, b, c) {
                 $scope.isLoading = false;
-                $.notify.error('读取数据失败');
+                $.notify.error($myTranslate.instant('get data failed'));
             }
         });
     }
@@ -2795,7 +3462,7 @@ app.controller('DeviceXunjianTaskDetailCtrl', ['$scope', 'ajax', 'platformServic
 }]);
 
 // 任务评价
-app.controller('TaskCommentCtrl', ['$scope', 'ajax', 'platformService', function ($scope, ajax, platformService) {
+app.controller('TaskCommentCtrl', ['$scope', 'ajax', 'platformService', '$myTranslate', function ($scope, ajax, platformService, $myTranslate) {
 
     var comment = $scope.comment;
     $scope.score = comment.score || 5;
@@ -2807,58 +3474,58 @@ app.controller('TaskCommentCtrl', ['$scope', 'ajax', 'platformService', function
     };
 
     $scope.getScoreDesp = function () {
-      switch ($scope.score) {
-          case 1:
-              return '很差';
-          case 2:
-              return '差';
-          case 3:
-              return '一般';
-          case 4:
-              return '很好';
-          case 5:
-              return '非常好';
-          return '';
-      }
+        switch ($scope.score) {
+            case 1:
+                return $myTranslate.instant('task.comment.terrible');
+            case 2:
+                return $myTranslate.instant('task.comment.bad');
+            case 3:
+                return $myTranslate.instant('task.comment.normal');
+            case 4:
+                return $myTranslate.instant('task.comment.good');
+            case 5:
+                return $myTranslate.instant('task.comment.excellent');
+                return '';
+        }
     };
 
     $scope.submitAndBack = function () {
         var pictures = [];
         var cloudHost = platformService.getCloudHost();
         $scope.imageList.forEach(function (url) {
-              if (url.indexOf(cloudHost) >= 0) {
-                  pictures.push(url.substring(cloudHost.length));
-              } else {
-                  pictures.push(url);
-              }
-          });
-          var param = {
-              score: $scope.score,
-              comment: $scope.description,
-              picture_datas: pictures
-          };
-          $.notify.progressStart();
-          ajax.post({
-              url: '/opstasks/' + $scope.taskId + '/comments',
-              headers: {
-                  'Content-Type': 'application/json;charset=UTF-8'
-              },
-              data: JSON.stringify(param),
-              success: function (res) {
-                  $.notify.progressStop();
-                  if (res) {
-                      $.notify.info('评价成功');
-                      $scope.onSuccess(res);
-                      $scope.cancel();
-                  } else {
-                      $.notify.error('评价失败');
-                  }
-              },
-              error: function () {
-                  $.notify.progressStop();
-                  $.notify.error('评价失败');
-              }
-          })
+            if (url.indexOf(cloudHost) >= 0) {
+                pictures.push(url.substring(cloudHost.length));
+            } else {
+                pictures.push(url);
+            }
+        });
+        var param = {
+            score: $scope.score,
+            comment: $scope.description,
+            picture_datas: pictures
+        };
+        $.notify.progressStart();
+        ajax.post({
+            url: '/opstasks/' + $scope.taskId + '/comments',
+            headers: {
+                'Content-Type': 'application/json;charset=UTF-8'
+            },
+            data: JSON.stringify(param),
+            success: function (res) {
+                $.notify.progressStop();
+                if (res) {
+                    $.notify.info($myTranslate.instant('submit successful'));
+                    $scope.onSuccess(res);
+                    $scope.cancel();
+                } else {
+                    $.notify.error($myTranslate.instant('submit failed'));
+                }
+            },
+            error: function () {
+                $.notify.progressStop();
+                $.notify.error($myTranslate.instant('submit failed'));
+            }
+        })
     };
 
     $scope.cancel = function () {

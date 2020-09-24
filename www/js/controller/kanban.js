@@ -47,7 +47,7 @@ app.controller('KanbanCtrl', ['$scope', '$stateParams', 'ajax', '$timeout', func
         if (count === 1) {
             $('<ul class="slidesjs-pagination">' +
                 '<li class="slidesjs-pagination-item">' +
-                '<a href="#" data-slidesjs-item="0" class="active">1</a>' +
+                '<a data-slidesjs-item="0" class="active">1</a>' +
                 '</li>' +
                 '</ul>').appendTo($('#chartSlider'));
         } else {
@@ -599,7 +599,6 @@ app.controller('KanbanCtrl', ['$scope', '$stateParams', 'ajax', '$timeout', func
                         x: 'left',
                         data: ['峰', '平', '谷']
                     },
-                    color: ['#F04863', '#F9CC13', '#369FFF', '#12C1C1', '#8442E0', '#2FC15B'],
                     series: [{
                         name: '用电量',
                         type: 'pie',
@@ -870,7 +869,6 @@ app.controller('KanbanCtrl', ['$scope', '$stateParams', 'ajax', '$timeout', func
                 data: times
             },
             yAxis: yAxis,
-            color: ['#369FFF', '#F9CC13', '#F04863', '#12C1C1', '#8442E0', '#2FC15B'],
             series: data
         };
     }
@@ -896,7 +894,6 @@ app.controller('KanbanCtrl', ['$scope', '$stateParams', 'ajax', '$timeout', func
     function getRatioPie(title, data, unit) {
         var echartOptions = {
             title: [],
-            color: ['#F04863', '#F9CC13', '#369FFF', '#12C1C1', '#8442E0', '#2FC15B'],
             series: [{
                 name: '2',
                 type: 'pie',
@@ -926,7 +923,7 @@ app.controller('KanbanCtrl', ['$scope', '$stateParams', 'ajax', '$timeout', func
             <div class="chart" id="' + id + '"></div>\
             </div>\
             </div>').prependTo($("#chartSlider"));
-        echarts.init(document.getElementById(id)).setOption(config);
+        echarts.init(document.getElementById(id), 'custom').setOption(config);
         chartCount += 1;
         paintSuccess();
     }
@@ -939,9 +936,9 @@ app.controller('KanbanCtrl', ['$scope', '$stateParams', 'ajax', '$timeout', func
 
 }]);
 
-app.controller('SiteOverviewCtrl', ['$scope', 'ajax', 'varDataService', function ($scope, ajax, varDataService) {
-    $scope.sn = GetQueryString('sn');
-    $scope.stationName = GetQueryString('name');
+app.controller('SiteOverviewCtrl', ['$scope', '$stateParams', 'ajax', 'varDataService', '$myTranslate', function ($scope, $stateParams, ajax, varDataService, $myTranslate) {
+    $scope.sn = $stateParams.sn; // $scope.currentSite.sn; // GetQueryString('sn');
+    // $scope.stationName = $scope.currentSite.name; // GetQueryString('name');
     var stationData = null;
     $scope.fuheLoading = true; // 负荷数据获取
     $scope.fuheError = null; // 负荷变量错误
@@ -952,15 +949,17 @@ app.controller('SiteOverviewCtrl', ['$scope', 'ajax', 'varDataService', function
     $scope.realtimeLoad = '-'; // 实时负荷
     var realtimeLoadInterval = null;
 
-    ajax.get({
-        url: '/stations/' + $scope.sn,
-        success: function (data) {
-            stationData = data;
-            getLoadTrend(data.realtime_load_var);
-            getLoadRealtime(data.realtime_load_var);
-            getElectricData(data.sum_epf_var);
-        }
-    });
+    setTimeout(function () {
+        ajax.get({
+            url: '/stations/' + $scope.sn,
+            success: function (data) {
+                stationData = data;
+                getLoadTrend(data.realtime_load_var);
+                getLoadRealtime(data.realtime_load_var);
+                getElectricData(data.sum_epf_var);
+            }
+        });
+    }, 300);
 
     function getLoadRealtime(varSn) {
         if (!varSn) {
@@ -986,7 +985,7 @@ app.controller('SiteOverviewCtrl', ['$scope', 'ajax', 'varDataService', function
     function getLoadTrend(varSn) { // 获取昨日、今日负荷趋势
         if (!varSn) {
             $scope.fuheLoading = false;
-            $scope.fuheError = '站点未配置实时负荷属性';
+            $scope.fuheError = $myTranslate.instant('tip.station.noload');
             return;
         }
         // 获取昨日、今日变量趋势
@@ -1004,7 +1003,7 @@ app.controller('SiteOverviewCtrl', ['$scope', 'ajax', 'varDataService', function
             }
         }, function () {
             $scope.fuheLoading = false;
-            $scope.fuheError = "获取数据失败";
+            $scope.fuheError = $myTranslate.instant('tip.failed.getdata');
             $scope.$apply();
         });
     }
@@ -1012,7 +1011,7 @@ app.controller('SiteOverviewCtrl', ['$scope', 'ajax', 'varDataService', function
     function getElectricData(varSn) {
         if (!varSn) {
             $scope.electricLoading = false;
-            $scope.electricError = '站点未配置总用电量属性';
+            $scope.electricError = $myTranslate.instant('tip.station.noepf');
             return;
         }
         // 获取今日用电
@@ -1038,7 +1037,7 @@ app.controller('SiteOverviewCtrl', ['$scope', 'ajax', 'varDataService', function
             if (res && res.length) {
                 var dataList = res[0].datas;
                 if (!dataList) {
-                    $scope.electricError = '获取用电数据失败';
+                    $scope.electricError = $myTranslate.instant('tip.failed.electric.getdata');
                     return;
                 }
                 var degrees = {
@@ -1050,7 +1049,8 @@ app.controller('SiteOverviewCtrl', ['$scope', 'ajax', 'varDataService', function
                 var times = [];
                 dataList.forEach(function (item) {
                     var d = Number.parseInt(item.time.substring(8, 10), 10);
-                    times.push(d + '日');
+                    // times.push(d + $myTranslate.instant('日'));
+                    times.push(getDay(d));
                     degrees.p.push(item.p_degree);
                     degrees.f.push(item.f_degree);
                     degrees.v.push(item.v_degree);
@@ -1066,7 +1066,7 @@ app.controller('SiteOverviewCtrl', ['$scope', 'ajax', 'varDataService', function
     function paintLoadTrendChart(yesterdayData, todayData) {
         var times = [];
         for (var i=0; i<24; i++) {
-            times.push(i + '时');
+            times.push(i + $myTranslate.instant('时'));
         }
         var option = {
             tooltip: {
@@ -1113,24 +1113,23 @@ app.controller('SiteOverviewCtrl', ['$scope', 'ajax', 'varDataService', function
             yAxis: {
                 name: 'kW'
             },
-            color: ['#F9CC13', '#369FFF'],
             series: [{
                 type: 'line',
                 data: yesterdayData,
-                name: '昨日'
+                name: $myTranslate.instant('yesterday')
             }, {
                 type: 'line',
                 data: todayData,
-                name: '今日'
+                name: $myTranslate.instant('today')
             }]
         };
-        echarts.init(document.getElementById('loadChart')).setOption(option);
+        echarts.init(document.getElementById('loadChart'), 'custom').setOption(option);
     }
     var g_pvf_label = {
-        p: '峰',
-        f: '平',
-        v: '谷',
-        s: '尖'
+        p: $myTranslate.instant('峰'),
+        f: $myTranslate.instant('平'),
+        v: $myTranslate.instant('谷'),
+        s: $myTranslate.instant('尖')
     };
     var g_pvf_colors = {
         'p': 'rgba(239, 150, 166, 1)',
@@ -1197,7 +1196,7 @@ app.controller('SiteOverviewCtrl', ['$scope', 'ajax', 'varDataService', function
             },
             series: series
         };
-        echarts.init(document.getElementById('electricChart')).setOption(option);
+        echarts.init(document.getElementById('electricChart'), 'custom').setOption(option);
     }
 
     function sum(datalist) {
@@ -1261,6 +1260,6 @@ app.controller('SiteOverviewCtrl', ['$scope', 'ajax', 'varDataService', function
                 },
             ],
         };
-        echarts.init(document.getElementById('electricPie')).setOption(option);
+        echarts.init(document.getElementById('electricPie'), 'custom').setOption(option);
     }
 }]);

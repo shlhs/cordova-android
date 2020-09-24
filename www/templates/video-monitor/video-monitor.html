@@ -1,89 +1,62 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>视频监控</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta http-equiv="Access-Control-Allow-Origin" content="*">
-    <link rel="stylesheet" href="../../components/mui/css/mui.min.css">
-    <link rel="stylesheet" href="../../components/mui/css/mui.picker.min.css">
-    <link rel="stylesheet" href="../../css/iconfont/iconfont.css">
-    <link rel="stylesheet" href="../../css/my.css">
-    <link rel="stylesheet" href="../../css/icon.css">
-    <link rel="stylesheet" href="../../css/animate.css">
-    <link rel="stylesheet" type="text/css" href="../../js/lib/datatables/jquery.dataTables.min.css">
-    <script type="text/javascript" src="../../components/libs/jquery-2.1.4.min.js"></script>
-    <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
-    <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
-    <script type="text/javascript" src="../../components/angular-animate/angular-animate.js"></script>
-    <script type="text/javascript" src="../../components/angular-ui-router/release/stateEvents.min.js"></script>
-    <script type="text/javascript" src="../../js/app/app.js"></script>
-    <script type="text/javascript" src="../../js/app/utils.js"></script>
-    <script type="text/javascript" src="../../js/controller/ipc.js"></script>
-</head>
-<body ng-app="myApp" ng-cloak ng-controller="VideoMonitorCtrl" id="videoMonitor">
-<header class="mui-bar bg-header mui-segmented-control-vertical">
-    <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
-    <h1 class="mui-title">视频监控</h1>
-    <a class="mui-action-menu mui-icon mui-pull-right" style="font-size: 16px;line-height: 28px;color: #fff;" ng-click="openCaptureRecordPage()">巡检记录</a>
-</header>
-<div class="mui-content" style="padding-bottom: 100px;">
-    <div ng-if="!isLoading && ipcs.length">
-        <!--<div class="row">-->
-            <!--<i class="iconfont anticon-pailie video-list-switcher" ng-if="listType==='row'" ng-click="switchListType()"></i>-->
-            <!--<i class="iconfont anticon-list video-list-switcher" ng-if="listType==='col'" ng-click="switchListType()"></i>-->
-        <!--</div>-->
-        <ul class="ipc-list" ng-class="{row: listType === 'row', col: listType === 'col'}" style="padding-top: 4px;">
-            <li ng-repeat="ipc in ipcs">
-                <div class="ipc-wrapper">
-                    <div class="bracket"></div>
-                    <div class="img" ng-switch="ipc.type">
-                        <iframe class="img" ng-src="{{ipc.streamUrl}}" allowFullScreen width="100%" height="100%" ng-if="ipc.startPlay"></iframe>
-                        <img class="img" ng-src="{{ipc.snapUrl}}" ng-if="!ipc.startPlay" ng-class="{'offline': !ipc.online}">
-                        <a class="play" ng-if="!ipc.startPlay && ipc.online" ng-click="startPlay(ipc)"><i class="iconfont anticon-play"></i></a>
+<div class="mui-page" ng-controller="VideoMonitorCtrl" id="videoMonitor" ng-cloak>
+    <header class="mui-bar bg-header mui-segmented-control-vertical">
+        <a class="mui-icon  mui-icon-left-nav mui-pull-left btn-back" onclick="history.back()"></a>
+        <h1 class="mui-title">{{'menu.monitor.video' | translate}}</h1>
+        <a class="mui-action-menu mui-icon mui-pull-right" style="font-size: 16px;line-height: 28px;" ng-click="openCaptureRecordPage()">{{'video.records' | translate}}</a>
+    </header>
+    <div class="body-content" style="padding-bottom: 100px;">
+        <div ng-if="!isLoading && ipcs.length">
+            <!--<div class="row">-->
+                <!--<i class="iconfont anticon-pailie video-list-switcher" ng-if="listType==='row'" ng-click="switchListType()"></i>-->
+                <!--<i class="iconfont anticon-list video-list-switcher" ng-if="listType==='col'" ng-click="switchListType()"></i>-->
+            <!--</div>-->
+            <ul class="ipc-list" ng-class="{row: listType === 'row', col: listType === 'col'}" style="padding-top: 4px;">
+                <li ng-repeat="ipc in ipcs">
+                    <div class="ipc-wrapper">
+                        <div class="bracket"></div>
+                        <div class="img" ng-switch="ipc.type">
+                            <img class="img" ng-src="{{ipc.snapUrl}}" ng-if="!ipc.startPlay" ng-class="{'offline': !ipc.online}">
+                            <a class="play" ng-if="!ipc.startPlay && ipc.online" ng-click="startPlay(ipc)"><i class="iconfont anticon-play"></i></a>
+                        </div>
                     </div>
-                </div>
-                <div>
-                    <span class="name mui-ellipsis">{{ipc.name}}</span>
-                    <span class="status" ng-class="{'online': ipc.online, 'offline': !ipc.online}">{{ipc.statusName}}</span>
-                </div>
-            </li>
-        </ul>
+                    <div>
+                        <span class="name mui-ellipsis">{{ipc.name}}</span>
+                        <span class="status" ng-class="{'online': ipc.online, 'offline': !ipc.online}">{{ipc.statusName}}</span>
+                    </div>
+                </li>
+            </ul>
 
-        <div class="float-bottom-btn2" ng-click="switchListType()">
-            <i class="iconfont" ng-class="{'anticon-list': listType==='col', 'anticon-pailie': listType==='row'}"></i>
+            <div class="float-bottom-btn2" ng-click="switchListType()">
+                <i class="iconfont" ng-class="{'anticon-list': listType==='col', 'anticon-pailie': listType==='row'}"></i>
+            </div>
+            <div class="float-bottom-btn" ng-click="openSnapModal()">
+                <i class="iconfont anticon-camera"></i>
+            </div>
         </div>
-        <div class="float-bottom-btn" ng-click="openSnapModal()">
-            <i class="iconfont anticon-camera"></i>
-        </div>
-    </div>
-    <div class="page-alert-wrapper" ng-if="!isLoading && !ipcs.length">
-        <div class="page-alert">
+        <div class="page-alert-wrapper" ng-if="!isLoading && !ipcs.length">
             <div class="page-alert">
-                <i class="alert-icon nodata"></i>
-                <div class="alert-text info">未关联摄像头</div>
+                <div class="page-alert">
+                    <i class="alert-icon nodata"></i>
+                    <div class="alert-text info">{{'video.novideo' | translate}}</div>
+                </div>
+            </div>
+        </div>
+        <div class="page-alert-wrapper" ng-if="isLoading">
+            <div class="page-alert">
+                <img src="../../img/page-loading.gif" class="loading-img">
+                <div class="alert-text info">{{'loading' | translate}}...</div>
+            </div>
+        </div>
+        <div class="page-alert-wrapper" ng-if="loadingFailed">
+            <div class="page-alert">
+                <i class="alert-icon warning"></i>
+                <div class="alert-text info">{{'tip.load.failed.network' | translate}}</div>
+                <div class="alert-reload" ng-click="getIpcList()">{{'reload' | translate}}</div>
             </div>
         </div>
     </div>
-    <div class="page-alert-wrapper" ng-if="isLoading">
-        <div class="page-alert">
-            <img src="../../img/page-loading.gif" class="loading-img">
-            <div class="alert-text info">正在加载...</div>
-        </div>
+    <div style="position: fixed; top: 0; width: 100%; height: 100%;background-color: #000;" ng-if="playingIpc">
+        <iframe class="img" ng-src="{{playingIpc.streamUrl}}" allowFullScreen width="100%" height="100%"></iframe>
     </div>
-    <div class="page-alert-wrapper" ng-if="loadingFailed">
-        <div class="page-alert">
-            <i class="alert-icon warning"></i>
-            <div class="alert-text info">加载失败，请检查网络</div>
-            <div class="alert-reload" ng-click="getIpcList()">重新加载</div>
-        </div>
-    </div>
+    <div ui-view=""></div>
 </div>
-<script type="text/javascript" src="../../components/libs/jquery-2.1.4.min.js"></script>
-<script src="../../js/my/notify.js"></script>
-<script src="../../components/moment.min.js"></script>
-<script src="../../components/slides-playing/js/jquery.slides.js"></script>
-</body>
-</html>

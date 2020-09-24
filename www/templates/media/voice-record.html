@@ -1,0 +1,25 @@
+﻿﻿<div style="width: 60%; max-width: 250px;display: inline-block">
+    <div ng-click="startCapture()" ng-if="!audio && canEdit" style="display: flex;align-items: center;cursor: pointer;">
+        <i class="icon icon-16 icon-voice-record"></i> 点击录音
+    </div>
+    <div class="voice-record" ng-if="audio" style="width: {{iconWidth}}px">
+        <div class="bubble voice" ng-class="playing ? 'play': ''" ng-click="startPlay()">
+            <div class="icon icon-16 icon-voice"></div>
+            <div class="length">{{tmpDuration}}''</div>
+        </div>
+        <div class="clear" ng-click="remove()" ng-if="canEdit"></div>
+    </div>
+    <div class="my-modal" ng-if="recording">
+        <div class="modal-mask" ng-click="cancelRecording()"></div>
+        <div class="modal-container">
+            <div class="modal-content">
+                <div class="voice play" >
+                    <div class="icon recording"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div style="color: #007aff;text-align: center;line-height: 42px;" ng-click="stopRecording()">说完了</div>
+            </div>
+        </div>
+    </div>
+</div>

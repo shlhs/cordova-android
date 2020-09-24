@@ -1,11 +1,16 @@
-<a href="javascript:void(0);" class="mui-navigate-right" ng-click="warpCallback(item, $event);"
+<a href="javascript:void(0);" ng-click="warpCallback(item, $event);"
    ng-class="{'is_leaf': !item.is_group, 'selected': item.sn === selectedSn}" >
-    <i class="node-group" ng-if="item.is_group"></i>
-    <input type="checkbox" ng-if="checkbox && !item.is_group">{{item.name}}
+    <i class="node-group" ng-if="item.is_group" ng-class="{device: item.product_type_id}"></i>
+    <!--<input type="checkbox" ng-if="checkbox && !isGroup(item)" ng-click="checkDevice($event, item)" ng-checked="isChecked(item.sn)">-->
+    <div class="mui-checkbox mui-left checkbox-square" ng-if="checkbox && !isGroup(item)" style="display: inline-block;" ng-click="checkDevice($event, item)">
+        <i class="checkbox" ng-class="{checked: isChecked(item.sn)}"></i>
+    </div>
+    {{item.name}}
     <label class="text-status warning" ng-if="showStatus && item.hasTask">运维</label>
     <label class="text-status danger" ng-if="showStatus && item.hasDts">缺陷</label>
+    <i class="mui-icon" ng-if="item.is_group" ng-class="item.$$isExpend ? 'mui-icon-arrowup' : 'mui-icon-arrowdown'"></i>
 </a>
-<ul class="tree-group" ng-if="item.is_group && item.children.length && !item.unvisible">
+<ul class="tree-group bg-white" ng-if="item.is_group && item.children.length && !item.unvisible">
     <li class="tree-cell" ng-repeat="item in item.children"
         ng-class="{'active': item.$$isExpend, 'collapse': !isLeaf(item), 'is-leaf': isLeaf(item)}"
         ng-include="'/templates/site/device-tree/tree-item.html'"

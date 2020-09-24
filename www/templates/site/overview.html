@@ -1,39 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>站点总览</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta http-equiv="Access-Control-Allow-Origin" content="*">
-    <link rel="stylesheet" href="../../components/mui/css/mui.min.css">
-    <link rel="stylesheet" href="../../css/iconfont/iconfont.css">
-    <link rel="stylesheet" href="../../css/my.css">
-    <link rel="stylesheet" href="../../css/icon.css">
-    <link rel="stylesheet" href="../../css/animate.css">
-    <link rel="stylesheet" href="../../components/mui/css/icons-extra.css">
-    <link rel="stylesheet" href="../../css/setting.css">
-    <!--<script type="text/javascript" src="../../cordova.js"></script>-->
-    <!--<script type="text/javascript" src="../../cordova_plugins.js"></script>-->
-    <script type="text/javascript" src="../../components/libs/jquery-2.1.4.min.js"></script>
-    <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
-    <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
-    <!--<script type="text/javascript" src="components/ui-router-extras/release/ct-ui-router-extras.js"></script>-->
-    <script type="text/javascript" src="../../components/angular-animate/angular-animate.js"></script>
-    <script type="text/javascript" src="../../components/angular-ui-router/release/stateEvents.min.js"></script>
-    <script type="text/javascript" src="../../js/app/utils.js"></script>
-    <script type="text/javascript" src="../../js/app/app.js"></script>
-    <script type="text/javascript" src="../../js/controller/sites.js"></script>
-    <script type="text/javascript" src="../../js/service/common-service.js"></script>
-    <script type="text/javascript" src="../../js/service/appstore.js"></script>
-    <script type="text/javascript" src="../../js/service/varData.js"></script>
-    <script src="../../js/controller/kanban.js"></script>
+<div  class="mui-page" ng-controller="SiteOverviewCtrl" ng-cloak>
     <style>
         .summary-list{
             list-style: none;
             padding: 0px;
-            /*display: -webkit-box;*/
             margin: 0 3px;
         }
         .summary-item{
@@ -42,10 +11,8 @@
             line-height: 24px;
             font-size: 12px;
             text-align: center;
-            background-color: #fff;
             margin: 0 3px;
             padding: 8px 0;
-            color: #fff;
             width: calc(33% - 6px);
             margin-bottom: 6px;
             height: 68px;
@@ -76,76 +43,63 @@
             font-weight: normal;
         }
     </style>
-</head>
-<body class="box-vertical-center" ng-app="myApp">
-<header class="mui-bar bg-header mui-segmented-control-vertical">
-    <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
-    <h1 class="mui-title">站点总览</h1>
-    <!--<a onclick="showTopMenu()" class="mui-action-menu mui-icon mui-pull-right" ><i class="header-icon white icon-add"></i></a>-->
-</header>
-<!--<div ng-include="'../../templates/top-menu.html'"></div>-->
-<div class="mui-content" ng-cloak ng-controller="SiteOverviewCtrl">
-    <ul class="mui-row summary-list" style="padding-top:6px;">
-        <li class="mui-col-xs-6 mui-col-sm-6 summary-item" style="background-color: #8f79ff">
-            <span class="title mui-ellipsis">实时负荷</span>
-            <h4 class="value">{{realtimeLoad}}<span class="unit">kW</span> </h4>
-        </li>
-        <li class="mui-col-xs-6 mui-col-sm-6 summary-item" style="background-color: #41aafb">
-            <span class="title mui-ellipsis">今日用电量</span>
-            <h4 class="value">{{todayDegree}}<span class="unit">kWh</span> </h4>
-        </li>
-        <li class="mui-col-xs-6 mui-col-sm-6 summary-item" style="background-color: #4e75fa">
-            <span class="title mui-ellipsis">本月用电量</span>
-            <h4 class="value">{{monthDegree}}<span class="unit">kWh</span> </h4>
-        </li>
-    </ul>
-    <div class="card">
-        <div class="card-header border">
-            <i class="iconfont anticon-shuju2" style="color: #007aff;"></i>
-            今日负荷趋势
-        </div>
-        <div class="card-content">
-            <div style="height: 150px;" id="loadChart" class="chart" ng-class="{'spin-loading': fuheLoading}">
-                <div ng-if="!fuheLoading && fuheError" style="line-height: 130px;text-align: center;color: #737373;font-size: 14px;">
-                    {{fuheError}}
+    <header class="mui-bar bg-header">
+        <a class="mui-icon mui-icon-left-nav mui-pull-left btn-back" onclick="history.back()"></a>
+        <h1 class="mui-title">{{'station overview' | myTranslate}}</h1>
+    </header>
+    <div class="body-content overview-page">
+        <ul class="mui-row summary-list" style="padding-top:6px;">
+            <li class="mui-col-xs-6 mui-col-sm-6 summary-item" style="background-color: #8f79ff">
+                <span class="title mui-ellipsis">{{ 'station.realtime.load' | translate }}</span>
+                <h4 class="value">{{realtimeLoad}}<span class="unit">kW</span> </h4>
+            </li>
+            <li class="mui-col-xs-6 mui-col-sm-6 summary-item" style="background-color: #41aafb">
+                <span class="title mui-ellipsis">{{'station.degree.today' | translate}}</span>
+                <h4 class="value">{{todayDegree}}<span class="unit">kWh</span> </h4>
+            </li>
+            <li class="mui-col-xs-6 mui-col-sm-6 summary-item" style="background-color: #4e75fa">
+                <span class="title mui-ellipsis">{{'station.degree.thismonth' | translate}}</span>
+                <h4 class="value">{{monthDegree}}<span class="unit">kWh</span> </h4>
+            </li>
+        </ul>
+        <div class="card">
+            <div class="card-header border">
+                <i class="iconfont anticon-shuju2"></i>
+                {{ 'station.load.trend.today' | translate }}
+            </div>
+            <div class="card-content">
+                <div style="height: 150px;" id="loadChart" class="chart" ng-class="{'spin-loading': fuheLoading}">
+                    <div ng-if="!fuheLoading && fuheError" class="no-data-tip">
+                        {{fuheError}}
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="card">
-        <div class="card-header border">
-            <i class="iconfont anticon-energy-fenxiang" style="color: #007aff;"></i>
-            本月用电占比
-        </div>
-        <div class="card-content">
-            <div style="height: 140px;" id="electricPie" class="chart" ng-class="{'spin-loading': electricLoading}">
-                <div ng-if="!electricLoading && electricError" style="line-height: 130px;text-align: center;color: #737373;font-size: 14px;">
-                    {{electricError}}
+        <div class="card">
+            <div class="card-header border">
+                <i class="iconfont anticon-energy-fenxiang"></i>
+                {{'station.pfv.ratio.month' | translate}}
+            </div>
+            <div class="card-content">
+                <div style="height: 140px;" id="electricPie" class="chart" ng-class="{'spin-loading': electricLoading}">
+                    <div ng-if="!electricLoading && electricError" class="no-data-tip">
+                        {{electricError}}
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="card">
-        <div class="card-header border">
-            <i class="iconfont anticon-shuju11" style="color: #007aff;"></i>
-            本月用电趋势
-        </div>
-        <div class="card-content">
-            <div style="height: 150px;" id="electricChart" class="chart" ng-class="{'spin-loading': electricLoading}">
-                <div ng-if="!electricLoading && electricError" style="line-height: 130px;text-align: center;color: #737373;font-size: 14px;">
-                    {{electricError}}
+        <div class="card">
+            <div class="card-header border">
+                <i class="iconfont anticon-shuju11"></i>
+                {{ 'station.electric.trend.month' | translate }}
+            </div>
+            <div class="card-content">
+                <div style="height: 150px;" id="electricChart" class="chart" ng-class="{'spin-loading': electricLoading}">
+                    <div ng-if="!electricLoading && electricError" class="no-data-tip">
+                        {{electricError}}
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<div ui-view class="page page-left"></div>
-<div class="page page-left" ui-view=""></div>
-<script src="../../components/fastclick-master/lib/fastclick.js"></script>
-<script src="../../js/my/notify.js"></script>
-<script src="../../components/echart/echarts.common.min.js"></script>
-<script src="../../components/moment.min.js"></script>
-<script src="../../components/slides-playing/js/jquery.slides.js"></script>
-
-</body>
-</html>
