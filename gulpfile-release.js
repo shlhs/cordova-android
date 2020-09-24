@@ -253,5 +253,3 @@ gulp.task("run-release", function () {
 
 // 发布时，先运行： gulp release，  将资源文件进行打包
 // 再运行： gulp run-release  启动webserver进行测试，根目录为 dist
-
-
