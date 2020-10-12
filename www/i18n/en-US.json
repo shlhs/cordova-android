@@ -59,6 +59,7 @@
   "station.pfv.ratio.month": "Electricity ratio of this month",
   "station.electric.trend.month": "Electricity trend of this month",
   "station.degree.today": "Today Consumption",
+  "station.degree.byday": "Consumption",
   "station.degree.thismonth": "Month Consumption",
   "station.noaddress": "Longitude and Latitude is not set",
   "station.getdetail.failed": "Get station info failed",
