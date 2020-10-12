@@ -949,6 +949,13 @@ app.controller('SiteOverviewCtrl', ['$scope', '$stateParams', 'ajax', 'varDataSe
     $scope.realtimeLoad = '-'; // 实时负荷
     var realtimeLoadInterval = null;
 
+    $scope.$on('$destroy', function () {
+       if (realtimeLoadInterval) {
+           clearInterval(realtimeLoadInterval);
+           realtimeLoadInterval = null;
+       }
+    });
+
     setTimeout(function () {
         ajax.get({
             url: '/stations/' + $scope.sn,
