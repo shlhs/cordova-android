@@ -25,99 +25,12 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
             // controller: 'HomeCtrl'
         })
     ;
-/*
-    // 战点相关
-    $stateProvider
-        // .state('index.sites', {
-        //     url: '/sites',
-        //     views: {
-        //         'sites': {
-        //             templateUrl: '/templates/site/site-list.html',
-        //             controller: 'SiteListCtrl'
-        //         }
-        //     }
-        // })
-        .state('index.siteDetail', {
-            url: '/siteDetail',
-            params: {
-                name: null,
-                sn: null
-            },
-            templateUrl: '/templates/site/site-detail.html',
-            controller: 'SiteDetailCtrl'
-        })
-
-        .state('index.siteDetail.docs', {
-            url: '/siteDocs',
-            params: {
-                sn: null
-            },
-            templateUrl: '/templates/site/docs.html',
-            controller: 'SiteDocsCtrl'
-        })
-        .state('index.siteDetail.deviceList', {
-            url: '/siteDevices',
-            params:{
-                sn: null
-            },
-            templateUrl: '/templates/site/device-list.html',
-            controller: "DeviceListCtrl"
-        })
-        .state('index.siteDetail.eventList', {
-            url: '/siteEvents',
-            params: {
-                sn: null
-            },
-            templateUrl: '/templates/site/event-list.html',
-            controller: 'EventListCtrl'
-        })
-        .state('index.siteDetail.kanban', {
-            url: '/kanban',
-            params: {
-                sn: null
-            },
-            templateUrl: '/templates/site/kanban.html',
-            controller: 'KanbanCtrl'
-        })
-        .state('index.siteDetail.monitorList', {
-            url: '/monitors',
-            params: {
-                sn: null
-            },
-            templateUrl: '/templates/site/monitor-list.html',
-            controller: 'MonitorListCtrl'
-        })
-        .state('index.siteDetail.monitorList.detail', {
-            url: '/detail',
-            params: {
-                url: null
-            },
-            templateUrl: '/templates/site/monitor-detail.html',
-            controller: 'MonitorDetailCtrl'
-        })
-        .state('index.siteDetail.deviceList.deviceDetail', {
-            url: '/deviceDetail',
-            params: {
-                sn: null,
-                deviceSn: null,
-                deviceName: null
-            },
-            templateUrl: '/templates/site/device-detail.html',
-            controller: 'DeviceDetailCtrl'
-        })
-        ;
-        */
     // 设置相关
     $stateProvider
-        // .state('index.setting', {
-        //     url: '/setting',
-        //     views: {
-        //         'setting': {
-        //             templateUrl: '/templates/setting/setting.html',
-        //             controller: 'SettingCtrl'
-        //         }
-        //     }
-        // })
+        .state('index.setting', {
+            url: 'setting/',
+            templateUrl: '/templates/setting/setting.html'
+        })
         .state('index.account', {
             url: 'account/',
             templateUrl: '/templates/setting/account.html'
@@ -133,10 +46,139 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
             url: 'share',
             templateUrl: '/templates/setting/share.html'
         })
-        .state('index.account.password', {
+        .state('index.setting.password', {
             url: 'password',
             templateUrl: '/templates/setting/password_setter.html',
             controller: 'PasswordCtrl'
+        })
+        .state('index.overview', { // 站点总览
+            url: 'overview/?sn',
+            templateUrl: '/templates/site/overview.html',
+            onEnter: function () {
+                console.log('onEnter');
+            },
+            onExit: function () {
+                console.log('onExit');
+            }
+        })
+        .state('index.graphs', { // 站点总览
+            url: 'graphs/?sn',
+            templateUrl: '/templates/site/monitor-list.html',
+        })
+        .state('index.monitorDevices', { // 设备监控
+            url: 'monitor-devices/?sn',
+            templateUrl: '/templates/site/device-monitor-list.html',
+        })
+        .state('index.monitorDevices.detail', { // 设备监控详情
+            url: 'detail/?deviceSn',
+            templateUrl: '/templates/site/device-monitor.html',
+            params: {
+                deviceSn: null,
+                name: null
+            }
+        })
+        .state('index.monitorDevices.detail.control', { // 设备监控-控制中心
+            url: 'control/',
+            templateUrl: '/templates/site/device-monitor/remote-control.html',
+            params: {
+                deviceSn: null,
+                name: null
+            }
+        })
+        .state('index.staticDevices', { // 设备档案
+            url: 'static-devices/?sn',
+            templateUrl: '/templates/site/static-devices/device-home.html',
+        })
+        .state('index.videos', { // 视频监控
+            url: 'videos/?sn',
+            templateUrl: '/templates/video-monitor/video-monitor.html',
+        })
+        .state('index.videos.records', { // 视频巡检记录
+            url: 'records/',
+            templateUrl: '/templates/video-monitor/ipc-record-history.html',
+        })
+        .state('index.videos.records.detail', { // 视频巡检详情
+            url: 'detail/?id',
+            templateUrl: '/templates/video-monitor/ipc-pic-record-detail.html',
+        })
+        .state('index.reports', { // 月度报告
+            url: 'reports/?sn',
+            templateUrl: '/templates/site/reports.html',
+        })
+        .state('index.docs', { // 电子档案
+            url: 'docs/?sn',
+            templateUrl: '/templates/site/docs.html',
+        })
+        .state('index.dataline', { // 历史曲线
+            url: 'dataline/?sn',
+            templateUrl: '/templates/site-monitor/data-line.html',
+        })
+        .state('index.dataHistory', { // 历史报表
+            url: 'data-history/?sn',
+            templateUrl: '/templates/site-monitor/data-history.html',
+        })
+        .state('index.security', { // 安全评测
+            url: 'security/?sn',
+            templateUrl: '/templates/evaluate/evaluate-history.html',
+        })
+        .state('index.security.record', { // 安全评测单个记录
+            url: 'record?id',
+            templateUrl: '/templates/evaluate/security-evaluate-home.html',
+        })
+        .state('index.security.record.detail', { // 安全评测单个记录
+            url: 'detail/',
+            templateUrl: '/templates/evaluate/security-evaluate-first-classify.html',
+        })
+        .state('index.poweroff', { // 停电维护
+            url: 'poweroff/?sn',
+            templateUrl: '/templates/maintenance-check/check-history.html',
+        })
+        .state('index.energyStatistics', { // 用能统计
+            url: 'energy-statistics/?sn',
+            templateUrl: '/templates/energy/statistics.html',
+        })
+        .state('index.energyReport', { // 用能报表
+            url: 'energy-report/?sn',
+            templateUrl: '/templates/energy/energy-report.html',
+        })
+        .state('index.meterreading', { // 抄表
+            url: 'meterreading/?sn',
+            templateUrl: '/templates/energy/meter-reading.html',
+        })
+        .state('index.allApp', { // 应用中心
+            url: 'appApp',
+            templateUrl: '/templates/app-store/app-store.html',
+        })
+        .state('index.dts', {
+            url: 'dts-list/?sn',
+            templateUrl: '/templates/dts/dts-list.html'
+        })
+    ;
+    // 能效管理
+    $stateProvider
+        .state('index.energyOverview', { // 用能统计
+            url: 'energy-overview/?sn',
+            templateUrl: '/templates/energy/overview.html',
+        })
+        .state('index.energyCost', { // 电费分析
+            url: 'energy-cost/?sn',
+            templateUrl: '/templates/energy/cost-analysis.html',
+        })
+        .state('index.energyLoad', { // 负荷统计
+            url: 'energy-load/?sn',
+            templateUrl: '/templates/energy/load-analysis.html',
+        })
+        .state('index.maxDemand', { // 最大需量
+            url: 'max-demand/?sn',
+            templateUrl: '/templates/energy/max-demand.html',
+        })
+        .state('index.energyQuality', { // 电能质量
+            url: 'energy-overview/?sn',
+            templateUrl: '/templates/energy/quality-monitor.html',
+        })
+        .state('index.energyQualityReport', { // 电能质量报告
+            url: 'energy-overview/?sn',
+            templateUrl: '/templates/energy/quality-report.html',
         })
     ;
 
