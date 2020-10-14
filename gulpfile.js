@@ -84,6 +84,11 @@ gulp.task('watch', async function () {
 
 gulp.task('default', ['theme', 'less', 'themeStatic', 'watch', 'webserver']);
 
+/**
+ * 修改主题色：
+ * 1）gulpfile.js： 修改 global.theme='light';
+ * 2）www/config/config.js： var gTheme = 'light';
+ */
 
 /**
  * 开发：
