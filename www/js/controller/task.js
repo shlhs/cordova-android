@@ -3283,7 +3283,7 @@ app.controller('TaskDevicesHandlerCtrl', ['$scope', 'routerService', 'ajax', '$m
 }]);
 
 // 巡检单个设备的处理页面
-app.controller('TaskDeviceCheckCtrl', ['$scope', 'ajax', '$myTranslate', function ($scope, ajax, $myTranslate) {
+app.controller('TaskDeviceCheckCtrl', ['$scope', 'ajax', '$myTranslate', 'userService', function ($scope, ajax, $myTranslate, userService) {
     var taskId = $scope.taskData.id;
     var deviceSn = $scope.device.device_sn;
     $scope.deviceName = $scope.device.device_name;
@@ -3295,6 +3295,14 @@ app.controller('TaskDeviceCheckCtrl', ['$scope', 'ajax', '$myTranslate', functio
     $scope.isLoading = false;
     $scope.expandItems = !$scope.canEdit;
     $scope.showResult = [TaskStatus.Arrived, TaskStatus.ToClose, TaskStatus.Closed].indexOf($scope.taskData.stage_id) >= 0;
+    $scope.autoSubmitDts = false; // 是否自动提交为缺陷单
+    $scope.selectedDtsLevel = {}; // 已选的缺陷等级
+    $scope.selectedDtsType = {}; // 已选的缺陷类型
+    var allDtsTypes = null; // 可选的缺陷类型
+    var dtsTypePicker = null;
+    var dtsLevelPicker = null;
+    var deviceExceptionDesp = {}; // 设备异常描述，默认=检查项的异常结果
+    var deviceDespEdited = false; // 设备异常描述如果被修改过，则后续步骤异常修改不再同步到设备结果
 
     $scope.onExpandItems = function () {
         $scope.expandItems = !$scope.expandItems;
@@ -3342,15 +3350,42 @@ app.controller('TaskDeviceCheckCtrl', ['$scope', 'ajax', '$myTranslate', functio
         if (pass === 2) {
             // 如果设置检查步骤异常，则默认设备结果也为异常
             $scope.result.status = '2';
+            deviceExceptionDesp[checkItem.id] = checkItem;
+        } else {
+            delete deviceExceptionDesp[checkItem.id];
         }
+        autoCompleteDeviceDesp();
+    };
+
+    function autoCompleteDeviceDesp() {
+        if (!deviceDespEdited) {
+            var desp = '';
+            var keys = Object.keys(deviceExceptionDesp);
+            keys.forEach(function (id, i) {
+                if (keys.length > 1) {
+                    desp += (i + 1) + '.';
+                }
+                var item = deviceExceptionDesp[id];
+                desp += item.name + ' 异常';
+                if (item.result_desp) {
+                    desp += '：' + item.result_desp;
+                }
+                desp += '\n';
+            });
+            $scope.result.desp = desp;
+        }
+    }
+
+    $scope.onItemInputBlur = function(item) {
+        autoCompleteDeviceDesp();
     };
 
     $scope.saveDeviceResult = function () {
-        // if ($scope.result.status === '2' && !$scope.result.desp) {
-        //     // 当设备状态设置为异常时，需要输入异常结果
-        //     $.notify.toast($myTranslate.instant('inspect.device.error.input.tip'));
-        //     return;
-        // }
+        if ($scope.result.status === '2' && !$scope.result.desp) {
+            // 当设备状态设置为异常时，需要输入异常结果
+            $.notify.toast($myTranslate.instant('inspect.device.error.input.tip'));
+            return;
+        }
         var checkItems = [];
         $scope.checkItems.forEach(function (t) {
             checkItems.push({
@@ -3361,11 +3396,25 @@ app.controller('TaskDeviceCheckCtrl', ['$scope', 'ajax', '$myTranslate', functio
             });
         });
         $.notify.progressStart();
+        if ($scope.selectedDtsType.id) { // 如果选择了缺陷类型后又被修改了，则设置id为空
+            for (var i=0; i<allDtsTypes.length; i++) {
+                if (allDtsTypes[i].id === $scope.selectedDtsType.id) {
+                    if (allDtsTypes[i].name !== $scope.selectedDtsType.name) {
+                        $scope.selectedDtsType.id = null;
+                    }
+                    break;
+                }
+            }
+        }
         var param = {
             status: $scope.result.status || '1',
             check_items: checkItems,
             desp: $scope.result.desp,
             images: $scope.result.images,
+            gen_dts: $scope.autoSubmitDts, // 是否自动创建dts单,
+            task_type_id: $scope.selectedDtsLevel.id,
+            defect_type_name: $scope.selectedDtsType.name || null,
+            defect_type: $scope.selectedDtsType.id || null
         };
         ajax.post({
             url: '/opstasks/' + taskId + '/setDeviceResult/' + deviceSn,
@@ -3394,6 +3443,99 @@ app.controller('TaskDeviceCheckCtrl', ['$scope', 'ajax', '$myTranslate', functio
     $scope.setDevicePass = function (pass) {
         $scope.result.status = pass;
     };
+
+    $scope.setSubmitDts = function () {
+        $scope.autoSubmitDts = !$scope.autoSubmitDts;
+        document.getElementById('dtsCreateContent').style.display = $scope.autoSubmitDts ? 'block' : 'none';
+        if ($scope.autoSubmitDts) {
+            initDtsLevelPicker();
+            initDtsTypePicker();
+        }
+    };
+
+    function initDtsLevelPicker() {
+        if (dtsLevelPicker) {
+            return;
+        }
+        var taskTypes = [{
+            value: 8,
+            text: $myTranslate.instant('dts.type.general')
+        }, {
+            value: 9,
+            text: $myTranslate.instant('dts.type.serious')
+        }, {
+            value: 10,
+            text: $myTranslate.instant('dts.type.fatal')
+        }];
+        var taskTypeButton = document.getElementById('dtsLevelPicker');
+        dtsLevelPicker = new mui.PopPicker();
+        dtsLevelPicker.setData(taskTypes);
+        taskTypeButton.addEventListener('click', function(event) {
+            dtsLevelPicker.show(function(items) {
+                $scope.selectedDtsLevel = {
+                    id: items[0].value,
+                    name: items[0].text
+                };
+                $scope.$apply();
+            });
+        }, false);
+        // 默认使用一般缺陷
+        $scope.selectedDtsLevel = {
+            id: taskTypes[0].value,
+            name: taskTypes[0].text
+        };
+    }
+
+    function initDtsTypePicker() {
+        if (dtsTypePicker) {
+            return;
+        }
+        ajax.get({
+            url: '/defect_types?companyId=' + userService.getTaskCompanyId(),
+            success: function (data) {
+                allDtsTypes = data;
+                dtsTypePicker = new mui.PopPicker();
+                var pickerData = [];
+                data.forEach(function (item) {
+                    pickerData.push({value: item.id, text: item.name});
+                });
+                dtsTypePicker.setData(pickerData);
+                var defectTypeBtn = document.getElementById('dtsTypePicker');
+                defectTypeBtn.addEventListener('click', function(event) {
+                    dtsTypePicker.show(function(items) {
+                        $scope.selectedDtsType = {
+                            id: items[0].value,
+                            name: items[0].text.substring(items[0].text.indexOf(' ') + 1)
+                        };
+                        $scope.$apply();
+                    });
+                }, false);
+                pickerI18n();
+                if (data.length) { // 默认缺陷类型为第一项
+                    $scope.selectedDtsType = {
+                        id: data[0].value,
+                        name: data[0].text
+                    };
+                }
+                $scope.$apply();
+            }
+        });
+    }
+
+    function destroyPicker() {
+        if (dtsTypePicker) {
+            dtsTypePicker.dispose();
+            dtsTypePicker = null;
+        }
+        if (dtsLevelPicker) {
+            dtsLevelPicker.dispose();
+            dtsLevelPicker = null;
+        }
+    }
+
+    $scope.$on('$destroy', function () {
+        destroyPicker();
+    });
 
     getDeviceCheckItems();
 }]);

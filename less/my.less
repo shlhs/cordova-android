@@ -693,6 +693,7 @@ header.mui-bar{
     color: #FFF;
     height: 40px;
     text-align: center;
+    line-height: 36px;
 }
 .weui-gallery__del {
     display: inline-block;
@@ -4166,15 +4167,22 @@ table.dataTable tbody th, table.dataTable tbody td {
         color: #333;
     }
     .address-popover .btn {
-        width: 70px;
+        width: 65px;
         background: @color-primary;
-        color: @color-text-primary;
+        color: #FFF;
         text-align: center;
         border-radius: 16px;
-        font-size: 14px;
+        font-size: 12px;
         margin-bottom: 0;
-        line-height: 28px;
+        line-height: 26px;
         margin-left: 8px;
+        border: 1px solid @color-primary;
+
+        &.transparent {
+            background: none;
+            border: 1px solid @color-primary;
+            color: @color-primary;
+        }
     }
 }
 

@@ -1068,3 +1068,19 @@
 .inspect-device-tab {
     background-color: @color-bg-primary;
 }
+.title-left-border {
+    position: relative;
+    padding-left: 6px;
+
+    &:before {
+        content: '';
+        display: block;
+        position: absolute;
+        left: 0;
+        width: 3px;
+        background-color: @color-primary;
+        margin-right: 4px;
+        top: 3px;
+        bottom: 0;
+    }
+}

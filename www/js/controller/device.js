@@ -1064,7 +1064,7 @@ app.controller('VarRealtimeCtrl', ['$scope', 'ajax', '$myTranslate', function ($
             $scope.realtimeType = realtimeItem.name;
             getRealTimeData();
             if (null === interval) {
-                // interval = setInterval(getRealTimeData, 5000);
+                interval = setInterval(getRealTimeData, 5000);
             }
         } else {
             $scope.isLoading = false;
@@ -1072,6 +1072,13 @@ app.controller('VarRealtimeCtrl', ['$scope', 'ajax', '$myTranslate', function ($
     });
 
     $scope.$on('$onHistoryVarChanged', function (event) {
+        if (interval) {
+            clearInterval(interval);
+            interval = null;
+        }
+    });
+
+    $scope.$on('$destroy', function () {
         if (interval) {
             clearInterval(interval);
             interval = null;

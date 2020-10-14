@@ -1,6 +1,6 @@
 <div>
     <div style="padding: 12px 0 4px 12px; font-size: 14px;">
-        <strong>{{'inspect.check.item' | translate}}：{{total}}{{'unit.count' | translate}}，{{'inspect.check.items.abnormal' | myTranslate}}：{{exception}}{{'unit.count' | translate}}</strong>
+        <strong class="title-left-border">{{'inspect.check.item' | translate}}：{{total}}{{'unit.count' | translate}}，{{'inspect.check.items.abnormal' | myTranslate}}：{{exception}}{{'unit.count' | translate}}</strong>
         <a style="margin-left: 16px;" ng-click="onExpandItems()">
             <span ng-if="!expandItems">{{'expand' | myTranslate}}<i class="navigate-down"></i></span>
             <span ng-if="expandItems">{{'collapse' | myTranslate}}<i class="navigate-up"></i></span>
@@ -27,7 +27,7 @@
         </div>
         <div ng-if="showResult && item.pass === 2">
             <label class="title">{{'inspect.result.unusual description' | myTranslate}}：</label>
-            <input placeholder="{{'please describe abnormal appearance' | myTranslate}}" ng-model="item.result_desp" ng-if="canEdit">
+            <input placeholder="{{'please describe abnormal appearance' | myTranslate}}" ng-model="item.result_desp" ng-if="canEdit" ng-blur="onItemInputBlur(item)">
             <label ng-if="!canEdit">{{item.result_desp}}</label>
         </div>
         <div>
@@ -37,7 +37,7 @@
     </div>
 </div>
 <div style="padding: 8px 0 4px 12px; font-size: 14px;">
-    <strong>{{'device inspection result' | myTranslate}}</strong>
+    <strong class="title-left-border">{{'device inspection result' | myTranslate}}</strong>
     <span ng-if="!canEdit">：
         <span class="text-normal" ng-if="result.status === '1'">{{ 'inspect.result.normal' | translate }}</span>
         <span class="text-danger" ng-if="result.status === '2'">{{ 'inspect.result.abnormal' | translate }}</span>
@@ -54,9 +54,29 @@
             </div>
         </div>
         <textarea rows="4" placeholder="{{canEdit ? ('inspect.check.device.desp' | translate) : ''}}" name="name" ng-model="result.desp" ng-disabled="!canEdit" required
-                  style="border: none;border-radius: 4px;font-size: 12px;padding: 8px;margin-top: 8px;" ng-if="canEdit || result.desp"></textarea>
+                  style="border: none;border-radius: 4px;font-size: 12px;padding: 8px;margin: 8px 0 0 0;" ng-if="canEdit || result.desp"></textarea>
         <div style="font-size: 13px;font-weight: 600;margin: 6px 0 4px 0;">{{'device photos' | myTranslate}}</div>
         <image-uploader images="result.images" ng-if="canEdit"></image-uploader>
         <image-grid-list images="result.images" ng-if="!canEdit && result.images.length"></image-grid-list>
+
+    </div>
+</div>
+<div class="card" ng-if="canEdit">
+    <a class="mui-tab-item1 mui-active mui-checkbox checkbox-square" style="width: auto;" href="javascript:void(0)">
+        <label class="checkbox text-link" ng-class="{checked: autoSubmitDts}" ng-click="setSubmitDts()">
+            <span style="margin-left: 2px;font-size: 13px;" class="color-danger">{{'inspect.tip.submitdefect' | translate}}</span>
+        </label>
+    </a>
+    <div id="dtsCreateContent" style="display: none;" class="mui-input-group task-create-rows dts-create-rows create-form no-border">
+        <div class="mui-input-row" style="margin: 0">
+            <label class="label">{{'ops.security.item.type' | translate}}</label>
+            <input type="text" name="defectType" ng-model="selectedDtsType.name" placeholder="{{'defect.type.input' | translate}}" style="width: calc(100% - 90px);">
+            <button id="dtsTypePicker" class="mui-btn mui-btn-block" type="button" style="float: right;width: auto;">{{'select' | translate}}</button>
+        </div>
+        <div class="mui-input-row" style="margin: 0">
+            <label class="label required">{{'dts.level' | translate}}</label>
+            <input type="text" name="taskTypeName" ng-model="selectedDtsLevel.name" placeholder="{{'please.select dts.level' | myTranslate}}" required style="width: calc(100% - 90px)">
+            <button id="dtsLevelPicker" class="mui-btn mui-btn-block" type="button">&nbsp; </button>
+        </div>
     </div>
 </div>

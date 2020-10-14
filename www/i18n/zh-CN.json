@@ -60,6 +60,7 @@
   "station.pfv.ratio.month": "本月用电占比",
   "station.electric.trend.month": "本月用电趋势",
   "station.degree.today": "今日用电量",
+  "station.degree.byday": "日用电量",
   "station.degree.thismonth": "本月用电量",
   "station.noaddress": "站点位置未设置",
   "station.getdetail.failed": "获取站点信息失败",
@@ -94,6 +95,7 @@
   "inspect.tip.submitdefect": "自动将异常提交为缺陷单",
   "inspect.device.error.input.tip": "请输入设备异常描述",
   "inspect.check.device.desp": "请输入设备情况描述",
+  "saveAndCreateDts": "保存并提交缺陷单",
 
   "task.new": "报修",
   "task.param.name": "报修内容",
