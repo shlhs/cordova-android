@@ -3453,6 +3453,14 @@ app.controller('TaskDeviceCheckCtrl', ['$scope', 'ajax', '$myTranslate', 'userSe
         }
     };
 
+    $scope.openDts = function () {
+        var ids = $scope.result.dts_task_ids;
+        if (!ids || !ids.length) {
+            return;
+        }
+        location.href = '/templates/dts/dts-detail.html?id=' + ids[0];
+    };
+
     function initDtsLevelPicker() {
         if (dtsLevelPicker) {
             return;

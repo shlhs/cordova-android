@@ -96,6 +96,7 @@
   "inspect.device.error.input.tip": "请输入设备异常描述",
   "inspect.check.device.desp": "请输入设备情况描述",
   "saveAndCreateDts": "保存并提交缺陷单",
+  "inspect.view.dts": "查看已提交的缺陷",
 
   "task.new": "报修",
   "task.param.name": "报修内容",

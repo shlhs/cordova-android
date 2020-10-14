@@ -95,6 +95,7 @@
   "inspect.device.error.input.tip": "Please enter defect of device",
   "inspect.check.device.desp": "describe device situation",
   "saveAndCreateDts": "Save and Create Defect Order",
+  "inspect.view.dts": "Open created defect order",
 
   "task.new": "New Order",
   "task.param.name": "Description",
