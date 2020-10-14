@@ -2855,7 +2855,6 @@ app.controller('TaskCreateCtrl', ['$scope', '$timeout', 'userService', 'routerSe
                 if (stations.length === 1) { // 用户只有一个站点，则无需让用户选择站点
                     $scope.taskData.station_sn = stations[0].sn;
                     $scope.stationName = stations[0].name;
-                    document.getElementById('stationFormItem').remove();
                     getDevices({sn: stations[0].sn}); // 获取报修设备
                     return;
                 }
@@ -2922,7 +2921,7 @@ app.controller('TaskCreateCtrl', ['$scope', '$timeout', 'userService', 'routerSe
             deviceDatas: staticDevices,
             onSelect: function (device) {
                 $scope.deviceName = device.name;
-                $scope.taskData.devices = [{id: device.id, sn: device.sn}];
+                $scope.taskData.devices = [{id: device.id, sn: device.sn, name: device.name}];
                 history.back();
             }
         });
