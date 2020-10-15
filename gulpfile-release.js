@@ -29,6 +29,7 @@ const htmlReplace = require('gulp-html-replace');
 const htmlMin = require('gulp-htmlmin');
 const sequence = require('run-sequence');
 const PipeQueue = require('pipe-queue');
+const gutil = require('gulp-util');
 
 //根据自己开发的实际需求自行设置， src放开发文件， dist是打包压缩后的导出目录
 const folder = {
@@ -179,7 +180,7 @@ gulp.task('compress-js', function () {
     gulp.src([
         folder.tmp + 'js/app/**',
         folder.tmp + 'js/service/**',
-        // folder.tmp + 'js/router/**',
+        folder.tmp + 'js/router/**',
         folder.tmp + 'js/controller/**',
         folder.tmp + 'js/my/**',
         folder.tmp + 'js/echartsTheme.js'
@@ -188,10 +189,13 @@ gulp.task('compress-js', function () {
         .pipe(gulp.dest(folder.tmp))
         .pipe(removeComments())
         .pipe(uglifyJS())
+        .on('error', function(err) { // 定位压缩过程中的错误文件和位置
+            gutil.log(gutil.colors.red('[Error]'), err.toString());
+        })
         .pipe(gulp.dest(folder.dist + 'js'))
         .pipe(connect.reload());
 
-    gulp.src([folder.tmp + 'js/router/router.js']).pipe(gulp.dest(folder.dist + 'js/router'));
+    // gulp.src([folder.tmp + 'js/router/router.js']).pipe(gulp.dest(folder.dist + 'js/router'));
     gulp.src([folder.lib + 'ys7/ezuikit-1.3.min.js']).pipe(gulp.dest(folder.dist + 'lib/ys7'));
     gulp.src([folder.lib + 'easy-player/easy-player-element.min.js']).pipe(gulp.dest(folder.dist + 'lib/easy-player'));
 });

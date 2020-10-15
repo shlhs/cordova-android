@@ -370,7 +370,7 @@ app.controller('SiteBaseInfoCtrl', ['$scope', 'ajax', 'platformService', functio
 }]);
 
 
-app.controller('EventListCtrl', ['$scope', 'scrollerService', 'userService', 'ajax', 'appStoreProvider', '$myTranslate', function ($scope, scrollerService, userService, ajax, appStoreProvider, $myTranslate) {
+app.controller('EventListCtrl', ['$scope', '$state', 'scrollerService', 'userService', 'ajax', 'appStoreProvider', '$myTranslate', function ($scope, $state, scrollerService, userService, ajax, appStoreProvider, $myTranslate) {
     $scope.sn = GetQueryString('sn');
     var checked = GetQueryString('status') === '0' ? 0 : 1;
     $scope.isDevice = false;   // 是设备还是站点
@@ -490,7 +490,11 @@ app.controller('EventListCtrl', ['$scope', 'scrollerService', 'userService', 'aj
     };
 
     $scope.goToCreateTaskHtml = function($event, eventObj) {
-        window.location.href = '/templates/task/add-task.html?eventId=' + eventObj.id + '&station_sn=' + eventObj.station_sn;
+        // window.location.href = '/templates/task/add-task.html?eventId=' + eventObj.id + '&station_sn=' + eventObj.station_sn;
+        $state.go('index.newTask', {
+            stationSn: eventObj.station_sn,
+            eventId: eventObj.id
+        });
     };
 }]);
 

@@ -7,22 +7,8 @@
 app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider){
 
     $stateProvider
-        // .state('base', {
-        //     url: '/'
-        // })
-        // .state('welcome', {
-        //     url:'/welcome',
-        //     // template: '<div>alskdjf</div>'
-        //     templateUrl: '/templates/welcome.html'
-        // })
-        // .state('login', {
-        //     url: '/login',
-        //     templateUrl: '/templates/login.html'
-        // })
         .state('index', {
-            url: '/',
-            // templateUrl: '/templates/home.html'
-            // controller: 'HomeCtrl'
+            url: '/'
         })
     ;
     // 设置相关
@@ -54,12 +40,6 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
         .state('index.overview', { // 站点总览
             url: 'overview/?sn',
             templateUrl: '/templates/site/overview.html',
-            onEnter: function () {
-                console.log('onEnter');
-            },
-            onExit: function () {
-                console.log('onExit');
-            }
         })
         .state('index.graphs', { // 站点总览
             url: 'graphs/?sn',
@@ -149,9 +129,21 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
             url: 'appApp',
             templateUrl: '/templates/app-store/app-store.html',
         })
-        .state('index.dts', {
+        .state('index.dtsList', {
             url: 'dts-list/?sn',
             templateUrl: '/templates/dts/dts-list.html'
+        })
+        .state('index.dtsList.dts', {
+            url: 'dts/?id',
+            templateUrl: '/templates/dts/dts-detail.html'
+        })
+        .state('index.dtsList.newDts', {
+            url: 'newDts',
+            templateUrl: '/templates/dts/dts-create.html',
+            params: {
+                stationSn: null,
+                deviceSns: null
+            }
         })
     ;
     // 能效管理
@@ -180,27 +172,87 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
             url: 'energy-overview/?sn',
             templateUrl: '/templates/energy/quality-report.html',
         })
+        .state('index.newTask', {
+            url: 'newTask',
+            templateUrl: '/templates/task/add-task.html',
+            params: {
+                stationSn: null,
+                eventId: null
+            }
+        })
+        .state('index.newDts', {
+            url: 'newDts',
+            templateUrl: '/templates/dts/dts-create.html',
+            params: {
+                stationSn: null,
+                deviceSns: null,
+                eventId: null
+            }
+        })
     ;
-
+    var taskRouters = {
+        'task': {
+            url: 'task/?id&taskType',
+            templateUrl: '/templates/task/task-detail.html'
+        },
+        'task.securityRecord': { // 安全评测报告
+            url: 'security/:id/',
+            templateUrl: '/templates/evaluate/security-evaluate-home.html',
+        },
+        'task.securitRecord.detail': {
+            url: 'detail/',
+            templateUrl: '/templates/evaluate/security-evaluate-first-classify.html',
+        },
+        'task.newDts': {
+            url: 'newDts',
+            templateUrl: '/templates/dts/dts-create.html',
+            params: {
+                stationSn: null,
+                deviceSns: null
+            }
+        },
+        'task.inspectDevices': {
+            url: 'inspectDevices/',
+            templateUrl: '/templates/task/device-list.html',
+            params: {
+                taskData: {},
+                canEdit: false,
+                recountFunc: null
+            }
+        },
+        'task.inspectDevices.detail': {
+            url: 'detail/',
+            templateUrl: '/templates/task/inspect-device-check.html',
+            params: {
+                device: {},
+                taskData: {},
+                canEdit: false
+            }
+        },
+        'task.inspectDevices.newDts': {
+            url: 'newDts',
+            templateUrl: '/templates/dts/dts-create.html?taskId&stationSn&deviceSns',
+            params: {
+                notOpenDetail: true, // 创建完成后不打开缺陷详情
+                taskId: null,
+                stationSn: null,
+                deviceSns: null
+            }
+        },
+        'dts': {
+            url: 'dts/?id&taskType',
+            templateUrl: '/templates/dts/dts-detail.html'
+        },
+        'task.dts': {
+            url: 'dts/?dtsId&dtsType',
+            templateUrl: '/templates/dts/dts-detail.html'
+        }
+    };
+    ['index'].forEach(function (parentIndex) {
+        Object.keys(taskRouters).forEach(function (index) {
+            $stateProvider.state(parentIndex + '.' + index, taskRouters[index]);
+        });
+    });
     $urlRouterProvider.when('', '/');
     $urlRouterProvider.otherwise('/');
 }]);
-
-/*
-app.run(function ($rootScope, $state, $stateParams) {
-   $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParam) {
-        console.log("chage start");
-   });
-    $rootScope.$on('$stateChangeSuccess', function (event, toState, toParams, fromState, fromParam) {
-        console.log("chage success");
-        if (toState.name.split('.').length > 2){        //  进入二级页面，则将footer隐藏
-            angular.element('#menu').hide();
-        }
-        else if (toState.name.split('.').length <= 2 && fromState.name.split('.').length > 2){
-            angular.element('#menu').show();
-
-        }
-
-    });
-});
-*/

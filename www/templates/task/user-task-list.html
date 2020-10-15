@@ -1,7 +1,7 @@
 <div ng-controller="TaskListCtrl">
     <header class="mui-bar bg-header">
         <h1 class="mui-title">{{'all task.services' | myTranslate}}</h1>
-        <a ng-click="toCreateTask()" class="mui-action-menu mui-icon mui-pull-right" ><i class="iconfont anticon-plus"></i></a>
+        <a id="taskAddBtn" ng-click="toCreateTask()" class="mui-action-menu mui-icon mui-pull-right" style="margin-top: -2px;"><i class="iconfont anticon-plus"></i></a>
     </header>
     <div style="top:61px;margin-bottom: 56px;" class="body-content" id="taskListWrapper">
         <div class="filter-btn" ng-click="toggleFilter()">

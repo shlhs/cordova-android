@@ -1,4 +1,15 @@
-<div class="mui-page" ng-controller="TaskBaseCtrl" ng-cloak>
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>任务详情</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <!--build:css -->
+    <link rel="stylesheet" href="/css/all.css">
     <!-- endbuild -->
     <style>
         html,
@@ -61,11 +72,35 @@
             right: 0;
         }
     </style>
+
+    <!--  build:lib -->
+    <script type="text/javascript" src="/lib/jquery-3.5.0.min.js"></script>
+    <script type="text/javascript" src="/lib/angular/angular.min.js"></script>
+    <script type="text/javascript" src="/lib/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script type="text/javascript" src="/lib/angular-animate/angular-animate.js"></script>
+    <script type="text/javascript" src="/lib/angular-ui-router/release/stateEvents.min.js"></script>
+    <script type="text/javascript" src="/lib/angular-translate.min.js"></script>
+    <script src="/lib/fastclick-master/lib/fastclick.js"></script>
+    <script src="/lib/moment.min.js"></script>
+    <script src="/lib/echart/echarts.min-3.x.js"></script>
+    <script src="/lib/mui/js/mui.min.js"></script>
+    <script src="/lib/mui/js/mui.picker.min.js"></script>
+    <script src="/lib/mui/js/mui.poppicker.js"></script>
+    <script src="/lib/slides-playing/js/jquery.slides.js"></script>
+    <script src="/lib/dropload-gh-pages/dist/dropload.min.js"></script>
+    <script type="text/javascript" src="/lib/datatables/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="/lib/datatables/dataTables.fixedColumns.min.js"></script>
+    <script type="text/javascript" src="/lib/datatables/dataTables.fixedHeader.min.js"></script>
+    <!-- endbuild -->
+</head>
+
+<body class="" ng-app="myApp" ng-controller="TaskBaseCtrl" ng-cloak>
+<div ng-controller="TaskDetailCtrl" ng-cloak id="taskDetail">
     <header class="mui-bar bg-header">
-        <a class="mui-icon  mui-icon-left-nav mui-pull-left btn-back" onclick="history.back()"></a>
+        <a class="mui-icon  mui-icon-left-nav mui-pull-left btn-back" onclick="pageBack()"></a>
         <h1 class="mui-title">{{'task.order detail' | myTranslate}}</h1>
     </header>
-    <div style="margin-top: 62px;" ng-class="{english: isEnglish}" ng-controller="TaskDetailCtrl" ng-cloak id="taskDetail">
+    <div style="margin-top: 62px;" ng-class="{english: isEnglish}">
         <!-- 正在处理的任务单 -->
         <div class="body-content" ng-class="{'page-bottom': canHandle}"
              ng-style="{'padding-bottom': actions.length>0 ? '50px' : ''}">
@@ -93,7 +128,7 @@
                         <span class="name">{{'staticdevice.count.defects.resolved' | translate}}</span>
                     </div>
                 </div>
-                <button ng-click="gotoDeviceHandlerPage()" ng-if="!canHandle">{{'inspect.device.view' |
+                <button ng-click="gotoDeviceHandlerPage()" ng-if="xunjianStage === 'toClose'">{{'inspect.device.view' |
                     translate}}
                 </button>
             </div>
@@ -329,6 +364,67 @@
                                title="{{ 'task.tip.select.repair.transfer' | translate }}"></handlers-selector>
         </div>
 
-        <div ui-view></div>
     </div>
+    <div ui-view></div>
 </div>
+
+<!-- build:js -->
+<script type="text/javascript" src="/config/config.js"></script>
+<script src="/js/echartsTheme.js"></script>
+<script src="/js/my/notify.js"></script>
+<script type="text/javascript" src="/js/app/utils.js"></script>
+<script type="text/javascript" src="/js/app/app.js"></script>
+<script type="text/javascript" src="/js/service/appstore.js"></script>
+<script type="text/javascript" src="/js/service/common-service.js"></script>
+<script type="text/javascript" src="/js/controller/login.js"></script>
+<script type="text/javascript" src="/js/controller/task.js"></script>
+<script type="text/javascript" src="/js/controller/sites.js"></script>
+<script src="/js/controller/user-energy.js"></script>
+<script src="/js/controller/setting.js"></script>
+<script type="text/javascript" src="/js/service/varData.js"></script>
+<script type="text/javascript" src="/js/controller/kanban.js"></script>
+<script type="text/javascript" src="/js/controller/monitor.js"></script>
+<script type="text/javascript" src="/js/controller/device.js"></script>
+<script type="text/javascript" src="/js/controller/ipc.js"></script>
+<script type="text/javascript" src="/js/controller/site-monitor.js"></script>
+<script type="text/javascript" src="/js/controller/site/security_evaluate.js"></script>
+<script type="text/javascript" src="/js/controller/site/maintenance-checks.js"></script>
+<script type="text/javascript" src="/js/controller/energy.js"></script>
+<script type="text/javascript" src="/js/controller/static-devices.js"></script>
+<script type="text/javascript" src="/js/controller/dts.js"></script>
+<!-- endbuild -->
+<script>
+    mui.init();
+
+</script>
+<script>
+
+    app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
+
+        $stateProvider
+            .state('task', {
+                url: '/'
+            })
+            .state('task.update', {
+                url: 'update/',
+                templateUrl: '/templates/task/task-handle-update.html'
+            })
+            .state('task.reject', {
+                url: 'reject',
+                templateUrl: '/templates/task/task-close-reject.html'
+            })
+            .state('task.securityRecord', { // 安全评测单个记录
+                url: 'security/:id/',
+                templateUrl: '/templates/evaluate/security-evaluate-home.html',
+            })
+            .state('task.securitRecord.detail', { // 安全评测单个记录
+                url: 'detail/',
+                templateUrl: '/templates/evaluate/security-evaluate-first-classify.html',
+            })
+        ;
+        $urlRouterProvider.otherwise('/');
+    }]);
+</script>
+</body>
+
+</html>

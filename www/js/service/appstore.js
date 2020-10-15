@@ -128,7 +128,7 @@ var DEFAULT_MENUS = [
                 templateUrl: '/templates/dts/dts-list.html',
                 url: 'dts-list',
                 sn: 'ops-management/defect-tasks',
-                sref: 'dts',
+                sref: 'dtsList',
                 defaultChecked: true,
                 role: ['OPS_OPERATOR', 'OPS_ADMIN', 'USER']
             }, {

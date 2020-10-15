@@ -11,13 +11,16 @@
         </div>
         <div class="mui-input-row" style="padding-bottom: 8px;">
             <label class="label required" style="padding-bottom: 0">{{'device' | translate}}</label>
-            <button class="mui-btn mui-btn-block" type="button" ng-click="openDeviceSelector()" ng-if="!isForDevice" style="font-size: 14px;text-align: left;padding-left: 0;padding-bottom: 0;min-height: 36px;">{{'select' | translate}}</button>
-            <div class="devices" style="padding-left: 115px;">
-                <a ng-repeat="d in devices" class="device-name" ng-click="showDeviceDetail(d)">{{d.name}};</a>
+            <div style="display: inline-block; width: calc(100% - 115px)">
+                <button class="mui-btn mui-btn-block" type="button" ng-click="openDeviceSelector()" ng-if="!isForDevice" style="font-size: 14px;text-align: left;padding-left: 0;padding-bottom: 0;min-height: 36px;width: 100%;margin-bottom: 4px;">
+                    {{'select' | translate}}</button>
+                <div class="devices" style="margin-top: 11px;">
+                    <a ng-repeat="d in devices" class="device-name" ng-click="showDeviceDetail(d)">{{d.name}};</a>
+                </div>
+                <label class="error" ng-show="deviceEmptyError" style="margin: 0;">
+                    {{'please.select device' | myTranslate}}
+                </label>
             </div>
-            <label class="error" ng-show="deviceEmptyError" style="margin-top: 0;">
-                {{'please.select device' | myTranslate}}
-            </label>
         </div>
         <div class="mui-input-row">
             <label class="label">{{'ops.security.item.type' | translate}}</label>
@@ -64,7 +67,7 @@
         </div>
         <div class="mui-input-row">
             <label class="label required">{{'dts.name' | translate}}</label>
-            <textarea rows="2" placeholder="{{'please.input dts.name' | myTranslate}}..." name="name" ng-model="taskData.name" required></textarea>
+            <textarea rows="2" placeholder="{{'please.input dts.name' | myTranslate}}..." name="name" ng-model="taskData.name" required style="width: calc(100% - 115px)"></textarea>
             <label class="error" ng-show="myForm.name.$invalid && (myForm.name.$dirty || myForm.$submitted)">
                 <span ng-show="myForm.name.$error.required">{{'dts.name cannotempty' | myTranslate}}</span>
             </label>

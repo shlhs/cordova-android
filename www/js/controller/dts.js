@@ -15,10 +15,10 @@ function onAndroid_dtsImageDelete (filename) {       // Android手机上删除�
 }
 
 var TaskSource = {Repaire: 1, Event: 2, Inspect: 3};
-app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'routerService', 'mediaService', '$myTranslate', function ($scope, $timeout, ajax, userService, routerService, mediaService, $myTranslate) {
-    var taskId = GetQueryString("task_id") || $scope.task_id || '';
-    var deviceSns = GetQueryString('device_sns');
-    var stationSn = GetQueryString('station_sn');
+app.controller('DtsCreateCtrl', ['$scope', '$state', '$stateParams', '$timeout', 'ajax', 'userService', 'routerService', 'mediaService', '$myTranslate', function ($scope, $state, $stateParams, $timeout, ajax, userService, routerService, mediaService, $myTranslate) {
+    var taskId = $stateParams.taskId; // GetQueryString("task_id") || $scope.task_id || '';
+    var deviceSns = $stateParams.deviceSns; // GetQueryString('device_sns');
+    var stationSn = $stateParams.stationSn; //  GetQueryString('station_sn');
     var siteStr = localStorage.getItem("currentSite");
     var defaultStationSn = null; // 用户默认选择的站点
     if (siteStr) {
@@ -192,7 +192,7 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
         ajax.get({
             url: '/stations/' + stationSn + '/staticdevices',
             data: {
-                sns: sns
+                sns: typeof sns === 'string' ? sns : sns.join(',')
             },
             success: function (data) {
                 $scope.devices = data;
@@ -457,6 +457,7 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
     var requestParams = null; // 记录请求的参数
 
     function createTask (params) {
+        var createdData = null;
         ajax.post({
             url: '/opstasks/' + companyId,
             headers: {
@@ -467,22 +468,12 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
                 $.notify.progressStop();
                 if (res.code === 201) {
                     $.notify.info($myTranslate.instant('submit successful'));
-                    if ($scope.isInPage) {
-                        history.back();
+                    createdData = res;
+                    if (!$stateParams.notOpenDetail) { // 从巡检设备创建缺陷单时，创建成功后不打开缺陷单详情
+                        window.addEventListener('popstate', _openNewDts);
                     }
-                    $timeout(function () {
-                        var url = '/templates/dts/dts-detail.html?id=' + res.id +
-                            '&taskType=' + params.task_type_id + '&mother_task_id=' + taskId;
-                        if ($scope.isInPage) {
-                            var record = {
-                                device_sn: $scope.device.sn,
-                                status: $myTranslate.instant('inspect.result.hasDefect')
-                            };
-                            onAndroidCb_updateDeviceRecord(JSON.stringify(record));     // 调用任务页更新设备状态
-                        } else {
-                            url += '&finishPage=1';
-                        }
-                        window.location.href = url;       // 设置finish=1，这样在Android端在打开新页面时，会将当前页finish掉
+                    setTimeout(function () {
+                        history.back();
                     }, 300);
                 } else if (res.code === 400) {
                     $.notify.error(res.message);
@@ -507,6 +498,11 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
                 console.log('error');
             }
         });
+        function _openNewDts() {
+            var currentRouterIndex = $state.current.name;
+            $state.go(currentRouterIndex + '.dts', {id: createdData.id});
+            window.removeEventListener('popstate', _openNewDts);
+        }
     }
 
     $scope.toggleWarningModal = function () {
@@ -545,7 +541,7 @@ app.controller('DtsCreateCtrl', ['$scope', '$timeout', 'ajax', 'userService', 'r
 }]);
 
 // 设备缺陷记录
-app.controller('DeviceDtsListCtrl', ['$scope', 'ajax', 'scrollerService', 'userService', function ($scope, ajax, scrollerService, userService) {
+app.controller('DeviceDtsListCtrl', ['$scope', '$state', 'ajax', 'scrollerService', 'userService', function ($scope, $state, ajax, scrollerService, userService) {
     var deviceSn = GetQueryString('device_sn');
     var stationSn = GetQueryString('station_sn');
     var status = GetQueryString("status");
@@ -633,6 +629,10 @@ app.controller('DeviceDtsListCtrl', ['$scope', 'ajax', 'scrollerService', 'userS
         });
     };
 
+    $scope.$on('toUpdateTask', function (event, taskId, taskData) {
+        $scope.updateTask(taskData);
+    });
+
     $scope.updateTask = function (taskData) {
         // 查找任务是否存在
         var exist = false;
@@ -651,7 +651,10 @@ app.controller('DeviceDtsListCtrl', ['$scope', 'ajax', 'scrollerService', 'userS
     };
 
     $scope.openDtsCreatePage = function () {
-        window.location.href = '/templates/dts/dts-create.html?station_sn=' + (stationSn || '') + '&device_sn=' + deviceSn;
+        $state.go('.newDts', {
+            stationSn: stationSn || '',
+            deviceSns: deviceSn
+        });
     };
 
     $scope.getDataList();
@@ -741,6 +744,10 @@ app.controller('StationDtsListCtrl', ['$scope', '$stateParams', '$rootScope', 's
             }
         });
     };
+
+    $scope.$on('toUpdateTask', function (event, taskId, taskData) {
+        $scope.updateTask(taskData);
+    });
 
     $scope.updateTask = function (taskData) {
         // 查找任务是否存在

@@ -1,4 +1,4 @@
-<div class="page page-fade" ng-controller="TaskDevicesHandlerCtrl" id="xunjianTaskDevices">
+<div class="mui-page" ng-controller="TaskDevicesHandlerCtrl" id="xunjianTaskDevices">
     <header class="mui-bar bg-header">
         <a class="mui-icon" onclick="history.back()" style="font-size: 16px;margin-top: 6px;margin-left: 6px;">{{ 'cancel' | translate }}</a>
         <h1 class="mui-title">{{'devices' | translate}}</h1>
@@ -39,4 +39,5 @@
                     ng-click="openDtsPage()">{{ 'task.defect.create' | translate }}</button>
         </a>
     </div>
+    <div ui-view=""></div>
 </div>

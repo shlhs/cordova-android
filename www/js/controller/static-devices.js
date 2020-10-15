@@ -143,7 +143,6 @@ app.controller('StaticDeviceSubListCtrl', ['$scope', 'ajax', function ($scope, a
 
 var OpsTaskType = [1, 2, 3, 4, 5, 6, 7, 11];
 
-
 app.controller('StaticDeviceDetailCtrl', ['$scope', 'ajax', 'routerService', 'platformService', 'authService', function ($scope, ajax, routerService, platformService, authService) {
     $scope.device = {};
     $scope.showTab = 'info';
@@ -338,7 +337,7 @@ app.controller('StaticDeviceEditCtrl', ['$scope', 'ajax', 'routerService', 'plat
                 $scope.device = parseDeviceData(data);
                 $scope.$apply();
             }
-        })
+        });
     };
 
     function parseDeviceData(data) {
