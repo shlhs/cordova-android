@@ -3097,6 +3097,9 @@ app.controller('TaskCreateCtrl', ['$scope', '$stateParams', '$state', '$timeout'
             taskData.pictures = $scope.imageList;
         }
         taskData.source = $scope.linkEventId ? TaskSource.Event : TaskSource.Repaire;
+        if (!taskData.current_handler && taskData.operator_team) {
+            taskData.stage_id = 6;
+        }
         $.notify.progressStart();
         var createdData = null;
         ajax.post({
