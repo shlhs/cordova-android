@@ -133,16 +133,16 @@
                             <div>{{'defect.description' | translate}}：</div>
                             <ul class="task-detail-info-group">
                                 <li ng-if="taskData.defect_type">
-                                    <label class="title" style="width: 70px;">{{'defect.type' | translate}}</label>
-                                    <span class="value">{{taskData.defect_type_name}}</span>
+                                    <label class="title" style="width: 70px;">{{'defect.type' | translate}}：</label>
+                                    <span class="value" style="float: none;">{{taskData.defect_type_name}}</span>
                                 </li>
                                 <li>
                                     <!--<label class="title" style="width: 50px;">{{'description' | translate}}</label>-->
-                                    <span class="value">{{taskData.name}}</span>
+                                    <span class="value" style="float: none;">{{taskData.name}}</span>
                                 </li>
                                 <li ng-if="taskData.desp">
-                                    <label class="title" style="width: 50px;">{{'remark' | translate}}</label>
-                                    <span class="value" style="padding-left: 50px;">{{taskData.desp}}</span>
+                                    <label class="title" style="width: 50px;">{{'remark' | translate}}：</label>
+                                    <span class="value" style="padding-left: 50px;float: none;">{{taskData.desp}}</span>
                                 </li>
                                 <audio-recorder audio="createRecord.voice_src" ng-if="createRecord.voice_src" duration="createRecord.voice_duration"></audio-recorder>
                                 <div ng-if="createRecord.picture_list.length || createRecord.video_src" style="font-size: 13px;">
