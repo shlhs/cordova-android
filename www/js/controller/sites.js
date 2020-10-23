@@ -148,6 +148,11 @@ app.controller('SiteListCtrl', ['$scope', 'ajax', 'userService', 'appStoreProvid
         }
     });
 
+    $scope.$on('onNotifyAppUpdate', function () {
+        $scope.selectedApps = appStoreProvider.getSelectedApps();
+        $scope.$apply();
+    });
+
     function getMenuDataOfStation() {
         ajax.get({
             url: '/station/' + $scope.currentSite.sn + '/menudata',

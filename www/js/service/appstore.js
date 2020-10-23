@@ -459,10 +459,10 @@ app.controller('AppStoreCtrl', ['$scope', 'appStoreProvider', '$translate', func
         $scope.toggleEdit();
 
         // 回到
-        if (window.android) {
-            window.android.onJsCallbackForPrevPage('onAndroidCb_updateAppList', '');
-        }
-        $scope.$emit('onNotifyAppUpdate');
+        // if (window.android) {
+        //     window.android.onJsCallbackForPrevPage('onAndroidCb_updateAppList', '');
+        // }
+        $scope.$emit('onBaseNotifyAppUpdate');
     };
     setSelectedState();
 }]);

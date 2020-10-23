@@ -227,6 +227,10 @@ app.controller('HomeCtrl', ['$scope', '$state', '$timeout', 'userService', 'appS
        $scope.$broadcast('toUpdateTask', taskId, taskData);
     });
 
+    $scope.$on('onBaseNotifyAppUpdate', function () { // appstore修改
+        $scope.$broadcast('onNotifyAppUpdate');
+    });
+
     $scope.openApp = function(app) {
         $state.go('.' + app.sref, {sn: $scope.currentSite.sn});
     };
@@ -347,11 +351,6 @@ app.controller('HomeCtrl', ['$scope', '$state', '$timeout', 'userService', 'appS
                 $scope.$apply();
             }
         });
-    };
-
-    $scope.updateAppList = function () {
-        $scope.selectedApps = appStoreProvider.getSelectedApps();
-        $scope.$apply();
     };
 
     $scope.searchInputChange = function (input) {
