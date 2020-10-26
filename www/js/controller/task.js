@@ -1667,7 +1667,7 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
     function formatTaskStatus() {   // 将任务状态转成适合页面显示的格式
         var taskData = $scope.taskData, stageId = taskData.stage_id, activeIndex = 0, finishIndex = 0, progress = 0,
             canHandle = false;
-        if (isTodoTask(taskData, username) || taskData.stage_id === TaskStatus.Competition) {
+        if (isTodoTask(taskData, username) && [TaskStatus.Competition, TaskStatus.ToAccept, TaskStatus.Coming, TaskStatus.Accepted].indexOf(stageId) < 0) {
             canHandle = true;
         }
         switch (stageId) {
