@@ -26,7 +26,7 @@
 <body class="box-vertical-center" ng-app="myApp" ng-cloak ng-controller="LoginCtrl" ng-class="isDark ? 'dark-login' : 'light-login'">
     <img class="main-icon" src="../img/login/login-icon.png" ng-if="!isDark">
     <div style="color: rgba(255, 255, 255, 0.6);font-size: 25px;margin-top: 15%;" ng-if="isDark">欢迎使用</div>
-    <div style="color: #FFF; font-size: 30px;" ng-if="isDark">{{appName}}</div>
+    <div style="color: #FFF; font-size: 2rem;line-height: 3.5rem;" ng-if="isDark">{{appName}}</div>
     <div class="login-area">
         <div class="login-form">
             <div class="form-item" ng-show="platformCodeVisible">
