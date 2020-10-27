@@ -31,13 +31,6 @@ app.directive('siteTreeView',[function(){
                 });
                 $event.stopPropagation();
             };
-            $scope.getItemIcon = function(item){
-                var isLeaf = $scope.isLeaf(item);
-                if(isLeaf){
-                    return 'fa fa-leaf';
-                }
-                return item.$$isExpend ? 'fa fa-minus': 'fa fa-plus';
-            };
             $scope.isLeaf = function(item){
                 return !item.is_group;
             };
@@ -155,6 +148,11 @@ app.controller('SiteListCtrl', ['$scope', 'ajax', 'userService', 'appStoreProvid
         }
     });
 
+    $scope.$on('onNotifyAppUpdate', function () {
+        $scope.selectedApps = appStoreProvider.getSelectedApps();
+        $scope.$apply();
+    });
+
     function getMenuDataOfStation() {
         ajax.get({
             url: '/station/' + $scope.currentSite.sn + '/menudata',
@@ -190,7 +188,9 @@ app.controller('SiteListCtrl', ['$scope', 'ajax', 'userService', 'appStoreProvid
     }
 }]);
 
-app.controller('SiteTreeCtrl', ['$scope', function ($scope) {
+app.controller('SiteTreeCtrl', ['$scope', '$stateParams', function ($scope, $stateParams) {
+    // $scope.selectedSn = $stateParams.selectedSn;
+    // $scope.onSelect = $stateParams.onSelect;
     $scope.showedTreeData = JSON.parse(JSON.stringify($scope.treeData));
 
     function setSearchKey(data) {
@@ -214,13 +214,6 @@ app.controller('SiteTreeCtrl', ['$scope', function ($scope) {
             $event:$event
         });
         $event.stopPropagation();
-    };
-    $scope.getItemIcon = function(item){
-        var isLeaf = $scope.isLeaf(item);
-        if(isLeaf){
-            return 'fa fa-leaf';
-        }
-        return item.$$isExpend ? 'fa fa-minus': 'fa fa-plus';
     };
     $scope.isLeaf = function(item){
         return !item.is_group;
@@ -382,7 +375,7 @@ app.controller('SiteBaseInfoCtrl', ['$scope', 'ajax', 'platformService', functio
 }]);
 
 
-app.controller('EventListCtrl', ['$scope', 'scrollerService', 'userService', 'ajax', 'appStoreProvider', '$myTranslate', function ($scope, scrollerService, userService, ajax, appStoreProvider, $myTranslate) {
+app.controller('EventListCtrl', ['$scope', '$state', 'scrollerService', 'userService', 'ajax', 'appStoreProvider', '$myTranslate', function ($scope, $state, scrollerService, userService, ajax, appStoreProvider, $myTranslate) {
     $scope.sn = GetQueryString('sn');
     var checked = GetQueryString('status') === '0' ? 0 : 1;
     $scope.isDevice = false;   // 是设备还是站点
@@ -464,6 +457,10 @@ app.controller('EventListCtrl', ['$scope', 'scrollerService', 'userService', 'aj
 
     $scope.getDataList();
 
+    $scope.openEventHistory = function () {
+        window.location.href = '/templates/site/closed-event-list.html?status=0&sn=' + $scope.sn;
+    };
+
     $scope.postCheckEventAction = function($event, eventId) {
         console.log("To check event: " + eventId);
         var data = {"status": 0};
@@ -498,13 +495,18 @@ app.controller('EventListCtrl', ['$scope', 'scrollerService', 'userService', 'aj
     };
 
     $scope.goToCreateTaskHtml = function($event, eventObj) {
-        window.location.href = '/templates/task/add-task.html?eventId=' + eventObj.id + '&station_sn=' + eventObj.station_sn;
+        // window.location.href = '/templates/task/add-task.html?eventId=' + eventObj.id + '&station_sn=' + eventObj.station_sn;
+        $state.go('index.newTask', {
+            stationSn: eventObj.station_sn,
+            eventId: eventObj.id
+        });
     };
 }]);
 
 
-app.controller('SiteDocsCtrl', ['$scope', 'ajax', 'platformService', function ($scope, ajax, platformService) {
-    var sn = GetQueryString('sn'), host = platformService.getCloudHost();
+app.controller('SiteDocsCtrl', ['$scope', '$stateParams', 'ajax', 'platformService', function ($scope, $stateParams, ajax, platformService) {
+    var sn = $stateParams.sn; //GetQueryString('sn')
+    var host = platformService.getCloudHost();
     $scope.docList = [];
     $scope.docLoading = false;
     $scope.loadingFailed = false;
@@ -615,8 +617,8 @@ app.controller('SiteDocsCtrl', ['$scope', 'ajax', 'platformService', function ($
 }]);
 
 
-app.controller('SiteReportsCtrl', ['$scope', 'ajax', 'routerService', 'platformService', function ($scope, ajax, routerService, platformService) {
-    var stationSn = GetQueryString('sn');
+app.controller('SiteReportsCtrl', ['$scope', '$stateParams', 'ajax', 'routerService', 'platformService', function ($scope, $stateParams, ajax, routerService, platformService) {
+    var stationSn = $stateParams.sn; // GetQueryString('sn');
     $scope.reports = [];
     $scope.isLoading = false;
     $scope.loadingFailed = false;
@@ -660,7 +662,6 @@ app.controller('SiteReportsCtrl', ['$scope', 'ajax', 'routerService', 'platformS
     };
 
     $scope.openReport = function (name, link) {
-        // routerService.openPage($scope, '/templates/base-image-zoom.html', {link: link, name: name});
         window.open('/pdf-viewer/viewer.html?file=' + link, '_self', 'width:100%;height:100%;top:0;left:0;');
     };
 

@@ -12,8 +12,8 @@ function openDeviceFromQR(data) {   //根据扫码结果打开设备详情
     }
 }
 
-app.controller('StaticDevicesHomeCtrl', ['$scope', 'ajax', 'routerService', function ($scope, ajax, routerService) {
-    var stationSn = GetQueryString("sn");
+app.controller('StaticDevicesHomeCtrl', ['$scope', '$stateParams', 'ajax', 'routerService', function ($scope, $stateParams, ajax, routerService) {
+    var stationSn = $stateParams.sn; // GetQueryString("sn");
     $scope.deviceDatas = [];
     $scope.isLoading = false;
     $scope.loadingFailed = false;
@@ -142,7 +142,6 @@ app.controller('StaticDeviceSubListCtrl', ['$scope', 'ajax', function ($scope, a
 }]);
 
 var OpsTaskType = [1, 2, 3, 4, 5, 6, 7, 11];
-
 
 app.controller('StaticDeviceDetailCtrl', ['$scope', 'ajax', 'routerService', 'platformService', 'authService', function ($scope, ajax, routerService, platformService, authService) {
     $scope.device = {};
@@ -338,7 +337,7 @@ app.controller('StaticDeviceEditCtrl', ['$scope', 'ajax', 'routerService', 'plat
                 $scope.device = parseDeviceData(data);
                 $scope.$apply();
             }
-        })
+        });
     };
 
     function parseDeviceData(data) {

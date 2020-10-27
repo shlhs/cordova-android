@@ -297,91 +297,6 @@ app.controller('DeviceInfoDetailCtrl', ['$scope', 'ajax', function ($scope, ajax
     })
 }]);
 
-app.controller('DeviceTaskHistoryCtrl', ['$scope', 'ajax', 'scrollerService', function ($scope, ajax, scrollerService) {
-    var deviceSn = GetQueryString('deviceSn');
-    var allTasks = [];
-    $scope.TaskStatus = TaskStatus;
-    $scope.showTasks = [];
-    $scope.showType = 'open';    // all, open, closed
-    $scope.isLoading = true;
-    $scope.openTaskCount = 0;   // 未关闭的任务数
-    $scope.closedTaskCount = 0; // 已关闭的任务数
-    $scope.getDataList = function() {
-
-        scrollerService.initScroll("#task_history_scroll", $scope.getDataList);
-        var url = "/opstasks?device_sn=" + deviceSn;
-        ajax.get({
-            url: url,
-            success: function(data) {
-                $scope.isLoading = false;
-                data.sort(sortByUpdateTime);
-                for (var i in data){
-                    formatTaskStatusName(data[i]);
-                }
-                allTasks = data;
-                $scope.changeTaskType($scope.showType);
-                $scope.$apply();
-            },
-            error: function (a,b,c) {
-                $scope.isLoading = false;
-                $.notify.error("获取任务历史失败");
-                $scope.$apply();
-            }
-        });
-    };
-
-    $scope.updateTask = function (taskData) {
-        console.log('TaskHistoryCtrl updateTask');
-        // 查找任务是否存在
-        var exist = false;
-        for (var i in allTasks){
-            if (allTasks[i].id == taskData.id){
-                allTasks[i] = taskData;
-                exist = true;
-                break;
-            }
-        }
-        if (!exist){        // 如果不存在，则加入到最前面
-            allTasks.unshift(taskData);
-        }
-        allTasks.sort(sortByUpdateTime);
-        $scope.changeTaskType($scope.showType);
-    };
-
-    $scope.changeTaskType = function (type) {
-        console.log('change type');
-        var showTasks = [];
-        if (type == 'all'){
-            showTasks = allTasks;
-        }
-        else if (type == 'closed'){
-            for(var i in allTasks){
-                if (allTasks[i].stage_id == TaskStatus.Closed){
-                    showTasks.push(allTasks[i]);
-                }
-            }
-            $scope.closedTaskCount = showTasks.length;
-            $scope.openTaskCount = allTasks.length - $scope.closedTaskCount;
-        }else{
-            for (var i in allTasks){
-                if (allTasks[i].stage_id != TaskStatus.Closed){
-                    showTasks.push(allTasks[i]);
-                }
-            }
-            $scope.openTaskCount = showTasks.length;
-            $scope.closedTaskCount = allTasks.length - $scope.openTaskCount;
-        }
-        $scope.showTasks = showTasks;
-        $scope.showType = type;
-    };
-
-    $scope.openTask = function (task) {
-        location.href = '/templates/task/task-detail.html?id=' + task.id + '&taskType=' + task.task_type_id;
-    };
-
-    $scope.getDataList();
-}]);
-
 app.controller('DeviceTreeCommonCtrl', ['$scope', function ($scope) {
     $scope.treeData = [];
     $scope.selectOptions = [
@@ -567,8 +482,8 @@ app.controller('DeviceTreeCommonCtrl', ['$scope', function ($scope) {
     };
 }]);
 
-app.controller('DeviceMonitorListCtrl', ['$scope', 'ajax', 'platformService', function ($scope, ajax, platformService) {       // 检测设备列表页
-    var stationSn = GetQueryString('sn');
+app.controller('DeviceMonitorListCtrl', ['$scope', '$stateParams', '$state', 'ajax', 'platformService', function ($scope, $stateParams, $state, ajax, platformService) {       // 检测设备列表页
+    var stationSn = $stateParams.sn;
     $scope.deviceDatas = [];
     $scope.treeData = [];
     $scope.hasDevice = false; // 是否有设备
@@ -678,17 +593,18 @@ app.controller('DeviceMonitorListCtrl', ['$scope', 'ajax', 'platformService', fu
     }
 
     $scope.gotoDevice = function (deviceData) {
-        location.href = '/templates/site/device-monitor.html?stationSn=' + stationSn + '&deviceSn=' + deviceData.sn + '&deviceName=' + encodeURIComponent(deviceData.name);
+        // location.href = '/templates/site/device-monitor.html?stationSn=' + stationSn + '&deviceSn=' + deviceData.sn + '&deviceName=' + encodeURIComponent(deviceData.name);
+        $state.go('.detail', {deviceSn: deviceData.sn, name: deviceData.name});
     };
 
     $scope.getDataList();
 }]);
 
-app.controller('DeviceMonitorCtrl', ['$scope', 'ajax', 'appStoreProvider', 'authService', 'platformService', '$myTranslate', function ($scope, ajax, appStoreProvider, authService, platformService, $myTranslate) {
+app.controller('DeviceMonitorCtrl', ['$scope', '$stateParams', 'ajax', 'appStoreProvider', 'authService', 'platformService', '$myTranslate', function ($scope, $stateParams, ajax, appStoreProvider, authService, platformService, $myTranslate) {
     $scope.isLoading = true;
-    $scope.stationSn = GetQueryString('stationSn');
-    $scope.deviceSn=GetQueryString('deviceSn');
-    $scope.deviceName = GetQueryString('deviceName');
+    $scope.stationSn = $scope.currentSite.sn; // GetQueryString('stationSn');
+    $scope.deviceSn= $stateParams.deviceSn; // GetQueryString('deviceSn');
+    $scope.deviceName = $stateParams.name; // GetQueryString('deviceName');
     $scope.realtimeLabel = $myTranslate.instant('device.realtime');
     $scope.historyLabel = $myTranslate.instant('device.history');
     $scope.analogLabel = $myTranslate.instant('var.analog');
@@ -819,8 +735,8 @@ app.controller('DeviceMonitorCtrl', ['$scope', 'ajax', 'appStoreProvider', 'auth
 
 }]);
 
-app.controller('DeviceRemoteControlCtrl', ['$scope', '$interval', 'routerService', 'platformService', 'ajax', function ($scope, $interval, routerService, platformService, ajax) {
-    $scope.device_sn = GetQueryString('device_sn');
+app.controller('DeviceRemoteControlCtrl', ['$scope', '$stateParams', '$interval', 'routerService', 'platformService', 'ajax', function ($scope, $stateParams, $interval, routerService, platformService, ajax) {
+    $scope.device_sn = $stateParams.deviceSn; // GetQueryString('device_sn');
     $scope.varList = [];
     $scope.confirmVisible = false;
     $scope.controlObj = null;
@@ -1077,6 +993,13 @@ app.controller('VarRealtimeCtrl', ['$scope', 'ajax', '$myTranslate', function ($
         }
     });
 
+    $scope.$on('$destroy', function () {
+        if (interval) {
+            clearInterval(interval);
+            interval = null;
+        }
+    });
+
     function getRealTimeData() {        // 获取变量的实时值
         var type = $scope.realtimeType, sns=$scope.realtime.sns;
         if (!sns || !sns.length) {
@@ -1239,7 +1162,6 @@ app.controller('HistoryVarCtrl', ['$scope', 'ajax', '$myTranslate', function ($s
                 textStyle: {
                     fontSize: 14,
                     fontWeight: 'normal',
-                    fontColor: '#333',
                 }
             },
             grid: {
@@ -1270,40 +1192,22 @@ app.controller('HistoryVarCtrl', ['$scope', 'ajax', '$myTranslate', function ($s
                 data: xAxis,
                 axisLabel: {
                     fontSize: 11,
-                    color: '#6b6b6b'
                 },
-                axisLine: {
-                    lineStyle: {
-                        color: '#E7EAED'
-                    }
-                }
             },
             yAxis: {
                 name: currentGroup.unit,
                 nameGap: 0,
                 nameTextStyle: {
-                    color: '#6b6b6b'
                 },
                 type: 'value',
                 axisLabel: {
                     fontSize: 11,
-                    color: '#6b6b6b'
                 },
-                axisLine: {
-                    lineStyle: {
-                        color: '#E7EAED'
-                    }
-                },
-                splitLine: {
-                    lineStyle: {
-                        color: '#E7EAED'
-                    }
-                }
             },
             series: series,
         };
         echarts.dispose(document.getElementById('chartContainer'));
-        echarts.init(document.getElementById('chartContainer')).setOption(option);
+        echarts.init(document.getElementById('chartContainer'), 'custom').setOption(option);
     }
 }]);
 
@@ -1327,13 +1231,6 @@ app.directive('treeView',[function(){
                     $event:$event
                 });
                 $event.stopPropagation();
-            };
-            $scope.getItemIcon = function(item){
-                var isLeaf = $scope.isLeaf(item);
-                if(isLeaf){
-                    return 'fa fa-leaf';
-                }
-                return item.$$isExpend ? 'fa fa-minus': 'fa fa-plus';
             };
             $scope.isLeaf = function(item){
                 return !item.is_group;

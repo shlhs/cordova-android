@@ -45,7 +45,7 @@
   "tab.competition": "抢单",
   "tab.todo": "待办",
   "tab.me": "我的",
-  "tab.energy": "能效管理",
+  "tab.energy": "能效",
   "tab.service": "我的服务",
   "tab.om": "运维",
 
@@ -60,6 +60,7 @@
   "station.pfv.ratio.month": "本月用电占比",
   "station.electric.trend.month": "本月用电趋势",
   "station.degree.today": "今日用电量",
+  "station.degree.byday": "日用电量",
   "station.degree.thismonth": "本月用电量",
   "station.noaddress": "站点位置未设置",
   "station.getdetail.failed": "获取站点信息失败",
@@ -94,6 +95,8 @@
   "inspect.tip.submitdefect": "自动将异常提交为缺陷单",
   "inspect.device.error.input.tip": "请输入设备异常描述",
   "inspect.check.device.desp": "请输入设备情况描述",
+  "saveAndCreateDts": "保存并提交缺陷单",
+  "inspect.view.dts": "查看已提交的缺陷",
 
   "task.new": "报修",
   "task.param.name": "报修内容",
@@ -156,7 +159,7 @@
   "defect.ops.person.empty": "请指定消缺人员",
   "defect.expecttime": "计划消缺时间",
   "defect.recheck": "复测",
-  "defect.recheck.team": "复测人员",
+  "defect.recheck.team": "复测班组",
   "defect.recheck.person": "复测人员",
   "defect.recheck.persion.empty": "不指定复测人员则无复测流程",
   "defect.name.voice": "语音描述",
@@ -235,7 +238,7 @@
   "staticdevice.ops.list": "运维记录",
   "staticdevice.param.click.tip": "点击对应属性进行编辑",
 
-  "ops.security.header": "设备安全技术评测记录",
+  "ops.security.header": "设备安全评测记录",
   "ops.security": "设备安全技术评测",
   "ops.security.level.urgent": "紧急",
   "ops.security.level.serious": "重大",
@@ -272,6 +275,8 @@
   "tip.number.validate": "请输入数字",
   "tip.nopicture": "暂无图片",
   "tip.thereisno": "当前未配置",
+  "tip.novar.ofdevice": "该设备未配置任何变量",
+  "tip.nogroupvar.ofdevice": "变量未关联标准定义",
 
   "app.my": "我的应用",
   "app.edit": "编辑",
@@ -404,6 +409,7 @@
   "map": "地图",
   "position": "位置",
   "coordinate": "坐标",
+  "username": "姓名",
 
   "edit": "编辑",
   "new": "新增",
@@ -442,6 +448,7 @@
   "select": "选择",
   "upload": "上传",
   "search": "搜索",
+  "update": "更新",
 
   "terrible": "非常差",
   "bad": "差",
@@ -463,6 +470,7 @@
   "overview": "总览",
   "realtime": "实时",
   "none": "无",
+  "abnormal": "异常",
   "to2": "至",
 
   "select.daily": "按日",

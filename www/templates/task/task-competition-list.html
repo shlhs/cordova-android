@@ -3,17 +3,17 @@
         <h1 class="mui-title">抢单</h1>
     </header>
 <div class="scroll-wrapper" style="margin-top: 60px; padding-top: 7px" id="competition_tasks_scroller">
-    <div class="mui-scroll">
+    <div>
         <ul class="mui-table-view mui-table-view-striped mui-table-view-condensed card-view task-list no-out-border" ng-if="tasks.length">
             <li class="mui-table-view-cell task-item" ng-repeat="task in tasks" data-id="{{task.id}}" ng-click="openTask(task)">
                 <div class="main-body">
                     <div class="mui-media-body task-main">
                         <h4 class="mui-ellipsis task-title" style="margin-top: 0">
-                            <img class="mui-pull-left task-icon" src="/img/task_type_{{task.task_type_id}}@2x.png">
+                            <i class="task-icon iconfont anticon-task-{{task.iconClass}}"></i>
                             <strong class="task-type" ng-class="{'ergent': task.task_type_id===3}">{{task.task_type_name}}</strong>
-                            <label style="float: right;color: #666;font-size: 13px;" ng-if="task.distance">
-                                {{task.distance}}
-                            </label>
+                            <!--<label style="float: right;font-size: 13px;" ng-if="task.distance" class="text-secondary">-->
+                                <!--{{task.distance}}-->
+                            <!--</label>-->
                         </h4>
                     </div>
                 </div>
@@ -42,7 +42,7 @@
 <!--<handlers-selector on-hide="onHideGrab" visible="userPickerVisible" callback="postGrabTask" users="toAcceptUsers" title="'您可以选择其他人协助'"></handlers-selector>-->
 <div class="page-alert-wrapper" ng-if="isLoading">
     <div class="page-alert">
-        <span class="mui-spinner"></span>
+        <img src="../../img/page-loading.gif" class="loading-img">
         <div class="alert-text info">{{'loading' | translate}}...</div>
     </div>
 </div>

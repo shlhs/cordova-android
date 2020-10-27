@@ -59,6 +59,7 @@
   "station.pfv.ratio.month": "Electricity ratio of this month",
   "station.electric.trend.month": "Electricity trend of this month",
   "station.degree.today": "Today Consumption",
+  "station.degree.byday": "Consumption",
   "station.degree.thismonth": "Month Consumption",
   "station.noaddress": "Longitude and Latitude is not set",
   "station.getdetail.failed": "Get station info failed",
@@ -90,9 +91,11 @@
   "inspect.check.items.abnormal": "Abnormal items",
   "inspect.check.reference": "Standard",
   "inspect.check.step.info": "Check steps",
-  "inspect.tip.submitdefect": "It will auto report the defect as a Defect Order",
+  "inspect.tip.submitdefect": "Report as a Defect Order automatically",
   "inspect.device.error.input.tip": "Please enter defect of device",
   "inspect.check.device.desp": "describe device situation",
+  "saveAndCreateDts": "Save and Create Defect Order",
+  "inspect.view.dts": "Open created defect order",
 
   "task.new": "New Order",
   "task.param.name": "Description",
@@ -271,6 +274,8 @@
   "tip.number.validate": "please enter number",
   "tip.nopicture": "no picture",
   "tip.thereisno": "There is no",
+  "tip.novar.ofdevice": "No variables of this device",
+  "tip.nogroupvar.ofdevice": "No standard variables",
 
   "app.my": "My Apps",
   "app.edit": "Edit",
@@ -403,6 +408,7 @@
   "map": "Map",
   "position": "Position",
   "coordinate": "Coordinate",
+  "username": "User Name",
 
   "edit": "Edit",
   "new": "New",
@@ -441,6 +447,7 @@
   "select": "Select",
   "upload": "Upload",
   "search": "Search",
+  "update": "Update",
 
   "terrible": "Terrible",
   "bad": "Bad",
@@ -462,6 +469,7 @@
   "overview": "Overview",
   "realtime": "Real-time",
   "none": "No",
+  "abnormal": "abnormal",
   "to2": "to",
 
   "select.daily": "by Day",

@@ -1,87 +1,90 @@
-
-<div style="height: 100%;" ng-style="{'background-color': currentSite.sn ? '' : '#fff'}">
-    <div class="site-header">
-        <header class="mui-bar bg-header bg-transparent" style="box-shadow: none;position: static;">
-            <a class=" mui-pull-left site-popover" ng-click="openSiteSelectPage()" ng-show="sites.length > 1" ng-if="!isSiteDetail">{{'station.switch' | translate}}</a>
-            <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()" ng-if="isSiteDetail"></a>
-            <h1 class="mui-title" style="font-size: 18px;left: 70px;right: 70px;">{{currentSite.name}}</h1>
-            <a class="mui-pull-right" href="/templates/site/event-list.html?sn={{currentSite.sn}}&name={{currentSite.name}}" style="position: relative;margin-right: 8px;" ng-if="currentSite.sn">
-                <i class="icon white icon-events" style="width: 18px;height: 18px;">
-                </i>
-                <span class="mui-badge mui-badge-danger" ng-if="currentSite.unclosed_envet_amount"
-                      style="position: absolute;font-size: 9px;top:-8px;left: 10px;font-weight: 300;">
-                    {{currentSite.events_amount}}
-                </span>
-            </a>
-        </header>
-        <div class="site-img-wrapper">
-            <div class="img-border">
-                <img ng-src="{{currentSite.site_image}}" style="width: 100%;height: 100%;border-radius: 8px;" ng-if="currentSite.sn" ng-click="refreshStationStatus(currentSite.sn)">
-                <img src="/img/site-default.png" style="width: 100%;height: 100%;border-radius: 8px;" ng-if="!isLoading && !currentSite.sn">
-                <img src="/img/no-station-img.png" style="height:64px;border-radius: 8px;margin-top: 20px;" ng-if="isLoading">
-            </div>
-            <div class="status-line" ng-if="currentSite.sn">
-                <div class="status {{currentSite.status}}"><i class="site-status {{currentSite.status}}"></i> {{currentSite.status_name}}</div>
+<div class="mui-page" style="height: 100%;">
+    <div ng-if="!isLoading && currentSite.sn" style="height: 100%; width: 100%; overflow-x: hidden;">
+        <div class="site-header">
+            <header class="mui-bar bg-header bg-transparent">
+                <a class=" mui-pull-left site-popover" ng-click="openSiteSelectPage()" ng-show="sites.length > 1" ng-if="!isSiteDetail">{{'station.switch' | translate}}</a>
+                <a class="mui-icon  mui-icon-left-nav mui-pull-left btn-back" onclick="pageBack()" ng-if="isSiteDetail"></a>
+                <h1 class="mui-title" style="font-size: 18px;left: 70px;right: 70px;">{{currentSite.name}}</h1>
+                <a class="mui-pull-right event-icon-link" href="/templates/site/event-list.html?sn={{currentSite.sn}}&name={{currentSite.name}}" ng-if="currentSite.sn">
+                    <i class="iconfont anticon-event-alarm">
+                    </i>
+                    <!-- {{currentSite.events_amount}} -->
+                    <span class="mui-badge mui-badge-danger event-badge" ng-if="currentSite.unclosed_envet_amount">{{currentSite.events_amount}}</span>
+                </a>
+            </header>
+            <div class="site-img-wrapper">
+                <div class="img-border">
+                    <img ng-src="{{currentSite.site_image}}" style="width: 100%;height: 100%;" ng-if="currentSite.sn" ng-click="refreshStationStatus(currentSite.sn)">
+                    <img src="/img/site-default.png" style="width: 100%;height: 100%;" ng-if="!isLoading && !currentSite.sn">
+                    <img src="/img/no-station-img.png" style="height:64px;margin-top: 20px;" ng-if="isLoading">
+                </div>
+                <div class="status-line" ng-if="currentSite.sn">
+                    <div class="status {{currentSite.status}}">{{currentSite.status_name}}</div>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="card round-card apps" style="padding: 4px 0 8px 0;" ng-if="currentSite.sn">
-        <ul class="mui-table-view mui-grid-view mui-grid-9 no-border entrance-list small" style="background-color: transparent;border-radius: 0;">
-            <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border" ng-repeat="app in selectedApps">
-                <a href="{{app.templateUrl}}?sn={{currentSite.sn}}&name={{currentSite.urlName}}" style="padding: 6px 0 0 0;">
-                    <span class="mui-icon icon icon-32 {{app.icon}}"></span>
-                    <div class="mui-media-body">{{app.name}}</div>
-                </a>
-            </li>
-            <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border" ng-if="!isEnergyPlatform">
-                <a href="/templates/app-store/app-store.html" style="padding: 6px 0 0 0;">
-                    <span class="mui-icon icon icon-32 icon-app-store"></span>
-                    <div class="mui-media-body">{{'menu.more' | translate}}</div>
-                </a>
-            </li>
-        </ul>
-    </div>
-    <div class="card round-card" ng-if="currentSite.sn">
-        <div class="card-header" style="margin: 0 -4px; border-bottom: rgb(239,238,238) 1px solid;">
-            {{ 'station info' | myTranslate}}
-        </div>
-        <div class="card-content">
-
-            <ul class="mui-table-view no-border info-group site-info-group" style="font-size: 14px;margin-top:0px;">
-                <li class="mui-table-view-cell">
-                    <label class="title">{{ 'station.address' | myTranslate }}</label>
-                    <span class="value" ng-click="openMap()" ng-if="currentSite.longitude">
-                        {{currentSite.full_address}}
-                        <i class="icon icon-location" style="width: 18px; height: 18px; float: right"></i>
-                    </span>
-                    <span class="value" ng-if="!currentSite.longitude">
-                        {{currentSite.address}}
-                    </span>
+        <div class="card round-card apps home-nav-bg" style="padding: 4px 0 8px 0;" ng-if="currentSite.sn">
+            <ul class="mui-table-view mui-grid-view mui-grid-9 no-border entrance-list small" style="background-color: transparent;border-radius: 0;">
+                <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border" ng-repeat="app in selectedApps">
+                    <a ng-click="openApp(app)" style="padding: 8px 0 8px 0;">
+                        <!--<span class="mui-icon icon icon-20 {{app.icon}}"></span>-->
+                        <i class="app-icon iconfont anticon-{{app.icon}} {{app.color}}"></i>
+                        <div class="mui-media-body">{{app.name}}</div>
+                    </a>
                 </li>
-                <li class="mui-table-view-cell">
-                    <label class="title">{{ 'station.tel' | myTranslate }}</label>
-                    <span class="value">{{currentSite.fix_line_telephone}}</span>
-                </li>
-                <li class="mui-table-view-cell">
-                    <label class="title">{{ 'capacity.rated' | myTranslate }}</label>
-                    <span class="value">{{currentSite.capacity}}KVA</span>
-                </li>
-                <li class="mui-table-view-cell">
-                    <label class="title">{{ 'station.power.type' | translate }}</label>
-                    <span class="value">{{currentSite.power_supply_type}}</span>
-                </li>
-                <li class="mui-table-view-cell">
-                    <label class="title">{{ 'station.voltage.level' | translate }}</label>
-                    <span class="value">{{currentSite.voltage_class}}</span>
+                <li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3 no-padding no-border" ng-if="!isEnergyPlatform">
+                    <a ui-sref=".allApp" style="padding: 8px 0 8px 0;">
+                        <!--<span class="mui-icon icon icon-20 icon-app-store"></span>-->
+                        <i class="app-icon iconfont anticon-app-all grey"></i>
+                        <div class="mui-media-body">{{'menu.more' | translate}}</div>
+                    </a>
                 </li>
             </ul>
         </div>
+
+        <div class="home-station-title">
+            {{ 'station info' | myTranslate}}
+        </div>
+
+
+        <div class="card round-card home-station" ng-if="currentSite.sn">
+            <div class="card-content">
+                <ul class="item-list">
+                    <li class="item">
+                        <label class="title">{{ 'capacity.rated' | myTranslate }}</label>
+                        <span class="value">{{currentSite.capacity}}KVA</span>
+                    </li>
+                    <li class="item">
+                        <label class="title">{{ 'station.power.type' | translate }}</label>
+                        <span class="value">{{currentSite.power_supply_type}}</span>
+                    </li>
+                    <li class="item">
+                        <label class="title">{{ 'station.voltage.level' | translate }}</label>
+                        <span class="value">{{currentSite.voltage_class}}</span>
+                    </li>
+                </ul>
+
+                <p class="item-tele" ng-if="currentSite.fix_line_telephone">
+                    <span class="value">联系电话:{{currentSite.fix_line_telephone}}</span>
+                </p>
+
+                <p class="item-loca" ng-if="currentSite.longitude">
+                <span class="value" ng-click="openMap()" ng-if="currentSite.longitude">
+                    {{currentSite.full_address}}
+                    <a class="iconfont anticon-location" style="float: right"></a>
+                </span>
+                    <span class="value" ng-if="!currentSite.longitude">
+                    {{currentSite.address}}
+                </span>
+                </p>
+            </div>
+        </div>
     </div>
-    <div class="no-station" ng-if="!isLoading && !currentSite.sn" style="text-align: center;">
+    <div class="no-station" style="text-align: center;" ng-if="!isLoading && !currentSite.sn">
         <i class="alert-icon"></i>
         <label class="alert-info">{{'tip.nostation' | translate}}，<a ng-click="getDataList()">{{ 'reload' | translate }}</a></label>
     </div>
-    <div class="page-alert-wrapper" ng-if="isLoading" style="background-color: #fff;">
+    <div class="page-alert-wrapper" ng-if="isLoading">
         <div class="page-alert">
             <img src="../../img/page-loading.gif" class="loading-img">
             <div class="alert-text info">{{'loading' | translate}}...</div>

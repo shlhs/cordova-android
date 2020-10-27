@@ -1,6 +1,6 @@
-<div class="page page-left" ng-controller="StaticDeviceDetailCtrl" style="background-color: #fff;">
+<div class="page page-left static-device-detail-ctrl-page" ng-controller="StaticDeviceDetailCtrl">
     <header class="mui-bar bg-header" style="height: 120px;box-shadow: none;">
-        <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="history.back()"></a>
+        <a class="mui-icon  mui-icon-left-nav mui-pull-left btn-back" onclick="history.back()"></a>
         <h1 class="mui-title">{{device.name}}</h1>
 
     </header>
@@ -18,9 +18,9 @@
             <span class="name">{{'staticdevice.count.defects.resolved' | translate}}</span>
         </li>
     </ul>
-    <div class="mui-content" ng-include="'/templates/site/static-devices/device-info-detail.html'" style="top: 120px;background-color: #fff;">
+    <div class="body-content" ng-include="'/templates/site/static-devices/device-info-detail.html'" style="top: 120px;">
     </div>
     <div class="device-edit-btn" ng-click="startDeviceEditor()" ng-if="canEdit">
-        <i class="icon icon-24 icon-edit"></i>
+        <i class="iconfont anticon-edit-pencil"></i>
     </div>
 </div>
