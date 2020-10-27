@@ -15,6 +15,7 @@
                     <div class="ipc-wrapper">
                         <div class="bracket"></div>
                         <div class="img" ng-switch="ipc.type">
+                            <iframe class="img" ng-src="{{ipc.streamUrl}}" allowFullScreen width="100%" height="100%" ng-if="ipc.startPlay"></iframe>
                             <img class="img" ng-src="{{ipc.snapUrl}}" ng-if="!ipc.startPlay" ng-class="{'offline': !ipc.online}">
                             <a class="play" ng-if="!ipc.startPlay && ipc.online" ng-click="startPlay(ipc)"><i class="iconfont anticon-play"></i></a>
                         </div>
@@ -55,8 +56,8 @@
             </div>
         </div>
     </div>
-    <div style="position: fixed; top: 0; width: 100%; height: 100%;background-color: #000;" ng-if="playingIpc">
-        <iframe class="img" ng-src="{{playingIpc.streamUrl}}" allowFullScreen width="100%" height="100%"></iframe>
-    </div>
+    <!--<div style="position: fixed; top: 0; width: 100%; height: 100%;background-color: #000;" ng-if="playingIpc">-->
+        <!--<iframe class="img" ng-src="{{playingIpc.streamUrl}}" allowFullScreen width="100%" height="100%" style="outline: none;border: none;"></iframe>-->
+    <!--</div>-->
     <div ui-view=""></div>
 </div>

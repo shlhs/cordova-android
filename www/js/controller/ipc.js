@@ -73,7 +73,7 @@ app.controller('VideoMonitorCtrl', ['$scope', '$stateParams', '$state', '$timeou
     };
 
     $scope.startPlay = function (ipc) {
-        // ipc.startPlay = true;
+        ipc.startPlay = true;
         $scope.playingIpc = ipc;
     };
 
