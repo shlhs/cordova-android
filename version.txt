@@ -1,5 +1,5 @@
 {
-	"versionCode": 230,
+	"versionCode": 220,
 	"versionName": "2.3.0",
 	"description": "",
 	"downloadUrl": "http://114.215.90.83/apk/dianguanjia-2.3.0.apk",
