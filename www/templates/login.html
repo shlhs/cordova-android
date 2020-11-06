@@ -148,13 +148,13 @@
                 <input type="text" id="platform" placeholder="请输入平台编号" ng-model="platformCode" ng-change="inputChange('platformCode')"></div>
             <div class="form-item">
                 <label>{{ 'login.account' | translate }}</label>
-                <input type="text" ng-model="username" ng-change="inputChange('username')" placeholder="{{ 'login.account.placeholder' | translate }}">
+                <input type="text" ng-model="username" ng-change="inputChange('username')">
             </div>
             <div class="form-item">
                 <label>{{ 'login.pwd' | translate }}</label>
-                <input type="password" ng-model="password" ng-change="inputChange('password')" placeholder="{{ 'login.pwd.placeholder' | translate }}" ng-show="!passwordVisible">
+                <input type="password" ng-model="password" ng-change="inputChange('password')" ng-show="!passwordVisible">
                 <i class="iconfont anticon-password-not-seen" ng-if="!passwordVisible" ng-click="togglePasswordVisible()"></i>
-                <input type="text" ng-model="password" ng-change="inputChange('password')" placeholder="{{ 'login.pwd.placeholder' | translate }}" ng-show="passwordVisible">
+                <input type="text" ng-model="password" ng-change="inputChange('password')" ng-show="passwordVisible">
                 <i class="iconfont anticon-password-seen" ng-if="passwordVisible" ng-click="togglePasswordVisible()"></i>
             </div>
             <!--<div class="error">{{error}}</div>-->
