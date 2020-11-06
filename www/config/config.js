@@ -11,5 +11,5 @@ var gEnableDeviceMap = true; // 是否显示设备档案地图
 var LANGUAGE = 'en-US';// getStorageItem('LANGUAGE') || "zh-CN"; //如果需要根据手机系统来自动切换的话，使用：getStorageItem('LANGUAGE') || "zh-CN";
 var gIsEnglish = LANGUAGE === 'en-US';
 var gShowRecheck = true; // 是否显示复测内容
-var appName = 'INT-OMS'; // 应用名称
+var appName = getStorageItem('APPNAME') || ''; // 应用名称
 
