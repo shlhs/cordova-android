@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>设备位置</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <!--build:css -->
+    <link rel="stylesheet" href="/css/all.css">
+    <!--endbuild -->
+
+    <!-- build:lib -->
+    <script type="text/javascript" src="/lib/jquery-3.5.0.min.js"></script>
+    <script type="text/javascript" src="/lib/angular/angular.min.js"></script>
+    <script type="text/javascript" src="/lib/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script type="text/javascript" src="/lib/angular-animate/angular-animate.js"></script>
+    <script type="text/javascript" src="/lib/angular-ui-router/release/stateEvents.min.js"></script>
+    <script type="text/javascript" src="/lib/angular-translate.min.js"></script>
+    <script type="text/javascript" src="/lib/baidu/map/MarkerManager-1.2.min.js"></script>
+    <!-- endbuild -->
+</head>
+<body ng-app="myApp" ng-cloak ng-controller="mapCtrl" class="device-map">
+    <header class="mui-bar bg-header bg-transparent" style="box-shadow: none; z-index: 99;top: 6px;">
+        <a class="mui-icon  mui-icon-left-nav mui-pull-left btn-back" onclick="pageBack()"></a>
+        <h1 class="mui-title" style="left: 30px; right: 12px;">
+            <div class="search">
+                <input ng-model="searchText">
+                <div class="search-text" ng-click="mapSearch()">{{'search' | translate}}</div>
+            </div>
+        </h1>
+    </header>
+    <div ng-if="canEdit" class="tip">
+        <span><i class="iconfont anticon-alert-circle-full"></i>{{'staticdevice.map.edit.tip' | translate}}
+        </span>
+    </div>
+    <div class="body-content" style="top: 0;">
+        <div id="map" style="width: 100%;height: 100%;"></div>
+    </div>
+    <div class="control control-zoom">
+        <div class="iconfont anticon-plus" ng-click="mapZoomIn()"></div>
+        <div class="iconfont anticon-minus" ng-click="mapZoomOut()"></div>
+    </div>
+    <div class="control control-position">
+        <div class="iconfont anticon-fix-position" ng-click="mapFixPosition()"></div>
+    </div>
+    <div class="address-popover" ng-class="popoverVisible ? 'animate__slideInUp' : 'animate__slideOutDown'">
+        <div style="width: 100%;">
+            <div class="address">{{pointAddress}}</div>
+            <div class="position">{{'coordinate' | translate}}：{{deviceLng.substring(0, 10)}}, {{deviceLat.substring(0, 10)}}</div>
+        </div>
+        <div>
+            <div class="btn" ng-click="save()" ng-if="canEdit">{{'save' | translate}}</div>
+            <div class="btn transparent" style="margin-top: 10px;" ng-if="canNavigate" ng-click="openThirdMap()">{{'navigate' | translate}}</div>
+        </div>
+    </div>
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=ITbaaCqA7nMWRjEIycEpddoUW1AvZvRq"></script>
+    <!-- build:js -->
+    <script type="text/javascript" src="/js/app/utils.js"></script>
+    <script type="text/javascript" src="/config/config.js"></script>
+    <script src="/js/my/notify.js"></script>
+    <script type="text/javascript" src="/js/app/app.js"></script>
+    <script type="text/javascript" src="/js/service/common-service.js"></script>
+    <!-- endbuild -->
+    <script>
+
+        app.controller('mapCtrl', ['$scope', 'ajax', '$myTranslate', function ($scope, ajax, $myTranslate) {
+            var map = null;
+            var deviceData = null;
+            var stationPos = GetQueryString('stationPos');
+            var deviceSn = GetQueryString('deviceSn');
+            $scope.canEdit = GetQueryString('edit') === '1';
+            var defaultLng = 121.367654;
+            var defaultLat = 31.141168;
+            $scope.defaultLng = null;
+            $scope.deviceLat = null;
+            $scope.pointAddress = null;
+            $scope.popoverVisible = false;
+            $scope.searchText = '';
+            $scope.canNavigate = window.android && window.android.gotoThirdMap;
+
+            if (stationPos) {
+                defaultLng = stationPos.split(',')[0];
+                defaultLat = stationPos.split(',')[1];
+            }
+
+            $scope.mapZoomIn = function () {  // 放大
+                if (map) {
+                    map.zoomTo(map.getZoom() + 1);
+                }
+            };
+
+            $scope.mapZoomOut = function () { // 缩小
+                if (map) {
+                    map.zoomTo(map.getZoom() - 1);
+                }
+            };
+
+            $scope.mapFixPosition = function () { // 定位ca
+                if (!map) {
+                    return;
+                }
+                if ($scope.canEdit) {
+                    apiLocation.start(function (longtitude, latitude) {
+                        //如果获取不到用户的定位，则直接显示站点的位置
+                        if (longtitude && latitude){
+                            // 添加标注
+                            var start = new BMap.Point(longtitude, latitude);
+                            // 坐标转换
+                            var convertor = new BMap.Convertor();
+                            var pointArr = [start];
+                            convertor.translate(pointArr, 3, 5, function (data) {   //3: gcj02坐标，5：百度坐标
+                                var p = data.points[0];
+                                map.centerAndZoom(p, 18);                 // 初始化地图，设置中心点坐标和地图级别
+                                $scope.deviceLng = p.lng.toString();
+                                $scope.deviceLat = p.lat.toString();
+                                setMark(map, p.lng, p.lat);
+                            });
+                        }
+                    });
+                } else { // 不可编辑时，直接定位到设备的原始位置
+                    var p = new BMap.Point(defaultLng, defaultLat);
+                    map.centerAndZoom(p, 18);
+                }
+            };
+
+            function getDeviceDetail(deviceSn) {
+                ajax.get({
+                    url: '/staticdevices/details',
+                    data: {
+                        sns: deviceSn
+                    },
+                    success: function (response) {
+                        var data = response[0];
+                        deviceData = data;
+                        if (data.map_pos) {
+                            var obj = JSON.parse(data.map_pos);
+                            if (obj.type === 'point') {
+                                $scope.deviceLng = obj.detail.lng;
+                                $scope.deviceLat = obj.detail.lat;
+                                defaultLng = $scope.deviceLng;
+                                defaultLat = $scope.deviceLat;
+                                var end = new BMap.Point($scope.deviceLng, $scope.deviceLat);
+                                map.centerAndZoom(end, 18);
+                                setMark(map);
+                                $scope.$apply();
+                            }
+                        }
+                    }
+                });
+            }
+
+            var touchtStartTime = null;
+            function drawMap(lng, lat) {
+                map = new BMap.Map("map");          // 创建地图实例
+                if (!map){ return; }
+                var end = new BMap.Point(lng, lat);
+                // 添加标注
+                map.centerAndZoom(end, 18);
+                map.enableScrollWheelZoom();
+                setMark(map);
+//                if (window.android && window.android.gotoThirdMap) { // 显示导航按钮
+//                    document.getElementById('thirdMapBtn').style.display = 'block';
+//                }
+
+                if ($scope.canEdit) {
+                    map.addEventListener("dragstart", function(evt){
+                        touchtStartTime = null;
+                    });
+
+                    map.addEventListener("touchstart",function(e){
+                        touchtStartTime = new Date();
+                    });
+                    map.addEventListener("touchmove", function (e) {
+                        touchtStartTime = null;
+                    });
+                    map.addEventListener("touchend",function(e){
+                        if (touchtStartTime) { // 长按
+                            var diff = new Date().getTime() - touchtStartTime.getTime();
+                            if (diff > 350) {
+                                // 长按
+                                $scope.deviceLng = e.point.lng.toString();
+                                $scope.deviceLat = e.point.lat.toString();
+                                setMark(map);
+                                $scope.$apply();
+                            } else { // 点击的不是marker
+                                toggleAddressPopover(false);
+                            }
+                        }
+                        touchtStartTime = null;
+                    });
+                }
+            }
+
+            // 搜索
+            $scope.mapSearch = function(){
+                if ($scope.searchText) {
+                    var local = new BMap.LocalSearch(map, {
+                        renderOptions:{map: map}
+                    });
+                    local.search($scope.searchText);
+                }
+                $scope.popoverVisible = false;
+            };
+
+            // 打开第三方地图
+            $scope.openThirdMap = function() {
+                if (window.android && window.android.gotoThirdMap){
+                    var lng = $scope.deviceLng;
+                    var lat = $scope.deviceLat;
+                    var sitePoint = new BMap.Point(lng, lat);
+                    var convertor = new BMap.Convertor();
+                    var pointArr = [sitePoint];
+                    convertor.translate(pointArr, 5, 3, function (data) {   //3: gcj02坐标，5：百度坐标
+                        window.android.gotoThirdMap(lat, lng, data.points[0].lat, data.points[0].lng);
+                    });
+                }
+            };
+
+            function setMark(map) {
+                var lng = $scope.deviceLng;
+                var lat = $scope.deviceLat;
+                if (!lng || !lat) {
+                    return;
+                }
+                //创建标注位置
+                map.clearOverlays();
+                var point = new BMap.Point(lng, lat);
+                var myIcon = new BMap.Icon("/img/location-tag.png", new BMap.Size(30,30));
+                var marker = new BMap.Marker(point, {icon: myIcon});  // 创建标注
+                map.addOverlay(marker);              // 将标注添加到地图中
+                marker.addEventListener('click', function (e) { // 点击marker显示地址和保存按钮
+                    touchtStartTime = null;
+                    toggleAddressPopover(!$scope.popoverVisible);
+                });
+
+                var gc = new BMap.Geocoder();
+                gc.getLocation(point, function (rs) {
+                    $scope.pointAddress = rs.address;
+                    // 显示地址和坐标，以及保存按钮
+                    toggleAddressPopover(true);
+                });
+            }
+
+            function toggleAddressPopover(visible) { // 显示或隐藏最下方的地址、坐标和保存按钮
+                $scope.popoverVisible = visible;
+                $scope.$apply();
+            }
+
+            $scope.save = function () {
+                var mapPos = {
+                    type: 'point',
+                    detail: {lng: $scope.deviceLng, lat: $scope.deviceLat}
+                };
+                var params = Object.assign({}, deviceData, {
+                    map_pos: JSON.stringify(mapPos)
+                });
+                var stationSn = deviceSn.substring(0, deviceSn.indexOf('__'));
+                $.notify.progressStart();
+                ajax.patch({
+                    url: '/stations/' + stationSn + '/staticdevices/' + params.id,
+                    data: JSON.stringify(params),
+                    contentType:"application/json",
+                    headers: {
+                        Accept: "application/json"
+                    },
+                    success: function (res) {
+                        $.notify.progressStop();
+                        $.notify.info($myTranslate.instant('save successful'));
+                    },
+                    error: function () {
+                        $.notify.progressStop();
+                        $.notify.error($myTranslate.instant('save failed'));
+                    }
+                })
+            };
+
+            getDeviceDetail(deviceSn);
+            drawMap(defaultLng, defaultLat);
+        }]);
+
+    </script>
+</body>
+
+</html>

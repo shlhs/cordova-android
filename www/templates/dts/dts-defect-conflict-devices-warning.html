@@ -1,0 +1,22 @@
+<div class="modal">
+    <div class="popover-mask" style="background-color: rgba(0,0,0,0.3);" ng-click="toggleWarningModal()"></div>
+    <div class="modal-body" style="max-width: 310px;">
+        <div class="modal-content">
+            <div style="font-size: 15px; margin: 6px 0 10px 0;">以下设备已存在相同类型的缺陷单：</div>
+            <div style="font-size: 12px;" class="text-secondary">请勾选您希望本缺陷单包含的设备，不勾选表示忽略该设备</div>
+            <div class="conflict-devices" style="max-height: 250px;overflow-y: auto;">
+                <div ng-repeat="d in defectConflictDevices" ng-click="checkConflictDevice(d)">
+                    <div class="mui-checkbox checkbox-square">
+                        <a class="checkbox" ng-class="{checked: d.checked}"></a>
+                    </div>
+                    <label>{{d.name}}</label>
+                </div>
+            </div>
+            <div class="text-danger" style="font-size: 12px;">{{conflictSubmitError}}</div>
+        </div>
+        <div class="modal-footer" style="margin-top: 10px;display: flex;justify-content: space-around;padding-top: 12px;">
+            <button class="mui-btn text-secondary" style="width: 40%;line-height: 30px;background-color: transparent;" ng-click="toggleWarningModal()">取消创建</button>
+            <button class="mui-btn mui-btn-primary" style="width: 40%;line-height: 30px;" ng-click="submitIgnoreConflictCheck()">继续创建</button>
+        </div>
+    </div>
+</div>

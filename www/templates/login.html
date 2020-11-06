@@ -7,18 +7,17 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta http-equiv="Access-Control-Allow-Origin" content="*">
-    <link rel="stylesheet" href="../components/mui/css/icons-extra.css">
-    <link rel="stylesheet" href="../css/setting.css">
-    <script type="text/javascript" src="../components/libs/jquery-2.1.4.min.js"></script>
-    <script type="text/javascript" src="../components/angular/angular.min.js"></script>
-    <script type="text/javascript" src="../components/angular-ui-router/release/angular-ui-router.min.js"></script>
-    <script type="text/javascript" src="../components/angular-animate/angular-animate.js"></script>
-    <script type="text/javascript" src="../components/angular-ui-router/release/stateEvents.min.js"></script>
-    <script type="text/javascript" src="../js/app/utils.js"></script>
-    <script type="text/javascript" src="../js/lib/jwt/jsrsasign-all-min.js"></script>
-    <!--<script type="text/javascript" src="../js/lib/jwt/jwt-token.js"></script>-->
-    <script type="text/javascript" src="../js/app/app.js"></script>
-    <script type="text/javascript" src="../js/service/common-service.js"></script>
+    <!--build:css -->
+    <link rel="stylesheet" href="/css/all.css">
+    <!--endbuild -->
+    <!-- build:lib -->
+    <script type="text/javascript" src="../lib/jquery-3.5.0.min.js"></script>
+    <script type="text/javascript" src="../lib/angular/angular.min.js"></script>
+    <script type="text/javascript" src="../lib/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script type="text/javascript" src="../lib/angular-animate/angular-animate.js"></script>
+    <script type="text/javascript" src="/lib/angular-translate.min.js"></script>
+    <script type="text/javascript" src="../lib/angular-ui-router/release/stateEvents.min.js"></script>
+    <!-- endbuild -->
     <style>
         html,body{
             font-family:SimHei,'Helvetica Neue',Arial,'Droid Sans',sans-serif;
@@ -49,7 +48,7 @@
         }
         .form-item {
             box-sizing: border-box;
-            margin: 10px 44px;
+            margin: 10px 32px;
             position: relative;
             background-color: #fff;
         }
@@ -58,17 +57,18 @@
             font-size: 18px;
             position: absolute;
             left: 0;
-            line-height: 38px;
+            line-height: 48px;
             margin-left: 10px;
         }
         .form-item input {
             outline: none;
             border: none;
-            padding-left: 84px;
-            width: calc(100% - 115px);
+            padding-left: 100px;
+            width: calc(100% - 32px);
             font-size: 16px;
-            line-height: 22px;
-            height: 36px;
+            line-height: 48px;
+            height: 48px;
+            margin-bottom: 0;
         }
         .form-item .password-not-seen {
             width: 16px;
@@ -80,6 +80,7 @@
             right: 6px;
             top: 50%;
             margin-top: -10px;
+            float: right;
         }
         .form-item .password-can-seen {
             width: 20px;
@@ -91,6 +92,7 @@
             right: 6px;
             top: 50%;
             margin-top: -10px;
+            float: right;
         }
         input::-webkit-input-placeholder {
             /* placeholder颜色  */
@@ -103,7 +105,7 @@
         .login-btn {
             background-color: rgb(195,227,249);
             border-radius: 4px;
-            margin: 20px 42px 0 42px;
+            margin: 20px 32px 0 32px;
             box-sizing: border-box;
             height: 42px;
             line-height: 42px;
@@ -145,46 +147,33 @@
                 <label for="platform">平台</label>
                 <input type="text" id="platform" placeholder="请输入平台编号" ng-model="platformCode" ng-change="inputChange('platformCode')"></div>
             <div class="form-item">
-                <label for="username">用户名</label>
-                <input type="text" id="username" ng-model="username" ng-change="inputChange('username')" placeholder="请输入账号">
+                <label>{{ 'login.account' | translate }}</label>
+                <input type="text" ng-model="username" ng-change="inputChange('username')" placeholder="{{ 'login.account.placeholder' | translate }}">
             </div>
             <div class="form-item">
-                <label for="password">密码</label>
-                <input type="password" id="password" ng-model="password" ng-change="inputChange('password')" placeholder="请输入密码" ng-show="!passwordVisible">
-                <i class="password-not-seen" ng-if="!passwordVisible" ng-click="togglePasswordVisible()"></i>
-                <input type="text" ng-model="password" ng-change="inputChange('password')" placeholder="请输入密码" ng-show="passwordVisible">
-                <i class="password-can-seen" ng-if="passwordVisible" ng-click="togglePasswordVisible()"></i>
+                <label>{{ 'login.pwd' | translate }}</label>
+                <input type="password" ng-model="password" ng-change="inputChange('password')" placeholder="{{ 'login.pwd.placeholder' | translate }}" ng-show="!passwordVisible">
+                <i class="iconfont anticon-password-not-seen" ng-if="!passwordVisible" ng-click="togglePasswordVisible()"></i>
+                <input type="text" ng-model="password" ng-change="inputChange('password')" placeholder="{{ 'login.pwd.placeholder' | translate }}" ng-show="passwordVisible">
+                <i class="iconfont anticon-password-seen" ng-if="passwordVisible" ng-click="togglePasswordVisible()"></i>
             </div>
             <!--<div class="error">{{error}}</div>-->
             <div class="login-btn" ng-class="{'enable': enable}" ng-click="login()">
-                <span ng-if="!isLogin">登录</span>
-                <span ng-if="isLogin">正在登录...</span>
+                <span ng-if="!isLogin">{{ 'login' | translate}}</span>
+                <span ng-if="isLogin">{{'login.submitting' | translate }}...</span>
             </div>
         </div>
     </div>
 </div>
-<script src="../components/fastclick-master/lib/fastclick.js"></script>
+<!-- build:js -->
+<script type="text/javascript" src="/js/app/utils.js"></script>
+<script type="text/javascript" src="/config/config.js"></script>
+<script type="text/javascript" src="../lib/jwt/jsrsasign-all-min.js"></script>
+<script type="text/javascript" src="../js/app/app.js"></script>
+<script type="text/javascript" src="../js/service/common-service.js"></script>
+<script src="../lib/fastclick-master/lib/fastclick.js"></script>
 <script src="../js/my/notify.js"></script>
-<script src="../components/dropload-gh-pages/dist/dropload.min.js"></script>
-<script src="../components/handlebars-v4.0.10.js"></script>
 <script type="text/javascript" src="../js/controller/login.js"></script>
-
-<!--<script>-->
-    <!--$(function () {-->
-        <!--var screenHeight = window.screen.height;-->
-        <!--var screenWidth = window.screen.width;-->
-        <!--var $img = $("#login_bg");-->
-        <!--var imageHeight = parseInt($img.css('height'));-->
-        <!--var imageWidth = parseInt($img.css('width'));-->
-        <!--if (imageWidth/imageHeight > screenWidth/screenHeight) {-->
-            <!--// 如果图片比例更宽，那么以高度为准-->
-            <!--var width = -(imageWidth * (screenHeight / imageHeight) - screenWidth) / 2;-->
-            <!--$img.css({height: screenHeight+'px', 'margin-left': width + 'px'});-->
-        <!--} else {-->
-            <!--var height = -(imageHeight * (screenWidth / imageWidth) - screenHeight ) / 2;-->
-            <!--$img.css({width: screenWidth+'px', 'margin-top': height + 'px'});-->
-        <!--}-->
-    <!--});-->
-<!--</script>-->
+<!-- endbuild -->
 </body>
 </html>

@@ -1,12 +1,4 @@
 
-function bodyScroll(ele) {
-    if (ele.scrollTop > 20) {
-        $('#transparentHeader').removeClass('bg-transparent');
-    } else {
-        $('#transparentHeader').addClass('bg-transparent');
-    }
-    console.log('scroll');
-}
 
 app.controller('SecurityBaseCtrl', ['$scope', '$compile', function ($scope, $compile) {
    function load() {
@@ -20,7 +12,7 @@ app.controller('SecurityBaseCtrl', ['$scope', '$compile', function ($scope, $com
    load();
 }]);
 
-app.service('SecurityReportService', ['userService', 'ajax', function (userService, ajax) {
+app.service('SecurityReportService', ['userService', 'ajax', '$myTranslate', function (userService, ajax, $myTranslate) {
     function _parseSecurityTemplate(template) {
 
         function evaluateItem(path, item) {
@@ -85,9 +77,9 @@ app.service('SecurityReportService', ['userService', 'ajax', function (userServi
             result.status = 'warning';
         }
         result.unqualifiedList.forEach(function (t) {
-            if (t.name === '紧急') {
+            if (t.name === $myTranslate.instant('ops.security.level.urgent')) {
                 emergency += 1;
-            } else if (t.name === '重大') {
+            } else if (t.name === $myTranslate.instant('ops.security.level.serious')) {
                 serious += 1;
             } else {
                 normal += 1;
@@ -123,12 +115,12 @@ app.service('SecurityReportService', ['userService', 'ajax', function (userServi
                 },
                 success: function (data) {
                     $.notify.progressStop();
-                    $.notify.info("保存成功");
+                    $.notify.info($myTranslate.instant('save successful'));
                     successCallback && successCallback(data);
                 },
                 error: function (xhr, status, error) {
                     $.notify.progressStop();
-                    $.notify.error('保存失败');
+                    $.notify.error($myTranslate.instant('save failed'));
                 }
             });
         } else {
@@ -147,7 +139,7 @@ app.service('SecurityReportService', ['userService', 'ajax', function (userServi
                 },
                 success: function (data) {
                     $.notify.progressStop();
-                    $.notify.info("保存成功");
+                    $.notify.info($myTranslate.instant('save successful'));
 
                     // 调用Android接口
                     window.android && window.android.onJsCallbackForPrevPage('setTaskReportId', data.id);
@@ -155,19 +147,20 @@ app.service('SecurityReportService', ['userService', 'ajax', function (userServi
                 },
                 error: function (xhr, status, error) {
                     $.notify.progressStop();
-                    $.notify.error('保存失败');
+                    $.notify.error($myTranslate.instant('save failed'));
                 }
             });
         }
     };
 }]);
 
-app.controller('SecurityHistoryCtrl', ['$scope', 'routerService', 'ajax', function ($scope, routerService, ajax) {
-    var sn = GetQueryString('sn');
-    $scope.stationName = GetQueryString("name");
+app.controller('SecurityHistoryCtrl', ['$scope', '$stateParams', 'routerService', 'ajax', function ($scope, $stateParams, routerService, ajax) {
+    var sn = $stateParams.sn; // GetQueryString('sn');
+    $scope.stationName = $stateParams.name; // GetQueryString("name");
     $scope.history = [];
     $scope.isLoading = false;
     $scope.loadingFailed = false;
+    $scope.isEnglish = gIsEnglish;
 
     $scope.createOneRecord = function () {
         $scope.openPage('/templates/evaluate/security-evaluate-first-classify.html', {isCreate: true, stationSn: sn,
@@ -223,7 +216,7 @@ app.controller('SecurityHistoryCtrl', ['$scope', 'routerService', 'ajax', functi
     $scope.getDataList();
 }]);
 
-app.controller('SecurityEvaluateHome', ['$scope', '$http', 'ajax', 'routerService', 'SecurityReportService', function ($scope, $http, ajax, routerService, SecurityReportService) {
+app.controller('SecurityEvaluateHome', ['$scope', '$stateParams', '$http', 'ajax', 'routerService', 'SecurityReportService', function ($scope, $stateParams, $http, ajax, routerService, SecurityReportService) {
     var backupData = {};        // 保存原始数据
     $scope.evaluateData = {};
     $scope.total = 0;
@@ -234,51 +227,85 @@ app.controller('SecurityEvaluateHome', ['$scope', '$http', 'ajax', 'routerServic
 
     // 画进度
     function drawProgress(progress) {
-        if (!progress) {    //
-            $("#evaluateChart").circleChart({
-                color: "#ffffff",
-                backgroundColor: "#e6e6e6",
-                widthRatio: 0.1, // 进度条宽度
-                size: Math.round($("#evaluateChart").parent().parent().height()*0.8),
-                value: 100,
-                startAngle: 175,
-                speed: 1,
-                textSize: 36,
-                relativeTextSize: 14,
-                animation: "easeInOutCubic",
-                text: 0,
-                onDraw: function(el, circle) {
-                    circle.text("0%"); // 根据value修改text
-                }
-            });
-        } else {
-            var color = '#F44336';  // warning的颜色
-            if ($scope.evaluateData.status === 'success') {
-                color = '#26A69A';
-            }
-            $("#evaluateChart").circleChart({
-                color: color,
-                backgroundColor: "rgba(255,255,255,0.5)",
-                widthRatio: 0.1, // 进度条宽度
-                size: Math.round($("#evaluateChart").parent().parent().height()*0.8),
-                value: progress,
-                startAngle: 175,
-                speed: 2000,
-                textSize: 36,
-                relativeTextSize: 14,
-                animation: "easeInOutCubic",
-                text: 0,
-                onDraw: function(el, circle) {
-                    circle.text(Math.round(circle.value) + "%"); // 根据value修改text
-                }
-            });
+        var color = $scope.evaluateData.status === 'success' ? ['#0FD781', '#06CFAD'] : ['#fc6076', '#ff9a44'];
+        if (!progress) {
+            color = ['#ccc', '#ccc'];
         }
+        var option = {
+            title: [{
+                text: '已完成',
+                x: 'center',
+                top: '25%',
+                textStyle: {
+                    color: color[0],
+                    fontSize: 12,
+                }
+            }, {
+                text: progress + '%',
+                x: 'center',
+                top: '36%',
+                textStyle: {
+                    fontSize: 18,
+                    color: color[0],
+                },
+            }],
+            polar: {
+                radius: ['80%', '90%'],
+                center: ['50%', '50%'],
+            },
+            angleAxis: {
+                max: 100,
+                show: false,
+            },
+            radiusAxis: {
+                type: 'category',
+                show: true,
+                axisLabel: {
+                    show: false,
+                },
+                axisLine: {
+                    show: false,
+
+                },
+                axisTick: {
+                    show: false
+                },
+            },
+            series: [
+                {
+                    name: '',
+                    type: 'bar',
+                    roundCap: true,
+                    barWidth: 6,
+                    showBackground: true,
+                    backgroundStyle: {
+                        // color: 'rgba(66, 66, 66, .3)',
+                    },
+                    data: [progress],
+                    coordinateSystem: 'polar',
+
+                    itemStyle: {
+                        normal: {
+                            color: new echarts.graphic.LinearGradient(0, 1, 0, 0, [{
+                                offset: 0,
+                                color: color[0]
+                            }, {
+                                offset: 1,
+                                color: color[1]
+                            }]),
+                        }
+                    }
+
+                },
+            ]
+        };
+        echarts.init(document.getElementById('evaluateChart')).setOption(option);
     }
 
     function getEvaluateData() {        // 获取评估数据
-        var apiHost=GetQueryString("apiHost") || "";
+        var apiHost = GetQueryString("apiHost") || "";
         ajax.get({
-            url: apiHost+'/security_reports/' + $scope.id,
+            url: apiHost+'/security_reports/' + $stateParams.id,
             success: function (data) {
                 data.template = JSON.parse(data.template);
                 var tmp = SecurityReportService.parseTemplate(data.template);
@@ -289,8 +316,12 @@ app.controller('SecurityEvaluateHome', ['$scope', '$http', 'ajax', 'routerServic
             }
         });
     }
-    $scope.openPage = function(template, params, config){
-        routerService.openPage($scope, template, params, config);
+    $scope.openDetail = function(){
+        routerService.openPage($scope, '/templates/evaluate/security-evaluate-first-classify.html', null, {
+            onClose: function () {
+                $scope.refresh();
+            }
+        });
     };
 
     $scope.refresh = function() {       // 刷新数据
@@ -338,9 +369,9 @@ function ($scope, $http, ajax, userService, routerService, SecurityReportService
     };
 
     $scope.gotoPrevPage = function () {     // 提示是否保存
-        if ($scope.$parent.refresh) {
-            $scope.$parent.refresh();
-        }
+        // if ($scope.$parent.refresh) {
+        //     $scope.$parent.refresh();
+        // }
         if (routerService.hasNoHistory()) {
             pageBack();
         } else {
