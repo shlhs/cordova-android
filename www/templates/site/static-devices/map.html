@@ -214,7 +214,7 @@
                     var convertor = new BMap.Convertor();
                     var pointArr = [sitePoint];
                     convertor.translate(pointArr, 5, 3, function (data) {   //3: gcj02坐标，5：百度坐标
-                        window.android.gotoThirdMap(lng, lat, data.points[0].lat, data.points[0].lng);
+                        window.android.gotoThirdMap(lat, lng, data.points[0].lat, data.points[0].lng);
                     });
                 }
             };
