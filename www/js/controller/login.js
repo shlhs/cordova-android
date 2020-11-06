@@ -56,7 +56,7 @@ app.controller('LoginCtrl', ['$scope', '$timeout', 'platformService', 'userServi
         var div = $('<div class="toast"><div class="msg">' + message + '</div></div>').appendTo($('body'));
         $timeout(function () {
             div.remove();
-        }, 200000);
+        }, 1500);
     }
 
     function login() {
