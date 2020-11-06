@@ -51,7 +51,7 @@
 
   "station.address": "站点地址",
   "station.location": "站点位置",
-  "station.tel": "联系电话",
+  "station.contact": "联系人",
   "station.power.type": "供电类型",
   "station.voltage.level": "电压等级",
   "station.switch": "站点切换",
@@ -305,6 +305,12 @@
   "energy.meterreading.nosetting": "当前站点未配置抄表项",
   "用能增幅前五名": "用能增幅前五名",
   "用能前五名": "用能前五名",
+
+  "status.unknown": "未知",
+  "status.normal": "正常",
+  "status.offline": "离线",
+  "status.abnormal": "异常",
+  "status.fault": "故障",
 
   "用电": "用电",
   "用水": "用水",

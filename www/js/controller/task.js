@@ -281,18 +281,18 @@ app.controller('HomeCtrl', ['$scope', '$state', '$timeout', 'userService', 'appS
     function _formatSiteStatus(data) {
         if (data.communication_status === null || data.communication_status === '') {
             data.status = 'unknown';
-            data.status_name = '未知';
+            data.status_name = $myTranslate.instnat('status.unknown');
         } else if (data.communication_status == 1) {
             if (data.running_status == 1) {
                 data.status = 'abnormal';
-                data.status_name = '故障';
+                data.status_name = $myTranslate.instant('status.abnormal');
             } else {
                 data.status = 'normal';
-                data.status_name = '正常';
+                data.status_name = $myTranslate.instant('status.normal');
             }
         } else {
             data.status = 'offline';
-            data.status_name = '离线';
+            data.status_name = $myTranslate.instant('status.offline');
         }
     }
 
@@ -734,7 +734,7 @@ app.controller('TaskBaseCtrl', ['$scope', '$stateParams', 'ajax', 'userService',
     $scope.isEnglish = gIsEnglish;
 }]);
 
-app.controller('CompetitionTaskListCtrl', ['$scope', '$rootScope', 'scrollerService', 'userService', 'ajax', function ($scope, $rootScope, scrollerService, userService, ajax) {
+app.controller('CompetitionTaskListCtrl', ['$scope', '$rootScope', 'scrollerService', 'userService', 'ajax', '$myTranslate', function ($scope, $rootScope, scrollerService, userService, ajax, $myTranslate) {
     $scope.tasks = [];
     var opsTeams = [];
     $scope.toAcceptUsers = [];      // 抢单时能选的其他运维工
@@ -875,7 +875,9 @@ app.controller('CompetitionTaskListCtrl', ['$scope', '$rootScope', 'scrollerServ
                     return;
                 }
                 for (var i in result) {
-                    formatTaskStatusName(formatTime(result[i]));
+                    var t = result[i];
+                    formatTaskStatusName(formatTime(t));
+                    t.task_type_name = $myTranslate.instant(t.task_type_name);
                 }
                 $scope.tasks = result;
                 $scope.tasks.sort(sortByCreateTime);
