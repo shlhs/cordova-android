@@ -58,7 +58,7 @@
             <span class="value">{{device.capacity}} kVA</span>
         </li>
         <li ng-repeat="p in device.properties" ng-if="device.properties">
-            <label class="title">{{p.name}}</label>
+            <label class="title">{{p.name | translate}}</label>
             <span class="value">{{p.value}}{{p.unit}}</span>
         </li>
     </div>
@@ -67,7 +67,7 @@
         <div class="card-content">
             <div class="info-group properties-group">
                 <li ng-repeat="p in item.properties">
-                    <label class="title">{{p.name}}</label>
+                    <label class="title">{{p.name | translate}}</label>
                     <span class="value">{{p.value}}{{p.unit}}</span>
                 </li>
             </div>

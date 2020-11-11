@@ -198,18 +198,18 @@
                                 <span class="value" style="float: none;">{{taskData.name}}</span>
                             </li>
                             <li ng-if="taskData.desp">
-                                <label class="title" style="width: 50px;">{{ 'remark' | translate }}：</label>
+                                <label class="title" ng-style="{width: isEnglish ? 'auto' : '50px'}">{{ 'remark' | translate }}：</label>
                                 <span class="value" style="padding-left: 50px;float: none;">{{taskData.desp}}</span>
                             </li>
                             <li>
-                                <label class="title" style="width: 50px;">{{ 'station' | translate}}：</label>
+                                <label class="title" ng-style="{width: isEnglish ? 'auto' : '50px'}">{{ 'station' | translate}}：</label>
                                 <span class="value" ng-click="openMap()" style="padding-left: 50px;float: none;">
                                         <a>{{taskData.station_name}}<i class="iconfont anticon-location"></i></a>
                                     </span>
                             </li>
                             <li ng-if="taskData.device_record && taskData.device_record.length">
-                                <label class="title" style="width: 50px;">{{ 'device' | translate }}：</label>
-                                <span class="value" style="padding-left: 50px;float: left;">
+                                <label class="title" ng-style="{width: isEnglish ? 'auto' : '50px'}">{{ 'device' | translate }}：</label>
+                                <span class="value" style="float: left;">
                                         <div ng-repeat="record in taskData.device_record" ng-click="gotoDevice(record)">
                                             <a>{{record.device_name}}</a>
                                         </div>

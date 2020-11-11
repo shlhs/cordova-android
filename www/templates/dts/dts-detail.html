@@ -141,7 +141,7 @@
                                     <span class="value" style="float: none;">{{taskData.name}}</span>
                                 </li>
                                 <li ng-if="taskData.desp">
-                                    <label class="title" style="width: 50px;">{{'remark' | translate}}：</label>
+                                    <label class="title" ng-style="{width: isEnglish ? 'auto' : '50px'}">{{'remark' | translate}}：</label>
                                     <span class="value" style="padding-left: 50px;float: none;">{{taskData.desp}}</span>
                                 </li>
                                 <audio-recorder audio="createRecord.voice_src" ng-if="createRecord.voice_src" duration="createRecord.voice_duration"></audio-recorder>
