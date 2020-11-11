@@ -1246,12 +1246,13 @@ app.controller('EnergyStatisticsCtrl', ['$scope', '$stateParams', 'ajax', 'platf
                 allEnergyItems = response.energyItems;
                 if ($scope.currentLabel) {
                     getItemsForLabel();
+                    var groupStyle = $scope.isEnglish ? 'display: block' : '';
                     var itemStyle1 = $scope.isEnglish ? 'width:50%; float: left;' : 'width:25%; float: left;';
-                    var itemStyle2 = $scope.isEnglish ? 'width:100%; float: left;' : 'width:50%; float: left;';
-                    var html = "<ul class='selector-group no-border'>" +
+                    var itemStyle2 = $scope.isEnglish ? 'width:75%; float: left;margin-left: 15%;padding-top: 0;' : 'width:50%; float: left;';
+                    var html = "<ul class='selector-group no-border' style=\"" + groupStyle + "\">" +
                         "<drop-down-menu options=\"categories\" on-select=\"onSelect\" model-name=\"'currentCategory'\" selected=\"currentCategory\" style=\"" + itemStyle1 + "\"></drop-down-menu>" +
                         "<drop-down-menu options=\"labelNames\" on-select=\"onSelect\" model-name=\"'currentLabel'\" selected=\"currentLabel\" style=\"" + itemStyle1 + "\"></drop-down-menu>" +
-                        "<drop-down-menu id='itemSelector' options=\"energyItems\" on-select=\"onSelect\" model-name=\"'labelItem'\" selected=\"currentItem\" style=\"" + itemStyle2 + "\" disabled=\"currentLabel.name !== '" + branchCircuitName + "'\"></drop-down-menu>" +
+                        "<drop-down-menu id=\"'itemSelector'\" options=\"energyItems\" on-select=\"onSelect\" model-name=\"'labelItem'\" selected=\"currentItem\" style=\"" + itemStyle2 + "\" disabled=\"currentLabel.name !== '" + branchCircuitName + "'\"></drop-down-menu>" +
                         "</ul>";
                     html += "</ul>";
                     var compileFn = $compile(html);
