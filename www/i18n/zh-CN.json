@@ -224,7 +224,7 @@
   "设备类型": "设备类型",
   "设备型号": "设备型号",
   "设备编号": "设备编号",
-  "安装地址": "安装地址",
+  "安装位置": "安装位置",
   "安装日期": "安装日期",
   "投运日期": "投运日期",
   "生产厂家": "生产厂家",
@@ -302,6 +302,8 @@
   "event.submitorder": "发布任务",
   "event.confirmed": "事件已确认",
   "event.confirm.error": "确认时发生异常",
+  "event.closed.time": "关闭时间",
+  "event.acknowledge": "确认",
 
   "energy.nosetting": "当前未配置",
   "energy.noitem": "当前无配置项",
