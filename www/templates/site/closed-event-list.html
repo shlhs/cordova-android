@@ -64,14 +64,14 @@
                         <div class="mui-pull-right" style="text-align: right;">
                             <label class="status-name"
                                ng-click="goToCreateTaskHtml($event, e.id, e.info)">{{e.status_name}}</label>
-                            <div class="closed-time">{{e.closed_time}}</div>
+                            <div class="closed-time">{{'event.closed.time' | translate}}：{{e.closed_time}}</div>
                         </div>
                     </li>
                 </ul>
                 <div class="page-alert-wrapper" ng-if="!events.length && !eventLoading && !loadingFailed">
                     <div class="page-alert">
                         <i class="alert-icon nodata-info"></i>
-                        <div class="alert-text info">当前无事件</div>
+                        <div class="alert-text info">{{'none alarm' | myTranslate}}</div>
                     </div>
                 </div>
             </div>
