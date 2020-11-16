@@ -2,7 +2,7 @@
 	"versionCode": 220,
 	"versionName": "2.2.0",
 	"description": "",
-	"downloadUrl": "http://61.185.214.211:8123/version/release.apk",
+	"downloadUrl": "http://192.168.2.201:8123/version/release.apk",
 	"isLaunched": true,
 	"isGatedLaunch": true,
 	"forceUpdate": false,
