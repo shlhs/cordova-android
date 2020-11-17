@@ -71,8 +71,8 @@
             var stationPos = GetQueryString('stationPos');
             var deviceSn = GetQueryString('deviceSn');
             $scope.canEdit = GetQueryString('edit') === '1';
-            var defaultLng = 121.367654;
-            var defaultLat = 31.141168;
+            var defaultLng = null;
+            var defaultLat = null;
             $scope.defaultLng = null;
             $scope.deviceLat = null;
             $scope.pointAddress = null;
@@ -134,6 +134,7 @@
                     success: function (response) {
                         var data = response[0];
                         deviceData = data;
+                        var endPoint = null;
                         if (data.map_pos) {
                             var obj = JSON.parse(data.map_pos);
                             if (obj.type === 'point') {
@@ -141,12 +142,13 @@
                                 $scope.deviceLat = obj.detail.lat;
                                 defaultLng = $scope.deviceLng;
                                 defaultLat = $scope.deviceLat;
-                                var end = new BMap.Point($scope.deviceLng, $scope.deviceLat);
-                                map.centerAndZoom(end, 18);
+                                endPoint = new BMap.Point($scope.deviceLng, $scope.deviceLat);
+                                map.centerAndZoom(endPoint, 18);
                                 setMark(map);
                                 $scope.$apply();
                             }
                         }
+                        addRoute(endPoint); // 添加用户到设备的路线
                     }
                 });
             }
@@ -155,14 +157,13 @@
             function drawMap(lng, lat) {
                 map = new BMap.Map("map");          // 创建地图实例
                 if (!map){ return; }
-                var end = new BMap.Point(lng, lat);
-                // 添加标注
-                map.centerAndZoom(end, 18);
+                if (lng && lat) {
+                    var end = new BMap.Point(lng, lat);
+                    // 添加标注
+                    map.centerAndZoom(end, 15);
+                }
                 map.enableScrollWheelZoom();
                 setMark(map);
-//                if (window.android && window.android.gotoThirdMap) { // 显示导航按钮
-//                    document.getElementById('thirdMapBtn').style.display = 'block';
-//                }
 
                 if ($scope.canEdit) {
                     map.addEventListener("dragstart", function(evt){
@@ -230,20 +231,6 @@
                 var myIcon = new BMap.Icon("/img/location-tag.png", new BMap.Size(30,30));
                 var marker = new BMap.Marker(point, {icon: myIcon});  // 创建标注
                 map.addOverlay(marker);              // 将标注添加到地图中
-                // 显示当前位置
-                console.log('zys-获取当前位置')
-                apiLocation.start(function (longtitude, latitude) {
-                    console.log('longtitude, latitude', longtitude, latitude)
-                    if (longtitude && latitude){
-                        var start = new BMap.Point(longtitude, latitude);
-                        var convertor = new BMap.Convertor();
-                        var pointArr = [start];
-                        convertor.translate(pointArr, 3, 5, function (data) {   //3: gcj02坐标，5：百度坐标
-                            var p = data.points[0];
-                            map.addOverlay(new BMap.Marker(new BMap.Point(p.lng.toString(), p.lat.toString()))); 
-                        });
-                    }
-                });
                 marker.addEventListener('click', function (e) { // 点击marker显示地址和保存按钮
                     touchtStartTime = null;
                     toggleAddressPopover(!$scope.popoverVisible);
@@ -254,6 +241,41 @@
                     $scope.pointAddress = rs.address;
                     // 显示地址和坐标，以及保存按钮
                     toggleAddressPopover(true);
+                });
+            }
+
+            // 增加用户当前位置到设备位置的路线
+            function addRoute(endPoint) {
+                // 从原生端获取用户当前位置
+                apiLocation.start(function (longitude, latitude) {
+                    if (longitude && latitude){
+                        var start = new BMap.Point(longitude, latitude);
+                        var convertor = new BMap.Convertor();
+                        var pointArr = [start];
+                        convertor.translate(pointArr, 3, 5, function (data) {   //3: gcj02坐标，5：百度坐标
+                            var p = data.points[0];
+                            map.addOverlay(new BMap.Marker(p));
+                            if (endPoint) {
+                                var straightDistance = map.getDistance(p, endPoint); // 先计算直接距离
+                                if (straightDistance > 3000) { // 如果直接距离>3km，则使用驾驶路线
+                                    new BMap.DrivingRoute(map, {
+                                        renderOptions: {
+                                            map   : map,
+                                            panel : "results",
+                                            autoViewport: true
+                                        },
+                                    }).search(p, endPoint);
+                                } else { // 如果直线距离<3km，则使用步行路线
+                                    new BMap.WalkingRoute(map, {
+                                        renderOptions: {map, map}
+                                    }).search(p, endPoint);
+                                }
+                            } else if (!defaultLng && !defaultLat) { // 如果站点位置和设备位置都为空，则使用用户当前位置作为中心位置
+                                map.centerAndZoom(p, 18);                 // 初始化地图，设置中心点坐标和地图级别
+                                map.clearOverlays(); // 去除默认的定位marker
+                            }
+                        });
+                    }
                 });
             }
 
