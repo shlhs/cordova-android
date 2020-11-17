@@ -31,7 +31,7 @@ app.controller('StaticDevicesHomeCtrl', ['$scope', '$stateParams', 'ajax', 'rout
         $scope.isLoading = true;
         $scope.loadingFailed = false;
         ajax.get({
-            url: '/stations/' + stationSn + '/staticdevices',
+            url: '/stations/' + stationSn + '/staticdevices?withOps=true',
             success: function (data) {
                 $scope.isLoading = false;
                 $scope.deviceDatas = data;

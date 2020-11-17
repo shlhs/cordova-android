@@ -48,7 +48,7 @@
     <div class="address-popover" ng-class="popoverVisible ? 'animate__slideInUp' : 'animate__slideOutDown'">
         <div style="width: 100%;">
             <div class="address">{{pointAddress}}</div>
-            <div class="position">{{'coordinate' | translate}}：{{deviceLng.substring(0, 10)}}, {{deviceLat.substring(0, 10)}}</div>
+            <div class="position">{{'coordinate' | translate}}：{{deviceLng | limitTo: 10}}, {{deviceLat | limitTo: 10}}</div>
         </div>
         <div>
             <div class="btn" ng-click="save()" ng-if="canEdit">{{'save' | translate}}</div>
@@ -230,6 +230,20 @@
                 var myIcon = new BMap.Icon("/img/location-tag.png", new BMap.Size(30,30));
                 var marker = new BMap.Marker(point, {icon: myIcon});  // 创建标注
                 map.addOverlay(marker);              // 将标注添加到地图中
+                // 显示当前位置
+                console.log('zys-获取当前位置')
+                apiLocation.start(function (longtitude, latitude) {
+                    console.log('longtitude, latitude', longtitude, latitude)
+                    if (longtitude && latitude){
+                        var start = new BMap.Point(longtitude, latitude);
+                        var convertor = new BMap.Convertor();
+                        var pointArr = [start];
+                        convertor.translate(pointArr, 3, 5, function (data) {   //3: gcj02坐标，5：百度坐标
+                            var p = data.points[0];
+                            map.addOverlay(new BMap.Marker(new BMap.Point(p.lng.toString(), p.lat.toString()))); 
+                        });
+                    }
+                });
                 marker.addEventListener('click', function (e) { // 点击marker显示地址和保存按钮
                     touchtStartTime = null;
                     toggleAddressPopover(!$scope.popoverVisible);
