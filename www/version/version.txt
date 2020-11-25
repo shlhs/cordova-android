@@ -2,7 +2,7 @@
 	"versionCode": 230,
 	"versionName": "2.3.0",
 	"description": "",
-	"downloadUrl": "http://114.215.90.83:8123/version/dianguanjia-2.3.0.apk",
+	"downloadUrl": "http://218.3.33.178:8123/version/dianzhidao.apk",
 	"isLaunched": true,
 	"isGatedLaunch": true,
 	"forceUpdate": false,
