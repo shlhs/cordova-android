@@ -1,7 +1,7 @@
 var gTheme = 'light'; // 主题色 light/dark
 
 var loginExpireCheckEnable = false;       // 是否检查鉴权过期
-var defaultPlatIpAddr = ''; // 平台默认ip，格式为：http://118.190.51.135
+var defaultPlatIpAddr = 'http://47.115.9.96'; // 平台默认ip，格式为：http://118.190.51.135
 var defaultImgThumbHost = "";     // 如果为空则与 host一样
 var defaultIpcHost = null; // 摄像头服务地址。为空则与host一样
 var gQrDownloadUrl = '/version/qr.png'; // 二维码下载链接
