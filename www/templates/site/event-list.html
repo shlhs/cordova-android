@@ -63,7 +63,7 @@
                         </div>
                         <div style="font-size: 13px;">
                             <a class="event-task" ng-click="goToCreateTaskHtml($event, e)" ng-if="hasOpsAuth">{{'event.submitorder' | translate}}</a>
-                            <a class="close" ng-click="postCheckEventAction($event, e.id)">{{'confirm' | translate}}</a>
+                            <a class="close" ng-click="postCheckEventAction($event, e.id)">{{'event.acknowledge' | translate}}</a>
                             <div style="clear: both"></div>
                         </div>
                     </li>
@@ -92,10 +92,10 @@
     </div>
     <div ui-view=""></div>
     <!-- build:js -->
+    <script type="text/javascript" src="/js/app/utils.js"></script>
     <script type="text/javascript" src="/config/config.js"></script>
     <script src="/js/echartsTheme.js"></script>
     <script src="/js/my/notify.js"></script>
-    <script type="text/javascript" src="/js/app/utils.js"></script>
     <script type="text/javascript" src="/js/app/app.js"></script>
     <script type="text/javascript" src="/js/service/appstore.js"></script>
     <script type="text/javascript" src="/js/service/common-service.js"></script>

@@ -1,6 +1,6 @@
 <div class="device-detail-wrap" ng-cloak style="padding-bottom: 40px;padding-top: 10px;height: 100%;">
     <a ng-if="device.showMap" style="padding: 0 0 8px 10px; font-size: 14px;" href="javascript:void(0);" ng-click="openDeviceMap()">
-        <i class="iconfont anticon-location"></i> 查看位置
+        <i class="iconfont anticon-location"></i> {{'position' | translate}}
     </a>
     <div class="device-img-wrapper">
         <ul class="container">
@@ -30,7 +30,7 @@
             <span class="value">{{device.device_number}}</span>
         </li>
         <li>
-            <label class="title">{{'安装地址' | translate}}</label>
+            <label class="title">{{'安装位置' | translate}}</label>
             <span class="value">{{device.position_desp}}</span>
         </li>
         <li>
@@ -58,7 +58,7 @@
             <span class="value">{{device.capacity}} kVA</span>
         </li>
         <li ng-repeat="p in device.properties" ng-if="device.properties">
-            <label class="title">{{p.name}}</label>
+            <label class="title">{{p.name | translate}}</label>
             <span class="value">{{p.value}}{{p.unit}}</span>
         </li>
     </div>
@@ -67,7 +67,7 @@
         <div class="card-content">
             <div class="info-group properties-group">
                 <li ng-repeat="p in item.properties">
-                    <label class="title">{{p.name}}</label>
+                    <label class="title">{{p.name | translate}}</label>
                     <span class="value">{{p.value}}{{p.unit}}</span>
                 </li>
             </div>

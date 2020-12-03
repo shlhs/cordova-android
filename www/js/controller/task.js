@@ -281,18 +281,18 @@ app.controller('HomeCtrl', ['$scope', '$state', '$timeout', 'userService', 'appS
     function _formatSiteStatus(data) {
         if (data.communication_status === null || data.communication_status === '') {
             data.status = 'unknown';
-            data.status_name = '未知';
+            data.status_name = $myTranslate.instnat('status.unknown');
         } else if (data.communication_status == 1) {
             if (data.running_status == 1) {
                 data.status = 'abnormal';
-                data.status_name = '故障';
+                data.status_name = $myTranslate.instant('status.abnormal');
             } else {
                 data.status = 'normal';
-                data.status_name = '正常';
+                data.status_name = $myTranslate.instant('status.normal');
             }
         } else {
             data.status = 'offline';
-            data.status_name = '离线';
+            data.status_name = $myTranslate.instant('status.offline');
         }
     }
 
@@ -734,7 +734,7 @@ app.controller('TaskBaseCtrl', ['$scope', '$stateParams', 'ajax', 'userService',
     $scope.isEnglish = gIsEnglish;
 }]);
 
-app.controller('CompetitionTaskListCtrl', ['$scope', '$rootScope', 'scrollerService', 'userService', 'ajax', function ($scope, $rootScope, scrollerService, userService, ajax) {
+app.controller('CompetitionTaskListCtrl', ['$scope', '$rootScope', 'scrollerService', 'userService', 'ajax', '$myTranslate', function ($scope, $rootScope, scrollerService, userService, ajax, $myTranslate) {
     $scope.tasks = [];
     var opsTeams = [];
     $scope.toAcceptUsers = [];      // 抢单时能选的其他运维工
@@ -875,7 +875,9 @@ app.controller('CompetitionTaskListCtrl', ['$scope', '$rootScope', 'scrollerServ
                     return;
                 }
                 for (var i in result) {
-                    formatTaskStatusName(formatTime(result[i]));
+                    var t = result[i];
+                    formatTaskStatusName(formatTime(t));
+                    t.task_type_name = $myTranslate.instant(t.task_type_name);
                 }
                 $scope.tasks = result;
                 $scope.tasks.sort(sortByCreateTime);
@@ -3159,6 +3161,7 @@ app.controller('TaskDevicesHandlerCtrl', ['$scope', '$state', '$stateParams', 'r
     $scope.checkedSns = [];
     $scope.checkAll = false;
     $scope.isSubmitting = false;
+    $scope.searchDevice = '';
 
     $scope.device_record.forEach(function (r) {
         r.checked = false;
@@ -3290,6 +3293,13 @@ app.controller('TaskDevicesHandlerCtrl', ['$scope', '$state', '$stateParams', 'r
         });
         return false;
     };
+    $scope.deviceFilter = function (item) {
+        if (!$scope.searchDevice) return true;
+        if (item.device_name.indexOf($scope.searchDevice) >= 0) {
+            return true;
+        }
+        return false;
+    }
 }]);
 
 // 巡检单个设备的处理页面
@@ -3471,33 +3481,39 @@ app.controller('TaskDeviceCheckCtrl', ['$scope', '$stateParams', 'ajax', '$myTra
         if (dtsLevelPicker) {
             return;
         }
-        var taskTypes = [{
-            value: 8,
-            text: $myTranslate.instant('dts.type.general')
-        }, {
-            value: 9,
-            text: $myTranslate.instant('dts.type.serious')
-        }, {
-            value: 10,
-            text: $myTranslate.instant('dts.type.fatal')
-        }];
-        var taskTypeButton = document.getElementById('dtsLevelPicker');
-        dtsLevelPicker = new mui.PopPicker();
-        dtsLevelPicker.setData(taskTypes);
-        taskTypeButton.addEventListener('click', function(event) {
-            dtsLevelPicker.show(function(items) {
-                $scope.selectedDtsLevel = {
-                    id: items[0].value,
-                    name: items[0].text
-                };
-                $scope.$apply();
-            });
-        }, false);
-        // 默认使用一般缺陷
-        $scope.selectedDtsLevel = {
-            id: taskTypes[0].value,
-            name: taskTypes[0].text
-        };
+        ajax.get({
+            url: '/opstasks/task_types',
+            success: function (data) {
+                if(data && data.length  > 0){
+                    var taskTypes = [];
+                    data.forEach(item=>{
+                        if(String(item.id) === '8' || String(item.id) === '9' || String(item.id) === '10'){
+                            taskTypes.push({
+                                value: item.id,
+                                text: item.name
+                            })
+                        }
+                    })
+                    var taskTypeButton = document.getElementById('dtsLevelPicker');
+                    dtsLevelPicker = new mui.PopPicker();
+                    dtsLevelPicker.setData(taskTypes);
+                    taskTypeButton.addEventListener('click', function(event) {
+                        dtsLevelPicker.show(function(items) {
+                            $scope.selectedDtsLevel = {
+                                id: items[0].value,
+                                name: items[0].text
+                            };
+                            $scope.$apply();
+                        });
+                    }, false);
+                    // 默认使用一般缺陷
+                    $scope.selectedDtsLevel = {
+                        id: taskTypes[0].value,
+                        name: taskTypes[0].text
+                    };
+                }
+            }
+        })
     }
 
     function initDtsTypePicker() {
@@ -3552,6 +3568,10 @@ app.controller('TaskDeviceCheckCtrl', ['$scope', '$stateParams', 'ajax', '$myTra
     });
 
     getDeviceCheckItems();
+    $scope.openDeviceMap = function () {
+        var url = '/templates/site/static-devices/map.html?deviceSn=' + $scope.device.device_sn;
+        window.location.href = url;
+    };
 }]);
 
 app.controller('DeviceXunjianTaskDetailCtrl', ['$scope', 'ajax', 'platformService', 'routerService', 'userService', '$myTranslate', function ($scope, ajax, platformService, routerService, userService, $myTranslate) {

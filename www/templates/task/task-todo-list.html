@@ -40,7 +40,7 @@
 
                         </div>
                         <div ng-if="task.next_recheck_time">
-                            <span class="task-info-label" style="padding-right: 0;">{{'task.recheck.nexttime' | translate}}：</span>
+                            <span class="task-info-label" style="padding-right: 0;">{{'recheck.nexttime' | translate}}：</span>
                             <span class="task-info-value">
                                 <span ng-if="task.next_recheck_time !== ('today' | translate)">{{task.next_recheck_time}}</span>
                                 <span ng-if="task.next_recheck_time === ('today' | translate)" class="text-normal" style="font-weight: 700;">

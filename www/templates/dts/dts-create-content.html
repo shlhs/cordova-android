@@ -35,7 +35,7 @@
                 <span ng-show="myForm.taskTypeName.$error.required">{{'please.select dts.level' | myTranslate}}</span>
             </label>
         </div>
-        <div class="mui-input-row">
+        <div class="mui-input-row" ng-show="needResign">
             <label class="label" style="width: 120px;" ng-class="{'required': needResign}">{{'defect.expecttime' | translate}}</label>
             <input type="text" name="expectCompleteTime" ng-model="taskData.expect_complete_time" placeholder="{{'please.select defect.expecttime' | myTranslate}}" ng-required="needResign">
             <button type="button" id='expectedTime' class="btn mui-btn mui-btn-block" style="position: absolute; right: 0;">&nbsp;</button>

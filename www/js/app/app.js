@@ -945,6 +945,7 @@ app.directive('dropDownMenu', function () {
         restrict: 'E',
         templateUrl: '/templates/site-monitor/dropdown-menu.html',
         scope: {
+            id: '=',
             options: '=',
             onSelect: '=',
             modelName: '=',
@@ -963,7 +964,7 @@ app.directive('dropDownMenu', function () {
                 }
                 $scope.active = !$scope.active;
                 if ($scope.active) {
-                    var mark = $('<div style="position: fixed;background-color: transparent;width: 100%;height: 100%;top:60px;z-index: 1;left: 0;" ng-click="toggle()"></div>')
+                    var mark = $('<div style="position: fixed;background-color: rgba(0,0,0,0.25);width: 100%;height: 100%;top:60px;z-index: 1;left: 0;" ng-click="toggle()"></div>')
                         .appendTo($scope.domEle);
                 } else {
                     $scope.domEle.find('div:last').remove();
@@ -1000,6 +1001,9 @@ app.directive('dropDownMenu', function () {
         link: function (scope, element, attrs) {
             console.log(element);
             scope.domEle = element;
+            if (scope.id) {
+                scope.domEle[0].id = scope.id;
+            }
         }
-    }
+    };
 });

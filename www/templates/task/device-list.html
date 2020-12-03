@@ -4,8 +4,15 @@
         <h1 class="mui-title">{{'devices' | translate}}</h1>
     </header>
     <div class="body-content bg-white" ng-cloak style="top: 60px;">
+        <div class="site-search-comp">
+            <div class="search-wrapper" style="margin-top: 6px;">
+                <i class="iconfont anticon-search"></i>
+                <input placeholder="{{'search' | translate}}" ng-model="searchDevice">
+            </div>
+        </div>
+
         <ul class="no-border static-device-list" style="margin-top: 0;" ng-style="{'padding-bottom': canHandle ? '48px' : '10px'}">
-            <li class="box-horizontal box-vertical-middle mui-navigate-right" ng-repeat="record in device_record" ng-click="openDeviceCheckPage(record)">
+            <li class="box-horizontal box-vertical-middle mui-navigate-right" ng-repeat="record in device_record | filter: deviceFilter" ng-click="openDeviceCheckPage(record)">
                 <div class="device-body box-horizontal box-vertical-middle">
                     <div class="mui-checkbox mui-left checkbox-square" ng-if="canHandle">
                         <a class="checkbox" ng-class="{checked: record.checked}" ng-click="checkDevice($event, record.device_sn)"></a>

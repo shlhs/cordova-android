@@ -129,6 +129,8 @@ gulp.task('build-js', function () {
     console.log('start build-js');
     gulp.src(folder.src + "config/config.js")
         .pipe(gulp.dest(folder.dist + "config/"));
+    gulp.src(folder.src + "js/app/utils.js")
+        .pipe(gulp.dest(folder.dist + "js/"));
     // 设置echarts主题色: 将对应主题色js文件拷贝到index.js，html引用 theme/echarts/index.js
     gulp.src([`theme/echarts/${themeType}.js`])
         .pipe(concat('echartsTheme.js'))
@@ -178,7 +180,7 @@ gulp.task('compress-js', function () {
         .pipe(connect.reload());
 
     gulp.src([
-        folder.tmp + 'js/app/**',
+        folder.tmp + 'js/app/app.js',
         folder.tmp + 'js/service/**',
         folder.tmp + 'js/router/**',
         folder.tmp + 'js/controller/**',
@@ -206,7 +208,7 @@ gulp.task('html-replace', function () {
     return gulp.src(folder.src + 'templates/**')
         .pipe(htmlReplace({
             lib: ['/js/' + libFileName],
-            js: ['/config/config.js?t=' + randomFileName, '/js/' + jsFileName],
+            js: ['/js/utils.js', '/config/config.js?t=' + randomFileName, '/js/' + jsFileName],
             css: '/css/' + cssFileName
         }))
         .pipe(htmlClean())

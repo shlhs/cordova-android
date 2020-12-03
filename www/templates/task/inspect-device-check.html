@@ -7,6 +7,9 @@
         <div class="bg-white" style="padding: 12px;font-size: 15px;">
             <label style="font-weight: bold;">{{ 'inspect.device' | translate }}：</label>
             <label>{{deviceName}}</label>
+            <a style="padding: 8px 0 8px 0px; font-size: 14px;display:block;" href="javascript:;" ng-click="openDeviceMap()">
+                <i class="iconfont anticon-location"></i> {{'position' | translate}}
+            </a>
         </div>
         <div ng-include="'/templates/task/inspect-device-check-result.html'"></div>
 

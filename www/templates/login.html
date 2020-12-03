@@ -34,13 +34,13 @@
                 <input type="text" placeholder="{{'login.code.placeholder' | translate}}" ng-model="platformCode" ng-change="inputChange('platformCode')"></div>
             <div class="form-item">
                 <label>{{ 'login.account' | translate }}</label>
-                <input type="text" ng-model="username" ng-change="inputChange('username')" placeholder="{{ 'login.account.placeholder' | translate }}">
+                <input type="text" ng-model="username" ng-change="inputChange('username')" placeholder="{{'login.account.placeholder' | translate}}">
             </div>
             <div class="form-item">
                 <label>{{ 'login.pwd' | translate }}</label>
-                <input type="password" ng-model="password" ng-change="inputChange('password')" placeholder="{{ 'login.pwd.placeholder' | translate }}" ng-show="!passwordVisible">
+                <input type="password" ng-model="password" ng-change="inputChange('password')" placeholder="{{'login.pwd.placeholder' | translate}}" ng-show="!passwordVisible">
                 <i class="iconfont anticon-password-not-seen" ng-if="!passwordVisible" ng-click="togglePasswordVisible()"></i>
-                <input type="text" ng-model="password" ng-change="inputChange('password')" placeholder="{{ 'login.pwd.placeholder' | translate }}" ng-show="passwordVisible">
+                <input type="text" ng-model="password" ng-change="inputChange('password')" placeholder="{{'login.pwd.placeholder' | translate}}" ng-show="passwordVisible">
                 <i class="iconfont anticon-password-seen" ng-if="passwordVisible" ng-click="togglePasswordVisible()"></i>
             </div>
             <div class="login-btn" ng-class="{'enable': enable}" ng-click="login()">
@@ -50,8 +50,8 @@
         </div>
     </div>
     <!-- build:js -->
+    <script type="text/javascript" src="/js/app/utils.js"></script>
     <script type="text/javascript" src="/config/config.js"></script>
-    <script type="text/javascript" src="../js/app/utils.js"></script>
     <script type="text/javascript" src="../lib/jwt/jsrsasign-all-min.js"></script>
     <script type="text/javascript" src="../js/app/app.js"></script>
     <script type="text/javascript" src="../js/service/common-service.js"></script>

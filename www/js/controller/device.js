@@ -4,7 +4,7 @@
  * Created by liucaiyun on 2017/8/26.
  */
 
-app.controller('DeviceListCtrl', ['$scope', 'ajax', 'scrollerService', function ($scope, ajax, scrollerService) {
+app.controller('DeviceListCtrl', ['$scope', 'ajax', 'scrollerService', '$myTranslate', function ($scope, ajax, scrollerService, $myTranslate) {
     var sn = GetQueryString('sn');
     $scope.sn = sn;
     $scope.deviceList = [];
@@ -21,7 +21,7 @@ app.controller('DeviceListCtrl', ['$scope', 'ajax', 'scrollerService', function 
                 // 设置默认状态胃正常
                 for (var i=0; i<result.length; i++){
                     result[i].status = 'normal';
-                    result[i].status_name = '正常';
+                    result[i].status_name = $myTranslate.instant('status.normal');
                 }
                 $scope.deviceList = result;
                 $scope.deviceLoading = false;
@@ -44,17 +44,17 @@ app.controller('DeviceListCtrl', ['$scope', 'ajax', 'scrollerService', function 
     function formatDeviceStatus(device) {
         if (device.communi_status > 0){
             device.status = 'offline';
-            device.status_name = '离线';
+            device.status_name = $myTranslate.instant('status.offline');
             $scope.faultDeviceList.push(device);
 
         }else{
             if (device.running_status > 0){
                 device.status = 'danger';
-                device.status_name = '故障';
+                device.status_name = $myTranslate.instant('status.fault');
                 $scope.faultDeviceList.push(device);
             }else{
                 device.status = 'normal';
-                device.status_name = '正常';
+                device.status_name = $myTranslate.instant('status.normal');
             }
         }
     }
@@ -482,7 +482,7 @@ app.controller('DeviceTreeCommonCtrl', ['$scope', function ($scope) {
     };
 }]);
 
-app.controller('DeviceMonitorListCtrl', ['$scope', '$stateParams', '$state', 'ajax', 'platformService', function ($scope, $stateParams, $state, ajax, platformService) {       // 检测设备列表页
+app.controller('DeviceMonitorListCtrl', ['$scope', '$stateParams', '$state', 'ajax', 'platformService', '$myTranslate', function ($scope, $stateParams, $state, ajax, platformService, $myTranslate) {       // 检测设备列表页
     var stationSn = $stateParams.sn;
     $scope.deviceDatas = [];
     $scope.treeData = [];
@@ -503,17 +503,17 @@ app.controller('DeviceMonitorListCtrl', ['$scope', '$stateParams', '$state', 'aj
         if (!device.is_group) {
             if (device.communi_status > 0){
                 device.status = 'offline';
-                device.status_name = '离线';
+                device.status_name = $myTranslate.instant('status.offline');
                 $scope.faultDeviceList.push(device);
 
             }else{
                 if (device.running_status > 0){
                     device.status = 'danger';
-                    device.status_name = '故障';
+                    device.status_name = $myTranslate.instant('status.fault');
                     $scope.faultDeviceList.push(device);
                 }else{
                     device.status = 'normal';
-                    device.status_name = '正常';
+                    device.status_name = $myTranslate.instant('status.normal');
                 }
             }
         }

@@ -259,7 +259,7 @@ app.controller('SiteTreeCtrl', ['$scope', '$stateParams', function ($scope, $sta
     }
 }]);
 
-app.controller('SiteDetailCtrl', ['$scope', 'ajax', 'platformService', function ($scope, ajax, platformService) {
+app.controller('SiteDetailCtrl', ['$scope', 'ajax', 'platformService', '$myTranslate', function ($scope, ajax, platformService, $myTranslate) {
     $scope.sn = GetQueryString("sn");
     $scope.currentSite = {};
     $scope.isSiteDetail = true;
@@ -274,18 +274,18 @@ app.controller('SiteDetailCtrl', ['$scope', 'ajax', 'platformService', function 
                         var s = result[i];
                         if (s.status === '') {
                             s.status = 'unknown';
-                            s.status_name = '未知';
+                            s.status_name = $myTranslate.instant('status.unknown');
                         } else if (s.status === '1') {
                             if (s.unclosed_envet_amount > 0) {
                                 s.status = 'abnormal';
-                                s.status_name = '异常';
+                                s.status_name = $myTranslate.instant('status.abnormal');
                             } else {
                                 s.status = 'normal';
-                                s.status_name = '正常';
+                                s.status_name = $myTranslate.instant('status.normal');
                             }
                         } else {
                             s.status = 'offline';
-                            s.status_name = '离线';
+                            s.status_name = $myTranslate.instant('status.offline');
                         }
                         if (s.station.photo_src_link) {
                             s.site_image = platformService.getImageUrl(180, 180, platformService.getCloudHost() + s.station.photo_src_link);
