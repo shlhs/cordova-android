@@ -6,7 +6,7 @@
         <i class="checkbox" ng-class="{checked: isChecked(item.sn)}"></i>
     </div>
     {{item.name}}
-    <label class="text-status warning" ng-if="showStatus && item.hasTask">运维</label>
+    <!-- <label class="text-status warning" ng-if="showStatus && item.hasTask">运维</label> -->
     <label class="text-status danger" ng-if="showStatus && item.hasDts">缺陷</label>
     <i class="mui-icon" ng-if="item.is_group" ng-class="item.$$isExpend ? 'mui-icon-arrowup' : 'mui-icon-arrowdown'"></i>
 </a>
