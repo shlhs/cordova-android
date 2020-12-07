@@ -2342,7 +2342,8 @@ app.controller('CommonTaskEditAssignCtrl', ['$scope', '$timeout', 'ajax', functi
                     $scope.expectTime = rs.text;
                     $scope.error.time = false;
                     $scope.$apply();
-                });
+                    checkRequire();
+                })
             } else {
                 var options = {type: 'date', beginDate: new Date()};
                 dtPicker = new mui.DtPicker(options);
@@ -2350,6 +2351,7 @@ app.controller('CommonTaskEditAssignCtrl', ['$scope', '$timeout', 'ajax', functi
                     $scope.expectTime = rs.text;
                     $scope.error.time = false;
                     $scope.$apply();
+                    checkRequire();
                 });
             }
         }, false);
@@ -2383,6 +2385,13 @@ app.controller('CommonTaskEditAssignCtrl', ['$scope', '$timeout', 'ajax', functi
         }
     }
 
+    // 必填项是否都已填上
+    function checkRequire(){
+        if($scope.expectTime && $scope.selectedUsers && $scope.selectedUsers.length > 0 &&  $scope.selectedTeam){
+            document.getElementById('dtsEditSubmitBtn').classList.remove('mui-active');
+        }
+    }
+
     $scope.toggleTeamSelector = function () {
         $scope.teamVisible = !$scope.teamVisible;
     };
@@ -2405,12 +2414,14 @@ app.controller('CommonTaskEditAssignCtrl', ['$scope', '$timeout', 'ajax', functi
         }
         // $scope.toggleTeamSelector();
         $scope.error.team = false;
+        checkRequire();
     };
 
     $scope.onSelectedUsers = function (users) {
         $scope.selectedUsers = users;
         // $scope.toggleHandlerSelector();
         $scope.error.handler = false;
+        checkRequire();
     };
 
     // 复测班组、人员选择

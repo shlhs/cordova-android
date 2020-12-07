@@ -2,7 +2,7 @@
     <header class="mui-bar mui-bar-transparent mui-segmented-control-vertical bg-header" style=" -webkit-box-shadow: none;box-shadow: none;position: relative;">
         <a class="mui-icon mui-pull-left mui-control-item" style="font-size: 16px;margin-left: 6px;top:5px;" ng-click="cancel()">{{'cancel' |translate}}</a>
         <h1 class="mui-title" style="font-weight: 400;">{{pageName}}</h1>
-        <a class="mui-icon mui-action-menu mui-pull-right mui-control-item" style="font-size: 16px;margin-right: 6px;top:5px;" ng-click="submitAndBack()">{{'submit' | translate}}</a>
+        <a id="dtsEditSubmitBtn" class="mui-icon mui-action-menu mui-pull-right mui-control-item mui-active" style="font-size: 16px;margin-right: 6px;top:5px;" ng-click="submitAndBack()">{{'submit' | translate}}</a>
     </header>
     <div class="body-content bg-white">
         <div class="mui-input-group task-create-rows dts-create-rows" style="padding: 0 12px;">
