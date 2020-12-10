@@ -153,7 +153,7 @@ app.service('varDataService', ['ajax', 'platformService', function (ajax, platfo
             data: {
                 sns: sn,
                 type: type,
-                querytime: time.format('YYYY-MM-01T00:00:00.000') + 'Z'
+                querytime: time.format('YYYY-MM-DDT00:00:00.000') + 'Z'
             },
             success: function (data) {
                 if (data && data.length) {
