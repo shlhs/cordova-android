@@ -59,7 +59,7 @@
         </li>
         <li ng-repeat="p in device.properties" ng-if="device.properties">
             <label class="title">{{p.name | translate}}</label>
-            <span class="value">{{p.value}}{{p.unit}}</span>
+            <span class="value">{{p.value}}</span>
         </li>
     </div>
     <div class="card no-padding sub-device-card" ng-repeat="item in device.items" style="margin-top: 12px;">
@@ -68,7 +68,7 @@
             <div class="info-group properties-group">
                 <li ng-repeat="p in item.properties">
                     <label class="title">{{p.name | translate}}</label>
-                    <span class="value">{{p.value}}{{p.unit}}</span>
+                    <span class="value">{{p.value}}</span>
                 </li>
             </div>
             <div class="card" ng-repeat="sub in item.contains">
