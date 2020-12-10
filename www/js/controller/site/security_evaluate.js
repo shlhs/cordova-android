@@ -224,6 +224,7 @@ app.controller('SecurityEvaluateHome', ['$scope', '$stateParams', '$http', 'ajax
     $scope.unqualified = {};
     $scope.status = 'disabled';
     $scope.editable = false;
+    $scope.dtsList = {};
 
     // 画进度
     function drawProgress(progress) {
@@ -340,6 +341,7 @@ app.controller('SecurityEvaluateHome', ['$scope', '$stateParams', '$http', 'ajax
 
     function init() {
         getEvaluateData();
+        getDtsListName();
     }
 
     $scope.gotoPrevPage = function () {
@@ -351,6 +353,24 @@ app.controller('SecurityEvaluateHome', ['$scope', '$stateParams', '$http', 'ajax
     };
 
     init();
+
+    // 获取缺陷名称
+    function getDtsListName(){
+        ajax.get({
+            url: '/opstasks/task_types',
+            success: function (data) {
+                if(data && data.length  > 0){
+                    var taskTypes = {};
+                    data.forEach(item=>{
+                        if(String(item.id) === '8' || String(item.id) === '9' || String(item.id) === '10'){
+                            taskTypes[item.id] = item.name;
+                        }
+                    })
+                    $scope.dtsList = taskTypes;
+                }
+            }
+        })
+    }
 }]);
 
 app.controller('SecurityEvaluateDetailCtrl', ['$scope', '$http', 'ajax', 'userService', 'routerService', 'SecurityReportService',

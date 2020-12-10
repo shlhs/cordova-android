@@ -2358,31 +2358,37 @@ app.controller('CommonTaskEditAssignCtrl', ['$scope', '$timeout', 'ajax', functi
     }
 
     function initTaskTypeList() {
-        var taskTypes = [{
-            value: 8,
-            text: '一般缺陷'
-        }, {
-            value: 9,
-            text: '严重缺陷'
-        }, {
-            value: 10,
-            text: '致命缺陷'
-        }];
-        var taskTypeButton = document.getElementById('taskTypePicker');
-        if (taskTypeButton) {
-            taskTypePicker = new mui.PopPicker();
-            taskTypePicker.setData(taskTypes);
-            taskTypePicker.pickers[0].setSelectedIndex(task.task_type_id - 8); // 默认选中
-            taskTypeButton.addEventListener('click', function (event) {
-                taskTypePicker.show(function (items) {
-                    $scope.taskType = {
-                        id: items[0].value,
-                        name: items[0].text
-                    };
-                    $scope.$apply();
-                });
-            }, false);
-        }
+        ajax.get({
+            url: '/opstasks/task_types',
+            success: function (data) {
+                if(data && data.length  > 0){
+                    var taskTypes = [];
+                    data.forEach(item=>{
+                        if(String(item.id) === '8' || String(item.id) === '9' || String(item.id) === '10'){
+                            taskTypes.push({
+                                value: item.id,
+                                text: item.name
+                            })
+                        }
+                    })
+                    var taskTypeButton = document.getElementById('taskTypePicker');
+                    if (taskTypeButton) {
+                        taskTypePicker = new mui.PopPicker();
+                        taskTypePicker.setData(taskTypes);
+                        taskTypePicker.pickers[0].setSelectedIndex(task.task_type_id - 8); // 默认选中
+                        taskTypeButton.addEventListener('click', function (event) {
+                            taskTypePicker.show(function (items) {
+                                $scope.taskType = {
+                                    id: items[0].value,
+                                    name: items[0].text
+                                };
+                                $scope.$apply();
+                            });
+                        }, false);
+                    }
+                }
+            }
+        })
     }
 
     // 必填项是否都已填上
