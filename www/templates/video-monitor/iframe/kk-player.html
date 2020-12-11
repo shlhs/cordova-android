@@ -7,17 +7,30 @@
     <meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport">
 </head>
 <body>
-<!--<easy-player video-url="http://114.215.90.83:10812/nvc/2/flv/hls/stream_1.flv" live="true" show-custom-button="true"-->
-<!--autoplay="true" id="player" muted="true" id="player"></easy-player>-->
 <easy-player live="true" show-custom-button="true"
              autoplay="true" id="player" muted="true" id="player"></easy-player>
-<script type="text/javascript" src="/js/app/utils.js"></script>
+<script type="text/javascript" src="/lib/easy-player/easy-player-element.min.js"></script>
 <script>
+    function GetQueryString(name, url)
+    {
+        var search = window.location.search;
+        if (url) {
+            search = url.substring(url.indexOf('?'));
+        }
+        var search = search.substring(1), params = search.split('&');
+        var index, param;
+        for (var i=0; i<params.length; i++){
+            param = params[i];
+            index = param.indexOf('=');
+            if (index > 0 && param.substring(0, index) == name){
+                return decodeURIComponent(param.substring(index+1));
+            }
+        }
+        return null;
+    }
+
     var url = GetQueryString("url"), ipcId=GetQueryString("ipcId");
     document.getElementById("player").setAttribute('video-url', url);
-</script>
-<script type="text/javascript" src="/components/easy-player/easy-player-element.min.js"></script>
-<script>
     var player = document.getElementById('player');
     var isPlaying = false;
     player.addEventListener('pause', function () {

@@ -47,7 +47,7 @@ app.controller('KanbanCtrl', ['$scope', '$stateParams', 'ajax', '$timeout', func
         if (count === 1) {
             $('<ul class="slidesjs-pagination">' +
                 '<li class="slidesjs-pagination-item">' +
-                '<a href="#" data-slidesjs-item="0" class="active">1</a>' +
+                '<a data-slidesjs-item="0" class="active">1</a>' +
                 '</li>' +
                 '</ul>').appendTo($('#chartSlider'));
         } else {
@@ -599,7 +599,6 @@ app.controller('KanbanCtrl', ['$scope', '$stateParams', 'ajax', '$timeout', func
                         x: 'left',
                         data: ['峰', '平', '谷']
                     },
-                    color: ['#F04863', '#F9CC13', '#369FFF', '#12C1C1', '#8442E0', '#2FC15B'],
                     series: [{
                         name: '用电量',
                         type: 'pie',
@@ -870,7 +869,6 @@ app.controller('KanbanCtrl', ['$scope', '$stateParams', 'ajax', '$timeout', func
                 data: times
             },
             yAxis: yAxis,
-            color: ['#369FFF', '#F9CC13', '#F04863', '#12C1C1', '#8442E0', '#2FC15B'],
             series: data
         };
     }
@@ -896,7 +894,6 @@ app.controller('KanbanCtrl', ['$scope', '$stateParams', 'ajax', '$timeout', func
     function getRatioPie(title, data, unit) {
         var echartOptions = {
             title: [],
-            color: ['#F04863', '#F9CC13', '#369FFF', '#12C1C1', '#8442E0', '#2FC15B'],
             series: [{
                 name: '2',
                 type: 'pie',
@@ -926,7 +923,7 @@ app.controller('KanbanCtrl', ['$scope', '$stateParams', 'ajax', '$timeout', func
             <div class="chart" id="' + id + '"></div>\
             </div>\
             </div>').prependTo($("#chartSlider"));
-        echarts.init(document.getElementById(id)).setOption(config);
+        echarts.init(document.getElementById(id), 'custom').setOption(config);
         chartCount += 1;
         paintSuccess();
     }
@@ -939,10 +936,11 @@ app.controller('KanbanCtrl', ['$scope', '$stateParams', 'ajax', '$timeout', func
 
 }]);
 
-app.controller('SiteOverviewCtrl', ['$scope', 'ajax', 'varDataService', function ($scope, ajax, varDataService) {
-    $scope.sn = GetQueryString('sn');
-    $scope.stationName = GetQueryString('name');
+app.controller('SiteOverviewCtrl', ['$scope', '$stateParams', 'ajax', 'varDataService', '$myTranslate', function ($scope, $stateParams, ajax, varDataService, $myTranslate) {
+    $scope.sn = $stateParams.sn; // $scope.currentSite.sn; // GetQueryString('sn');
+    // $scope.stationName = $scope.currentSite.name; // GetQueryString('name');
     var stationData = null;
+    var pfvSetting = null;
     $scope.fuheLoading = true; // 负荷数据获取
     $scope.fuheError = null; // 负荷变量错误
     $scope.electricLoading = true; // 电量获取
@@ -952,15 +950,25 @@ app.controller('SiteOverviewCtrl', ['$scope', 'ajax', 'varDataService', function
     $scope.realtimeLoad = '-'; // 实时负荷
     var realtimeLoadInterval = null;
 
-    ajax.get({
-        url: '/stations/' + $scope.sn,
-        success: function (data) {
-            stationData = data;
-            getLoadTrend(data.realtime_load_var);
-            getLoadRealtime(data.realtime_load_var);
-            getElectricData(data.sum_epf_var);
-        }
+    $scope.$on('$destroy', function () {
+       if (realtimeLoadInterval) {
+           clearInterval(realtimeLoadInterval);
+           realtimeLoadInterval = null;
+       }
     });
+
+    setTimeout(function () {
+        ajax.get({
+            url: '/stations/' + $scope.sn,
+            success: function (data) {
+                stationData = data;
+                getLoadTrend(data.realtime_load_var);
+                getLoadRealtime(data.realtime_load_var);
+                getElectricData(data.sum_epf_var);
+                $scope.$apply();
+            }
+        });
+    }, 300);
 
     function getLoadRealtime(varSn) {
         if (!varSn) {
@@ -986,7 +994,7 @@ app.controller('SiteOverviewCtrl', ['$scope', 'ajax', 'varDataService', function
     function getLoadTrend(varSn) { // 获取昨日、今日负荷趋势
         if (!varSn) {
             $scope.fuheLoading = false;
-            $scope.fuheError = '站点未配置实时负荷属性';
+            $scope.fuheError = $myTranslate.instant('tip.station.noload');
             return;
         }
         // 获取昨日、今日变量趋势
@@ -1004,7 +1012,7 @@ app.controller('SiteOverviewCtrl', ['$scope', 'ajax', 'varDataService', function
             }
         }, function () {
             $scope.fuheLoading = false;
-            $scope.fuheError = "获取数据失败";
+            $scope.fuheError = $myTranslate.instant('tip.failed.getdata');
             $scope.$apply();
         });
     }
@@ -1012,7 +1020,7 @@ app.controller('SiteOverviewCtrl', ['$scope', 'ajax', 'varDataService', function
     function getElectricData(varSn) {
         if (!varSn) {
             $scope.electricLoading = false;
-            $scope.electricError = '站点未配置总用电量属性';
+            $scope.electricError = $myTranslate.instant('tip.station.noepf');
             return;
         }
         // 获取今日用电
@@ -1038,26 +1046,48 @@ app.controller('SiteOverviewCtrl', ['$scope', 'ajax', 'varDataService', function
             if (res && res.length) {
                 var dataList = res[0].datas;
                 if (!dataList) {
-                    $scope.electricError = '获取用电数据失败';
+                    $scope.electricError = $myTranslate.instant('tip.failed.electric.getdata');
                     return;
                 }
                 var degrees = {
                     p: [],
                     s: [],
                     v: [],
-                    f: []
+                    f: [],
+                    all: [],
                 };
                 var times = [];
+                var degreePfvValidCount = {p: 0, s: 0, v: 0, f: 0};
                 dataList.forEach(function (item) {
                     var d = Number.parseInt(item.time.substring(8, 10), 10);
-                    times.push(d + '日');
+                    // times.push(d + $myTranslate.instant('日'));
+                    times.push(getDay(d));
+                    degrees.all.push(item.all_degree);
                     degrees.p.push(item.p_degree);
+                    if (item.p_degree) {
+                        degreePfvValidCount.p = 1;
+                    }
                     degrees.f.push(item.f_degree);
+                    if (item.f_degree) {
+                        degreePfvValidCount.f = 1;
+                    }
                     degrees.v.push(item.v_degree);
+                    if (item.v_degree) {
+                        degreePfvValidCount.v = 1;
+                    }
                     degrees.s.push(item.s_degree);
+                    if (item.s_degree) {
+                        degreePfvValidCount.s = 1;
+                    }
                 });
-                paintElectricDegreeTrend(times, degrees);
-                paintElectricDegreeBar(degrees);
+                var validDegree = degreePfvValidCount.p + degreePfvValidCount.s + degreePfvValidCount.v + degreePfvValidCount.f;
+                if (validDegree > 1) { // 如果没有配置峰谷平 或 配置了不分时电价，则不显示峰谷平占比饼图
+                    paintElectricDegreeTrendByPfv(times, degrees);
+                    document.getElementById('pidCard').style.display = 'block';
+                    paintElectricDegreeBar(degrees);
+                } else {
+                    paintElectricDegreeTrendByAllDegree(times, degrees.all);
+                }
             }
 
         });
@@ -1066,7 +1096,7 @@ app.controller('SiteOverviewCtrl', ['$scope', 'ajax', 'varDataService', function
     function paintLoadTrendChart(yesterdayData, todayData) {
         var times = [];
         for (var i=0; i<24; i++) {
-            times.push(i + '时');
+            times.push(i + $myTranslate.instant('时'));
         }
         var option = {
             tooltip: {
@@ -1113,33 +1143,26 @@ app.controller('SiteOverviewCtrl', ['$scope', 'ajax', 'varDataService', function
             yAxis: {
                 name: 'kW'
             },
-            color: ['#F9CC13', '#369FFF'],
             series: [{
                 type: 'line',
                 data: yesterdayData,
-                name: '昨日'
+                name: $myTranslate.instant('yesterday')
             }, {
                 type: 'line',
                 data: todayData,
-                name: '今日'
+                name: $myTranslate.instant('today')
             }]
         };
-        echarts.init(document.getElementById('loadChart')).setOption(option);
+        echarts.init(document.getElementById('loadChart'), 'custom').setOption(option);
     }
     var g_pvf_label = {
-        p: '峰',
-        f: '平',
-        v: '谷',
-        s: '尖'
+        p: $myTranslate.instant('峰'),
+        f: $myTranslate.instant('平'),
+        v: $myTranslate.instant('谷'),
+        s: $myTranslate.instant('尖')
     };
-    var g_pvf_colors = {
-        'p': 'rgba(239, 150, 166, 1)',
-        'v': 'rgba(138, 212, 199, 1)',
-        'f': 'rgba(136, 169, 248, 1)',
-        's': 'rgba(254,139,106, 1)',
-    };
-
-    function paintElectricDegreeTrend(times, data) {
+    // 按峰谷平显示月趋势
+    function paintElectricDegreeTrendByPfv(times, data) {
         var series = [];
         ['s', 'p', 'f', 'v'].forEach(function (key) {
             series.push({
@@ -1197,7 +1220,54 @@ app.controller('SiteOverviewCtrl', ['$scope', 'ajax', 'varDataService', function
             },
             series: series
         };
-        echarts.init(document.getElementById('electricChart')).setOption(option);
+        echarts.init(document.getElementById('electricChart'), 'custom').setOption(option);
+    }
+
+    // 用all_degree显示月趋势
+    function paintElectricDegreeTrendByAllDegree(times, data) {
+        var series = [{
+            type: 'bar',
+            name: $myTranslate.instant('station.degree.byday'),
+            data: data,
+            color: '#8f79ff'
+        }];
+
+        var option = {
+            tooltip: {
+                trigger: 'axis',
+                confine: true,
+            },
+            legend: {
+                bottom: -5,
+                textStyle: {
+                    fontSize: 9,
+                    lineHeight: 10
+                },
+                itemWidth: 15,
+                itemHeight: 10
+            },
+            grid: {
+                top: 15,
+                left: 4,
+                right: 2,
+                bottom: 20,
+                containLabel: true
+            },
+            toolbox: {
+                feature: {
+                    saveAsImage: false
+                }
+            },
+            xAxis: {
+                type: 'category',
+                data: times
+            },
+            yAxis: {
+                name: 'kWh'
+            },
+            series: series
+        };
+        echarts.init(document.getElementById('electricChart'), 'custom').setOption(option);
     }
 
     function sum(datalist) {
@@ -1261,6 +1331,6 @@ app.controller('SiteOverviewCtrl', ['$scope', 'ajax', 'varDataService', function
                 },
             ],
         };
-        echarts.init(document.getElementById('electricPie')).setOption(option);
+        echarts.init(document.getElementById('electricPie'), 'custom').setOption(option);
     }
 }]);

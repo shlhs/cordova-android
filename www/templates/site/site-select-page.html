@@ -1,17 +1,17 @@
-<div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden;background-color: rgb(245,245,245);"
-     ng-controller="SiteTreeCtrl" class="page page-right">
-    <header class="mui-bar bg-header mui-segmented-control-vertical bg-transparent" style="padding-left: 14px;padding-left: 14px;box-shadow: none;">
-        <a class="mui-icon mui-pull-left text-white" ng-click="cancel()" style="color: rgb(68,68,68);font-size: 16px;top:6px;">取消</a>
-        <h1 class="mui-title" style="color: rgb(68,68,68);font-weight: bold;font-size: 18px;left: 60px;right:60px;">站点切换</h1>
+<div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden;"
+     ng-controller="SiteTreeCtrl" class="page page-right site-select-page">
+    <header class="mui-bar bg-header bg-transparent" style="padding-left: 14px;box-shadow: none;">
+        <a class="mui-icon mui-pull-left" ng-click="cancel()" style="font-size: 16px;top:6px;">{{'cancel' | translate}}</a>
+        <h1 class="mui-title" style="font-weight: bold;font-size: 18px;left: 60px;right:60px;">{{'station.switch' | myTranslate}}</h1>
     </header>
     <div style="position: fixed;bottom: 0;top: 60px;width: 100%;">
         <div class="site-search-comp">
             <div class="search-wrapper">
-                <i class="icon icon-search"></i>
-                <input placeholder="支持名称和站点编号搜索" oninput="angular.element(this).scope().searchInputChange(this)">
+                <i class="iconfont anticon-search"></i>
+                <input placeholder="{{'tip.station.search.text' | translate}}" oninput="angular.element(this).scope().searchInputChange(this)">
             </div>
         </div>
-        <div class="site-tree" style="position: absolute; top: 50px;bottom:0;width:100%;overflow-y: auto;">
+        <div class="site-tree bg-white" style="position: absolute; top: 50px;bottom:0;width:100%;overflow-y: auto;">
             <ul class="tree-group">
                 <li class="tree-cell" ng-repeat="item in showedTreeData"
                     ng-class="{'active': item.$$isExpend, 'collapse': !isLeaf(item), 'is-leaf': isLeaf(item)}"

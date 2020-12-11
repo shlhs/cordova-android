@@ -2,7 +2,7 @@
 	"versionCode": 220,
 	"versionName": "2.2.0",
 	"description": "",
-	"downloadUrl": "http://139.196.33.250:8123/version/ubiku-2.2.0.apk",
+	"downloadUrl": "http://139.196.33.250:8123/version/ubiku.apk",
 	"isLaunched": true,
 	"isGatedLaunch": true,
 	"forceUpdate": false,
