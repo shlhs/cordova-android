@@ -1041,33 +1041,57 @@ app.controller('SiteOverviewCtrl', ['$scope', 'ajax', 'varDataService', function
                 p: [],
                 s: [],
                 v: [],
-                f: []
+                f: [],
+                all: [],
             };
             var index = 0;
             var times = [];
+            var degreePfvValidCount = {p: 0, s: 0, v: 0, f: 0};
+
             var monthDays = moment().endOf('month').date();
             for (var day=1; day<=monthDays; day++) {
                 if (dataList.length > index) {
                     var item = dataList[index];
                     var d = Number.parseInt(item.time.substring(8, 10), 10);
                     if (day === d) {
+                        degrees.all.push(item.allDegree);
                         degrees.p.push(item.pDegree);
+                        if (item.pDegree) {
+                            degreePfvValidCount.p = 1;
+                        }
                         degrees.f.push(item.fDegree);
+                        if (item.fDegree) {
+                            degreePfvValidCount.f = 1;
+                        }
                         degrees.v.push(item.vDegree);
+                        if (item.vDegree) {
+                            degreePfvValidCount.v = 1;
+                        }
                         degrees.s.push(item.sDegree);
+                        if (item.sDegree) {
+                            degreePfvValidCount.s = 1;
+                        }
                         index += 1;
                     } else if (d > day) {
                         degrees.p.push(null);
                         degrees.f.push(null);
                         degrees.v.push(null);
                         degrees.s.push(null);
-                        index += 1;
+                        degrees.all.push(null);
                     }
                 }
                 times.push(day + '日');
             }
-            paintElectricDegreeTrend(times, degrees);
-            paintElectricDegreeBar(degrees);
+            var validDegree = degreePfvValidCount.p + degreePfvValidCount.s + degreePfvValidCount.v + degreePfvValidCount.f;
+            if (validDegree > 1) { // 如果没有配置峰谷平 或 配置了不分时电价，则不显示峰谷平占比饼图
+                paintElectricDegreeTrendByPfv(times, degrees);
+                document.getElementById('pidCard').style.display = 'block';
+                paintElectricDegreeBar(degrees);
+            } else {
+                paintElectricDegreeTrendByAllDegree(times, degrees.all);
+            }
+            // paintElectricDegreeTrend(times, degrees);
+            // paintElectricDegreeBar(degrees);
         });
     }
 
@@ -1147,7 +1171,7 @@ app.controller('SiteOverviewCtrl', ['$scope', 'ajax', 'varDataService', function
         's': 'rgba(254,139,106, 1)',
     };
 
-    function paintElectricDegreeTrend(times, data) {
+    function paintElectricDegreeTrendByPfv(times, data) {
         var series = [];
         ['s', 'p', 'f', 'v'].forEach(function (key) {
             series.push({
@@ -1206,6 +1230,53 @@ app.controller('SiteOverviewCtrl', ['$scope', 'ajax', 'varDataService', function
             series: series
         };
         echarts.init(document.getElementById('electricChart')).setOption(option);
+    }
+
+    // 用all_degree显示月趋势
+    function paintElectricDegreeTrendByAllDegree(times, data) {
+        var series = [{
+            type: 'bar',
+            name: '每日用电',
+            data: data,
+            color: '#8f79ff'
+        }];
+
+        var option = {
+            tooltip: {
+                trigger: 'axis',
+                confine: true,
+            },
+            legend: {
+                bottom: -5,
+                textStyle: {
+                    fontSize: 9,
+                    lineHeight: 10
+                },
+                itemWidth: 15,
+                itemHeight: 10
+            },
+            grid: {
+                top: 15,
+                left: 4,
+                right: 2,
+                bottom: 20,
+                containLabel: true
+            },
+            toolbox: {
+                feature: {
+                    saveAsImage: false
+                }
+            },
+            xAxis: {
+                type: 'category',
+                data: times
+            },
+            yAxis: {
+                name: 'kWh'
+            },
+            series: series
+        };
+        echarts.init(document.getElementById('electricChart'), 'custom').setOption(option);
     }
 
     function sum(datalist) {
