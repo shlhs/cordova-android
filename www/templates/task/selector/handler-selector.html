@@ -1,11 +1,11 @@
 <div class="mui-poppicker my-picker" ng-class="{'mui-active': visible}">
     <div class="mui-poppicker-header">
-        <button class="mui-btn mui-poppicker-btn-cancel" ng-click="hide()">取消</button>
-        <button class="mui-btn mui-btn-blue mui-poppicker-btn-ok" ng-click="confirm()">确定</button>
+        <button class="mui-btn mui-poppicker-btn-cancel" ng-click="hide()">{{ 'cancel' | translate }}</button>
+        <button class="mui-btn mui-btn-blue mui-poppicker-btn-ok" ng-click="confirm()">{{ 'confirm' | translate }}</button>
         <div class="mui-poppicker-clear"></div>
     </div>
     <div class="mui-poppicker-body">
-        <div style="font-size: 13px;text-align: center;padding-top: 10px;">{{title || '请选择运维工'}}</div>
+        <div style="font-size: 13px;text-align: center;padding-top: 10px;">{{title || ('please.select task.repairer' | myTranslate)}}</div>
         <div class="teams-selector">
             <div ng-repeat="user in users" ng-click="onToggleCheck(user.account)">
                 <label ng-class="{'selected': isSelected(user.account)}">{{getNameAndPhone(user)}}</label>

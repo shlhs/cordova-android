@@ -1,16 +1,3 @@
-var g_pvf_label = {
-    p: '峰',
-    f: '平',
-    v: '谷',
-    s: '尖'
-};
-var g_pvf_colors = {
-    'p': 'rgba(239, 150, 166, 1)',
-    'v': 'rgba(138, 212, 199, 1)',
-    'f': 'rgba(136, 169, 248, 1)',
-    's': 'rgba(254,139,106, 1)',
-};
-
 function EnergyFuncApi(scope, varDataService) {
     this.scope = scope;
     this.varDataApi = varDataService;
@@ -201,46 +188,24 @@ EnergyFuncApi.prototype.paintAvgPriceTrend = function (chartId, data) {
             data: times,
             axisLabel: {
                 fontSize: 11,
-                color: '#6b6b6b'
             },
-            axisLine: {
-                lineStyle: {
-                    color: '#E7EAED'
-                }
-            }
         },
         yAxis: {
             name: '元',
             nameGap: 0,
-            nameTextStyle: {
-                color: '#6b6b6b'
-            },
             type: 'value',
             axisLabel: {
                 fontSize: 11,
-                color: '#6b6b6b'
             },
-            axisLine: {
-                lineStyle: {
-                    color: '#E7EAED'
-                }
-            },
-            splitLine: {
-                lineStyle: {
-                    color: '#E7EAED'
-                }
-            }
+            splitNumber: 4,
         },
         series: [{
             data: yAxis,
             type: 'line',
             symbolSize: 4,
-            itemStyle: {
-                color: '#8D6ADD'
-            }
         }]
     };
-    echarts.init(document.getElementById(chartId)).setOption(option);
+    echarts.init(document.getElementById(chartId), "custom").setOption(option);
 };
 
 // 计算出电度电费以外的所有电费
@@ -461,7 +426,7 @@ EnergyFuncApi.prototype.calcAvgMaxLoadAndTrend = function (dataList, month) {
 };
 
 // 能源管理基础控制，主要用于获取所有监测点，并显示设备显示页面
-app.controller('EnergyBaseCtrl', ['$scope', 'ajax', 'platformService', 'routerService', 'varDataService', function ($scope, ajax, platformService, routerService, varDataService) {
+app.controller('EnergyBaseCtrl', ['$scope', '$stateParams', '$state', 'ajax', 'platformService', 'routerService', 'varDataService', function ($scope, $stateParams, $state, ajax, platformService, routerService, varDataService) {
     $scope.stationSn = $scope.stationSn || GetQueryString('sn');
     $scope.stationName = $scope.stationName || GetQueryString('name');
     $scope.stationCapacity = $scope.capacity|| GetQueryString("capacity");
@@ -473,7 +438,7 @@ app.controller('EnergyBaseCtrl', ['$scope', 'ajax', 'platformService', 'routerSe
     };
     $scope.screenWidth = window.screen.width;
     $scope.contentHeight = window.screen.height - 60;
-    $scope.isLoading = true;
+    $scope.isLoading = $scope.stationSn ? true : false;
     $scope.selectedDate = moment();
     $scope.showDateName = $scope.selectedDate.format('YYYY.MM');
     $scope.isCurrentMonth = true;       // 所选月份是否当前月份
@@ -600,7 +565,11 @@ app.controller('EnergyBaseCtrl', ['$scope', 'ajax', 'platformService', 'routerSe
     $scope.openDeviceSelector = function () {
         // 打开设备选择页面
         routerService.openPage($scope, '/templates/energy/device-select-page.html',
-            {treeData: $scope.devices, onSelect: $scope.onChangeDevice, selectedSn: $scope.currentDevice.sn});
+            {
+                treeData: $scope.devices, onSelect: $scope.onChangeDevice, selectedSn: $scope.currentDevice.sn
+            }, {
+                hidePrev: false
+            });
     };
 
     function initDatePicker() {
@@ -612,7 +581,7 @@ app.controller('EnergyBaseCtrl', ['$scope', 'ajax', 'platformService', 'routerSe
                         $scope.$apply();
                     });
                 } else {
-                    var options = {type: 'date'};
+                    var options = {type: 'month'};
                     datePicker = new mui.DtPicker(options);
                     datePicker.show(function(rs) {
                         onMonthChange(rs.text);
@@ -692,39 +661,20 @@ function paintAvgLoadTrendByDay(chartId, times, datas) {
             data: times,
             axisLabel: {
                 fontSize: 11,
-                color: '#6b6b6b'
             },
-            axisLine: {
-                lineStyle: {
-                    color: '#E7EAED'
-                }
-            }
         },
         yAxis: {
             type: 'value',
             axisLabel: {
                 fontSize: 11,
-                color: '#6b6b6b',
                 formatter: '{value}%'
             },
-            axisLine: {
-                lineStyle: {
-                    color: '#E7EAED'
-                }
-            },
-            splitLine: {
-                lineStyle: {
-                    color: '#E7EAED'
-                }
-            },
+            splitNumber: 4,
         },
         series: [{
             data: datas,
             type: 'line',
             symbolSize: 0,
-            itemStyle: {
-                color: '#8D6ADD'
-            },
             markPoint: {
                 data: [
                     {type: 'max', name: '最大值', offset: [0, -12]},
@@ -740,7 +690,6 @@ function paintAvgLoadTrendByDay(chartId, times, datas) {
                 symbolSize: 15,
                 label: {
                     fontSize: 10,
-                    color: '#666',
                     offset: [0, -12],
                     formatter: '{c}%'
                 }
@@ -751,7 +700,6 @@ function paintAvgLoadTrendByDay(chartId, times, datas) {
                 ],
                 label: {
                     fontSize: 10,
-                    color: '#666',
                     formatter: '{c}%',
                     offset: [-5, 0]
                 },
@@ -759,13 +707,13 @@ function paintAvgLoadTrendByDay(chartId, times, datas) {
             }
         }]
     };
-    echarts.init(document.getElementById(chartId)).setOption(option);
+    echarts.init(document.getElementById(chartId), 'custom').setOption(option);
 }
 
 // 能源管理
 app.controller('EnergyHomeCtrl', ['$scope', 'ajax', 'platformService', 'varDataService', function ($scope, ajax, platformService, varDataService) {
 
-    $scope.selectedApps = defaultEnergyMenus;
+    $scope.selectedApps = DEFAULT_ENERGY_MENUS;
     $scope.degreeVarSn = null;     // 设备的电度变量sn
     $scope.currentMonthData = {};
     var energyApi = new EnergyFuncApi($scope, varDataService);
@@ -939,13 +887,11 @@ app.controller('EnergyOverviewCtrl', ['$scope', 'ajax', 'platformService', 'varD
             colors.push(g_pvf_colors[key]);
         });
         var option = {
-            backgroundColor:'#ffffff',
             legend: {
                 data: ['峰', '平', '谷'],
                 right: 20,
                 top: 0,
                 textStyle: {
-                    color: '#666666',
                     fontSize: 10,
                 },
                 itemWidth: 14,
@@ -965,40 +911,21 @@ app.controller('EnergyOverviewCtrl', ['$scope', 'ajax', 'platformService', 'varD
                 data: times,
                 axisLabel: {
                     fontSize: 11,
-                    color: '#6b6b6b'
-                },
-                axisLine: {
-                    lineStyle: {
-                        color: '#E7EAED'
-                    }
                 },
             },
             yAxis: {
                 type: 'value',
                 name: '元',
                 nameGap: 0,
-                nameTextStyle: {
-                    color: '#6b6b6b'
-                },
                 axisLabel: {
                     fontSize: 11,
-                    color: '#6b6b6b'
                 },
-                axisLine: {
-                    lineStyle: {
-                        color: '#E7EAED'
-                    }
-                },
-                splitLine: {
-                    lineStyle: {
-                        color: '#E7EAED'
-                    }
-                }
+                splitNumber: 4,
             },
             color: colors,
             series: series,
         };
-        echarts.init(document.getElementById('charge_chart')).setOption(option);
+        echarts.init(document.getElementById('charge_chart'), 'custom').setOption(option);
     }
 
     function calcCosAndLoad(varMap) {
@@ -1130,7 +1057,6 @@ app.controller('EnergyCostAnalysisCtrl', ['$scope', 'ajax', 'platformService', '
                 text: total + (unit ? '\n' + unit : ''),
                 textStyle: {
                     fontSize: 13,
-                    color: '#666666',
                     align: 'center',
                     lineHeight: 14,
                 },
@@ -1143,7 +1069,6 @@ app.controller('EnergyCostAnalysisCtrl', ['$scope', 'ajax', 'platformService', '
                 triggerOn: 'none',
                 formatter: '{b} : {c} ({d}%)',
             },
-            backgroundColor:'#ffffff',
             grid: {
                 top: '20%',
                 left: 0,
@@ -1184,7 +1109,7 @@ app.controller('EnergyCostAnalysisCtrl', ['$scope', 'ajax', 'platformService', '
                 },
             ],
         };
-        echarts.init(document.getElementById(chartId)).setOption(option);
+        echarts.init(document.getElementById(chartId), 'custom').setOption(option);
     }
 
     setTimeout(function () {
@@ -1330,42 +1255,23 @@ app.controller('EnergyLoadAnalysisCtrl', ['$scope', 'varDataService', function (
                 data: times,
                 axisLabel: {
                     fontSize: 11,
-                    color: '#6b6b6b'
                 },
-                axisLine: {
-                    lineStyle: {
-                        color: '#E7EAED'
-                    }
-                }
             },
             yAxis: {
                 type: 'value',
                 axisLabel: {
                     fontSize: 11,
-                    color: '#6b6b6b',
                     formatter: '{value}%'
                 },
-                axisLine: {
-                    lineStyle: {
-                        color: '#E7EAED'
-                    }
-                },
-                splitLine: {
-                    lineStyle: {
-                        color: '#E7EAED'
-                    }
-                },
+                splitNumber: 4,
             },
             series: [{
                 data: avgList,
                 type: 'line',
                 symbolSize: 0,
-                itemStyle: {
-                    color: '#8D6ADD'
-                }
             }]
         };
-        echarts.init(document.getElementById('chart1')).setOption(option);
+        echarts.init(document.getElementById('chart1'), 'custom').setOption(option);
     }
 
     setTimeout(function () {
@@ -1406,7 +1312,6 @@ app.controller('EnergyMaxDemandCtrl', ['$scope', 'varDataService', function ($sc
     function initDatePicker() {
         document.getElementById('datePicker1').addEventListener('tap', function() {
             // 去掉月的样式限制
-            $('body').removeClass('timeType-MONTH');
             if(startDatePicker) {
                 startDatePicker.show(function (rs) {
                     $scope.startDate = rs.text;
@@ -1424,7 +1329,6 @@ app.controller('EnergyMaxDemandCtrl', ['$scope', 'varDataService', function ($sc
             }
         }, false);
         document.getElementById('datePicker2').addEventListener('tap', function() {
-            $('body').removeClass('timeType-MONTH');
             if(endDatePicker) {
                 endDatePicker.show(function (rs) {
                     $scope.endDate = rs.text;
@@ -1444,7 +1348,6 @@ app.controller('EnergyMaxDemandCtrl', ['$scope', 'varDataService', function ($sc
     }
 
     function onDateChange() {
-        $('body').addClass('timeType-MONTH');
         paintDemandTrend();
     }
 
@@ -1553,44 +1456,22 @@ app.controller('EnergyMaxDemandCtrl', ['$scope', 'varDataService', function ($sc
                     data: times,
                     axisLabel: {
                         fontSize: 11,
-                        color: '#6b6b6b'
                     },
-                    axisLine: {
-                        lineStyle: {
-                            color: '#E7EAED'
-                        }
-                    }
                 },
                 yAxis: {
                     name: 'kW',
                     type: 'value',
                     nameGap: 8,
-                    nameTextStyle: {
-                        color: '#6b6b6b',
-                    },
                     axisLabel: {
                         fontSize: 11,
-                        color: '#6b6b6b',
                         formatter: '{value}'
                     },
-                    axisLine: {
-                        lineStyle: {
-                            color: '#E7EAED'
-                        }
-                    },
-                    splitLine: {
-                        lineStyle: {
-                            color: '#E7EAED'
-                        }
-                    },
+                    splitNumber: 4,
                 },
                 series: [{
                     data: data.datas,
                     type: 'line',
                     symbolSize: 0,
-                    itemStyle: {
-                        color: '#8D6ADD'
-                    },
                     markPoint: {
                         data: [
                             {type: 'max', name: '最大值'},
@@ -1599,13 +1480,12 @@ app.controller('EnergyMaxDemandCtrl', ['$scope', 'varDataService', function ($sc
                         label: {
                             fontSize: 10,
                             offset: [0, -12],
-                            color: '#666',
                             formatter: '{c}kW'
                         }
                     },
                 }]
             };
-            echarts.init(document.getElementById('chart1')).setOption(option);
+            echarts.init(document.getElementById('chart1'), 'custom').setOption(option);
         });
     }
 
@@ -1626,8 +1506,6 @@ app.controller('EnergyMaxDemandCtrl', ['$scope', 'varDataService', function ($sc
         initDatePicker();
     }, 500);
 }]);
-
-const defaultVoltage = null;     // 默认额定相电压
 
 app.controller('EnergyQualityMonitorCtrl', ['$scope', 'varDataService', 'collectorService', function ($scope, varDataService, collectorService) {
     var codes = [];
@@ -1909,9 +1787,6 @@ app.controller('EnergyQualityMonitorCtrl', ['$scope', 'varDataService', 'collect
             title: {
                 left: 'center',
                 text: '',
-                textStyle: {
-                    color: '#787878',
-                },
             },
             polar: {
                 radius: 70,
@@ -1944,25 +1819,13 @@ app.controller('EnergyQualityMonitorCtrl', ['$scope', 'varDataService', 'collect
             radiusAxis: {
                 splitNumber: 2,
                 axisLabel: {
-                    color: '#666',
                     fontSize: 10,
                     margin: 4
                 },
-                axisLine: {
-                    lineStyle: {
-                        color: '#666',
-                    }
-                },
-                splitLine: {
-                    lineStyle: {
-                        color: '#aaa',
-                        type: 'dashed'
-                    }
-                }
             },
             series: aseries,
         };
-        echarts.init(document.getElementById(chartId)).setOption(option);
+        echarts.init(document.getElementById(chartId), 'custom').setOption(option);
     }
 
     function paintThdTrend(chartId, type, varDatas) {
@@ -2019,7 +1882,6 @@ app.controller('EnergyQualityMonitorCtrl', ['$scope', 'varDataService', 'collect
                 data: ['A相', 'B相', 'C相'],
                 right: 0,
                 textStyle: {
-                    color: '#6b6b6b',
                     fontSize: 10
                 },
                 itemHeight: 10
@@ -2030,38 +1892,15 @@ app.controller('EnergyQualityMonitorCtrl', ['$scope', 'varDataService', 'collect
             xAxis: {
                 type: 'category',
                 data: xAxis,
-                axisLabel: {
-                    fontSize: 11,
-                    color: '#6b6b6b'
-                },
-                axisLine: {
-                    lineStyle: {
-                        color: '#E7EAED'
-                    }
-                }
             },
             yAxis: {
                 name: keys.unit,
                 type: 'value',
                 splitNumber: 4,
-                nameTextStyle: {
-                    color: '#6b6b6b',
-                },
                 nameGap: 5,
                 axisLabel: {
                     fontSize: 11,
-                    color: '#6b6b6b',
                     formatter: '{value}'
-                },
-                axisLine: {
-                    lineStyle: {
-                        color: '#E7EAED'
-                    }
-                },
-                splitLine: {
-                    lineStyle: {
-                        color: '#E7EAED'
-                    }
                 },
                 axisTick: {
                     show: false
@@ -2069,7 +1908,7 @@ app.controller('EnergyQualityMonitorCtrl', ['$scope', 'varDataService', 'collect
             },
             series: series
         };
-        echarts.init(document.getElementById(chartId)).setOption(option);
+        echarts.init(document.getElementById(chartId), 'custom').setOption(option);
     }
 
     $scope.getPercent = function (v) {      // 用于界面显示百分比数据

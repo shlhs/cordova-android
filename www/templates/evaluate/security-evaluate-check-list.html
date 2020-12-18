@@ -1,18 +1,18 @@
 
 <div ng-controller="SecurityEvaluateChecklistCtrl" class="page page-left">
     <header class="mui-bar bg-header">
-        <a class="mui-icon mui-icon-left-nav mui-pull-left text-white btn-back" ng-click="gotoPrevPage()"></a>
+        <a class="mui-icon mui-icon-left-nav mui-pull-left btn-back" ng-click="gotoPrevPage()"></a>
         <h1 class="mui-title">{{group.name}}</h1>
-        <a class="mui-action-menu mui-icon mui-pull-right" style="font-size: 16px;line-height: 28px;color: #fff;" ng-click="save()" ng-if="hasPermission && editable">保存</a>
+        <a class="mui-action-menu mui-icon mui-pull-right" style="font-size: 16px;line-height: 28px;" ng-click="save()" ng-if="hasPermission && editable">{{'save' | translate}}</a>
     </header>
-    <div class="mui-content" ng-cloak style="display: -webkit-box;-webkit-box-align: stretch;">
-        <div class="left-panel" style="background-color: #FFFFFF;width: 35%;box-shadow: 0 0 2px #ccc;">
-            <ul class="check-list">
-                <li class="check-item" ng-repeat="item in items" ng-class="{'active': $index===currentIndex}">
-                    <a class="mui-navigate-right" href="#" ng-click="chooseItem($index)">
-                        <i class="icon icon-16 icon-all-right" ng-if="item.status === 'success'"></i>
-                        <i class="icon icon-16 icon-warning" ng-if="item.status === 'warning'"></i>
-                        <i class="icon icon-16 icon-circle-grey" ng-if="item.status === 'disabled'"></i>
+    <div class="body-content" ng-cloak style="display: -webkit-box;-webkit-box-align: stretch;">
+        <div class="left-panel" style="padding-top: 12px;">
+            <ul class="check-list" style="margin-top: 12px;">
+                <li class="check-item" ng-repeat="item in items" ng-class="{'active': $index===currentIndex}" style="padding: 8px 2px;">
+                    <a class="mui-navigate-right" ng-click="chooseItem($index)">
+                        <i class="iconfont anticon-check-circle-o color-success" ng-if="item.status === 'success'"></i>
+                        <i class="iconfont anticon-alert-circle color-warning" ng-if="item.status === 'warning'"></i>
+                        <i class="icon circle-grey" ng-if="item.status === 'disabled'"></i>
                         {{item.name}}
                     </a>
                 </li>
@@ -20,21 +20,21 @@
 
         </div>
         <div class="right-panel" style="-webkit-box-flex: 2;">
-            <h5 class="mui-text-center" style="color: #444;padding: 4px;">{{currentItem.name}}</h5>
+            <h5 class="mui-text-center" style="padding: 4px;">{{currentItem.name}}</h5>
             <div style="padding: 0 8px;">
                 <ul class="check-box-list">
                     <li class="check-box-item" ng-repeat="item in checklist">
                         <div class="name" style="min-height: 40px;">
                             <label>{{item.name}}</label>
-                            <div class="mui-pull-right mui-radio">
-                                <div><input name="radio{{$index}}" type="radio" ng-model="item.value" value="1" ng-click="checkThis(item)">是</div>
-                                <div><input name="radio{{$index}}" type="radio" ng-model="item.value" value="0" ng-click="checkThis(item)">否</div>
+                            <div class="mui-pull-right mui-radio" ng-if="hasPermission && editable">
+                                <div><input name="radio{{$index}}" type="radio" ng-model="item.value" value="1" ng-click="checkThis(item)">{{'yes' | translate}}</div>
+                                <div><input name="radio{{$index}}" type="radio" ng-model="item.value" value="0" ng-click="checkThis(item)">{{'no' | translate}}</div>
                             </div>
                         </div>
                         <ul class="info-group" style="font-size: 11px;">
-                            <li><span class="value" style="margin-left: 0;">缺陷类型：</span><span class="value" style="margin-left: 0;">{{item.name}}</span></li>
-                            <li><span class="value" style="margin-left: 0;">缺陷危害：</span><span class="value" style="margin-left: 0;">{{item.damage}}</span></li>
-                            <li><span class="value" style="margin-left: 0;">处理建议：</span><span class="value" style="margin-left: 0;">{{item.resolve}}</span></li>
+                            <li><span class="value" style="margin-left: 0;">{{'ops.security.item.type' | translate}}：</span><span class="value" style="margin-left: 0;">{{item.name}}</span></li>
+                            <li><span class="value" style="margin-left: 0;">{{'ops.security.item.harm' | translate}}：</span><span class="value" style="margin-left: 0;">{{item.damage}}</span></li>
+                            <li><span class="value" style="margin-left: 0;">{{'ops.security.item.solution' | translate}}：</span><span class="value" style="margin-left: 0;">{{item.resolve}}</span></li>
                         </ul>
                     </li>
                 </ul>
