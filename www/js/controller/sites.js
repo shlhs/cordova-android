@@ -382,6 +382,7 @@ app.controller('EventListCtrl', ['$scope', '$state', 'scrollerService', 'userSer
     $scope.canCreateTask = userService.getUserRole() === UserRole.Normal ? false : true;
 
     $scope.hasOpsAuth = appStoreProvider.hasOpsAuth();
+    $scope.eventConfirmVisible = eventConfirmVisible;
 
     var deviceSn = GetQueryString("deviceSn");
     if (deviceSn){
@@ -393,6 +394,7 @@ app.controller('EventListCtrl', ['$scope', '$state', 'scrollerService', 'userSer
     $scope.eventLoading = false;
     $scope.loadingFailed = false;
     $scope.unhandledEventCount = 0;
+    $scope.checkedEventIds = [];
 
     $scope.getDataList = function(cb) {
         function formatTime(d) {
@@ -461,10 +463,63 @@ app.controller('EventListCtrl', ['$scope', '$state', 'scrollerService', 'userSer
         window.location.href = '/templates/site/closed-event-list.html?status=0&sn=' + $scope.sn;
     };
 
-    $scope.postCheckEventAction = function($event, eventId) {
-        console.log("To check event: " + eventId);
+    $scope.onCheckEvent = function (eventId) {
+        if ($scope.isChecked(eventId)) {
+            $scope.checkedEventIds.splice($scope.checkedEventIds.indexOf(eventId), 1);
+        } else {
+            $scope.checkedEventIds.push(eventId);
+        }
+    };
+
+    $scope.isChecked = function (eventId) {
+        return $scope.checkedEventIds.indexOf(eventId) >= 0;
+    };
+
+    $scope.checkAll = function () {
+        var btnArray = [$myTranslate.instant('cancel'), $myTranslate.instant('confirm')];
+        mui.prompt($myTranslate.instant('please.input event.acknowledge description'), '', $myTranslate.instant('event.acknowledge'), btnArray, function (e) {
+            if (e.index === 1) {     // 是
+                postCheckEventAction($scope.checkedEventIds, e.value);
+            }
+        });
+    };
+
+    $scope.confirmAndCheckEvent = function ($event, eventId) {
+        if (eventConfirmVisible) {
+            var btnArray = [$myTranslate.instant('cancel'), $myTranslate.instant('confirm')];
+            mui.prompt($myTranslate.instant('please.input event.acknowledge description'), '', $myTranslate.instant('event.acknowledge'), btnArray, function (e) {
+                if (e.index === 1) {     // 是
+                    postCheckEventAction(parseInt(eventId), e.value);
+                }
+            });
+        } else {
+            postCheckEventAction(parseInt(eventId));
+        }
+    };
+
+    function postCheckEventAction(eventIds, info) {
+        function removeEvent(id) {
+            for (let i=0; i<$scope.events.length; i++) {
+                if ($scope.events[i].id === id) {
+                    $scope.events.splice(i, 1);
+                    break;
+                }
+            }
+        }
+
         var data = {"status": 0};
-        var url = "/events/" + eventId;
+        if (info) {
+            data.check_info = info;
+        }
+        var url = '';
+        var isBatch = false;
+        if (eventIds.length) {
+            isBatch = true;
+            url = '/events/acknowledge?ids=' + eventIds.join(',');
+        } else {
+            url = "/events/" + eventIds;
+        }
+        $.notify.progressStart();
         ajax.put({
             url: url,
             data: JSON.stringify(data),
@@ -476,14 +531,15 @@ app.controller('EventListCtrl', ['$scope', '$state', 'scrollerService', 'userSer
                 $.notify.progressStop();
                 $.notify.info($myTranslate.instant('event.confirmed'), 800);
                 // 将已确认的事件从列表中删除
-                for (var i=0; i<$scope.events.length; i++) {
-                    if ($scope.events[i].id === data.id) {
-                        $scope.events.splice(i, 1);
-                        break;
-                    }
+                if (isBatch) { // 确认多个事件
+                    eventIds.forEach(function (id) {
+                        removeEvent(id);
+                    });
+                } else { // 只确认一个事件
+                    removeEvent(data.id);
                 }
+                $scope.checkedEventIds = [];
                 // 确认事件后，需要在首页更新事件信息
-                window.android && window.android.onJsCallbackForPrevPage('eventHandled', '');
                 $scope.$apply();
             },
             error: function (data) {
@@ -492,7 +548,7 @@ app.controller('EventListCtrl', ['$scope', '$state', 'scrollerService', 'userSer
                 $.notify.error($myTranslate.instant('event.confirm.error'));
             }
         });
-    };
+    }
 
     $scope.goToCreateTaskHtml = function($event, eventObj) {
         // window.location.href = '/templates/task/add-task.html?eventId=' + eventObj.id + '&station_sn=' + eventObj.station_sn;
