@@ -76,7 +76,11 @@ app.service("$myTranslate", ['$translate', function ($translate) {
         var tmpKeys = keys.split(' ');
         var words = [];
         tmpKeys.forEach(function (key) {
-            words.push($translate.instant(key));
+            if (key) {
+                words.push($translate.instant(key));
+            } else {
+                words.push('');
+            }
         });
         if (gIsEnglish) {
             return words.join(' ');

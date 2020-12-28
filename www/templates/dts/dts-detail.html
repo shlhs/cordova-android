@@ -54,7 +54,7 @@
     <div ng-controller="TaskDetailCtrl" ng-cloak>
         <header class="mui-bar bg-header">
             <a class="mui-icon  mui-icon-left-nav mui-pull-left btn-back" onclick="history.back()"></a>
-            <h1 class="mui-title">{{'defect detail' | myTranslate}}</h1>
+            <h1 class="mui-title">{{taskName}}{{' detail' | translate}}</h1>
             <a ng-click="gotoEditPage()"
                class="mui-action-menu mui-icon mui-pull-right" style="font-size: 14px;line-height: 24px;" ng-if="canEdit">{{'edit' | translate}}</a>
         </header>
@@ -65,7 +65,7 @@
                     <div class="mui-card-content">
                         <div class="mui-card-content-inner" style="padding: 2px 0;">
                             <div class="task-desp mui-ellipsis">
-                                <span class="task-type" ng-class="{'ergent': taskData.task_type_id===3}">{{taskData.task_type_name}}:</span>
+                                <strong class="task-type" ng-class="{'ergent': taskData.task_type_id===3}">{{taskData.task_type_name}}:</strong>
                                 <span style="font-size: 14px;">{{taskData.no}}</span>
                                 <label class="btn-status" style="float: right;" ng-class="{running: taskData.stage_id!==TaskStatus.Closed, closed: taskData.stage_id===TaskStatus.Closed}">
                                     {{taskData.stage_name || taskData.recheck_stage_name}}
@@ -127,17 +127,16 @@
                         <a ng-repeat="d in taskData.device_record" class="device-name" ng-click="gotoDevice(d)">{{d.device_name}};</a>
                     </div>
                 </div>
-                <div class="mui-card card" style="box-shadow: none;margin-top: 6px;" ng-if="taskData.task_type_id !== TaskTypes.Xunjian">
+                <div class="mui-card card" style="box-shadow: none;margin-top: 6px;">
                     <div class="mui-card-content">
                         <div class="mui-card-content-inner" style="padding: 0;">
-                            <div>{{'defect.description' | translate}}：</div>
+                            <div>{{taskName}}{{'description' | translate}}：</div>
                             <ul class="task-detail-info-group">
                                 <li ng-if="taskData.defect_type">
                                     <label class="title" style="width: 70px;">{{'defect.type' | translate}}：</label>
                                     <span class="value" style="float: none;">{{taskData.defect_type_name}}</span>
                                 </li>
                                 <li>
-                                    <!--<label class="title" style="width: 50px;">{{'description' | translate}}</label>-->
                                     <span class="value" style="float: none;">{{taskData.name}}</span>
                                 </li>
                                 <li ng-if="taskData.desp">

@@ -208,21 +208,23 @@ app.controller('DtsCreateCtrl', ['$scope', '$state', '$stateParams', '$timeout',
                 if(data && data.length  > 0){
                     var taskTypes = [];
                     data.forEach(item=>{
-                        if(String(item.id) === '8' || String(item.id) === '9' || String(item.id) === '10'){
+                        if(DtsTaskType.indexOf(item.id) >= 0){
                             taskTypes.push({
                                 value: item.id,
                                 text: item.name
-                            })
+                            });
                         }
-                    })
+                    });
                     var taskTypeButton = document.getElementById('taskTypePicker');
                     if (taskTypeButton) {
                         taskTypePicker = new mui.PopPicker();
                         taskTypePicker.setData(taskTypes);
                         taskTypeButton.addEventListener('click', function(event) {
                             taskTypePicker.show(function(items) {
+                                var v = items[0].value;
                                 $scope.taskTypeName = items[0].text;
-                                $scope.taskData.task_type_id = items[0].value;
+                                $scope.taskData.task_type_id = v;
+                                $scope.showRecheck = v !== TaskTypes.HiddenDanger;
                                 $scope.$apply();
                             });
                         }, false);
@@ -230,7 +232,7 @@ app.controller('DtsCreateCtrl', ['$scope', '$state', '$stateParams', '$timeout',
                     }
                 }
             }
-        })
+        });
     }
 
     $scope.showTeamSelector = function () {     // 显示维修班组选择框
