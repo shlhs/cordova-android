@@ -4,8 +4,8 @@
  * Created by liucaiyun on 2017/7/23.
  */
 
-// var gPublicApiHost = 'http://47.104.75.86:8090';        // 公有云接口
-var gPublicApiHost = 'http://47.111.182.35:8090';        // 西电自动化
+var gPublicApiHost = 'http://47.104.75.8:8090';        // 公有云接口
+// var gPublicApiHost = 'http://47.111.182.35:8090';        // 西电自动化
 var defaultActiveEnergyMode = false; // 是否默认使用能效管理模式
 
 app.controller('LoginCtrl', ['$scope', '$timeout', 'platformService', 'userService', '$state', '$http', 'ajax', '$translate', function ($scope, $timeout, platformService, userService, $state, $http, ajax, $translate) {
