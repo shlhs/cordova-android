@@ -23,17 +23,17 @@
             </div>
         </div>
         <div class="mui-input-row">
-            <label class="label">{{'ops.security.item.type' | translate}}</label>
-            <input type="text" name="defectType" ng-model="selectedDefectType.name" placeholder="{{'defect.type.input' | translate}}" style="width: calc(100% - 150px);">
-            <button id="defectTypePicker" class="mui-btn mui-btn-block" type="button" style="float: right;width: auto;">{{'select' | translate}}</button>
-        </div>
-        <div class="mui-input-row">
             <label class="label required">{{'dts.level' | translate}}</label>
             <input type="text" name="taskTypeName" ng-model="taskTypeName" placeholder="{{'please.select dts.level' | myTranslate}}" required>
             <button id="taskTypePicker" class="mui-btn mui-btn-block" type="button">&nbsp; </button>
             <label class="error" ng-show="myForm.taskTypeName.$invalid && (myForm.taskTypeName.$dirty || myForm.$submitted)">
                 <span ng-show="myForm.taskTypeName.$error.required">{{'please.select dts.level' | myTranslate}}</span>
             </label>
+        </div>
+        <div class="mui-input-row">
+            <label class="label">{{'ops.security.item.type' | translate}}</label>
+            <input type="text" name="defectType" ng-model="selectedDefectType.name" placeholder="{{'defect.type.input' | translate}}" style="width: calc(100% - 150px);">
+            <button id="defectTypePicker" class="mui-btn mui-btn-block" type="button" style="float: right;width: auto;">{{'select' | translate}}</button>
         </div>
         <div class="mui-input-row" ng-show="needResign">
             <label class="label" style="width: 120px;" ng-class="{'required': needResign}">{{'defect.expecttime' | translate}}</label>

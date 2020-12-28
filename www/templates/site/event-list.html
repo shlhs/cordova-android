@@ -59,15 +59,21 @@
                             <label class="mui-pull-right device-name">{{e.device_name}}</label>
                         </div>
                         <div class="info">
-                            {{e.info}}
+                            <a class="mui-tab-item1 mui-active mui-checkbox checkbox-square" ng-click="onCheckEvent(e.id)" style="width: auto;" href="javascript:void(0)" ng-if="eventConfirmVisible">
+                                <label class="checkbox" ng-class="{checked: isChecked(e.id)}" style="font-size: 15px; color: #333; font-weight: 500;">
+                                    {{e.info}}
+                                </label>
+                            </a>
+                            <span ng-if="!eventConfirmVisible">{{e.info}}</span>
                         </div>
                         <div style="font-size: 13px;">
                             <a class="event-task" ng-click="goToCreateTaskHtml($event, e)" ng-if="hasOpsAuth">{{'event.submitorder' | translate}}</a>
-                            <a class="close" ng-click="postCheckEventAction($event, e.id)">{{'event.acknowledge' | translate}}</a>
+                            <a class="close" ng-click="confirmAndCheckEvent($event, e.id)">{{'event.acknowledge' | translate}}</a>
                             <div style="clear: both"></div>
                         </div>
                     </li>
                 </ul>
+
                 <div class="page-alert-wrapper" ng-if="!events.length && !eventLoading && !loadingFailed">
                     <div class="page-alert">
                         <i class="alert-icon nodata-info"></i>
@@ -75,6 +81,8 @@
                     </div>
                 </div>
             </div>
+            <button type="submit" class="mui-btn mui-btn-primary mui-btn-block" ng-if="checkedEventIds.length"
+                    style="position: fixed; bottom: 0; left: 0; width: 100%;margin-bottom: 0;z-index: 1; padding: 6px;" ng-click="checkAll()">全部确认</button>
         </div>
         <div class="page-alert-wrapper" ng-if="eventLoading">
             <div class="page-alert">
