@@ -1,16 +1,16 @@
 <!--分享-->
 <div id="share" class="mui-page" ng-controller="AppShareCtrl">
-    <header class="mui-navbar-inner mui-bar" style="box-shadow: none">
+    <header class="mui-bar bg-header" style="z-index: 1;">
         <button type="button" class="mui-left mui-btn mui-btn-link mui-btn-nav mui-pull-left" onclick="history.back()">
             <span class="mui-icon mui-icon-left-nav"></span>{{'tab.me' | translate}}
         </button>
         <h1 class="mui-center mui-title">{{'setting.share' | translate}}</h1>
     </header>
-    <div class="mui-content" style="text-align: center;margin-top: 80px;padding: 0 15%;">
-        <h4>{{'setting.share.tip.scan' | translate}}
+    <div class="body-content" style="top: 0; text-align: center; padding: 0 15%;">
+        <h4 style="margin-top: 152px;">{{'setting.share.tip.scan' | translate}}
         </h4>
-        <img ng-src="{{src}}" style="max-width: 250px;">
-        <div style="color: #777;">
+        <img ng-src="{{src}}" style="max-width: 180px;">
+        <div class="text-secondary">
             {{'setting.share.tip.browser' | translate}}
         </div>
     </div>

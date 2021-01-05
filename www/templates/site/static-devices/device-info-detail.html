@@ -1,18 +1,18 @@
-<div ng-cloak style="background-color: #fff;padding-bottom: 40px;padding-top: 10px;height: 100%;">
+<div class="device-detail-wrap" ng-cloak style="padding-bottom: 40px;padding-top: 10px;height: 100%;">
     <a ng-if="device.showMap" style="padding: 0 0 8px 10px; font-size: 14px;" href="javascript:void(0);" ng-click="openDeviceMap()">
-        <i class="icon icon-16 icon-location"></i> 查看位置
+        <i class="iconfont anticon-location"></i> {{'position' | translate}}
     </a>
     <div class="device-img-wrapper">
         <ul class="container">
-            <li class="img device-img"
+            <li class="img device-img no-picture"
                 style="background-image: url({{device.device_photo_src_link}});background-position: center;background-repeat: no-repeat; background-size: contain;">
-                <i class="icon icon-no-picture icon-36" ng-if="!device.device_photo_src_link"></i>
-                <div style="color: #999; font-size: 13px;margin-top: -4px;" ng-if="!device.device_photo_src_link">{{'tip.nopicture' | translate}}</div>
+                <i class="iconfont anticon-picture-empty" ng-if="!device.device_photo_src_link"></i>
+                <div style="font-size: 13px;margin-top: -4px;" ng-if="!device.device_photo_src_link">{{'tip.nopicture' | translate}}</div>
             </li>
             <li class="img qr"
                 style="background-image: url({{device.qr_photo_src_link}});background-position: center;background-repeat: no-repeat; background-size: cover;">
                 <i class="icon icon-no-qr icon-36" ng-if="!device.qr_photo_src_link"></i>
-                <div style="color: #999; font-size: 13px;margin-top: -4px;" ng-if="!device.qr_photo_src_link">{{'staticdevice.noqr' | translate}}</div>
+                <div style="font-size: 13px;margin-top: -4px;" ng-if="!device.qr_photo_src_link">{{'staticdevice.noqr' | translate}}</div>
             </li>
         </ul>
     </div>
@@ -30,7 +30,7 @@
             <span class="value">{{device.device_number}}</span>
         </li>
         <li>
-            <label class="title">{{'安装地址' | translate}}</label>
+            <label class="title">{{'安装位置' | translate}}</label>
             <span class="value">{{device.position_desp}}</span>
         </li>
         <li>
@@ -58,17 +58,17 @@
             <span class="value">{{device.capacity}} kVA</span>
         </li>
         <li ng-repeat="p in device.properties" ng-if="device.properties">
-            <label class="title">{{p.name}}</label>
-            <span class="value">{{p.value}}{{p.unit}}</span>
+            <label class="title">{{p.name | translate}}</label>
+            <span class="value">{{p.value}}</span>
         </li>
     </div>
-    <div class="card no-padding sub-device-card" ng-repeat="item in device.items">
+    <div class="card no-padding sub-device-card" ng-repeat="item in device.items" style="margin-top: 12px;">
         <div class="card-header device-detail-title">{{item.name}}</div>
         <div class="card-content">
             <div class="info-group properties-group">
                 <li ng-repeat="p in item.properties">
-                    <label class="title">{{p.name}}</label>
-                    <span class="value">{{p.value}}{{p.unit}}</span>
+                    <label class="title">{{p.name | translate}}</label>
+                    <span class="value">{{p.value}}</span>
                 </li>
             </div>
             <div class="card" ng-repeat="sub in item.contains">

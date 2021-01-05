@@ -1,0 +1,501 @@
+@import './theme/index.less';
+.energy-header {
+    background: none;
+}
+.site-header.energy-header{
+    height: 60px;
+}
+
+.page .energy-page-body {
+     background: @energy-page-body-bg;
+     background-size: cover;
+}
+.energy-home {
+    background: @energy-home-top-bg;
+    background-size: cover;
+}
+.energy-card {
+    background-color: @energy-card-bg;
+}
+.site-header .mui-title {
+    font-size: 18px;
+    left: 70px;
+    right: 70px;
+    text-align: center;
+}
+.site-header .mui-title>label {
+    position: relative;
+}
+.site-header .mui-title>label:after {
+    position: absolute;
+    content: '\a604';
+    font-family: "iconfont" !important;
+    display: inline-block;
+    margin-left: 10px;
+    color: #fafafa;
+    top: -10px;
+    right: -20px;
+    font-size: 10px;
+}
+.value-tab {
+    text-align: center;
+    color: @color-text-regular;
+    flex: 1px;
+    position: relative;
+}
+.value-tab .top {
+    font-size: 12px;
+    margin-bottom: 20px;
+    color: rgba(250, 250, 250, 0.6);
+    display: block;
+}
+.value-tab .value {
+    font-size: 30px;
+    display: block;
+    color: @energy-color-value-primary;
+}
+.value-tab .value .unit {
+    font-size: 14px;
+    margin-left: 4px;
+}
+.value-tab .bottom {
+    margin-top: 2px;
+    font-size: 12px;
+    display: block;
+    color: #ececec;
+    //font-weight: 400;
+}
+.value-mask {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+.h-values {
+    display: flex;
+}
+.h-values .item {
+    flex: 1;
+    text-align: center;
+    color: @energy-color-value-secondary;
+}
+.h-values .item .name {
+    font-size: 12px;
+    color: #ececec;
+}
+.h-values .item .value {
+    font-size: 14px;
+    margin-left: 8px;
+}
+.h-values .item .unit {
+    font-size: 12px;
+    font-weight: 300;
+}
+.energy-page {
+
+    .head-select-tabs {
+        display: flex;
+        display: -webkit-box;
+        background-color: @energy-header-selector-bg-color;
+    }
+    .head-select-tabs>.item {
+        flex:1;
+        -webkit-box-flex: 1;
+        text-align: center;
+        padding: 10px;
+        position: relative;
+    }
+    .head-select-tabs>.item>.title {
+        font-size: 12px;
+        color: @color-text-regular;
+        display: block;
+    }
+    .head-select-tabs>.item>.value {
+        font-size: 14px;
+        color: @color-text-primary;
+        font-weight: 700;
+    }
+    .head-select-tabs>.item:before {
+        content: '';
+        display: block;
+        background-color: #D2E3FF;
+        width: 1px;
+        top: 17px;
+        bottom: 17px;
+        left: 0;
+    }
+    .head-select-tabs>.item:first-child:before {
+        display: none;
+    }
+    .head-select-tabs>.item:after {
+        content: '\a61f';
+        font-family: "iconfont" !important;
+        display: block;
+        position: absolute;
+        right: 23px;
+        top: 50%;
+        margin-top: -11px;
+        font-size: 10px;
+        color: @color-text-regular;
+    }
+}
+.energy-header-bg {
+    background: @energy-header-bg-color;
+}
+.sides-values {
+    display: -webkit-box;
+    -webkit-box-pack: justify;
+    padding: 12px 15px 0 15px;
+}
+.sides-values>.value-tab>.value {
+    font-size: 24px;
+}
+.sides-values>.value-tab:first-child {
+    text-align: left;
+}
+.sides-values>.value-tab>.top {
+    margin-bottom: 12px;
+}
+.sides-values>.value-tab:last-child {
+    text-align: right;
+}
+.energy-value-title {
+    color: #B0D3EF;
+    font-size: 12px;
+}
+.energy-value {
+    color: @energy-color-value-secondary;
+    font-size: 14px;
+    margin-left: 4px;
+}
+.energy-value-unit {
+    color: @color-text-secondary;
+    font-size: 12px;
+}
+.energy-value-separate {
+    width: 1px;
+    height: 12px;
+    display: inline-block;
+    margin: 0 6px;
+    background-color: @color-primary-light;
+}
+.light-value-tabs {
+    display: flex;
+    padding: 8px;
+}
+.light-value-tabs>.value-tab>.top {
+    color: @color-text-primary;
+    font-size: 12px;
+    margin-bottom: 0;
+}
+.light-value-tabs>.value-tab:last-child:before {
+    display: inline-block;
+    content: '';
+    width: 1px;
+    background-color: @color-border-base;
+    position: absolute;
+    top: 11px;
+    bottom: 11px;
+    left: 0;
+}
+.light-value-tabs>.value-tab>.value {
+    color: @color-text-secondary;
+    font-size: 14px;
+    display: block;
+}
+.light-value-tabs.border-top {
+    border-top: @color-border-base 1px solid;
+}
+.chart-title {
+    background-color: @energy-card-title-bg;
+    font-size: 14px;
+    padding: 4px;
+    color: @energy-card-title;
+    text-align: center;
+}
+.energy-rate {
+    position: relative;
+    padding-left: 8px;
+    font-weight: 500;
+}
+.energy-rate.up {
+    color: @red;
+}
+.energy-rate.down {
+    color: @color-primary;
+}
+.energy-rate.up:before {
+    content: '\a615';
+    font-family: "iconfont" !important;
+    display: inline-block;
+    color: @red;
+    font-size: 12px;
+}
+.energy-rate.down:before {
+    content: '\a614';
+    font-family: "iconfont" !important;
+    display: inline-block;
+    color: @color-primary;
+    font-size: 12px;
+}
+.pfv-texts {
+    padding: 10px;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-box-pack: center;
+}
+.pfv-texts>.item {
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+.pfv-texts>.item:last-child {
+    margin-bottom: 0;
+}
+.pfv-texts>.item>.value {
+    width: 90px;
+    display: inline-block;
+}
+.device-selector-line {
+    padding-top: 9px;
+    text-align: center;
+    color: @color-text-regular;
+    font-size: 14px;
+}
+.device-selector-line>label {
+    position: relative;
+}
+.device-selector-line>label:after {
+    position: absolute;
+    content: '\a604';
+    font-family: "iconfont" !important;
+    right: -20px;
+    display: block;
+    color: @color-text-secondary;
+    font-size: 8px;
+    top: 50%;
+    margin-top: -10px;
+}
+.energy-realtime-values {
+    padding: 10px;
+    display: flex;
+}
+.energy-realtime-values>.item {
+    flex: 1;
+    margin-right: 4px;
+    padding: 10px 0;
+    text-align: center;
+    background-color: @energy-quality-value-item-bg;
+    position: relative;
+}
+.energy-realtime-values>.item.warning:after {
+    display: block;
+    position: absolute;
+    content: '\a621';
+    font-family: "iconfont" !important;
+    top: 0;
+    right: 4px;
+    font-size: 12px;
+    color: @red
+}
+.energy-realtime-values>.item .title {
+    color: @color-text-primary;
+    font-size: 12px;
+}
+.energy-realtime-values>.item .unit {
+    color: @color-text-regular;
+    font-size: 10px;
+}
+.energy-realtime-values>.item .value {
+    color: @color-text-regular;
+    font-size: 13px;
+    display: block;
+    margin-top: -2px;
+}
+.energy-realtime-values>.item:last-child {
+    margin-right: 0;
+}
+
+.monitor-table {
+    font-size: 13px;
+    width: ~'calc(100% - 12px)';
+    margin-left: 6px;
+}
+.monitor-table th, .monitor-table td {
+    border: @color-border-base 2px solid;
+}
+.monitor-table th {
+    color: @color-text-regular;
+    font-weight: bold;
+    padding: 5px 0;
+    text-align: center;
+}
+.monitor-table td {
+    color: @color-text-secondary;
+    font-size: 12px;
+    padding: 5px 0;
+    text-align: center;
+}
+.monitor-table td.title {
+    font-size: 13px;
+    color: @color-text-regular;
+}
+.monitor-table td.warning {
+    position: relative;
+}
+.monitor-table td.warning:after {
+    display: block;
+    position: absolute;
+    content: '\a621';
+    font-family: "iconfont" !important;
+    top: 0;
+    right: 4px;
+    font-size: 12px;
+    color: @red;
+}
+.report-card {
+    margin: 8px 0;
+    padding: 10px 15px;
+    background-color: @color-bg-regular;
+}
+.report-card .header {
+    margin-bottom: 8px;
+}
+.report-card .header .title {
+    color: @color-text-primary;
+    font-size: 15px;
+    position: relative;
+
+    &:before {
+        content: '';
+        width: 3px;
+        height: 14px;
+        margin-right: 4px;
+        background-color: @color-primary;
+        display: inline-block;
+        float: left;
+        margin-top: 3px;
+    }
+}
+.report-card .report-list>.report-item {
+    background-color: @energy-quality-report-sub-card-bg;
+    display: -webkit-box;
+    -webkit-box-align: center;
+    padding: 8px;
+    -webkit-box-pack: justify;
+    margin-top: 2px;
+}
+.report-item>.title{
+    color: @color-text-regular;
+    font-size: 13px;
+    width: 75px;
+}
+.report-item>.group {
+    text-align: center;
+
+}
+.report-item>.group .value {
+    color: @color-text-primary;
+    font-size: 14px;
+    font-weight: 500;
+}
+.report-item>.group .title {
+    color: @color-text-secondary;
+    font-size: 12px;
+    display: block;
+}
+.report-item>.conclusion {
+    border-radius: 12px;
+    text-align: center;
+    color: #fafafa;
+    font-size: 12px;
+    padding: 2px 8px;
+    min-width: 52px;
+}
+.conclusion.pass {
+    background: linear-gradient(to left bottom, #538EFF 0%,#72A2FF 100%);
+}
+.conclusion.fail {
+    background: linear-gradient(to left bottom, #FF4C52 0%,#FF6065 100%);
+}
+.report-item.nodata {
+    font-size: 14px;
+    color: #777;
+    padding-left: 18px;
+}
+.report-item.nodata:before {
+    display: inline-block;
+    content: '\e6be';
+    font-family: "iconfont" !important;
+    font-size: 12px;
+    color: #f0ad4e;
+}
+.opt-tip {
+    font-size: 14px;
+    color: #F9F871;
+}
+.opt-tip .hand {
+    font-size: 14px;
+    font-family: "iconfont" !important;
+    display: inline-block;
+}
+.hand.left:before {
+    content: '\a620';
+}
+.hand.right {
+    transform: rotateY(180deg);
+}
+.hand.right:before {
+    content: '\a620';
+}
+
+.page{
+    // 监测站点选择
+    .device-select-body{
+        .mui-navigate-right{
+            .left-group{
+                width: 18px;
+                height: 18px;
+                display: inline-block;
+                margin-right: 8px;
+                color: @color-primary;
+            }
+        }
+    }
+    // 电能实时监测
+    .energy-base-ctrl-page{
+        .chart-title{
+            color: @color-text-regular;
+            background-color: @color-bg-regular;
+        }
+    }
+}
+.energy-apps {
+    list-style: none;
+
+    &:after {
+        content: '';
+        clear: both;
+        display: block;
+    }
+
+    .energy-app {
+        background-color: @energy-app-icon-bg;
+        width: ~"calc(33.33% - 6px)";
+        float: left;
+        margin-right: 8px;
+        margin-top: 8px;
+        padding: 16px 0;
+        text-align: center;
+        font-size: 14px;
+
+        .iconfont {
+            font-size: 14px;
+            display: inline-block;
+            margin-bottom: 0;
+        }
+        span {
+            color: @color-text-primary
+        }
+
+        &:nth-child(3), &:nth-child(6) {
+            margin-right: 0;
+        }
+    }
+}
