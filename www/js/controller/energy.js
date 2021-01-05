@@ -94,9 +94,9 @@ function formatEnergyTree(category, labelName, allEnergyItems) { //
                 });
             }
             if (parent.isVirtual) {
-                const deviceVars = [];
-                children.forEach(child => {
-                    child.deviceVarSns.forEach(sn => {
+                var deviceVars = [];
+                children.forEach(function (child) {
+                    child.deviceVarSns.forEach(function (sn) {
                         if (deviceVars.indexOf(sn) < 0) {
                             deviceVars.push(sn);
                         }
@@ -270,14 +270,14 @@ app.service('energyFormatService', ['$myTranslate', function ($myTranslate) {
                     });
                 }
                 if (parent.isVirtual) {
-                    const deviceVars = [];
-                    children.forEach(child => {
-                        child.deviceVarSns.forEach(sn => {
-                        if (deviceVars.indexOf(sn) < 0) {
-                        deviceVars.push(sn);
-                    }
-                });
-                });
+                    var deviceVars = [];
+                    children.forEach(function (child) {
+                        child.deviceVarSns.forEach(function (sn) {
+                            if (deviceVars.indexOf(sn) < 0) {
+                                deviceVars.push(sn);
+                            }
+                        });
+                    });
                     parent.deviceVarSns = deviceVars;
                     parent.isVirtual = false;
                 }
@@ -333,13 +333,6 @@ app.directive('energyConfigTree',[function(){
                     $event:$event
                 });
                 $event.stopPropagation();
-            };
-            $scope.getItemIcon = function(item){
-                var isLeaf = $scope.isLeaf(item);
-                if(isLeaf){
-                    return 'fa fa-leaf';
-                }
-                return item.$$isExpend ? 'fa fa-minus': 'fa fa-plus';
             };
             $scope.isLeaf = function(item){
                 return item.isLeaf;
@@ -456,8 +449,8 @@ function distinctVarSns(sns) {      // 变量sn去重
     return tmpSns;
 }
 
-app.controller('EnergyMeterReadingCtrl', ['$scope', 'ajax', '$compile', 'platformService', 'energyFormatService', '$myTranslate', function ($scope, ajax, $compile, platformService, energyFormatService, $myTranslate) {
-    var stationSn = GetQueryString("sn");
+app.controller('EnergyMeterReadingCtrl', ['$scope', '$stateParams', 'ajax', '$compile', 'platformService', 'energyFormatService', '$myTranslate', function ($scope, $stateParams, ajax, $compile, platformService, energyFormatService, $myTranslate) {
+    var stationSn = $stateParams.sn ; // GetQueryString("sn");
     $scope.categories = [];
     $scope.labelNames = [];
     $scope.currentCategory = null;
@@ -517,7 +510,7 @@ app.controller('EnergyMeterReadingCtrl', ['$scope', 'ajax', '$compile', 'platfor
                 getVariableUnits(response.energyItems);
                 $scope.$apply();
                 if ($scope.categories.length) {
-                    var html = "<ul class='selector-group' style='border-bottom: #ececec 1px solid;'>" +
+                    var html = "<ul class='selector-group header-selector-group'>" +
                         "<drop-down-menu options=\"categories\" on-select=\"onSelect\" model-name=\"'currentCategory'\" selected=\"currentCategory\"></drop-down-menu>" +
                         "<drop-down-menu options=\"labelNames\" on-select=\"onSelect\" model-name=\"'currentLabel'\" selected=\"currentLabel\"></drop-down-menu>" +
                         "<energy-config-tree category=\"currentCategory.name\" label-name=\"currentLabel.name\" datas=\"energyItems\" on-select=\"onSelectItems\"></energy-config-tree>" +
@@ -525,7 +518,7 @@ app.controller('EnergyMeterReadingCtrl', ['$scope', 'ajax', '$compile', 'platfor
                     var compileFn = $compile(html);
                     var $dom = compileFn($scope);
                     // 添加到文档中
-                    $dom.prependTo($('.mui-content'));
+                    $dom.prependTo($('.body-content'));
                     refreshData();
                     initDatePicker();
                 }
@@ -742,6 +735,13 @@ app.controller('EnergyMeterReadingCtrl', ['$scope', 'ajax', '$compile', 'platfor
         }
     }
 
+    $scope.$on('$destroy', function () {
+        if ($scope.picker) {
+            $scope.picker.dispose();
+            $scope.picker = null;
+        }
+    });
+
     // initDatePicker();
     getConfig(stationSn);
 }]);
@@ -789,8 +789,8 @@ app.directive('energyMeterReadingTableRepeatFinish',function(){
     }
 });
 
-app.controller('EnergyReportCtrl', ['$scope', 'ajax', '$compile', 'platformService', 'energyFormatService', '$myTranslate', function ($scope, ajax, $compile, platformService, energyFormatService, $myTranslate) {
-    var stationSn = GetQueryString("sn");
+app.controller('EnergyReportCtrl', ['$scope', '$stateParams', 'ajax', '$compile', 'platformService', 'energyFormatService', '$myTranslate', function ($scope, $stateParams, ajax, $compile, platformService, energyFormatService, $myTranslate) {
+    var stationSn = $stateParams.sn; // GetQueryString("sn");
     $scope.categories = [];
     $scope.labelNames = [];
     $scope.currentCategory = null;
@@ -839,7 +839,7 @@ app.controller('EnergyReportCtrl', ['$scope', 'ajax', '$compile', 'platformServi
                     }
                     var category = item.category;
                     if (categories.indexOf(category) < 0) {
-                        categories.push(category)
+                        categories.push(category);
                     }
                 });
                 $scope.categories = [];
@@ -865,7 +865,7 @@ app.controller('EnergyReportCtrl', ['$scope', 'ajax', '$compile', 'platformServi
                 checkAll($scope.energyItems);
                 $scope.$apply();
                 if ($scope.currentLabel) {
-                    var html = "<ul class='selector-group' style='border-bottom: #ececec 1px solid;'>" +
+                    var html = "<ul class='selector-group header-selector-group'>" +
                         "<drop-down-menu options=\"categories\" on-select=\"onSelect\" model-name=\"'currentCategory'\" selected=\"currentCategory\"></drop-down-menu>" +
                         "<drop-down-menu options=\"labelNames\" on-select=\"onSelect\" model-name=\"'currentLabel'\" selected=\"currentLabel\"></drop-down-menu>" +
                         "<energy-config-tree category=\"currentCategory.name\" label-name=\"currentLabel.name\" datas=\"energyItems\" on-select=\"onSelectItems\"></energy-config-tree>" +
@@ -873,7 +873,7 @@ app.controller('EnergyReportCtrl', ['$scope', 'ajax', '$compile', 'platformServi
                     var compileFn = $compile(html);
                     var $dom = compileFn($scope);
                     // 添加到文档中
-                    $dom.prependTo($('.mui-content'));
+                    $dom.prependTo($('.body-content'));
                     refreshData();
                     setTimeout(initDatePicker, 200);
                 }
@@ -897,6 +897,7 @@ app.controller('EnergyReportCtrl', ['$scope', 'ajax', '$compile', 'platformServi
             case 'YEAR':
                 $scope.dateName = currentDay.substring(0, 4);
         }
+        setDtPickerTimeType($scope.picker, $scope.timeType.id);
     }
 
     function initDatePicker() {
@@ -915,6 +916,7 @@ app.controller('EnergyReportCtrl', ['$scope', 'ajax', '$compile', 'platformServi
             } else {
                 var options = {type: 'date'};
                 _self.picker = new mui.DtPicker(options);
+                setDtPickerTimeType(_self.picker, $scope.timeType.id);
                 _self.picker.show(function(rs) {
                     currentDay = rs.text + ' 00:00:00.000';
                     refreshDateShowName();
@@ -1028,6 +1030,7 @@ app.controller('EnergyReportCtrl', ['$scope', 'ajax', '$compile', 'platformServi
                 break;
         }
         $scope.tableHeader.push($myTranslate.instant('total'));
+        $scope.tableHeader.push($myTranslate.instant('unit'));
         $scope.tableBodyData = [];
         if (!sns.length) {
             $scope.isLoading = false;
@@ -1055,11 +1058,12 @@ app.controller('EnergyReportCtrl', ['$scope', 'ajax', '$compile', 'platformServi
                 $scope.selectedItems.forEach(function (item) {
                     var rowData = [item.aliasName];
                     // 加入默认数据
-                    for (var i=1; i<$scope.tableHeader.length-1; i++) {
+                    for (var i=1; i<$scope.tableHeader.length-2; i++) {
                         rowData.push('-');
                     }
                     var total = 0;
                     var isNull = true;
+                    var unit = 'kWh';
                     distinctVarSns(item.deviceVarSns).forEach(function (sn) {
                         data.forEach(function (dataItem) {
                             if (dataItem.var.sn === sn) {
@@ -1076,6 +1080,7 @@ app.controller('EnergyReportCtrl', ['$scope', 'ajax', '$compile', 'platformServi
                                         }
                                     }
                                 }
+                                unit = dataItem.var.unit;
                             }
                         });
                     });
@@ -1090,6 +1095,7 @@ app.controller('EnergyReportCtrl', ['$scope', 'ajax', '$compile', 'platformServi
                     } else {
                         rowData.push(parseFloat(total.toFixed(3)));
                     }
+                    rowData.push(unit);
                     $scope.tableBodyData.push(rowData);
                 });
                 refreshTable();
@@ -1115,6 +1121,13 @@ app.controller('EnergyReportCtrl', ['$scope', 'ajax', '$compile', 'platformServi
             $dom.appendTo($('#tableParent'));
         }
     }
+
+    $scope.$on('$destroy', function () {
+        if ($scope.picker) {
+            $scope.picker.dispose();
+            $scope.picker = null;
+        }
+    });
 
     init();
 }]);
@@ -1160,8 +1173,8 @@ app.directive('energyReportTableRepeatFinish',function(){
     }
 });
 
-app.controller('EnergyStatisticsCtrl', ['$scope', 'ajax', 'platformService', '$compile', '$myTranslate', 'energyFormatService', function ($scope, ajax, platformService, $compile, $myTranslate, energyFormatService) {
-    var stationSn = GetQueryString("sn");
+app.controller('EnergyStatisticsCtrl', ['$scope', '$stateParams', 'ajax', 'platformService', '$compile', '$myTranslate', 'energyFormatService', function ($scope, $stateParams, ajax, platformService, $compile, $myTranslate, energyFormatService) {
+    var stationSn = $stateParams.sn; // GetQueryString("sn");
     $scope.categories = [];
     $scope.labelNames = [];
     $scope.currentCategory = null;
@@ -1180,6 +1193,8 @@ app.controller('EnergyStatisticsCtrl', ['$scope', 'ajax', 'platformService', '$c
         id: 'YEAR',
         name: $myTranslate.instant('select.yearly')
     }];
+    var categoryUnit = {}; // 不同类别的用能单位
+    $scope.unit = 'kWh'; // 当前类别的单位
     $scope.isEnglish = gIsEnglish;
     $scope.timeType = {id: 'DAY', name: $myTranslate.instant('report.daily')};
     var branchCircuitName = $myTranslate.instant('支路');
@@ -1231,18 +1246,19 @@ app.controller('EnergyStatisticsCtrl', ['$scope', 'ajax', 'platformService', '$c
                 allEnergyItems = response.energyItems;
                 if ($scope.currentLabel) {
                     getItemsForLabel();
+                    var groupStyle = $scope.isEnglish ? 'display: block' : '';
                     var itemStyle1 = $scope.isEnglish ? 'width:50%; float: left;' : 'width:25%; float: left;';
-                    var itemStyle2 = $scope.isEnglish ? 'width:100%; float: left;' : 'width:50%; float: left;';
-                    var html = "<ul class='selector-group' style='border-bottom: #ececec 1px solid;display:block;'>" +
+                    var itemStyle2 = $scope.isEnglish ? 'width:75%; float: left;margin-left: 15%;padding-top: 0;' : 'width:50%; float: left;';
+                    var html = "<ul class='selector-group no-border' style=\"" + groupStyle + "\">" +
                         "<drop-down-menu options=\"categories\" on-select=\"onSelect\" model-name=\"'currentCategory'\" selected=\"currentCategory\" style=\"" + itemStyle1 + "\"></drop-down-menu>" +
                         "<drop-down-menu options=\"labelNames\" on-select=\"onSelect\" model-name=\"'currentLabel'\" selected=\"currentLabel\" style=\"" + itemStyle1 + "\"></drop-down-menu>" +
-                        "<drop-down-menu id='itemSelector' options=\"energyItems\" on-select=\"onSelect\" model-name=\"'labelItem'\" selected=\"currentItem\" style=\"" + itemStyle2 + "\" disabled=\"currentLabel.name !== '" + branchCircuitName + "'\"></drop-down-menu>" +
+                        "<drop-down-menu id=\"'itemSelector'\" options=\"energyItems\" on-select=\"onSelect\" model-name=\"'labelItem'\" selected=\"currentItem\" style=\"" + itemStyle2 + "\" disabled=\"currentLabel.name !== '" + branchCircuitName + "'\"></drop-down-menu>" +
                         "</ul>";
                     html += "</ul>";
                     var compileFn = $compile(html);
                     var $dom = compileFn($scope);
                     // 添加到文档中
-                    $dom.prependTo($('.mui-content'));
+                    $dom.prependTo($('.body-content'));
                     refreshData();
                 }
                 $scope.$apply();
@@ -1269,6 +1285,7 @@ app.controller('EnergyStatisticsCtrl', ['$scope', 'ajax', 'platformService', '$c
             }
         });
         items = formatEnergyItems(category, labelName, allEnergyItems);
+        getCategoryUnit(category, items);
         $scope.energyItems = [];
         items.forEach(function (item, i) {
             $scope.energyItems.push($.extend({}, item, {name: item.aliasName, id: i}));
@@ -1279,6 +1296,30 @@ app.controller('EnergyStatisticsCtrl', ['$scope', 'ajax', 'platformService', '$c
             $scope.currentItem = {name: $scope.isEnglish ? 'ALL' : '所有' + labelName, id: '所有', deviceVarSns: []};
             $scope.energyItems.unshift($scope.currentItem);
         }
+    }
+
+    function getCategoryUnit(category, items) { // 切换类别时，读取该类别第一个变量的单位作为该类别单位
+        if (categoryUnit[category]) {
+            $scope.unit = categoryUnit[category];
+            return categoryUnit[category];
+        }
+        if (!items || !items.length) {
+            return 'kWh';
+        }
+        var sn = items[0].deviceVarSns[0];
+        ajax.get({
+            url: platformService.getDeviceMgmtHost() + '/management/variables',
+            data: {
+                sns: sn,
+            },
+            async: false,
+            success: function (res) {
+                if (res && res.data.length) {
+                    categoryUnit[category] = res.data[0].unit;
+                    $scope.unit = res.data[0].unit;
+                }
+            }
+        });
     }
 
     function initDatePicker() {
@@ -1297,6 +1338,7 @@ app.controller('EnergyStatisticsCtrl', ['$scope', 'ajax', 'platformService', '$c
             } else {
                 var options = {type: 'date'};
                 _self.picker = new mui.DtPicker(options);
+                setDtPickerTimeType(_self.picker, $scope.timeType.id);
                 _self.picker.show(function(rs) {
                     currentDay = rs.text + ' 00:00:00.000';
                     refreshDateShowName();
@@ -1322,6 +1364,7 @@ app.controller('EnergyStatisticsCtrl', ['$scope', 'ajax', 'platformService', '$c
             case 'YEAR':
                 $scope.dateName = currentDay.substring(0, 4);
         }
+        setDtPickerTimeType($scope.picker, $scope.timeType.id);
     }
 
     $scope.onSelect = function (key, item) {
@@ -1332,7 +1375,7 @@ app.controller('EnergyStatisticsCtrl', ['$scope', 'ajax', 'platformService', '$c
                     var compileFn = $compile(html);
                     var $dom = compileFn($scope);
                     // 添加到文档中
-                    $dom.prependTo($('.mui-content'));
+                    $dom.prependTo($('.body-content'));
                 }
             }
             // 如果当前所选不是"支路"，且是英文版，则第三个选项不显示
@@ -1361,10 +1404,16 @@ app.controller('EnergyStatisticsCtrl', ['$scope', 'ajax', 'platformService', '$c
         }
     }
 
+    $scope.$on('$destroy', function () {
+       if ($scope.picker) {
+           $scope.picker.dispose();
+           $scope.picker = null;
+       }
+    });
+
     init();
 }]);
 
-const ENERGY_LINE_COLORS = ['#41bed8','#fde664','#9283ea','#3cd3cb','#fe7979','#f9b344','#46be8a','#579fe4','#f37c54','#3995ea'];
 
 app.controller('EnergyStatisticsZhiluCtrl', ['$scope', 'ajax', 'platformService', '$myTranslate', function ($scope, ajax, platformService, $myTranslate) {
     $scope.timeTypes = [$myTranslate.instant('日'), $myTranslate.instant('月'), $myTranslate.instant('年')];
@@ -1383,7 +1432,6 @@ app.controller('EnergyStatisticsZhiluCtrl', ['$scope', 'ajax', 'platformService'
         currentItem = $scope.$parent.currentItem;
         varSns = distinctVarSns(currentItem.deviceVarSns);
         // 获取变量信息
-        recordPeriod = null;
         $scope.labelName = $scope.$parent.currentLabel.name;
         if ($scope.categoryName !== $scope.$parent.currentCategory.name) {
             $scope.categoryName = $scope.$parent.currentCategory.name;
@@ -1416,7 +1464,7 @@ app.controller('EnergyStatisticsZhiluCtrl', ['$scope', 'ajax', 'platformService'
                             queryPeriod = 'HOUR';
                         }
                     });
-                    callback();
+                    callback(res.data);
                 }
             }
         });
@@ -1644,26 +1692,23 @@ app.controller('EnergyStatisticsZhiluCtrl', ['$scope', 'ajax', 'platformService'
                         var lines = [t];
                         params.forEach(function (p) {
                             lines.push('<br />');
-                            lines.push(p.marker + p.seriesName + '：' + (p.data === null ? '-' : p.data) + ' kWh');
+                            lines.push(p.marker + p.seriesName + '：' + (p.data === null ? '-' : p.data) + ' ' + $scope.unit);
                         });
                         return lines.join('');
                     }
                 },
                 legend: {
                     data: [$myTranslate.instant('today'), $myTranslate.instant('yesterday')],
-                    bottom: 5,
+                    top: 'bottom',
                     textStyle: {
                         fontSize: 9,
-                        rich: {
-                            fonSize: 9
-                        }
                     }
                 },
                 grid: {
                     top: 20,
                     left: 10,
                     right: 20,
-                    bottom: 35,
+                    bottom: 25,
                     containLabel: true,
                 },
                 toolbox: {
@@ -1678,10 +1723,9 @@ app.controller('EnergyStatisticsZhiluCtrl', ['$scope', 'ajax', 'platformService'
                 },
                 yAxis: {
                     type: 'value',
-                    name: 'kWh',
+                    name: $scope.unit,
                     nameGap: '5'
                 },
-                color: ENERGY_LINE_COLORS,
                 series: [
                     {
                         name: $myTranslate.instant('today'),
@@ -1699,7 +1743,7 @@ app.controller('EnergyStatisticsZhiluCtrl', ['$scope', 'ajax', 'platformService'
                 ],
             };
 
-            echarts.init(document.getElementById('zhilu_trend1')).setOption(config);
+            echarts.init(document.getElementById('zhilu_trend1'), "custom").setOption(config);
         }
     }
 
@@ -1796,26 +1840,23 @@ app.controller('EnergyStatisticsZhiluCtrl', ['$scope', 'ajax', 'platformService'
                             var lines = [t];
                             params.forEach(function (p) {
                                 lines.push('<br />');
-                                lines.push(p.marker + p.seriesName + '：' + (p.data === null ? '-' : p.data) + ' kWh');
+                                lines.push(p.marker + p.seriesName + '：' + (p.data === null ? '-' : p.data) + ' ' + $scope.unit);
                             });
                             return lines.join('');
                         }
                         var lines = [p0.axisValue];
                         params.forEach(function (p) {
                             lines.push('<br />');
-                            lines.push(p.marker + p.seriesName + '：' + (p.data === null ? '-' : p.data) + ' kWh');
+                            lines.push(p.marker + p.seriesName + '：' + (p.data === null ? '-' : p.data) + ' ' + $scope.unit);
                         });
                         return lines.join('');
                     },
                 },
                 legend: {
                     data: labels,
-                    bottom: 5,
+                    top: 'bottom',
                     textStyle: {
-                        fontSize: 9,
-                        rich: {
-                            fonSize: 9
-                        }
+                        fontSize: 9
                     }
                 },
                 grid: {
@@ -1833,7 +1874,7 @@ app.controller('EnergyStatisticsZhiluCtrl', ['$scope', 'ajax', 'platformService'
                     data: times,
                 },
                 yAxis: {
-                    name: 'kWh',
+                    name: $scope.unit,
                     type: 'value',
                     nameGap: 25,
                     nameLocation: 'start',
@@ -1841,7 +1882,6 @@ app.controller('EnergyStatisticsZhiluCtrl', ['$scope', 'ajax', 'platformService'
                         // verticalAlign: 'top'
                     }
                 },
-                color: ENERGY_LINE_COLORS,
                 series: [{
                     name: labels[0],
                     type:'bar',
@@ -1857,7 +1897,7 @@ app.controller('EnergyStatisticsZhiluCtrl', ['$scope', 'ajax', 'platformService'
                 },
                 ],
             };
-            echarts.init(document.getElementById('zhilu_trend2')).setOption(config);
+            echarts.init(document.getElementById('zhilu_trend2'), "custom").setOption(config);
         }
     }
     
@@ -2023,28 +2063,25 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
             var config = {
                 tooltip: {
                     trigger: 'item',
-                    formatter: '{b} : {c} kWh({d}%)',
+                    formatter: '{b} : {c} ' + $scope.unit + '({d}%)',
                     confine: true
                 },
-                backgroundColor:'#ffffff',
                 title: [
                     {
-                        text: total + '\nkWh',
+                        text: total + '\n' + $scope.unit,
                         textStyle: {
                             fontFamily: 'Microsoft YaHei',
                             fontSize: 12,
-                            color: '#818181',
                         },
                         x: 'center',
                         y: 'center',
                     },
                 ],
                 legend: {
-                    bottom: 5,
+                    top: 'bottom',
                     left: 'center',
                     show: false
                 },
-                color: ENERGY_LINE_COLORS,
                 series: [
                     {
                         avoidLabelOverlap: false,
@@ -2073,7 +2110,7 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
                     },
                 ],
             };
-            echarts.init(document.getElementById('chart_pie1')).setOption(config);
+            echarts.init(document.getElementById('chart_pie1'), "custom").setOption(config);
         }
     }
 
@@ -2144,7 +2181,7 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
                 }
             });
             values.sort(function (v1, v2) {
-                return Math.abs(v2.value) - Math.abs(v1.value);
+                return v2.value - v1.value;
             });
             // 取前5名
             var seriesData = [], labels=[];
@@ -2166,7 +2203,7 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
                 legend: {
                     show: false,
                     data: [],
-                    bottom: 0,
+                    top: 'bottom',
                 },
                 grid: {
                     top: 5,
@@ -2191,7 +2228,6 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
                     data: labels,
                     inverse: true,
                 },
-                color: ENERGY_LINE_COLORS,
                 series: [{
                     type:'bar',
                     barGap:0,
@@ -2206,7 +2242,7 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
                     data: seriesData,
                 }],
             };
-            echarts.init(document.getElementById('chart_bar1')).setOption(config);
+            echarts.init(document.getElementById('chart_bar1'), "custom").setOption(config);
         }
     }
     
@@ -2243,7 +2279,7 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
             var config = {
                 tooltip: {
                     trigger: 'axis',
-                    formatter: '{b} \r\n: {c} kWh',
+                    formatter: '{b} \r\n: {c} ' + $scope.unit,
                     axisPointer: {
                         type: 'shadow',
                     },
@@ -2251,6 +2287,7 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
                 },
                 legend: {
                     data: [],
+                    top: 'bottom',
                     bottom: 5,
                 },
                 grid: {
@@ -2267,17 +2304,16 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
                 yAxis: {
                     type: 'value',
                     boundaryGap: [0, 0.01],
-                    name: 'kWh',
+                    name: $scope.unit,
                     nameGap: '5',
                 },
-                color: ENERGY_LINE_COLORS,
                 series: {
                     type:'bar',
                     barMaxWidth: "30px",
                     data: seriesData
                 },
             };
-            echarts.init(document.getElementById('chart_bar2')).setOption(config);
+            echarts.init(document.getElementById('chart_bar2'), "custom").setOption(config);
         }
     }
 
@@ -2336,7 +2372,7 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
                         var lines = [p0.axisValue];
                         params.forEach(function (p) {
                             lines.push('<br />');
-                            lines.push(p.marker + p.seriesName + '：' + (p.data === null ? '-' : p.data) + ' kWh');
+                            lines.push(p.marker + p.seriesName + '：' + (p.data === null ? '-' : p.data) + ' ' + $scope.unit);
                         });
                         return lines.join('');
                     }
@@ -2348,10 +2384,7 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
                     itemWidth: 12,
                     itemHeight: 8,
                     textStyle: {
-                        fontSize: 11,
-                        rich: {
-                            fonSize: 11
-                        }
+                        fontSize: 11
                     },
                     x: 'right'
                 },
@@ -2365,7 +2398,7 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
                 xAxis: {
                     type: 'value',
                     boundaryGap: [0, 0.01],
-                    name: 'kWh',
+                    name: $scope.unit,
                     nameLocation: 'start',
                     nameGap: '5',
                 },
@@ -2373,7 +2406,6 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
                     type: 'category',
                     data: labels,
                 },
-                color: ENERGY_LINE_COLORS,
                 series: [{
                     name: $myTranslate.instant('本期'),
                     type:'bar',
@@ -2388,7 +2420,7 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
                     data: historyValues,
                 }],
             };
-            echarts.init(document.getElementById('chart_bar3')).setOption(config);
+            echarts.init(document.getElementById('chart_bar3'), "custom").setOption(config);
         }
     }
 
@@ -2519,7 +2551,7 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
                         // var lines = [p0.axisValue];
                         // params.forEach(function (p) {
                         //     lines.push('<br />');
-                        //     lines.push(p.marker + p.seriesName + '：' + (p.data === null ? '-' : p.data) + ' kWh');
+                        //     lines.push(p.marker + p.seriesName + '：' + (p.data === null ? '-' : p.data) + ' ' + $scope.unit);
                         // });
                         // return lines.join('');
                         if (!params.length) {
@@ -2537,28 +2569,26 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
                             var lines = [t];
                             params.forEach(function (p) {
                                 lines.push('<br />');
-                                lines.push(p.marker + p.seriesName + '：' + (p.data === null ? '-' : p.data) + ' kWh');
+                                lines.push(p.marker + p.seriesName + '：' + (p.data === null ? '-' : p.data) + ' ' + $scope.unit);
                             });
                             return lines.join('');
                         }
                         var lines = [p0.axisValue];
                         params.forEach(function (p) {
                             lines.push('<br />');
-                            lines.push(p.marker + p.seriesName + '：' + (p.data === null ? '-' : p.data) + ' kWh');
+                            lines.push(p.marker + p.seriesName + '：' + (p.data === null ? '-' : p.data) + ' ' + $scope.unit);
                         });
                         return lines.join('');
                     }
                 },
                 legend: {
                     data: labels,
+                    top: 'bottom',
                     bottom: 0,
                     itemWidth: 10,
                     itemHeight: 6,
                     textStyle: {
-                        fontSize: 9,
-                        rich: {
-                            fonSize: 9
-                        }
+                        fontSize: 9
                     }
                 },
                 grid: {
@@ -2579,16 +2609,15 @@ app.controller('EnergyStatisticsOtherCtrl', ['$scope', 'ajax', 'platformService'
                 },
                 yAxis: {
                     type: 'value',
-                    name: 'kWh',
+                    name: $scope.unit,
                     nameGap: '5'
                 },
-                color: ENERGY_LINE_COLORS,
                 series: seriesData,
             };
             if (chart5) {
                 chart5.dispose();
             }
-            chart5 = echarts.init(document.getElementById('chart_bar4'));
+            chart5 = echarts.init(document.getElementById('chart_bar4'), "custom");
             chart5.setOption(config);
         }
     }

@@ -1,12 +1,4 @@
 
-function bodyScroll(ele) {
-    if (ele.scrollTop > 20) {
-        $('#transparentHeader').removeClass('bg-transparent');
-    } else {
-        $('#transparentHeader').addClass('bg-transparent');
-    }
-    console.log('scroll');
-}
 
 app.controller('SecurityBaseCtrl', ['$scope', '$compile', function ($scope, $compile) {
    function load() {
@@ -162,9 +154,9 @@ app.service('SecurityReportService', ['userService', 'ajax', '$myTranslate', fun
     };
 }]);
 
-app.controller('SecurityHistoryCtrl', ['$scope', 'routerService', 'ajax', function ($scope, routerService, ajax) {
-    var sn = GetQueryString('sn');
-    $scope.stationName = GetQueryString("name");
+app.controller('SecurityHistoryCtrl', ['$scope', '$stateParams', 'routerService', 'ajax', function ($scope, $stateParams, routerService, ajax) {
+    var sn = $stateParams.sn; // GetQueryString('sn');
+    $scope.stationName = $stateParams.name; // GetQueryString("name");
     $scope.history = [];
     $scope.isLoading = false;
     $scope.loadingFailed = false;
@@ -224,7 +216,7 @@ app.controller('SecurityHistoryCtrl', ['$scope', 'routerService', 'ajax', functi
     $scope.getDataList();
 }]);
 
-app.controller('SecurityEvaluateHome', ['$scope', '$http', 'ajax', 'routerService', 'SecurityReportService', function ($scope, $http, ajax, routerService, SecurityReportService) {
+app.controller('SecurityEvaluateHome', ['$scope', '$stateParams', '$http', 'ajax', 'routerService', 'SecurityReportService', function ($scope, $stateParams, $http, ajax, routerService, SecurityReportService) {
     var backupData = {};        // 保存原始数据
     $scope.evaluateData = {};
     $scope.total = 0;
@@ -232,54 +224,89 @@ app.controller('SecurityEvaluateHome', ['$scope', '$http', 'ajax', 'routerServic
     $scope.unqualified = {};
     $scope.status = 'disabled';
     $scope.editable = false;
+    $scope.dtsList = {};
 
     // 画进度
     function drawProgress(progress) {
-        if (!progress) {    //
-            $("#evaluateChart").circleChart({
-                color: "#ffffff",
-                backgroundColor: "#e6e6e6",
-                widthRatio: 0.1, // 进度条宽度
-                size: Math.round($("#evaluateChart").parent().parent().height()*0.8),
-                value: 100,
-                startAngle: 175,
-                speed: 1,
-                textSize: 36,
-                relativeTextSize: 14,
-                animation: "easeInOutCubic",
-                text: 0,
-                onDraw: function(el, circle) {
-                    circle.text("0%"); // 根据value修改text
-                }
-            });
-        } else {
-            var color = '#F44336';  // warning的颜色
-            if ($scope.evaluateData.status === 'success') {
-                color = '#26A69A';
-            }
-            $("#evaluateChart").circleChart({
-                color: color,
-                backgroundColor: "rgba(255,255,255,0.5)",
-                widthRatio: 0.1, // 进度条宽度
-                size: Math.round($("#evaluateChart").parent().parent().height()*0.8),
-                value: progress,
-                startAngle: 175,
-                speed: 2000,
-                textSize: 36,
-                relativeTextSize: 14,
-                animation: "easeInOutCubic",
-                text: 0,
-                onDraw: function(el, circle) {
-                    circle.text(Math.round(circle.value) + "%"); // 根据value修改text
-                }
-            });
+        var color = $scope.evaluateData.status === 'success' ? ['#0FD781', '#06CFAD'] : ['#fc6076', '#ff9a44'];
+        if (!progress) {
+            color = ['#ccc', '#ccc'];
         }
+        var option = {
+            title: [{
+                text: '已完成',
+                x: 'center',
+                top: '25%',
+                textStyle: {
+                    color: color[0],
+                    fontSize: 12,
+                }
+            }, {
+                text: progress + '%',
+                x: 'center',
+                top: '36%',
+                textStyle: {
+                    fontSize: 18,
+                    color: color[0],
+                },
+            }],
+            polar: {
+                radius: ['80%', '90%'],
+                center: ['50%', '50%'],
+            },
+            angleAxis: {
+                max: 100,
+                show: false,
+            },
+            radiusAxis: {
+                type: 'category',
+                show: true,
+                axisLabel: {
+                    show: false,
+                },
+                axisLine: {
+                    show: false,
+
+                },
+                axisTick: {
+                    show: false
+                },
+            },
+            series: [
+                {
+                    name: '',
+                    type: 'bar',
+                    roundCap: true,
+                    barWidth: 6,
+                    showBackground: true,
+                    backgroundStyle: {
+                        // color: 'rgba(66, 66, 66, .3)',
+                    },
+                    data: [progress],
+                    coordinateSystem: 'polar',
+
+                    itemStyle: {
+                        normal: {
+                            color: new echarts.graphic.LinearGradient(0, 1, 0, 0, [{
+                                offset: 0,
+                                color: color[0]
+                            }, {
+                                offset: 1,
+                                color: color[1]
+                            }]),
+                        }
+                    }
+
+                },
+            ]
+        };
+        echarts.init(document.getElementById('evaluateChart')).setOption(option);
     }
 
     function getEvaluateData() {        // 获取评估数据
-        var apiHost=GetQueryString("apiHost") || "";
+        var apiHost = GetQueryString("apiHost") || "";
         ajax.get({
-            url: apiHost+'/security_reports/' + $scope.id,
+            url: apiHost+'/security_reports/' + $stateParams.id,
             success: function (data) {
                 data.template = JSON.parse(data.template);
                 var tmp = SecurityReportService.parseTemplate(data.template);
@@ -290,8 +317,12 @@ app.controller('SecurityEvaluateHome', ['$scope', '$http', 'ajax', 'routerServic
             }
         });
     }
-    $scope.openPage = function(template, params, config){
-        routerService.openPage($scope, template, params, config);
+    $scope.openDetail = function(){
+        routerService.openPage($scope, '/templates/evaluate/security-evaluate-first-classify.html', null, {
+            onClose: function () {
+                $scope.refresh();
+            }
+        });
     };
 
     $scope.refresh = function() {       // 刷新数据
@@ -310,6 +341,7 @@ app.controller('SecurityEvaluateHome', ['$scope', '$http', 'ajax', 'routerServic
 
     function init() {
         getEvaluateData();
+        getDtsListName();
     }
 
     $scope.gotoPrevPage = function () {
@@ -321,6 +353,24 @@ app.controller('SecurityEvaluateHome', ['$scope', '$http', 'ajax', 'routerServic
     };
 
     init();
+
+    // 获取缺陷名称
+    function getDtsListName(){
+        ajax.get({
+            url: '/opstasks/task_types',
+            success: function (data) {
+                if(data && data.length  > 0){
+                    var taskTypes = {};
+                    data.forEach(item=>{
+                        if(String(item.id) === '8' || String(item.id) === '9' || String(item.id) === '10'){
+                            taskTypes[item.id] = item.name;
+                        }
+                    })
+                    $scope.dtsList = taskTypes;
+                }
+            }
+        })
+    }
 }]);
 
 app.controller('SecurityEvaluateDetailCtrl', ['$scope', '$http', 'ajax', 'userService', 'routerService', 'SecurityReportService',
@@ -339,9 +389,9 @@ function ($scope, $http, ajax, userService, routerService, SecurityReportService
     };
 
     $scope.gotoPrevPage = function () {     // 提示是否保存
-        if ($scope.$parent.refresh) {
-            $scope.$parent.refresh();
-        }
+        // if ($scope.$parent.refresh) {
+        //     $scope.$parent.refresh();
+        // }
         if (routerService.hasNoHistory()) {
             pageBack();
         } else {

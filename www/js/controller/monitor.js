@@ -6,7 +6,7 @@ app.controller('MonitorListCtrl', ['$scope', '$stateParams', 'platformService', 
     $scope.monitorLoading = true;
     $scope.loadingFailed = false;
 
-    var sn = GetQueryString('sn');
+    var sn = $stateParams.sn;
     $scope.getDataList = function() {
 
         $scope.loadingFailed = false;
@@ -42,17 +42,10 @@ app.controller('MonitorListCtrl', ['$scope', '$stateParams', 'platformService', 
     $scope.openMonitorDetail = function (item) {
         var url = item.mobile_screen_link;
         var backgroundColor = item.background;
-        if (window.android && window.android.setScreenOrient) {
-            routerService.openPage($scope, "/templates/site/monitor-detail-template.html", {
-                url: url,
-                background: backgroundColor
-            });
-        } else {
-            if (backgroundColor && backgroundColor.indexOf('#') === 0) {
-                backgroundColor = backgroundColor.substring(1);     // #号在url里会导致参数被截断
-            }
-            location.href = "/templates/site/monitor-detail.html?url=" + url + "&background=" + backgroundColor + "&screen=h";
-        }
+        routerService.openPage($scope, "/templates/site/monitor-detail-template.html", {
+            url: url,
+            background: backgroundColor
+        });
     };
 
     $scope.getDataList();
@@ -64,7 +57,6 @@ app.controller('MonitorDetailCtrl', ['$scope', function ($scope) {
     var url = $scope.url;
     var iframe = document.getElementById('iframe');
     $scope.clickedBack = false;     // 是否点击过返回按钮，防止重复点击
-
     setTimeout(function () {
         iframe.src = url;
         $.notify.progressStart();
@@ -84,16 +76,31 @@ app.controller('MonitorDetailCtrl', ['$scope', function ($scope) {
     }, 500);
 
     $scope.back = function () {
-        $scope.clickedBack = true;
-        window.history.go(-(history.length-1));     // 站点列表页认为是history的第一个记录
+        if (!$scope.clickedBack) { // 避免多次点击后多次后退
+            $scope.clickedBack = true;
+            history.back();
+        }
     };
 
     function pageBackCallback() {
         window.android && window.android.setScreenOrient("PORTRAIT");
         $("#iframe").remove();
         window.removeEventListener('popstate', pageBackCallback);
+        window.removeEventListener('message', postMessageToIframe);
     }
 
+    function postMessageToIframe (e) {
+        var frames = window.frames;
+        for(var i=0; i<frames.length; i++) {
+            frames[i].postMessage('Bearer' + (getStorageItem('accountToken') || ''), '*');
+        }
+    }
 
     window.addEventListener('popstate', pageBackCallback);
+    window.addEventListener('message', postMessageToIframe, false);
+
+    // $scope.$on('$destroy', function () {
+    //     window.removeEventListener('message', postMessageToIframe);
+    //     window.removeEventListener('popstate', pageBackCallback);
+    // });
 }]);

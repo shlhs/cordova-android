@@ -7,23 +7,9 @@ function getCurrentMonthLast(data) {
     return new Date(nextMonthFirstDay - 1);
 }
 
-var g_line_colors = ['#9474df','#ef7e9c', '#6bc1dd', '#13cf5a',  '#f3a15d', '#6c7fff', '#ca8622', '#bda29a','#6e7074', '#546570', '#c4ccd3'];
-var g_pvf_colors = {
-    'p': 'rgba(239, 150, 166, 0.18)',
-    'v': 'rgba(138, 212, 199, 0.18)',
-    'f': 'rgba(136, 169, 248, 0.18)',
-    's': 'rgba(254,139,106, 0.18)',
-};
-
-var g_pvf_label_colors = {
-    'p': 'rgba(239, 150, 166, 1)',
-    'v': 'rgba(138, 212, 199, 1)',
-    'f': 'rgba(136, 169, 248, 1)',
-    's': 'rgba(254,139,106, 1)',
-};
 // 历史曲线
-app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', '$myTranslate', function ($scope, ajax, $myTranslate) {
-    var stationSn = GetQueryString("sn");
+app.controller('SiteHistoryTrendCtrl', ['$scope', '$stateParams', 'ajax', '$myTranslate', function ($scope, $stateParams, ajax, $myTranslate) {
+    var stationSn = $stateParams.sn; // GetQueryString("sn");
     var deviceChargeSettingF = null;    // 设备用电电价配置
     var deviceChargeSettingR = null;    // 设备发电电价配置
     var stationPfvSettingF = null;     // 用电电价
@@ -102,7 +88,9 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', '$myTranslate', functi
                 break;
             case 'YEAR':
                 $scope.dateName = currentDay.substring(0, 4);
+                break;
         }
+        setDtPickerTimeType($scope.picker, $scope.timeType.id);
     }
 
     function initDatePicker() {
@@ -123,6 +111,7 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', '$myTranslate', functi
             } else {
                 var options = {type: 'date'};
                 _self.picker = new mui.DtPicker(options);
+                setDtPickerTimeType(_self.picker, $scope.timeType.id);
                 _self.picker.show(function(rs) {
                     currentDay = rs.text + 'T00:00:00.000Z';
                     refreshDateShowName();
@@ -224,36 +213,11 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', '$myTranslate', functi
         var yAxis = [
             {
                 type: 'value',
-                nameTextStyle: {
-                    color: '#999999'
-                },
-                "axisLine": {
-                    lineStyle: {
-                        color: '#e7ecf1'
-                    }
-                },
-                axisLabel: {
-                    textStyle: {
-                        color: '#999999'
-                    }
-                },
-                splitLine: {
-                    lineStyle: {
-                        color: ['#e7ecf1']
-                    }
-                },
                 axisTick: {
                     "show": false
                 },
                 scale: false
             },
-            {
-                "axisLine": {
-                    lineStyle: {
-                        color: '#e7ecf1'
-                    }
-                },
-            }
         ];
         var group = $scope.trendGroups.find(function (item) {
             return item.id === groupId;
@@ -320,16 +284,6 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', '$myTranslate', functi
                 ri = data.data[0].time_keys[0].slice(8, 10); //针对最后一个点 为第二天0点 的特殊处理
             }
             yAxis[1]={
-                "axisLine": {
-                    lineStyle: {
-                        color: '#e7ecf1'
-                    }
-                },
-                axisLabel: {
-                    textStyle: {
-                        color: '#999999'
-                    }
-                },
                 splitLine: {
                     show: false,
                 },
@@ -394,19 +348,19 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', '$myTranslate', functi
             var tempLabelColor = 'gray';
             if(tempPfv === 'p') {
                 tempName = $myTranslate.instant('峰');
-                tempColor = g_pvf_colors.p;
+                tempColor = g_pvf_colors_opacity.p;
                 tempLabelColor = g_pvf_label_colors.p;
             } else if(tempPfv === 'f') {
                 tempName = $myTranslate.instant('平');
-                tempColor = g_pvf_colors.f;
+                tempColor = g_pvf_colors_opacity.f;
                 tempLabelColor = g_pvf_label_colors.f;
             } else if(tempPfv === 'v') {
                 tempName = $myTranslate.instant('谷');
-                tempColor = g_pvf_colors.v;
+                tempColor = g_pvf_colors_opacity.v;
                 tempLabelColor = g_pvf_label_colors.v;
             } else if(tempPfv === 's') {
                 tempName = $myTranslate.instant('尖');
-                tempColor = g_pvf_colors.s;
+                tempColor = g_pvf_colors_opacity.s;
                 tempLabelColor = g_pvf_label_colors.s;
             }
             var now = new Date();
@@ -439,7 +393,14 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', '$myTranslate', functi
                         color: tempLabelColor,
                         lineStyle: {
                             width: 0
-                        }
+                        },
+                        opacity: 0.7,
+                    }
+                },
+                lineStyle: {
+                    opacity: 1,
+                    normal: {
+                        opacity: 1
                     }
                 },
                 data: chargeData,
@@ -447,7 +408,13 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', '$myTranslate', functi
                     data: markAreaData,
                     itemStyle: {
                         normal: {
-                            color: tempColor
+                            color: tempColor,
+                            // opacity: 0.3,
+                        }
+                    },
+                    label: {
+                        normal: {
+                            color: tempLabelColor
                         }
                     }
                 }
@@ -487,19 +454,18 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', '$myTranslate', functi
         if (echartsDiv.length) {
             echarts.dispose(echartsDiv[0]);
         }
-        var echartsObj = echarts.init(getChartDiv(groupId));
+        var echartsObj = echarts.init(getChartDiv(groupId), "custom");
         var that = "";
         var legendData = [];
         data.data.forEach(function (item) {
             legendData.push(item.name);
         });
         var option = {
-            color: g_line_colors,
             grid: {
                 left: 55,
                 right: 30,
-                top: 20,
-                bottom: 45,
+                top: 10,
+                bottom: 55,
             },
             tooltip: {
                 trigger: 'axis',
@@ -512,7 +478,6 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', '$myTranslate', functi
                 itemWidth: 15,
                 itemHeight: 8,
                 textStyle: {
-                    color: '#848484',
                     fontSize: 11,
                 },
             },
@@ -521,24 +486,13 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', '$myTranslate', functi
                 splitNumber: 6,
                 min: mintime,
                 max: maxtime,
-                nameTextStyle: {
-                    color: '#999999'
-                },
                 boundaryGap: false,
                 splitLine: {
                     show: false
                 },
-                "axisLine": {
-                    lineStyle: {
-                        color: '#e7ecf1'
-                    }
-                },
                 axisLabel: {
-                    textStyle: {
-                        color: '#999999'
-                    },
                     formatter: function(value, index) {
-
+                        
                         var date = new Date(value);
                         var texts = [];
                         if (timety === "DAY") {
@@ -638,14 +592,18 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', '$myTranslate', functi
 
     $scope.$on('$destroy', function (event) {
         stopScrollListen();
-    })
+        if ($scope.picker) {
+            $scope.picker.dispose();
+            $scope.picker = null;
+        }
+    });
 }]);
 
 // 历史报表
 var siteHistoryTableScrollHeight = 154;
-app.controller('SiteHistoryReportCtrl', ['$scope', '$compile', 'ajax', '$myTranslate', function ($scope, $compile, ajax, $myTranslate) {
+app.controller('SiteHistoryReportCtrl', ['$scope', '$stateParams', '$compile', 'ajax', '$myTranslate', function ($scope, $stateParams, $compile, ajax, $myTranslate) {
 
-    var stationSn = GetQueryString("sn");
+    var stationSn = $stateParams.sn; // GetQueryString("sn");
     $scope.timeTypeList = [{
         id: 'DAY',
         name: $myTranslate.instant('report.daily')
@@ -693,6 +651,7 @@ app.controller('SiteHistoryReportCtrl', ['$scope', '$compile', 'ajax', '$myTrans
             } else {
                 var options = {type: 'date'};
                 _self.picker = new mui.DtPicker(options);
+                setDtPickerTimeType(_self.picker, $scope.timeType.id);
                 _self.picker.show(function(rs) {
                     currentDay = rs.text + 'T00:00:00.000Z';
                     refreshDateShowName();
@@ -717,7 +676,9 @@ app.controller('SiteHistoryReportCtrl', ['$scope', '$compile', 'ajax', '$myTrans
                 break;
             case 'YEAR':
                 $scope.dateName = currentDay.substring(0, 4);
+                break;
         }
+        setDtPickerTimeType($scope.picker, $scope.timeType.id);
     }
 
     function getReports(sn) {
@@ -1342,6 +1303,10 @@ app.controller('SiteHistoryReportCtrl', ['$scope', '$compile', 'ajax', '$myTrans
        if (reportPicker) {
            reportPicker.dispose();
            reportPicker = null;
+       }
+       if ($scope.picker) {
+           $scope.picker.dispose();
+           $scope.picker = null;
        }
     });
 

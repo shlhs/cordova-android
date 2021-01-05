@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>视频监控</title>
-  <script src="/js/lib/ys7/ezuikit-1.3.min.js"></script>
-  <script src="/js/app/utils.js"></script>
+  <script src="/lib/ys7/ezuikit-1.3.min.js"></script>
   <style>
     html, body {
       width: 100%;
@@ -18,10 +17,27 @@
 <!--<video id="myPlayer" controls playsInline webkit-playsinline autoplay>-->
 <!--<source type="application/x-mpegURL" id="source" />-->
 <!--</video>-->
-<video id="myPlayer" controls autoplay>
+<video id="myPlayer" controls autoplay playsInline webkit-playsinline>
 </video>
 <script>
 
+    function GetQueryString(name, url)
+    {
+        var search = window.location.search;
+        if (url) {
+            search = url.substring(url.indexOf('?'));
+        }
+        var search = search.substring(1), params = search.split('&');
+        var index, param;
+        for (var i=0; i<params.length; i++){
+            param = params[i];
+            index = param.indexOf('=');
+            if (index > 0 && param.substring(0, index) == name){
+                return decodeURIComponent(param.substring(index+1));
+            }
+        }
+        return null;
+    }
     var url = GetQueryString("url");
     if (location.search.indexOf('autoplay') > 0) {
         document.getElementById('myPlayer').setAttribute('autoplay', '');
