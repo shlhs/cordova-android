@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.luohusi.kuaikong" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>MingYang</name>
+<widget id="com.yinhe.dianguanjia" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>Yinhe</name>
     <description>
-        电力物联云平台.
+        银河e电助手
     </description>
-    <author email="isdavid@126.com" href="http://www.uscada.com/">
+    <author email="540140255@qq.com" href="http://www.yhqygroup.com/">
         罗湖斯自动化技术有限公司
     </author>
     <content src="index.html" />
