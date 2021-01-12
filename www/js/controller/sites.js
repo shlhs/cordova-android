@@ -84,7 +84,7 @@ app.controller('SiteListCtrl', function ($scope, $http, $state, userService, aja
                         });
                     }
                     var platFuncs = response.plat_function_switch ? JSON.parse(response.plat_function_switch) : null;
-                    appStoreProvider.setMenuSns(menuSns, platFuncs);
+                    appStoreProvider.setMenuSns(menuSns, platFuncs, $scope.role);
                     $scope.$emit('$onMenuUpdate', !platFuncs || platFuncs.opsManagement, menuSns);
                     $scope.selectedApps = appStoreProvider.getSelectedApps();
                     $scope.$apply();

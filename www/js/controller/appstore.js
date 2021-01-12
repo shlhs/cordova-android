@@ -65,7 +65,7 @@ app.provider('appStoreProvider', function () {
         return JSON.parse(getStorageItem("allApps"));
     }
 
-    function setMenuSns(snsObj, platFuncs) {
+    function setMenuSns(snsObj, platFuncs, userRole) {
         var platFormHasOpsAuth = !platFuncs || platFuncs.opsManagement;
 
         // 再判断菜单是否配置了运维权限
@@ -101,7 +101,9 @@ app.provider('appStoreProvider', function () {
                     // 如果没有保存过该菜单的配置，则根据平台功能权限显示菜单
                     if (sn.indexOf('ops-management') >= 0) {
                         if (hasOpsAuth) {
-                            children.push(child);
+                            if (child.role && child.role.indexOf(userRole) >= 0) {
+                                children.push(child);
+                            }
                         }
                         return;
                     }
@@ -227,35 +229,35 @@ app.config(['appStoreProviderProvider', function (appStoreServiceProvider) {
                     templateUrl: '/templates/site/static-devices/device-home.html',
                     url: 'static-devices',
                     sn: 'station-monitor/device-documents',
-                    defaultChecked: true
+                    defaultChecked: true && !gIsEnergyPlatform
                 }, {
                     name: '月度报告',
                     icon: 'icon-reports',
                     templateUrl: '/templates/site/reports.html',
                     url: 'monthly-report',
                     sn: 'station-monitor/month-report',
-                    defaultChecked: true
+                    defaultChecked: true && !gIsEnergyPlatform
                 }, {
                     name: '电子档案',
                     icon: 'icon-docs',
                     templateUrl: '/templates/site/docs.html',
                     url: 'site-documents',
                     sn: 'station-monitor/e-file',
-                    defaultChecked: true
+                    defaultChecked: true && !gIsEnergyPlatform
                 }, {
                     name: '历史曲线',
                     icon: 'icon-history-line',
                     templateUrl: '/templates/site-monitor/data-line.html',
                     url: 'data-line',
                     sn: 'station-monitor/data-line',
-                    defaultChecked: true
+                    defaultChecked: true && !gIsEnergyPlatform
                 }, {
                     name: '历史报表',
                     icon: 'icon-history-report',
                     templateUrl: '/templates/site-monitor/data-history.html',
                     url: 'data-history',
                     sn: 'station-monitor/data-report-v2',
-                    defaultChecked: true
+                    defaultChecked: true && !gIsEnergyPlatform
                 }
             ]
         }, {
@@ -267,21 +269,24 @@ app.config(['appStoreProviderProvider', function (appStoreServiceProvider) {
                     templateUrl: '/templates/dts/dts-list.html',
                     url: 'dts-list',
                     sn: 'ops-management/defect-tasks',
-                    defaultChecked: true
+                    defaultChecked: true,
+                    role: ['OPS_OPERATOR', 'OPS_ADMIN', 'USER']
                 }, {
                     name: '安全评测',
                     icon: 'icon-security',
                     templateUrl: '/templates/evaluate/evaluate-history.html',
                     sn: 'ops-management',
                     url: 'evaluate-security',
-                    defaultChecked: true
+                    defaultChecked: true,
+                    role: ['OPS_OPERATOR', 'OPS_ADMIN']
                 }, {
                     name: '停电维护',
                     icon: 'icon-poweroff',
                     templateUrl: '/templates/maintenance-check/check-history.html',
                     sn: 'ops-management',
                     url: 'poweroff-maintenance',
-                    defaultChecked: true
+                    defaultChecked: true,
+                    role: ['OPS_OPERATOR', 'OPS_ADMIN']
                 }
             ]
         }, {
