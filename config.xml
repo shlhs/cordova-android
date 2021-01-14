@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.hongxin.dianguanjia" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>Hongxin</name>
+<widget id="com.cto.dianguanjia" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>CTO</name>
     <description>
-        全能管
+        悉拓物联云
     </description>
-    <author email="isdavid@126.com" href="http://www.uscada.com/">
-        罗湖斯自动化技术有限公司
+    <author email="15840364047@163.com" href="http://www.uscada.com/">
+        悉拓（上海）安全技术有限公司
     </author>
     <content src="index.html" />
     <access origin="*" />
