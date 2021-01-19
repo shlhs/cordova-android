@@ -19,6 +19,7 @@ var TaskTypes = {
     Xiaoque: 15,    // 消缺
     Tingsong: 16,   // 停送操作,
     Install: 17,    // 安装调试
+    HiddenDanger: 20, // 隐患
 };
 var OpsTaskType = [1, 2, 3, 4, 5, 6, 7, 11, 12, 13, 14, 15, 16, 17];
 var DtsTaskType = [8, 9, 10];
@@ -115,6 +116,9 @@ function formatTaskStatusName(task) {   // 根据任务状态转换任务描述
         case TaskTypes.Xunjian:
         case TaskTypes.Xunshi:
             icon = 'inspect';
+            break;
+        case TaskTypes.HiddenDanger:
+            icon = 'hidden-danger warning';
             break;
     }
     task.iconClass = icon;
@@ -555,8 +559,8 @@ app.controller('TaskBaseCtrl', ['$scope', '$stateParams', 'ajax', 'userService',
         //     // 如果是查看单个设备的巡检任务，那么进入特殊的巡检页面
         //     location.href = '/templates/task/xunjian-device-detail.html?id=' + task.id + '&device_sn=' + deviceSn;
         // } else
-        if (task.is_defect) {
-            $state.go('.dts', {id: task.id});
+        if (task.is_defect || task.task_type_id === TaskTypes.HiddenDanger) {
+            $state.go('.dts', {id: task.id, taskType: task.task_type_id});
         } else {
             $state.go('.task', {id: task.id, taskType: task.task_type_id});
         }
@@ -1479,7 +1483,15 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
     if (taskType) {
         taskType = parseInt(taskType);
     }
-    $scope.taskName = DtsTaskType.indexOf(taskType) >= 0 ? $myTranslate.instant('defect') : (taskType === TaskTypes.Xunjian ? $myTranslate.instant('inspection') : $myTranslate.instant('task.order'));
+    var translateName = 'task.order ';
+    if (DtsTaskType.indexOf(taskType) >= 0) {
+        translateName = 'defect ';
+    } else if (taskType === TaskTypes.Xunjian) {
+        translateName = 'inspection ';
+    } else if (taskType === TaskTypes.HiddenDanger) {
+        translateName = 'hiddenDanger ';
+    }
+    $scope.taskName = $myTranslate.instant(translateName);
     var companyId = userService.getCompanyId(); // 用户所在公司，运维公司或用户公司
     var opsCompanyId = null;            // 任务所在运维公司
 
@@ -1632,7 +1644,7 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
         // } else {
         //     $scope.taskName = '报修';
         // }
-        $scope.taskName = data.source_name;
+        // $scope.taskName = data.source_name;
     }
 
     function drawMap(taskData) {
@@ -1815,10 +1827,11 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
 
     $scope.gotoHandleTask = function () {       // 根据任务类型打开对应的操作界面
         var reportId = $scope.taskData.report_id;
+        /**
         switch ($scope.taskData.task_type_id) {
             case TaskTypes.Security:     // 安全检测任务
                 if (reportId) {
-                    $state.go('task.securityRecord', {id: reportId});
+                    $state.go('.securityRecord', {id: reportId});
                 } else {
                     routerService.openPage($scope, '/templates/evaluate/security-evaluate-first-classify.html',
                         {isCreate: true, stationSn: $scope.taskData.station_sn,
@@ -1836,6 +1849,8 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
             default:
                 routerService.openPage($scope, '/templates/task/task-handle-update.html');
         }
+         **/
+        routerService.openPage($scope, '/templates/task/task-handle-update.html');
     };
 
     $scope.getUserHeadImage = function (user) {
@@ -3504,7 +3519,7 @@ app.controller('TaskDeviceCheckCtrl', ['$scope', '$stateParams', 'ajax', '$myTra
                 if(data && data.length  > 0){
                     var taskTypes = [];
                     data.forEach(item=>{
-                        if(String(item.id) === '8' || String(item.id) === '9' || String(item.id) === '10'){
+                        if(DtsTaskType.indexOf(item.id) >= 0 || item.id === TaskTypes.HiddenDanger){
                             taskTypes.push({
                                 value: item.id,
                                 text: item.name

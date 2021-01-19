@@ -69,14 +69,14 @@
     </a>
     <div id="dtsCreateContent" style="display: none;" class="mui-input-group task-create-rows dts-create-rows create-form no-border">
         <div class="mui-input-row" style="margin: 0">
-            <label class="label">{{'ops.security.item.type' | translate}}</label>
-            <input type="text" name="defectType" ng-model="selectedDtsType.name" placeholder="{{'defect.type.input' | translate}}" style="width: calc(100% - 90px);">
-            <button id="dtsTypePicker" class="mui-btn mui-btn-block" type="button" style="float: right;width: auto;">{{'select' | translate}}</button>
-        </div>
-        <div class="mui-input-row" style="margin: 0">
             <label class="label required">{{'dts.level' | translate}}</label>
             <input type="text" name="taskTypeName" ng-model="selectedDtsLevel.name" placeholder="{{'please.select dts.level' | myTranslate}}" required style="width: calc(100% - 90px)">
             <button id="dtsLevelPicker" class="mui-btn mui-btn-block" type="button">&nbsp; </button>
+        </div>
+        <div class="mui-input-row" style="margin: 0">
+            <label class="label">{{'ops.security.item.type' | translate}}</label>
+            <input type="text" name="defectType" ng-model="selectedDtsType.name" placeholder="{{'defect.type.input' | translate}}" style="width: calc(100% - 90px);">
+            <button id="dtsTypePicker" class="mui-btn mui-btn-block" type="button" style="float: right;width: auto;">{{'select' | translate}}</button>
         </div>
     </div>
 </div>

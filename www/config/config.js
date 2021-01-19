@@ -12,4 +12,5 @@ var LANGUAGE = 'zh-CN'; //如果需要根据手机系统来自动切换的话，
 var gIsEnglish = LANGUAGE === 'en-US';
 var gShowRecheck = true; // 是否显示复测内容
 var appName = getStorageItem('APPNAME') || ''; // 应用名称
+var eventConfirmVisible = false; // 告警确认时是否需要输入确认信息
 

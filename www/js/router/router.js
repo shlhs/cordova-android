@@ -134,7 +134,7 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
             templateUrl: '/templates/dts/dts-list.html'
         })
         .state('index.dtsList.dts', {
-            url: 'dts/?id',
+            url: 'dts/?id&taskType',
             templateUrl: '/templates/dts/dts-detail.html'
         })
         .state('index.dtsList.newDts', {
@@ -244,7 +244,7 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
             templateUrl: '/templates/dts/dts-detail.html'
         },
         'task.dts': {
-            url: 'dts/?dtsId&dtsType',
+            url: 'dts/?dtsId&taskType',
             templateUrl: '/templates/dts/dts-detail.html'
         }
     };
