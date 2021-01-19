@@ -1827,10 +1827,11 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
 
     $scope.gotoHandleTask = function () {       // 根据任务类型打开对应的操作界面
         var reportId = $scope.taskData.report_id;
+        /**
         switch ($scope.taskData.task_type_id) {
             case TaskTypes.Security:     // 安全检测任务
                 if (reportId) {
-                    $state.go('task.securityRecord', {id: reportId});
+                    $state.go('.securityRecord', {id: reportId});
                 } else {
                     routerService.openPage($scope, '/templates/evaluate/security-evaluate-first-classify.html',
                         {isCreate: true, stationSn: $scope.taskData.station_sn,
@@ -1848,6 +1849,8 @@ app.controller('TaskDetailCtrl', ['$scope', '$state', 'userService', 'platformSe
             default:
                 routerService.openPage($scope, '/templates/task/task-handle-update.html');
         }
+         **/
+        routerService.openPage($scope, '/templates/task/task-handle-update.html');
     };
 
     $scope.getUserHeadImage = function (user) {

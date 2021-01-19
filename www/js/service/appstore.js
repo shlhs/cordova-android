@@ -131,29 +131,30 @@ var DEFAULT_MENUS = [
                 sref: 'dtsList',
                 defaultChecked: true,
                 role: ['OPS_OPERATOR', 'OPS_ADMIN', 'USER']
-            }, {
-                name: '安全评测',
-                key: 'menu.ops.security',
-                icon: 'app-security',
-                color: 'orange',
-                templateUrl: '/templates/evaluate/evaluate-history.html',
-                sn: 'ops-management',
-                url: 'evaluate-security',
-                defaultChecked: true,
-                sref: 'security',
-                role: ['OPS_OPERATOR', 'OPS_ADMIN']
-            }, {
-                name: '停电维护',
-                key: 'menu.ops.poweroff',
-                icon: 'app-poweroff',
-                color: 'red',
-                templateUrl: '/templates/maintenance-check/check-history.html',
-                sn: 'ops-management',
-                url: 'poweroff-maintenance',
-                defaultChecked: true,
-                sref: 'poweroff',
-                role: ['OPS_OPERATOR', 'OPS_ADMIN']
-            }
+            },
+            // {
+            //     name: '安全评测',
+            //     key: 'menu.ops.security',
+            //     icon: 'app-security',
+            //     color: 'orange',
+            //     templateUrl: '/templates/evaluate/evaluate-history.html',
+            //     sn: 'ops-management',
+            //     url: 'evaluate-security',
+            //     defaultChecked: true,
+            //     sref: 'security',
+            //     role: ['OPS_OPERATOR', 'OPS_ADMIN']
+            // }, {
+            //     name: '停电维护',
+            //     key: 'menu.ops.poweroff',
+            //     icon: 'app-poweroff',
+            //     color: 'red',
+            //     templateUrl: '/templates/maintenance-check/check-history.html',
+            //     sn: 'ops-management',
+            //     url: 'poweroff-maintenance',
+            //     defaultChecked: true,
+            //     sref: 'poweroff',
+            //     role: ['OPS_OPERATOR', 'OPS_ADMIN']
+            // }
         ]
     }, {
         name: '能源管理',
