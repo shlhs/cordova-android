@@ -1,9 +1,11 @@
-<div class="inner-page" ng-controller="TaskCloseRejectCtrl">
-    <header class="mui-bar mui-bar-transparent" style=" -webkit-box-shadow: none;box-shadow: none;position: relative;">
-        <a class=" mui-icon mui-pull-left" style="font-size: 16px;margin-left: 6px;color: #9e9e9e;top:10px;" ng-click="history.back()">{{ 'cancel' | translate }}</a>
-        <a class="mui-icon mui-action-menu mui-pull-right" style="font-size: 16px;margin-right: 6px;top:10px;" ng-click="submit()">{{ 'submit' | translate }}</a>
+<div class="page page-left" ng-controller="TaskCloseRejectCtrl">
+    <header class="mui-bar bg-header">
+        <a class="mui-icon ng-binding" onclick="history.back()" style="font-size: 16px;margin-top: 6px;margin-left: 6px;">
+            {{'cancel' | translate}}
+        </a>
+        <a class="mui-icon mui-action-menu mui-pull-right mui-control-item text-link" style="font-size: 16px;margin-right: 6px;top:6px;" ng-click="submit()">{{'submit' | translate}}</a>
     </header>
-    <div class="mui-content" style="top:0px;padding: 0;position: relative" >
+    <div class="body-content" style="top:0px;padding: 0;position: relative" >
         <div class="task-result">
             <div class="mui-input-row" style="padding: 10px 5px;">
                 <textarea rows="4" placeholder="{{'task.tip.reason.reject' | translate}}..." name="description" ng-model="description"></textarea>

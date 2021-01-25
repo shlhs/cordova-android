@@ -11,14 +11,16 @@ var defaultActiveEnergyMode = false; // 是否默认使用能效管理模式
 app.controller('LoginCtrl', ['$scope', '$timeout', 'platformService', 'userService', '$state', '$http', 'ajax', '$translate', function ($scope, $timeout, platformService, userService, $state, $http, ajax, $translate) {
     $scope.error = '';
     var platform = null;
-    $scope.enable = false;
+    $scope.isDark = gTheme === 'dark';
     $scope.platformCodeVisible = !defaultPlatIpAddr;
     $scope.platformCode = platformService.getLatestPlatform() ? platformService.getLatestPlatform().code : null;
     $scope.username = userService.getUsername();
     $scope.password = userService.getPassword();
+    $scope.enable = $scope.platformCode && $scope.username && $scope.password;
     $scope.isLogin = false;
     $scope.isAutoLogin = false;
     $scope.passwordVisible = false;
+    $scope.appName = appName;
 
     $scope.togglePasswordVisible = function () {
         $scope.passwordVisible = !$scope.passwordVisible;
@@ -54,7 +56,7 @@ app.controller('LoginCtrl', ['$scope', '$timeout', 'platformService', 'userServi
         var div = $('<div class="toast"><div class="msg">' + message + '</div></div>').appendTo($('body'));
         $timeout(function () {
             div.remove();
-        }, 2000);
+        }, 1500);
     }
 
     function login() {

@@ -1,3 +1,5 @@
+'use strict';
+
 var DEFAULT_MENUS = [
     {
         name: '站点监控',
@@ -13,75 +15,93 @@ var DEFAULT_MENUS = [
             {
                 name: '站点总览',
                 key: 'menu.station.overview',
-                icon: 'icon-kanban',
+                icon: 'app-site-overview',
+                color: 'green',
                 templateUrl: '/templates/site/overview.html',
                 url: 'site-overview',
+                sref: 'overview', // ui-router跳转的链接
                 defaultChecked: true
             }, {
                 name: '画面',
                 key: 'menu.monitor.screen',
-                icon: 'icon-monitor',
+                icon: 'app-graph',
+                color: 'blue',
                 templateUrl: '/templates/site/monitor-list.html',
                 url: 'site-monitors',
                 sn: 'station-monitor/monitor-screen-v2',
+                sref: 'graphs',
                 defaultChecked: true
             }, {
                 name: '设备监测',
                 key: 'menu.monitor.device',
-                icon: 'icon-device-monitor',
+                icon: 'app-device-monitor',
+                color: 'green',
                 templateUrl: '/templates/site/device-monitor-list.html',
                 url: 'device-monitor',
                 sn: 'station-monitor/device-monitor',
+                sref: 'monitorDevices',
                 defaultChecked: true
             },
             {
                 name: '视频监控',
                 key: 'menu.monitor.video',
-                icon: 'icon-video-monitor',
+                icon: 'app-video',
+                color: 'green',
                 templateUrl: '/templates/video-monitor/video-monitor.html',
                 url: 'video-monitor',
                 sn: 'station-monitor/video-monitor',
+                sref: 'videos',
                 defaultChecked: true
             },
             {
                 name: '设备档案',
                 key: 'menu.device.document',
-                icon: 'icon-archives',
+                icon: 'app-static-devices',
+                color: 'blue',
                 templateUrl: '/templates/site/static-devices/device-home.html',
                 url: 'static-devices',
                 sn: 'station-monitor/device-documents',
+                sref: 'staticDevices',
                 defaultChecked: true && !gIsEnergyPlatform
             }, {
                 name: '月度报告',
                 key: 'menu.station.report',
-                icon: 'icon-reports',
+                icon: 'app-report',
+                color: 'green',
                 templateUrl: '/templates/site/reports.html',
                 url: 'monthly-report',
                 sn: 'station-monitor/month-report',
+                sref: 'reports',
                 defaultChecked: true && !gIsEnergyPlatform
             }, {
                 name: '电子档案',
                 key: 'menu.device.efile',
-                icon: 'icon-docs',
+                icon: 'app-docs',
+                color: 'blue',
                 templateUrl: '/templates/site/docs.html',
                 url: 'site-documents',
                 sn: 'station-monitor/e-file',
+                sref: 'docs',
                 defaultChecked: true && !gIsEnergyPlatform
             }, {
                 name: '历史曲线',
                 key: 'menu.station.dataline',
-                icon: 'icon-history-line',
+                icon: 'app-dataline',
+                color: 'cyan',
                 templateUrl: '/templates/site-monitor/data-line.html',
                 url: 'data-line',
                 sn: 'station-monitor/data-line',
+                sref: 'dataline',
                 defaultChecked: true && !gIsEnergyPlatform
             }, {
                 name: '历史报表',
                 key: 'menu.station.history',
-                icon: 'icon-history-report',
+                icon: 'app-data-history',
+                color: 'green',
                 templateUrl: '/templates/site-monitor/data-history.html',
                 url: 'data-history',
                 sn: 'station-monitor/data-report-v2',
+                sref: 'dataHistory',
                 defaultChecked: true && !gIsEnergyPlatform
             }
         ]
@@ -89,43 +109,52 @@ var DEFAULT_MENUS = [
         name: '运维中心',
         key: 'menu.parent.ops',
         children: [
+            // {
+            //     name: '服务申请',
+            //     key: 'menu.ops.create',
+            //     icon: 'icon-add-task',
+            //     color: 'orange',
+            //     templateUrl: '/templates/task/add-task.html',
+            //     url: 'add-task',
+            //     sn: 'ops-management/add-task',
+            //     defaultChecked: true,
+            //     role: ['USER']
+            // },
             {
-                name: '服务申请',
-                key: 'menu.ops.create',
-                icon: 'icon-add-task',
-                templateUrl: '/templates/task/add-task.html',
-                url: 'add-task',
-                sn: 'ops-management/add-task',
-                defaultChecked: true,
-                role: ['USER']
-            }, {
                 name: '缺陷记录',
                 key: 'menu.ops.defect',
-                icon: 'icon-dashboard-dts',
+                icon: 'warning',
+                color: 'orange',
                 templateUrl: '/templates/dts/dts-list.html',
                 url: 'dts-list',
                 sn: 'ops-management/defect-tasks',
+                sref: 'dtsList',
                 defaultChecked: true,
-                role: ['OPS_OPERATOR', 'OPS_ADMIN']
-            }, {
-                name: '安全评测',
-                key: 'menu.ops.security',
-                icon: 'icon-security',
-                templateUrl: '/templates/evaluate/evaluate-history.html',
-                sn: 'ops-management',
-                url: 'evaluate-security',
-                defaultChecked: true,
-                role: ['OPS_OPERATOR', 'OPS_ADMIN']
-            }, {
-                name: '停电维护',
-                key: 'menu.ops.poweroff',
-                icon: 'icon-poweroff',
-                templateUrl: '/templates/maintenance-check/check-history.html',
-                sn: 'ops-management',
-                url: 'poweroff-maintenance',
-                defaultChecked: true,
-                role: ['OPS_OPERATOR', 'OPS_ADMIN']
-            }
+                role: ['OPS_OPERATOR', 'OPS_ADMIN', 'USER']
+            },
+            // {
+            //     name: '安全评测',
+            //     key: 'menu.ops.security',
+            //     icon: 'app-security',
+            //     color: 'orange',
+            //     templateUrl: '/templates/evaluate/evaluate-history.html',
+            //     sn: 'ops-management',
+            //     url: 'evaluate-security',
+            //     defaultChecked: true,
+            //     sref: 'security',
+            //     role: ['OPS_OPERATOR', 'OPS_ADMIN']
+            // }, {
+            //     name: '停电维护',
+            //     key: 'menu.ops.poweroff',
+            //     icon: 'app-poweroff',
+            //     color: 'red',
+            //     templateUrl: '/templates/maintenance-check/check-history.html',
+            //     sn: 'ops-management',
+            //     url: 'poweroff-maintenance',
+            //     defaultChecked: true,
+            //     sref: 'poweroff',
+            //     role: ['OPS_OPERATOR', 'OPS_ADMIN']
+            // }
         ]
     }, {
         name: '能源管理',
@@ -134,26 +163,32 @@ var DEFAULT_MENUS = [
             {
                 name: '用能统计',
                 key: 'menu.energy.stat',
-                icon: 'icon-energy-statistics',
+                icon: 'app-energy-statistics',
+                color: 'cyan',
                 templateUrl: '/templates/energy/statistics.html',
                 url: 'energy-overview',
                 sn: 'energy/overview',
+                sref: 'energyStatistics',
                 defaultChecked: true
             }, {
                 name: '用能报表',
                 key: 'menu.energy.dataline',
-                icon: 'icon-energy-history',
+                icon: 'app-energy-report',
+                color: 'cyan',
                 templateUrl: '/templates/energy/energy-report.html',
                 url: 'energy-report',
                 sn: 'energy/report',
+                sref: 'energyReport',
                 defaultChecked: true
             }, {
                 name: '抄表',
                 key: 'menu.energy.meterreading',
-                icon: 'icon-energy-reading',
+                icon: 'app-meterreading',
+                color: 'cyan',
                 templateUrl: '/templates/energy/meter-reading.html',
                 sn: 'energy/meter-reading',
                 url: 'energy-meter-reading',
+                sref: 'meterreading',
                 defaultChecked: true
             }
         ]
@@ -164,43 +199,46 @@ var DEFAULT_ENERGY_MENUS = [
     {
         name: '用电概况',
         key: 'menu.energy.overview',
-        icon: 'icon-dashboard-energy-overview',
-        templateUrl: '/templates/energy/overview.html'
+        icon: 'app-degree-overview',
+        color: 'blue',
+        templateUrl: '/templates/energy/overview.html',
+        sref: 'energyOverview'
     }, {
         name: '电费分析',
         key: 'menu.energy.cost',
-        icon: 'icon-dashboard-energy-cost-analysis',
-        templateUrl: '/templates/energy/cost-analysis.html'
+        icon: 'app-energy-statistics',
+        color: 'cyan',
+        templateUrl: '/templates/energy/cost-analysis.html',
+        sref: 'energyCost'
     }, {
         name: '用电负荷',
         key: 'menu.energy.load',
-        icon: 'icon-dashboard-energy-charge',
-        templateUrl: '/templates/energy/load-analysis.html'
+        icon: 'app-load',
+        color: 'cyan',
+        templateUrl: '/templates/energy/load-analysis.html',
+        sref: 'energyLoad'
     }, {
         name: '最大需量',
         key: 'menu.energy.maxdemand',
-        icon: 'icon-dashboard-energy-max-demand',
-        templateUrl: '/templates/energy/max-demand.html'
+        icon: 'app-max-demand',
+        color: 'green',
+        templateUrl: '/templates/energy/max-demand.html',
+        sref: 'maxDemand'
     }, {
         name: '电能质量',
         key: 'menu.energy.quality.monitor',
-        icon: 'icon-dashboard-energy-monitor',
-        templateUrl: '/templates/energy/quality-monitor.html'
+        icon: 'app-quality',
+        color: 'green',
+        templateUrl: '/templates/energy/quality-monitor.html',
+        sref: 'energyQuality'
     }, {
         name: '质量报告',
         key: 'menu.energy.quality.report',
-        icon: 'icon-dashboard-energy-quality-report',
-        templateUrl: '/templates/energy/quality-report.html'
+        icon: 'app-quality-report',
+        color: 'green',
+        templateUrl: '/templates/energy/quality-report.html',
+        sref: 'energyQualityReport'
     },
-    // {
-    //     name: '设备监控',
-    //     icon: 'icon-device-monitor-new',
-    //     templateUrl: '/templates/site/device-monitor-list.html'
-    // }, {
-    //     name: '设备档案',
-    //     icon: 'icon-archives-new',
-    //     templateUrl: '/templates/site/static-devices/device-home.html'
-    // }
 ];
 
 app.service('appStoreProvider', ['$translate', function ($translate) {
@@ -369,171 +407,6 @@ app.service('appStoreProvider', ['$translate', function ($translate) {
     this.hasOpsAuth = hasOpsAuth;      // 用户是否有运维权限
 }]);
 
-//
-// app.config(['appStoreProviderProvider', function (appStoreProvider) {
-//     appStoreProvider.setDefaultApps([
-//         {
-//             name: '站点监控',
-//             key: 'menu.parent.station',
-//             children: [
-//                 // {
-//                 //     name: '站点看板',
-//                 //     icon: 'icon-kanban',
-//                 //     templateUrl: '/templates/site/kanban.html',
-//                 //     url: 'site-kanban',
-//                 //     defaultChecked: true
-//                 // },
-//                 {
-//                     name: '站点总览',
-//                     key: 'menu.station.overview',
-//                     icon: 'icon-kanban',
-//                     templateUrl: '/templates/site/overview.html',
-//                     url: 'site-overview',
-//                     defaultChecked: true
-//                 }, {
-//                     name: '画面',
-//                     key: 'menu.monitor.screen',
-//                     icon: 'icon-monitor',
-//                     templateUrl: '/templates/site/monitor-list.html',
-//                     url: 'site-monitors',
-//                     sn: 'station-monitor/monitor-screen-v2',
-//                     defaultChecked: true
-//                 }, {
-//                     name: '设备监测',
-//                     key: 'menu.monitor.device',
-//                     icon: 'icon-device-monitor',
-//                     templateUrl: '/templates/site/device-monitor-list.html',
-//                     url: 'device-monitor',
-//                     sn: 'station-monitor/device-monitor',
-//                     defaultChecked: true
-//                 },
-//                 {
-//                     name: '视频监控',
-//                     key: 'menu.monitor.video',
-//                     icon: 'icon-video-monitor',
-//                     templateUrl: '/templates/video-monitor/video-monitor.html',
-//                     url: 'video-monitor',
-//                     sn: 'station-monitor/video-monitor',
-//                     defaultChecked: true
-//                 },
-//                 {
-//                     name: '设备档案',
-//                     key: 'menu.device.document',
-//                     icon: 'icon-archives',
-//                     templateUrl: '/templates/site/static-devices/device-home.html',
-//                     url: 'static-devices',
-//                     sn: 'station-monitor/device-documents',
-//                     defaultChecked: true && !gIsEnergyPlatform
-//                 }, {
-//                     name: '月度报告',
-//                     key: 'menu.station.report',
-//                     icon: 'icon-reports',
-//                     templateUrl: '/templates/site/reports.html',
-//                     url: 'monthly-report',
-//                     sn: 'station-monitor/month-report',
-//                     defaultChecked: true && !gIsEnergyPlatform
-//                 }, {
-//                     name: '电子档案',
-//                     key: 'menu.device.efile',
-//                     icon: 'icon-docs',
-//                     templateUrl: '/templates/site/docs.html',
-//                     url: 'site-documents',
-//                     sn: 'station-monitor/e-file',
-//                     defaultChecked: true && !gIsEnergyPlatform
-//                 }, {
-//                     name: '历史曲线',
-//                     key: 'menu.station.dataline',
-//                     icon: 'icon-history-line',
-//                     templateUrl: '/templates/site-monitor/data-line.html',
-//                     url: 'data-line',
-//                     sn: 'station-monitor/data-line',
-//                     defaultChecked: true && !gIsEnergyPlatform
-//                 }, {
-//                     name: '历史报表',
-//                     key: 'menu.station.history',
-//                     icon: 'icon-history-report',
-//                     templateUrl: '/templates/site-monitor/data-history.html',
-//                     url: 'data-history',
-//                     sn: 'station-monitor/data-report-v2',
-//                     defaultChecked: true && !gIsEnergyPlatform
-//                 }
-//             ]
-//         }, {
-//             name: '运维中心',
-//             key: 'menu.parent.ops',
-//             children: [
-//                 {
-//                     name: '服务申请',
-//                     key: 'menu.ops.create',
-//                     icon: 'icon-add-task',
-//                     templateUrl: '/templates/task/add-task.html',
-//                     url: 'add-task',
-//                     sn: 'ops-management/add-task',
-//                     defaultChecked: true,
-//                     role: ['USER']
-//                 }, {
-//                     name: '缺陷记录',
-//                     key: 'menu.ops.defect',
-//                     icon: 'icon-dashboard-dts',
-//                     templateUrl: '/templates/dts/dts-list.html',
-//                     url: 'dts-list',
-//                     sn: 'ops-management/defect-tasks',
-//                     defaultChecked: true,
-//                     role: ['OPS_OPERATOR', 'OPS_ADMIN']
-//                 }, {
-//                     name: '安全评测',
-//                     key: 'menu.ops.security',
-//                     icon: 'icon-security',
-//                     templateUrl: '/templates/evaluate/evaluate-history.html',
-//                     sn: 'ops-management',
-//                     url: 'evaluate-security',
-//                     defaultChecked: true,
-//                     role: ['OPS_OPERATOR', 'OPS_ADMIN']
-//                 }, {
-//                     name: '停电维护',
-//                     key: 'menu.ops.poweroff',
-//                     icon: 'icon-poweroff',
-//                     templateUrl: '/templates/maintenance-check/check-history.html',
-//                     sn: 'ops-management',
-//                     url: 'poweroff-maintenance',
-//                     defaultChecked: true,
-//                     role: ['OPS_OPERATOR', 'OPS_ADMIN']
-//                 }
-//             ]
-//         }, {
-//             name: '能源管理',
-//             key: 'menu.parent.energy',
-//             children: [
-//                 {
-//                     name: '用能统计',
-//                     key: 'menu.energy.stat',
-//                     icon: 'icon-energy-statistics',
-//                     templateUrl: '/templates/energy/statistics.html',
-//                     url: 'energy-overview',
-//                     sn: 'energy/overview',
-//                     defaultChecked: true
-//                 }, {
-//                     name: '用能报表',
-//                     key: 'menu.energy.dataline',
-//                     icon: 'icon-energy-history',
-//                     templateUrl: '/templates/energy/energy-report.html',
-//                     url: 'energy-report',
-//                     sn: 'energy/report',
-//                     defaultChecked: true
-//                 }, {
-//                     name: '抄表',
-//                     key: 'menu.energy.meterreading',
-//                     icon: 'icon-energy-reading',
-//                     templateUrl: '/templates/energy/meter-reading.html',
-//                     sn: 'energy/meter-reading',
-//                     url: 'energy-meter-reading',
-//                     defaultChecked: true
-//                 }
-//             ]
-//         }
-//     ]);
-// }]);
-
 app.controller('AppStoreCtrl', ['$scope', 'appStoreProvider', '$translate', function ($scope, appStoreProvider, $translate) {
     $scope.allApps = appStoreProvider.getAllApps();
     $scope.selectedApps = appStoreProvider.getSelectedApps();
@@ -570,7 +443,7 @@ app.controller('AppStoreCtrl', ['$scope', 'appStoreProvider', '$translate', func
                         item.selected = false;
                         return false;
                     }
-                })
+                });
             });
         } else {
             app.selected = true;
@@ -587,10 +460,10 @@ app.controller('AppStoreCtrl', ['$scope', 'appStoreProvider', '$translate', func
         $scope.toggleEdit();
 
         // 回到
-        if (window.android) {
-            window.android.onJsCallbackForPrevPage('onAndroidCb_updateAppList', '');
-        }
-        $scope.$emit('onNotifyAppUpdate');
+        // if (window.android) {
+        //     window.android.onJsCallbackForPrevPage('onAndroidCb_updateAppList', '');
+        // }
+        $scope.$emit('onBaseNotifyAppUpdate');
     };
     setSelectedState();
 }]);

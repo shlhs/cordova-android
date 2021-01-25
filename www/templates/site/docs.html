@@ -1,118 +1,79 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>电子文档</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta http-equiv="Access-Control-Allow-Origin" content="*">
-    <link rel="stylesheet" href="../../components/mui/css/mui.min.css">
-    <link rel="stylesheet" href="../../css/my.css">
-    <link rel="stylesheet" href="../../css/icon.css">
-    <link rel="stylesheet" href="../../css/animate.css">
-    <link rel="stylesheet" href="../../components/mui/css/icons-extra.css">
-    <link rel="stylesheet" href="../../css/setting.css">
-    <!--<script type="text/javascript" src="../../cordova.js"></script>-->
-    <!--<script type="text/javascript" src="../../cordova_plugins.js"></script>-->
-    <script type="text/javascript" src="../../components/libs/jquery-2.1.4.min.js"></script>
-    <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
-    <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
-    <script type="text/javascript" src="../../components/angular-animate/angular-animate.js"></script>
-    <script type="text/javascript" src="../../components/angular-ui-router/release/stateEvents.min.js"></script>
-    <script type="text/javascript" src="/js/lib/angular-translate.min.js"></script>
-    <script type="text/javascript" src="../../js/app/utils.js"></script>
-    <script type="text/javascript" src="../../js/app/app.js"></script>
-<style>
-    /*.mui-table-view-cell{*/
+
+<div class="mui-page" ng-controller="SiteDocsCtrl" ng-cloak>
+    <style>
+        /*.mui-table-view-cell{*/
         /*padding-right: 60px;*/
-    /*}*/
-    .mui-content{
-        padding-left: 0px;
-        padding-right: 0px;
-    }
-    .mui-card{
-        margin: 6px 0;
-    }
-    .icon-download{
-        position: absolute;
-        right: 8px;
-        top: 10px;
-        width: 20px;
-        height: 20px;
-    }
-    .title{
-        margin: 0px 15px;
-        color: #6d6d72;
-        font-size: 15px;
-    }
-    .mui-table-view .mui-media-object{
-        width: 28px;
-        height: 28px;
-    }
-</style>
-<body class="box-vertical-center" ng-app="myApp" ng-controller="SiteDocsCtrl">
-<header class="mui-bar bg-header">
-    <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
-    <h1 class="mui-title">{{'menu.device.efile' | translate}}</h1>
-</header>
-<div ng-include="'../../templates/top-menu.html'"></div>
-<div class="mui-content" ng-cloak>
-    <div style="height: 8px;"></div>
-    <div ng-repeat="group in groups" ng-if="!docLoading && !loadingFailed">
-        <div class="title">
-            {{group.name}}
-        </div>
-        <div class="mui-card">
-            <div class="mui-card-content">
-                <ul class="mui-table-view">
-                    <li class="mui-table-view-cell mui-media" ng-repeat="doc in group.docs">
-                        <i class="mui-media-object mui-pull-left icon icon-md {{doc.icon}}"></i>
-                        <div class="mui-media-body mui-ellipsis" ng-click="open(doc)">
-                            {{doc.name}}
-                            <p class="mui-ellipsis">
-                                {{doc.create_time}}
-                                <!-- <span class="mui-pull-right">{{doc.creator}}</span> -->
-                            </p>
-                        </div>
-                        <!--<i class="mui-pull-right icon icon-ms icon-download"></i>-->
-                    </li>
-                </ul>
+        /*}*/
+        .body-content{
+            padding-left: 0px;
+            padding-right: 0px;
+        }
+        .mui-card{
+            margin: 6px 0;
+        }
+        .title{
+            margin: 0px 15px;
+            font-size: 15px;
+        }
+        .mui-table-view .mui-media-object{
+            width: 28px;
+            height: 28px;
+        }
+    </style>
+    <header class="mui-bar bg-header">
+        <a class="mui-icon  mui-icon-left-nav mui-pull-left btn-back" onclick="history.back()"></a>
+        <h1 class="mui-title">{{'menu.device.efile' | translate}}</h1>
+    </header>
+    <div class="body-content" ng-cloak>
+        <div style="height: 8px;"></div>
+        <div ng-repeat="group in groups" ng-if="!docLoading && !loadingFailed">
+            <div class="title">
+                {{group.name}}
+            </div>
+            <div class="mui-card">
+                <div class="mui-card-content">
+                    <ul class="mui-table-view bg-regular" style="margin-bottom: 10px;">
+                        <li class="mui-table-view-cell mui-media" ng-repeat="doc in group.docs">
+                            <i class="mui-media-object mui-pull-left icon icon-md {{doc.icon}}"></i>
+                            <div class="mui-media-body mui-ellipsis" ng-click="open(doc)">
+                                {{doc.name}}
+                                <p class="mui-ellipsis">
+                                    {{doc.create_time}}
+                                    <!-- <span class="mui-pull-right">{{doc.creator}}</span> -->
+                                </p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="page-alert-wrapper" ng-if="docLoading">
-        <div class="page-alert">
-            <img src="../../img/page-loading.gif" class="loading-img">
-            <div class="alert-text info">{{'loading' | translate}}...</div>
-        </div>
-    </div>
-    <div class="page-alert-wrapper" ng-if="!loadingFailed && !docLoading && !groups.length">
-        <div class="page-alert">
+        <div class="page-alert-wrapper" ng-if="docLoading">
             <div class="page-alert">
-                <i class="alert-icon nodata"></i>
-                <div class="alert-text info">{{'none menu.device.efile' | myTranslate}}</div>
+                <img src="../../img/page-loading.gif" class="loading-img">
+                <div class="alert-text info">{{'loading' | translate}}...</div>
+            </div>
+        </div>
+        <div class="page-alert-wrapper" ng-if="!loadingFailed && !docLoading && !groups.length">
+            <div class="page-alert">
+                <div class="page-alert">
+                    <i class="alert-icon nodata"></i>
+                    <div class="alert-text info">{{'none menu.device.efile' | myTranslate}}</div>
+                </div>
+            </div>
+        </div>
+        <div class="page-alert-wrapper" ng-if="loadingFailed">
+            <div class="page-alert">
+                <i class="alert-icon warning"></i>
+                <div class="alert-text info">{{'tip.load.failed.network' | translate}}</div>
+                <div class="alert-reload" ng-click="getDataList()">{{'reload' | translate}}</div>
             </div>
         </div>
     </div>
-    <div class="page-alert-wrapper" ng-if="loadingFailed">
-        <div class="page-alert">
-            <i class="alert-icon warning"></i>
-            <div class="alert-text info">{{'tip.load.failed.network' | translate}}</div>
-            <div class="alert-reload" ng-click="getDataList()">{{'reload' | translate}}</div>
+    <div id="slides" class="slides" style="display: none;">
+        <div class="img-container">
+            <div>
+                <img src="{{currentImage}}">
+            </div>
         </div>
     </div>
 </div>
-<div id="slides" class="slides" style="display: none;">
-    <div class="img-container">
-        <div>
-            <img src="{{currentImage}}">
-        </div>
-    </div>
-</div>
-<script src="../../components/fastclick-master/lib/fastclick.js"></script>
-<script src="../../js/my/notify.js"></script>
-<script src="../../components/dropload-gh-pages/dist/dropload.min.js"></script>
-<script type="text/javascript" src="../../js/controller/sites.js"></script>
-</body>
-</html>

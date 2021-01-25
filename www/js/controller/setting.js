@@ -9,21 +9,6 @@ app.controller('SettingCtrl', ['$scope', 'ajax', 'userService', 'routerService',
     $scope.appName = GetQueryString('appName') || '快控电管家';
     $scope.company = null;
 
-    $scope.logout = function () {
-        var btnArray = [$myTranslate.instant('cancel'), $myTranslate.instant('logout')];
-        mui.confirm("", $myTranslate.instant('logout.confirm'), btnArray, function(e) {
-            if (e.index === 1) {     // 是
-                userService.setPassword('');
-                userService.saveCompany('');
-                if (window.android){
-                    window.android.logout();
-                }
-                location.href = '/templates/login.html?finishPage=1';
-            }
-        });
-
-    };
-
     $scope.openUiSwitchModal = function () {
         routerService.openPage($scope, '/templates/setting/uiModeSwitchModal.html', {
             mode: $scope.uiMode
@@ -120,8 +105,23 @@ app.controller('CompanyCtrl', ['$scope', '$stateParams', function ($scope, $stat
     $scope.company = $stateParams.company;
 }]);
 
-app.controller('AccountCtrl', ['$scope', 'userService', function ($scope, userService) {
+app.controller('AccountCtrl', ['$scope', 'userService', '$myTranslate', function ($scope, userService, $myTranslate) {
     $scope.user = userService.user;
+
+    $scope.logout = function () {
+        var btnArray = [$myTranslate.instant('cancel'), $myTranslate.instant('logout')];
+        mui.confirm("", $myTranslate.instant('logout.confirm'), btnArray, function(e) {
+            if (e.index === 1) {     // 是
+                userService.setPassword('');
+                userService.saveCompany('');
+                if (window.android){
+                    window.android.logout();
+                }
+                location.href = '/templates/login.html?finishPage=1';
+            }
+        });
+
+    };
 }]);
 
 app.controller('AppShareCtrl', ['$scope', function ($scope) {

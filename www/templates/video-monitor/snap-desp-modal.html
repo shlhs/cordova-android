@@ -2,14 +2,14 @@
     <div class="mui-popup property-editor-popup" style="display: block;opacity: 1;">
         <div class="mui-popup-inner">
             <div class="form-group">
-                <label style="color: #333;font-size: 16px;line-height: 1.5">{{'video.snapshots.capture.tip' | translate}}</label>
+                <label style="font-size: 16px;line-height: 1.5">{{'video.snapshots.capture.tip' | translate}}</label>
                 <input type="text" ng-model="newValue" ng-change="onInputValidate(newValue)" placeholder="{{'video.snapshots.capture.desp' | translate}}" style="font-size: 14px;">
                 <div style="color: red;font-size: 12px;">{{error}}</div>
             </div>
         </div>
         <div class="mui-popup-buttons">
-            <a class="mui-popup-button" ng-click="onCancel()" style="color: #848484;">{{'cancel' | translate}}</a>
-            <a class="mui-popup-button" ng-click="confirm()" style="color: #439AF2;">{{'video.snapshots.capture.action' | translate}}</a>
+            <a class="mui-popup-button text-secondary" ng-click="onCancel()" >{{'cancel' | translate}}</a>
+            <a class="mui-popup-button text-link" ng-click="confirm()">{{'video.snapshots.capture.action' | translate}}</a>
         </div>
     </div>
     <div class="mui-popup-backdrop mui-active" style="display: block;"></div>

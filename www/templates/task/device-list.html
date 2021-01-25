@@ -1,11 +1,18 @@
-<div class="page page-fade" ng-controller="TaskDevicesHandlerCtrl" id="xunjianTaskDevices">
-    <header class="mui-bar bg-header" style="box-shadow: none;background: #f5f5f5;">
-        <a class="mui-icon text-white" onclick="history.back()" style="color: #9a9a9a;font-size: 16px;margin-top: 6px;margin-left: 6px;">{{ 'cancel' | translate }}</a>
-        <h1 class="mui-title" style="color: #444;">{{'devices' | translate}}</h1>
+<div class="mui-page" ng-controller="TaskDevicesHandlerCtrl" id="xunjianTaskDevices">
+    <header class="mui-bar bg-header">
+        <a class="mui-icon" onclick="history.back()" style="font-size: 16px;margin-top: 6px;margin-left: 6px;">{{ 'cancel' | translate }}</a>
+        <h1 class="mui-title">{{'devices' | translate}}</h1>
     </header>
-    <div class="mui-content" ng-cloak style="background-color: #fff;top: 60px;">
+    <div class="body-content bg-white" ng-cloak style="top: 60px;">
+        <div class="site-search-comp">
+            <div class="search-wrapper" style="margin-top: 6px;">
+                <i class="iconfont anticon-search"></i>
+                <input placeholder="{{'search' | translate}}" ng-model="searchDevice">
+            </div>
+        </div>
+
         <ul class="no-border static-device-list" style="margin-top: 0;" ng-style="{'padding-bottom': canHandle ? '48px' : '10px'}">
-            <li class="box-horizontal box-vertical-middle mui-navigate-right" ng-repeat="record in device_record" ng-click="openDeviceCheckPage(record)">
+            <li class="box-horizontal box-vertical-middle mui-navigate-right" ng-repeat="record in device_record | filter: deviceFilter" ng-click="openDeviceCheckPage(record)">
                 <div class="device-body box-horizontal box-vertical-middle">
                     <div class="mui-checkbox mui-left checkbox-square" ng-if="canHandle">
                         <a class="checkbox" ng-class="{checked: record.checked}" ng-click="checkDevice($event, record.device_sn)"></a>
@@ -26,9 +33,9 @@
         </ul>
 
     </div>
-    <div class="mui-bar mui-bar-tab" style="z-index: 0;background-color: #fff;border-top: #efefef 1px solid;" ng-if="canHandle">
+    <div class="mui-bar mui-bar-tab inspect-device-tab" style="z-index: 0;" ng-if="canHandle">
         <a class="mui-tab-item1 mui-active mui-checkbox checkbox-square" style="padding-left: 10px;text-align: left;padding-top: 6px;" href="javascript:void(0)">
-            <label class="checkbox" ng-class="{checked: checkAll}" ng-click="toggleCheckAll()" style="color: #03a9f4"><span style="margin-left: 8px;">{{ 'selectall' | translate }}</span></label>
+            <label class="checkbox text-link" ng-class="{checked: checkAll}" ng-click="toggleCheckAll()"><span style="margin-left: 8px;">{{ 'selectall' | translate }}</span></label>
         </a>
         <a class="mui-tab-item1 mui-active" href="javascript:void(0)" style="padding-right: 10px;" ng-click="setStatusOk()">
             <button type="button" class="mui-btn mui-btn-primary mui-btn-block mui-btn-outlined task-btn" style="margin-bottom: 10px;">{{ 'inspect.result.device.normal' | translate }}</button>
@@ -39,4 +46,5 @@
                     ng-click="openDtsPage()">{{ 'task.defect.create' | translate }}</button>
         </a>
     </div>
+    <div ui-view=""></div>
 </div>

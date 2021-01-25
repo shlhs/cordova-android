@@ -1,16 +1,15 @@
 
 <div class="page page-left" ng-controller="MaintenanceChecklistCtrl">
     <header class="mui-bar bg-header">
-        <a class="mui-icon mui-icon-left-nav text-white btn-back" ng-click="pageBack()"></a>
+        <a class="mui-icon mui-icon-left-nav btn-back" ng-click="pageBack()"></a>
         <h1 class="mui-title">{{'ops.poweroff.report.name' | translate}}</h1>
-        <a class="mui-action-menu mui-icon mui-pull-right" style="font-size: 16px;line-height: 28px;color: #fff;" ng-click="save()" ng-if="canEdit">{{'save' | translate}}</a>
+        <a class="mui-action-menu mui-icon mui-pull-right" style="font-size: 16px;line-height: 28px;" ng-click="save()" ng-if="canEdit">{{'save' | translate}}</a>
     </header>
-    <div class="mui-content" ng-cloak style="display: -webkit-box;-webkit-box-align: stretch;">
-        <div class="left-panel" style="background-color: #FFFFFF;width: 35%;box-shadow: 0 0 2px #ccc;">
-            <ul class="check-list">
-                <li class="check-item" ng-repeat="item in template" ng-class="{'active': currentIndex===$index}">
-                    <a class="mui-navigate-right" href="#" ng-click="chooseItem($index)">
-                        <i class="icon icon-16 icon-circle-grey"></i>
+    <div class="body-content" ng-cloak style="display: -webkit-box;-webkit-box-align: stretch;">
+        <div class="left-panel">
+            <ul class="12pcheck-list" style="margin-top: 12px;">
+                <li class="check-item" ng-repeat="item in template" ng-class="{'active': currentIndex===$index}" style="padding: 8px 0">
+                    <a class="mui-navigate-right" ng-click="chooseItem($index)">
                         {{item.name}}
                     </a>
                 </li>
@@ -18,13 +17,13 @@
 
         </div>
         <div class="right-panel" style="-webkit-box-flex: 2;">
-            <h5 class="mui-text-center" style="color: #444;padding: 4px;">{{currentItem.name}}</h5>
+            <h5 class="mui-text-center text-primary" style="padding: 4px;">{{currentItem.name}}</h5>
             <div style="padding: 0 8px;">
                 <ul class="check-box-list">
                     <li class="check-box-item" ng-repeat="item in currentItem.checklist">
                         <div class="name">
                             <label>{{item.name}}</label>
-                            <div class="mui-pull-right mui-checkbox">
+                            <div class="mui-pull-right mui-checkbox" ng-if="canEdit">
                                 <div>
                                     <input name="checkbox{{item.id}}" type="checkbox" ng-click="checkThis(item, 1)" ng-if="!item.value">
                                     <input name="checkbox{{item.id}}" type="checkbox" checked ng-click="checkThis(item, 0)" ng-if="item.value">

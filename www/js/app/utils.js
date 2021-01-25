@@ -428,3 +428,22 @@ function datePickerI18n() {
     $parent.find('[data-id="title-h"]').html('HOUR');
     $parent.find('[data-id="title-i"]').html('MINUTE');
 }
+
+// 设置日期选择是 日/月/年，timeType：DAY, MONTH, YEAR
+function setDtPickerTimeType(picker, timeType) {
+    if (picker) {
+        var uiPicker = picker.ui.picker;
+        var className = uiPicker.className;
+        if (className.indexOf('timeType-') < 0) {
+            uiPicker.className += ' timeType-' + timeType;
+        } else {
+            var classNames = className.split(' ');
+            classNames.forEach(function (n, i) {
+                if (n.indexOf('timeType-') >= 0) {
+                    classNames[i] = 'timeType-' + timeType;
+                }
+            });
+            uiPicker.className = classNames.join(' ');
+        }
+    }
+}

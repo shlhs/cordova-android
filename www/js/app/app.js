@@ -1,19 +1,7 @@
 "use strict";
-/**
- * Created by liucaiyun on 2017/5/4.
- */
+
+
 var app = angular.module('myApp', ['ngAnimate', 'ui.router', 'ui.router.state.events', 'pascalprecht.translate']);
-var loginExpireCheckEnable = false;       // 是否检查鉴权过期
-var defaultPlatIpAddr = 'http://221.6.205.125'; // 平台默认ip，格式为：http://118.190.51.135
-var defaultImgThumbHost = "";     // 如果为空则与 host一样
-// var gQrDownloadUrl = defaultPlatIpAddr + ':8123/version/qr.png'; // 二维码下载链接
-var gQrDownloadUrl = '/version/qr.png'; // 二维码下载链接
-var gShowEnergyPage = false;     // 是否显示能效页面，不显示能效页面时运维人员会看到抢单页面
-var gIsEnergyPlatform = false; // 是否是能源管理平台，是的话部分菜单默认不显示
-var gEnableDeviceMap = false; // 是否显示设备档案地图
-var LANGUAGE = 'zh-CN'; //如果需要根据手机系统来自动切换的话，使用：getStorageItem('LANGUAGE') || "zh-CN";
-var gIsEnglish = LANGUAGE === 'en-US';
-var gShowRecheck = true; // 是否显示复测内容
 
 function setSystemLanguage(language) {
     if (language) {
@@ -23,9 +11,9 @@ function setSystemLanguage(language) {
     }
 }
 
-app.run(function ($animate) {
+app.run(['$animate', function ($animate) {
     $animate.enabled(true);
-});
+}]);
 // app.config(['$locationProvider', function ($locationProvider) {
 //
 //
@@ -61,7 +49,7 @@ function loadTranslateFiles(forceLoad) { // 加载翻译文件，forceLoad：重
     return jsonData;
 }
 
-app.config(function ($translateProvider) {
+app.config(['$translateProvider', function ($translateProvider) {
 
     //// 不用static-file-loader，因为是json文件是异步加载的，会导致controller里的js的translate不生效的情况
     // $translateProvider.useStaticFilesLoader({
@@ -73,7 +61,7 @@ app.config(function ($translateProvider) {
     var json = loadTranslateFiles();
     $translateProvider.translations(LANGUAGE, json);
     $translateProvider.preferredLanguage(LANGUAGE);
-});
+}]);
 
 app.filter(
     'to_trusted', ['$sce', function ($sce) {
@@ -88,7 +76,11 @@ app.service("$myTranslate", ['$translate', function ($translate) {
         var tmpKeys = keys.split(' ');
         var words = [];
         tmpKeys.forEach(function (key) {
-            words.push($translate.instant(key));
+            if (key) {
+                words.push($translate.instant(key));
+            } else {
+                words.push('');
+            }
         });
         if (gIsEnglish) {
             return words.join(' ');
@@ -101,9 +93,6 @@ app.filter('myTranslate', ['$myTranslate', function($myTranslate) { //可以注�
     return function(keys) {
         return $myTranslate.instant(keys);
     };
-}]);
-
-app.controller('MainCtrl', ['$scope', '$rootScope', 'userService', function ($scope, $rootScope, userService) {
 }]);
 
 app.controller('LoginExpireCtrl', ['$scope', 'userService', function ($scope, userService) {
@@ -137,6 +126,7 @@ app.service('userService', ['$rootScope', function ($rootScope) {
                 permissions.push(perm.authrity_name);
             });
             setStorageItem('permissions', permissions.join(','));
+            this.permissions = permissions;
         }
         setStorageItem('company', '');
         this.username = user.account;
@@ -186,6 +176,14 @@ app.service('userService', ['$rootScope', function ($rootScope) {
             return null;
         }
         return user.user_groups[0].name;
+    };
+
+    this.getPermissions = function () {
+        const permission = getStorageItem('permissions');
+        if (permission) {
+            return permission.split(',');
+        }
+        return [];
     };
 
     this.getUsername = function () {
@@ -246,8 +244,26 @@ app.service('userService', ['$rootScope', function ($rootScope) {
     this.username = this.getUsername();
     this.password = this.getPassword();
     this.company = this.getCompany();
+    this.permissions = this.getPermissions();
 
     $rootScope.permission = {canEditTask: this.getUserRole() != UserRole.Normal && this.getUserRole() != UserRole.OpsOperator};
+}]);
+
+app.service('authService', ['userService', function (userService) {
+
+    function isHaveTheAuthority(authority) {
+        var permissions = userService.getPermissions();
+
+        return (permissions.indexOf(authority) >= 0);
+    }
+
+    this.canConfigStation = function (stationSn) {
+        return isHaveTheAuthority('ROLE_SUPERUSER') || isHaveTheAuthority('ROLE_OPS_ADMIN') || isHaveTheAuthority('ROLE_MANAGER') || (isHaveTheAuthority('ROLE_OPS_OPERATOR') && isHaveTheAuthority('STATION_EDIT_'+stationSn));
+    };
+
+    this.canControlStation = function (stationSn) {
+        return isHaveTheAuthority('ROLE_OPS_ADMIN') || (isHaveTheAuthority('ROLE_OPS_OPERATOR') && isHaveTheAuthority('STATION_W_'+stationSn));
+    };
 }]);
 
 app.service('platformService', function () {
@@ -371,7 +387,11 @@ app.service('platformService', function () {
     };
 
     this.getIpcServiceHost = function () {
-        return this.host + ':8095/v1';
+        if (defaultIpcHost) {
+            return defaultIpcHost + ':8095/v1';
+        } else {
+            return this.host + ':8095/v1';
+        }
     };
 
     this.getMediaHost = function () {
@@ -396,9 +416,9 @@ app.service('routerService', ['$timeout', '$compile', function ($timeout, $compi
         }
         // 显示前一个页面，排除掉 mui-popover组建内容
         if (pageLength>1){
-            pages[pageLength - 2].ele.not('.mui-popover').show();
-        }else{
-            pages[0].ele.prevAll().not('.mui-popover').show();
+            pages[pageLength - 2].ele.not('.mui-popover').not('script').show();
+        } else{
+            pages[0].ele.prevAll().not('.mui-popover').not('script').show();
         }
         var item = pages[currentIndex], element=item.ele;
         element.addClass('ng-leave');
@@ -409,6 +429,9 @@ app.service('routerService', ['$timeout', '$compile', function ($timeout, $compi
         element[0].addEventListener('webkitAnimationEnd', _animateEnd);
         function _animateEnd() {
             element.remove();
+            if (item && item.config && item.config.onClose) {
+                item.config.onClose();
+            }
         }
     });
 
@@ -451,6 +474,12 @@ app.service('routerService', ['$timeout', '$compile', function ($timeout, $compi
         element[0].addEventListener('webkitAnimationEnd', _animationEnd);
     };
 
+    /**
+     * @param config参数：
+     *          hidePrev：是否隐藏前一个页面
+     *          addHistory：是否加到location.history中，false的话，则取代当前页面
+     *          onClose：页面关闭的回调
+     */
     this.openPage = function (scope, templateUrl, params, config) {
         var html = "<route-page template=" + templateUrl;
         this._setNextPage(params, config);
@@ -485,12 +514,12 @@ app.service('routerService', ['$timeout', '$compile', function ($timeout, $compi
     };
 }]);
 
-app.directive('routePage', ['$log', 'routerService', function($log, routerService){
+app.directive('routePage', function(){
     return {
         restrict: 'E', // E = Element, A = Attribute, C = Class, M = Comment
         // templateUrl: '/templates/site/site-detail.html',
         replace: true,
-        controller: function($scope, $element){
+        controller: ['$scope', '$element', 'routerService', function($scope, $element, routerService){
             var pageData = routerService.getNextPage();
             var params = pageData.params, config=pageData.config;
             if (params){
@@ -502,47 +531,14 @@ app.directive('routePage', ['$log', 'routerService', function($log, routerServic
             {
                 routerService.addHistory($scope, $element);
             }
-        },
+        }],
         templateUrl: function (ele, attr) {
             return attr.template;
         },
         scope: true     // scope隔离
-
-        // compile: function(element, attributes) {
-        //     return {
-        //         pre: function preLink(scope, element, attributes) {
-        //             scope.sn = attributes.sn;
-        //         },
-        //         post: function postLink(scope, element, attributes) {
-        //             element.prevAll().hide();
-        //         }
-        //     };
-        // }
     };
-}]);
+});
 
-app.directive('rootPage', ['$log', 'routerService', function($log, routerService){
-    return {
-        restrict: 'E', // E = Element, A = Attribute, C = Class, M = Comment
-        replace: true,
-        templateUrl: function (ele, attr) {
-            return attr.template;
-        },
-        scope: true,     // scope隔离
-        controller: function ($scope, $element) {
-            var search = window.location.search.substring(1), params = search.split('&');
-            var index, param;
-            for (var i=0; i<params.length; i++){
-                param = params[i];
-                index = param.indexOf('=');
-                var key = param.substring(0, index), value = param.substring(index+1);
-                if (key !== 'template') {
-                    $scope[key] = decodeURIComponent(value);
-                }
-            }
-        }
-    };
-}]);
 // routerService end
 
 app.service('ajax', ['$rootScope', 'platformService', 'userService', 'routerService', function ($rootScope, platformService, userService, routerService) {
@@ -953,6 +949,7 @@ app.directive('dropDownMenu', function () {
         restrict: 'E',
         templateUrl: '/templates/site-monitor/dropdown-menu.html',
         scope: {
+            id: '=',
             options: '=',
             onSelect: '=',
             modelName: '=',
@@ -971,7 +968,7 @@ app.directive('dropDownMenu', function () {
                 }
                 $scope.active = !$scope.active;
                 if ($scope.active) {
-                    var mark = $('<div style="position: fixed;background-color: transparent;width: 100%;height: 100%;top:60px;z-index: 1;left: 0;" ng-click="toggle()"></div>')
+                    var mark = $('<div style="position: fixed;background-color: rgba(0,0,0,0.25);width: 100%;height: 100%;top:60px;z-index: 1;left: 0;" ng-click="toggle()"></div>')
                         .appendTo($scope.domEle);
                 } else {
                     $scope.domEle.find('div:last').remove();
@@ -1008,6 +1005,9 @@ app.directive('dropDownMenu', function () {
         link: function (scope, element, attrs) {
             console.log(element);
             scope.domEle = element;
+            if (scope.id) {
+                scope.domEle[0].id = scope.id;
+            }
         }
-    }
+    };
 });

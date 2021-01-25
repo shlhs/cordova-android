@@ -5,11 +5,11 @@
                 <label>{{analogDesp}}</label>
                 <input type="text" ng-model="newValue" ng-change="onInputValidate(newValue)" autocomplete="off">
                 <div class="text-danger" ng-if="inputError" style="margin-top: 8px;text-align: left;font-size: 12px;">{{inputError}}</div>
-                <label style="margin-top: 10px;color: #444;">{{'device.control.pwd.input' | translate}}</label>
+                <label style="margin-top: 10px;">{{'device.control.pwd.input' | translate}}</label>
                 <input placeholder="{{'login.pwd.placeholder' | translate}}" autocomplete="new-password" style="font-size: 14px" type="password" ng-model="pwd" ng-change="onPwdChange(pwd)">
             </div>
             <div class="form-group" ng-if="controlObj.type==='Digital'">
-                <label style="color: #333;">{{digitalDesp}}</label>
+                <label class="text-primary">{{digitalDesp}}</label>
                 <div class="mui-input-row mui-radio mui-left control-radio" ng-click="onCheck('1')">
                     <label for="radio2">{{controlObj.one_meaning}}</label>
                     <input name="digitalValue" type="radio" id="radio2" ng-checked="controlObj.value === '1'" >
@@ -18,15 +18,15 @@
                     <label for="radio1">{{controlObj.zero_meaning}}</label>
                     <input name="digitalValue" type="radio" id="radio1" ng-checked="controlObj.value === '0'" ng-model="controlObj.value">
                 </div>
-                <label style="margin-top: 10px;color: #444;">{{'device.control.pwd.input' | translate}}</label>
-                <input placeholder=""{{'login.pwd.placeholder' | translate}}" autocomplete="new-password" style="font-size: 14px" type="password" ng-model="pwd" ng-change="onPwdChange(pwd)">
+                <label style="margin-top: 10px;" class="text-primary">{{'device.control.pwd.input' | translate}}</label>
+                <input placeholder="{{'login.pwd.placeholder' | translate}}" autocomplete="new-password" style="font-size: 14px" type="password" ng-model="pwd" ng-change="onPwdChange(pwd)">
             </div>
             <div class="text-danger" ng-if="error" style="margin-top: 8px;text-align: left;font-size: 12px;">{{error}}</div>
         </div>
         <div class="mui-popup-buttons">
-            <a class="mui-popup-button" ng-click="onCancel()" style="color: #848484;">{{'cancel' | translate}}</a>
-            <a class="mui-popup-button" ng-click="confirm()" style="color: #439AF2;" ng-if="!isSubmitting">{{'device.control.issue' | translate}}</a>
-            <a class="mui-popup-button" ng-if="isSubmitting" disabled style="color: #848484;">{{'device.control.issuing' | translate}}...</a>
+            <a class="mui-popup-button text-secondary" ng-click="onCancel()">{{'cancel' | translate}}</a>
+            <a class="mui-popup-button" ng-click="confirm()" ng-if="!isSubmitting">{{'device.control.issue' | translate}}</a>
+            <a class="mui-popup-button text-secondary" ng-if="isSubmitting" disabled>{{'device.control.issuing' | translate}}...</a>
         </div>
     </div>
     <div class="mui-popup-backdrop mui-active" style="display: block;"></div>
