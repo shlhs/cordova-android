@@ -1,1 +1,8 @@
-node_modules
+node_modules/
+.history/
+www/css/
+www/js/echartsTheme.js
+dist/
+build/
+platforms/
+less/theme/index.less
