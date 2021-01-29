@@ -867,8 +867,7 @@ app.controller('CompetitionTaskListCtrl', ['$scope', '$rootScope', 'scrollerServ
         }
         $scope.isLoading = true;
         ajax.get({
-            // url: "/opstasks/competition",
-            url: "/opstasks/" + companyId,
+            url: "/opstasks/competition",
             data: {
                 stage: TaskStatus.Competition
             },

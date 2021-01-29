@@ -343,11 +343,7 @@ app.service('platformService', function () {
     };
 
     this.getAuthHost = function () {
-<<<<<<< HEAD
         return this.host + ":28096/v1" // 华源
-=======
-        return this.host + ":8096/v1";
->>>>>>> master
     };
 
     this.getImageThumbHost = function () {      // 获取图片压缩服务的地址
@@ -357,11 +353,7 @@ app.service('platformService', function () {
         }
         if (this.host)
         {
-<<<<<<< HEAD
             return this.host + ":28888/unsafe"; // 华源
-=======
-            return this.host + ":8888/unsafe";
->>>>>>> master
         }
         return null;
     };
@@ -398,20 +390,15 @@ app.service('platformService', function () {
     };
 
     this.getIpcServiceHost = function () {
-<<<<<<< HEAD
-        // return this.host + ':8095/v1';
-        return this.host + ':28095/v1'; // 华源
-=======
         if (defaultIpcHost) {
-            return defaultIpcHost + ':8095/v1';
+            return defaultIpcHost + ':28095/v1';
         } else {
-            return this.host + ':8095/v1';
+            return this.host + ':28095/v1';
         }
     };
 
     this.getMediaHost = function () {
-        return this.host + ':8093/v2';
->>>>>>> master
+        return this.host + ':28095/v2';
     };
 
     this.setUiMode = function (mode) {
