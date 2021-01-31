@@ -1,6 +1,6 @@
 {
-	"versionCode": 220,
-	"versionName": "2.2.0",
+	"versionCode": 232,
+	"versionName": "2.3.2",
 	"description": "",
 	"downloadUrl": "http://111.42.38.119:28123/version/huayuan.apk",
 	"isLaunched": true,
