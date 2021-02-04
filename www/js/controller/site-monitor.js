@@ -415,7 +415,8 @@ app.controller('SiteHistoryTrendCtrl', ['$scope', 'ajax', function ($scope, ajax
                 bottom: 30
             },
             tooltip: {
-                trigger: 'axis'
+                trigger: 'axis',
+                confine: true
             },
             legend: {
                 left: 'center',
