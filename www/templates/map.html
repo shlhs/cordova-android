@@ -8,9 +8,9 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
 
-    <!--标准mui.css-->
-    <link rel="stylesheet" href="../components/mui/css/mui.min.css">
-    <link rel="stylesheet" href="../css/my.css" />
+    <!--build:css -->
+    <link rel="stylesheet" href="/css/all.css">
+    <!--endbuild -->
     <style>
 
         .icon{
@@ -28,42 +28,52 @@
         }
 
     </style>
-    <script type="text/javascript" src="../components/libs/jquery-2.1.4.js"></script>
-    <script type="text/javascript" src="../js/app/utils.js"></script>
-    <script type="text/javascript" src="../components/angular/angular.min.js"></script>
+    <!-- build:lib -->
+    <script type="text/javascript" src="/lib/jquery-3.5.0.min.js"></script>
+    <script type="text/javascript" src="/lib/angular/angular.min.js"></script>
+    <script type="text/javascript" src="/lib/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script type="text/javascript" src="/lib/angular-animate/angular-animate.js"></script>
+    <script type="text/javascript" src="/lib/angular-ui-router/release/stateEvents.min.js"></script>
+    <script type="text/javascript" src="/lib/angular-translate.min.js"></script>
+    <script type="text/javascript" src="/lib/baidu/map/MarkerManager-1.2.min.js"></script>
+    <!-- endbuild -->
 </head>
 
-<body class="mui-android mui-android-5 mui-android-5-1 mui-android-5-1-1 mui-segmented-control-vertical" ng-app="myApp">
+<body class="mui-android mui-android-5 mui-android-5-1 mui-android-5-1-1 mui-segmented-control-vertical" ng-app="myApp" ng-cloak>
 <header class="mui-bar bg-header">
-    <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
-    <h1 class="mui-title" id="head_title">站点位置</h1>
+    <a class="mui-icon  mui-icon-left-nav mui-pull-left btn-back" onclick="pageBack()"></a>
+    <h1 class="mui-title" id="head_title">{{'station.location' | translate}}</h1>
 </header>
 <div>
-    <div class="mui-content bg-white" style="padding: 0" ng-class="{'page-bottom': canHandle}" ng-controller="mapCtrl" ng-cloak>
+    <div class="body-content bg-white" style="padding: 0" ng-class="{'page-bottom': canHandle}" ng-controller="mapCtrl" ng-cloak>
         <div style="padding: 8px 12px;font-size: 14px;">
             <span id="stationAddress">{{siteData.address}}</span>
-            <span class="text-red mui-pull-right" style="color: #007aff;">{{distance}}</span>
+            <a class="text-red mui-pull-right">{{distance}}</a>
         </div>
         <div style="height: 100%;width: 100%;">
             <div id="map" style="width: 100%;height: 100%;"></div>
         </div>
         <div style="position: fixed;bottom: 0px;width: 100%;text-align: center;" ng-if="enableNavigate">
             <button type="button" class="mui-btn mui-btn-primary mui-icon mui-btn-block " style="width: 50%;" ng-click="openThirdMap()">
-                <span style="position: relative;display: inline-block;line-height: 24px;"><i class="icon icon-20 icon-navigate mui-pull-left"></i>导航</span>
+                <span style="display: inline-block;line-height: 24px;"><i class="iconfont anticon-navigate mui-pull-left"></i>{{'navigate' | translate}}</span>
 
             </button>
         </div>
     </div>
 </div>
+<!-- build:js -->
+<script type="text/javascript" src="/js/app/utils.js"></script>
+<script type="text/javascript" src="/config/config.js"></script>
+<script src="/js/my/notify.js"></script>
+<script type="text/javascript" src="/js/app/app.js"></script>
+<script type="text/javascript" src="/js/service/common-service.js"></script>
+<!-- endbuild -->
 <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=ITbaaCqA7nMWRjEIycEpddoUW1AvZvRq"></script>
-<script type="text/javascript" src="../components/baidu/map/MarkerManager-1.2.min.js"></script>
-<script src="../components/fastclick-master/lib/fastclick.js"></script>
-<script src="../js/my/notify.js"></script>
 <script>
 
     $("#head_title").html(GetQueryString('name'));
-    var app = angular.module('myApp', []);
-    app.controller('mapCtrl', function ($scope) {
+
+    app.controller('mapCtrl', ['$scope', '$translate', function ($scope, $translate) {
         var sn = GetQueryString('stationSn');
 
         $scope.siteData = {};
@@ -90,11 +100,11 @@
                     if (data.longitude && data.latitude) {
                         drawMap(data);
                     } else {
-                        $.notify.toast('无法获取站点位置');
+                        $.notify.toast($translate.instant('station.noaddress'));
                     }
                 },
                 error: function (a, b, c) {
-                    $.notify.error('获取站点信息失败');
+                    $.notify.error($translate.instant('station.getdetail.failed'));
                     console.log('login fail');
                 }
             });
@@ -119,7 +129,7 @@
             });
             var end = new BMap.Point(siteData.longitude, siteData.latitude);
             // 添加标注
-            map.centerAndZoom(end, 15);
+            map.centerAndZoom(end, 13);
             map.enableScrollWheelZoom();
             var marker = new BMap.Marker(end);
             var mgr = new BMapLib.MarkerManager(map,{
@@ -163,7 +173,7 @@
             }
         };
         getSite();
-    });
+    }]);
 
 
 

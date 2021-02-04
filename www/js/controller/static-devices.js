@@ -1,29 +1,39 @@
 function openDeviceFromQR(data) {   //根据扫码结果打开设备详情
     var scope = $('[ng-controller="StaticDevicesHomeCtrl"]').scope();
     if (scope) {
-        scope.gotoDevice({sn: JSON.parse(data).sn});
+        var deviceSn = JSON.parse(data).sn;
+        var stationSn = deviceSn.substring(0, deviceSn.indexOf('__'));
+        var userStationSns = getStorageItem('stationSns').split(',');
+        if (userStationSns.indexOf(stationSn) >= 0) {       // 只能查看有权限的站点下的设备
+            scope.gotoDevice({sn: JSON.parse(data).sn});
+        } else {
+            $.notify.toast('无权限查看该设备', 1500);
+        }
     }
 }
 
-app.controller('StaticDevicesHomeCtrl', function ($scope, ajax, routerService) {
-    var stationSn = GetQueryString("sn");
+app.controller('StaticDevicesHomeCtrl', ['$scope', '$stateParams', 'ajax', 'routerService', function ($scope, $stateParams, ajax, routerService) {
+    var stationSn = $stateParams.sn; // GetQueryString("sn");
     $scope.deviceDatas = [];
     $scope.isLoading = false;
     $scope.loadingFailed = false;
+    var stationPosition = null;
 
     $scope.gotoDevice = function(deviceData){
-        routerService.openPage($scope, '/templates/site/static-devices/device-detail.html', {device_sn: deviceData.sn});
+        routerService.openPage($scope, '/templates/site/static-devices/device-detail.html', {
+            stationSn: stationSn,
+            device_sn: deviceData.sn,
+            stationPosition: stationPosition,
+        });
     };
 
     $scope.getDataList = function() {
         $scope.isLoading = true;
         $scope.loadingFailed = false;
         ajax.get({
-            url: '/stations/' + stationSn + '/staticdevices',
+            url: '/stations/' + stationSn + '/staticdevices?withOps=true',
             success: function (data) {
                 $scope.isLoading = false;
-                // $scope.treeData = formatToTreeData(data);
-                // setDefaultData();
                 $scope.deviceDatas = data;
                 $scope.$apply();
             }, error: function () {
@@ -31,7 +41,19 @@ app.controller('StaticDevicesHomeCtrl', function ($scope, ajax, routerService) {
                 $scope.loadingFailed = true;
                 $scope.$apply();
             }
-        })
+        });
+
+        ajax.get({
+            url: '/stations/' + stationSn,
+            success: function (data) {
+                if (data.longitude && data.latitude) {
+                    stationPosition = {
+                        lng: data.longitude,
+                        lat: data.latitude
+                    };
+                }
+            }
+        });
     };
 
     $scope.startCaptureQR = function() {
@@ -40,9 +62,9 @@ app.controller('StaticDevicesHomeCtrl', function ($scope, ajax, routerService) {
     };
 
     $scope.getDataList();
-});
+}]);
 
-app.controller('StaticDeviceSubListCtrl', function ($scope, ajax) {
+app.controller('StaticDeviceSubListCtrl', ['$scope', 'ajax', function ($scope, ajax) {
     $scope.noDevice = false;
     $scope.groups = [];
     $scope.devices = [];
@@ -109,7 +131,7 @@ app.controller('StaticDeviceSubListCtrl', function ($scope, ajax) {
             }, error: function (xhr, status, error) {
 
             }
-        })
+        });
     }
 
     $scope.toggleContent = function (device) {      // 显示或隐藏设备详情
@@ -117,18 +139,18 @@ app.controller('StaticDeviceSubListCtrl', function ($scope, ajax) {
     };
 
     init();
-});
+}]);
 
 var OpsTaskType = [1, 2, 3, 4, 5, 6, 7, 11];
 
-
-app.controller('StaticDeviceDetailCtrl', function ($scope, ajax, routerService, platformService) {
+app.controller('StaticDeviceDetailCtrl', ['$scope', 'ajax', 'routerService', 'platformService', 'authService', function ($scope, ajax, routerService, platformService, authService) {
     $scope.device = {};
     $scope.showTab = 'info';
     $scope.isPC = IsPC();
     $scope.opsTaskCount = 0;        // 运维个数
     $scope.unhandledDtsCount = 0;   // 未解决缺陷个数
     $scope.closedDtsCount = 0;      // 已关闭缺陷个数
+    $scope.canEdit = authService.canConfigStation($scope.stationSn) && !$scope.disableEdit; //  userService.getUserRole().indexOf('OPS') >= 0 && !$scope.disableEdit;
     var TaskStatus = {ToAccept: 1, ToAssign: 2, Accepted: 3, ToClose: 4, Closed: 5, Competition: 6, Coming: 7, Arrived: 8};
 
     function init() {
@@ -162,15 +184,18 @@ app.controller('StaticDeviceDetailCtrl', function ($scope, ajax, routerService, 
                                 n.properties = JSON.parse(n.properties);
                             }
 
-                        })
+                        });
                     }
                 }
                 if (data.device_photo_src_link) {
                     var width = window.screen.width*2, height=Math.round(width/2);
-                    data.device_photo_src_link = platformService.host + data.device_photo_src_link;
+                    data.device_photo_src_link = platformService.getCloudHost() + data.device_photo_src_link;
                 }
                 if (data.qr_photo_src_link) {
-                    data.qr_photo_src_link = platformService.host + data.qr_photo_src_link;
+                    data.qr_photo_src_link = platformService.getCloudHost() + data.qr_photo_src_link;
+                }
+                if (gEnableDeviceMap && (!data.is_group || (data.product_type_id))) {
+                    data.showMap = true;
                 }
                 $scope.device = data;
                 $scope.$apply();
@@ -228,7 +253,7 @@ app.controller('StaticDeviceDetailCtrl', function ($scope, ajax, routerService, 
                 device_sn: $scope.device_sn,
                 onSave: function (data, photoLink) {
                     $.extend($scope.device, data, {
-                        device_photo_src_link: photoLink ? (platformService.host + photoLink) : null,
+                        device_photo_src_link: photoLink ? (platformService.getCloudHost() + photoLink) : null,
                         qr_photo_src_link: $scope.device.qr_photo_src_link
                     });
                 }
@@ -236,16 +261,29 @@ app.controller('StaticDeviceDetailCtrl', function ($scope, ajax, routerService, 
         );
     };
 
-    $scope.gotoDtsList = function () {
-        window.location.href = '/templates/site/static-devices/device-dts-history.html?device_sn=' + $scope.device.sn + '&station_sn=' + $scope.device.station_sn;
+    $scope.gotoDtsList = function (status) {
+        // status=doing: 未完成，status=finish：已完成
+        window.location.href = '/templates/site/static-devices/device-dts-history.html?device_sn=' + $scope.device.sn + '&station_sn=' + $scope.device.station_sn + '&status=' + status;
     };
 
     $scope.gotoOpsList = function () {
-        window.location.href = '/templates/task/task-list.html?device_sn=' + $scope.device.sn;
+        window.location.href = '/templates/site/static-devices/device-ops-history.html?device_sn=' + $scope.device.sn;
+    };
+
+    $scope.openDeviceMap = function () {
+        var stationPosition = $scope.stationPosition;
+        var url = '/templates/site/static-devices/map.html?deviceSn=' + $scope.device_sn;
+        if (stationPosition) {
+            url += "&stationPos=" + stationPosition.lng + "," + stationPosition.lat;
+        }
+        if ($scope.canEdit) {
+            url += "&edit=1";
+        }
+        window.location.href = url;
     };
 
     init();
-});
+}]);
 
 function onAndroid_deviceImageImport(imageData, filename) {    // 从Android读取的图片
     var scope = angular.element('#staticDeviceEditPage').scope();
@@ -255,15 +293,11 @@ function onAndroid_deviceImageImport(imageData, filename) {    // 从Android读�
     }
 }
 
-app.controller('StaticDeviceEditCtrl', function ($scope, ajax, routerService, platformService) {
+app.controller('StaticDeviceEditCtrl', ['$scope', 'ajax', 'routerService', 'platformService', '$myTranslate', function ($scope, ajax, routerService, platformService, $myTranslate) {
+    $scope.deviceImages = [];
     $scope.device = {};
     $scope.showTab = 'info';
     $scope.editObj = {};
-    $scope.deviceImage = null;
-    $scope.useMobileGallery = window.android && window.android.openGallery;
-
-    // 先清除上一次选择的图片
-    window.android && window.android.clearSelectedPhotos();
 
     $scope.changeTabType = function ($event, tab) {
         $scope.showTab = tab;
@@ -292,18 +326,18 @@ app.controller('StaticDeviceEditCtrl', function ($scope, ajax, routerService, pl
                 }
 
                 if (data.device_photo_src_link) {
-                    data.device_photo_src_link = platformService.host + data.device_photo_src_link;
+                    data.device_photo_src_link = platformService.getCloudHost() + data.device_photo_src_link;
+                    $scope.deviceImages.push(data.device_photo_src_link);
                 }
                 if (data.qr_photo_src_link) {
-                    data.qr_photo_src_link = platformService.host + data.qr_photo_src_link;
+                    data.qr_photo_src_link = platformService.getCloudHost() + data.qr_photo_src_link;
                 }
 
-                $scope.deviceImage = data.device_photo_src_link;
                 data.device_photo_src_link = null;
                 $scope.device = parseDeviceData(data);
                 $scope.$apply();
             }
-        })
+        });
     };
 
     function parseDeviceData(data) {
@@ -325,14 +359,28 @@ app.controller('StaticDeviceEditCtrl', function ($scope, ajax, routerService, pl
         return data;
     }
 
+    function clearProperties(properties) {
+        if (properties) {
+            var list = [];
+            properties.forEach(function (p) {
+                list.push({
+                    name: p.name,
+                    value: p.value
+                });
+            });
+            return list;
+        }
+        return [];
+    }
+
     function stringifyDeviceData(data) {
         // 将设备和子部件的属性由列表转成字符串
         var tmpData = JSON.parse(JSON.stringify(data));
-        tmpData.properties = JSON.stringify(data.properties);
+        tmpData.properties = JSON.stringify(clearProperties(data.properties));
         if (tmpData.items) {
             tmpData.items.forEach(function (item) {
                if (item.properties) {
-                   item.properties = JSON.stringify(item.properties);
+                   item.properties = JSON.stringify(clearProperties(item.properties));
                }
             });
         }
@@ -438,50 +486,15 @@ app.controller('StaticDeviceEditCtrl', function ($scope, ajax, routerService, pl
 
     };
 
-    $scope.chooseImage = function (files) {     // 选择图片
-        $scope.canDelete = true;
-        for (var i = 0; i < files.length; i++) {
-            var reader = new FileReader(), file=files[i];
-            reader.readAsDataURL(file);
-            reader.onloadstart = function () {
-                //用以在上传前加入一些事件或效果，如载入中...的动画效果
-            };
-            reader.onload = function (event) {
-                var img = new Image();
-                img.src = event.target.result;
-                img.onload = function(){
-                    var quality =  75;
-                    var dataUrl = imageHandler.compress(this, 75, file.orientation).src;
-                    $scope.deviceImage = dataUrl;
-                    $scope.device.device_photo_src_link = dataUrl;
-                    $scope.$apply();
-                };
-            };
-        }
-    } ;
-
-    $scope.openMobileGallery = function () {
-        window.android.openGallery(1, 'onAndroid_deviceImageImport', null);
-    };
-
-    $scope.chooseDeviceImage = function () {
-        // 上传设备图片
-
-    };
-
-    $scope.addImagesWithBase64 = function (data, filename) {
-        $scope.deviceImage = data;
-        $scope.device.device_photo_src_link = data;
-        $scope.$apply();
-    };
-
-
     $scope.chooseDeviceQr = function () {
         // 上传二维码
     };
 
     $scope.save = function () {
         $.notify.progressStart();
+        if ($scope.deviceImages.length) {
+            $scope.device.device_photo_src_link = $scope.deviceImages[0];
+        }
         var params = stringifyDeviceData($scope.device);
         ajax.patch({
             url: '/stations/' + $scope.device.station_sn + '/staticdevices/' + $scope.device.id,
@@ -492,18 +505,20 @@ app.controller('StaticDeviceEditCtrl', function ($scope, ajax, routerService, pl
             },
             success: function (response) {
                 $.notify.progressStop();
-                $.notify.info('更新成功', 1000);
+                $.notify.info($myTranslate.instant('update successful'), 1000);
                 $scope.device = parseDeviceData(response);
                 if ($scope.onSave) {
                     $scope.onSave($scope.device, response.device_photo_src_link);
                 }
                 $scope.device.device_photo_src_link = null;      // 默认使用$scope.deviceImage显示图片
                 $scope.$apply();
-                setTimeout(pageBack, 1000);
+                setTimeout(function () {
+                    history.back();
+                }, 1000);
             },
             error: function () {
                 $.notify.progressStop();
-                $.notify.error('更新失败');
+                $.notify.error($myTranslate.instant('update failed'));
                 console.log('error');
             }
         })
@@ -511,4 +526,4 @@ app.controller('StaticDeviceEditCtrl', function ($scope, ajax, routerService, pl
 
 
     $scope.getDataList();
-});
+}]);

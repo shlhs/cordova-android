@@ -1,0 +1,14 @@
+<ul class="image-list" style="padding: 0;" ng-show="isVisible()">
+    <li class="image-item video" ng-if="video" ng-click="startPlay()">
+        <div class="content">
+            <div style="background-color: rgba(0,0,0,0.7);height: 100%;" class="box-horizontal-center">
+                <div class="iconfont anticon-play play"></div>
+            </div>
+        </div>
+    </li>
+    <li class="image-item" ng-repeat="url in imageList" ng-click="openGallery($index)">
+        <div class="content">
+            <img ng-src="{{url}}" alt="">
+        </div>
+    </li>
+</ul>

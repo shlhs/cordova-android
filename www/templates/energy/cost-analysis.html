@@ -1,0 +1,70 @@
+<div ng-controller="EnergyBaseCtrl" class="energy-page page page-left">
+<header class="mui-bar bg-header mui-segmented-control-vertical">
+    <a class="mui-icon  mui-icon-left-nav mui-pull-left btn-back" onclick="history.back()"></a>
+    <h1 class="mui-title">电费分析</h1>
+</header>
+<div class="body-content energy-page-body" style="background-color: transparent;">
+    <div class="head-select-tabs">
+        <div class="item" ng-click="openDeviceSelector()">
+            <label class="title">监测点</label>
+            <label class="value">{{currentDevice.name}}</label>
+        </div>
+        <div class="item" id="datePicker">
+            <label class="title">用电周期</label>
+            <label class="value">{{showDateName}}</label>
+        </div>
+    </div>
+    <div ng-controller="EnergyCostAnalysisCtrl">
+        <div style="display: flex;width: 100%;padding-top: 12px;">
+            <div class="value-tab">
+                <label class="top">{{isCurrentMonth ? '平均电度电价' : '平均电价'}}</label>
+                <label class="value">{{isCurrentMonth ? showData(statisticsObj.avgDegreePrice) : showData(statisticsObj.avgPrice)}}<span class="unit">元</span></label>
+            </div>
+        </div>
+        <div class="bg-white" style="margin-top: 16px;min-height: {{contentHeight - 158}}px;">
+            <div class="light-value-tabs">
+                <div class="value-tab">
+                    <label class="top">电度电费</label>
+                    <label class="value">{{showData(statisticsObj.degreeCharge)}}</label>
+                </div>
+                <div class="value-tab">
+                    <label class="top">基本电费</label>
+                    <label class="value">{{showData(statisticsObj.capacityCharge)}}</label>
+                </div>
+            </div>
+            <div class="light-value-tabs border-top">
+                <div class="value-tab">
+                    <label class="top">力率电费</label>
+                    <label class="value">{{isCurrentMonth ? '-' : showData(statisticsObj.cosCharge)}}</label>
+                </div>
+                <div class="value-tab">
+                    <label class="top">加征(收)电费</label>
+                    <label class="value">{{showData(statisticsObj.additionCharge)}}</label>
+                </div>
+            </div>
+            <div>
+                <div class="chart-title">分时电量</div>
+                <div style="position: relative;">
+                    <div id="chart1" style="height: 130px;width: 53%;"></div>
+                    <div style="position: absolute;height: 100%;right: 0;top: 0;width: 47%;" class="pfv-texts">
+                        <div class="item" ng-repeat="item in degreeTexts" style="color: {{item.color}}">
+                            <label class="value">{{item.label + '： ' + item.value}}</label> <label class="ratio">{{item.ratio}}%</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="chart-title">分时电费</div>
+                <div style="position: relative;">
+                    <div id="chart2" style="height: 130px;width: 53%;"></div>
+                    <div style="position: absolute;height: 100%;right: 0;top: 0;width: 47%" class="pfv-texts">
+                        <div class="item" ng-repeat="item in chargeTexts" style="color: {{item.color}}">
+                            <label class="value">{{item.label + '： ' + item.value}}</label> <label class="ratio">{{item.ratio}}%</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>

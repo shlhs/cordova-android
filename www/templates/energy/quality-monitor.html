@@ -1,0 +1,77 @@
+<div ng-controller="EnergyBaseCtrl" class="page page-left energy-base-ctrl-page">
+<header class="mui-bar bg-header mui-segmented-control-vertical">
+    <a class="mui-icon  mui-icon-left-nav mui-pull-left btn-back" onclick="history.back()"></a>
+    <h1 class="mui-title">电能质量实时监测</h1>
+</header>
+<div class="body-content bg-white" ng-controller="EnergyQualityMonitorCtrl">
+    <div class="device-selector-line" ng-click="openDeviceSelector()">
+        <label class="value">{{currentDevice.name}}</label>
+    </div>
+    <div class="energy-realtime-values">
+        <div class="item" ng-class="{'warning': warning.f}"><label class="title">频率</label><label class="unit">(Hz)</label><label class="value">{{current.f}}</label> </div>
+        <div class="item"><label class="title">有功功率</label><label class="unit">(kW)</label><label class="value">{{current.P}}</label> </div>
+        <div class="item" ng-class="{'warning': warning.Q}"><label class="title">无功功率</label><label class="unit">(kVar)</label><label class="value">{{current.Q}}</label> </div>
+        <div class="item" ng-class="{'warning': warning.PF}"><label class="title">功率因数</label><label class="value">{{current.PF}}</label> </div>
+    </div>
+    <div class="card">
+        <h3 class="chart-title" style="font-size: 14px;margin-bottom: 10px;text-align: center;">三相不平衡</h3>
+        <div style="display: flex">
+            <div style="flex: 1;height: 100%;width: 50%">
+                <div id="chart1" style="height: 150px;"></div>
+                <div style="text-align: center;">
+                    <label style="font-size: 14px;">{{getPercent(current.ublup)}}</label>
+                    <label style="display: block;font-size: 13px">三相电压不平衡度</label>
+                </div>
+            </div>
+            <div style="flex: 1;height: 100%;width: 50%">
+                <div id="chart2" style="height: 150px;"></div>
+                <div style="text-align: center;">
+                    <label style="font-size: 14px;">{{getPercent(current.ublip)}}</label>
+                    <label style="display: block;font-size: 13px">三相电流不平衡度</label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="margin-top: 10px;">
+        <table class="monitor-table">
+            <thead>
+            <tr>
+                <th style="width: 120px;">监测项</th>
+                <th>A相</th>
+                <th>B相</th>
+                <th>C相</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td class="title">电压(V)</td>
+                <td ng-class="{'warning': warning.Ua}">{{current.Ua}}</td>
+                <td ng-class="{'warning': warning.Ub}">{{current.Ub}}</td>
+                <td ng-class="{'warning': warning.Uc}">{{current.Uc}}</td>
+            </tr>
+            <tr>
+                <td class="title">电流(A)</td>
+                <td>{{current.Ia}}</td>
+                <td>{{current.Ib}}</td>
+                <td>{{current.Ic}}</td>
+            </tr>
+            <tr>
+                <td class="title">电压总谐波畸变率</td>
+                <td ng-class="{'warning': warning.thdua}">{{getPercent(current.thdua)}}</td>
+                <td ng-class="{'warning': warning.thdub}">{{getPercent(current.thdub)}}</td>
+                <td ng-class="{'warning': warning.thduc}">{{getPercent(current.thduc)}}</td>
+            </tr>
+            <tr><td class="title">电流总谐波畸变率</td><td>{{getPercent(current.thdia)}}</td><td>{{getPercent(current.thdib)}}</td><td>{{getPercent(current.thdic)}}</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <div style="margin-top: 12px;">
+        <div class="chart-title">电压谐波</div>
+        <div id="chart3" style="height: 140px"></div>
+    </div>
+    <div style="margin-top: 8px;padding-bottom: 15px;">
+        <div class="chart-title">电流谐波</div>
+        <div id="chart4" style="height: 140px"></div>
+    </div>
+</div>
+</div>

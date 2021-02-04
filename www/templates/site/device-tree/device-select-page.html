@@ -1,0 +1,17 @@
+<div class="page page-fade" ng-controller="DeviceSelectPageCtrl">
+    <header class="mui-bar bg-header">
+        <!--<a class="mui-icon  mui-icon-left-nav mui-pull-left btn-back" onclick="history.back()"></a>-->
+        <a class="mui-icon mui-pull-left" onclick="history.back()" style="font-size: 16px;top:6px;padding: 10px;margin-left: -6px;">{{'cancel' | translate}}</a>
+        <h1 class="mui-title">{{'all devices' | myTranslate}}</h1>
+        <a ng-click="confirm()"
+           class="mui-action-menu mui-icon mui-pull-right" style="font-size: 14px;line-height: 24px;" ng-if="multiple">{{'confirm' | translate}}</a>
+    </header>
+    <div class="body-content" ng-cloak>
+        <div>
+            <device-tree-view device-list="deviceDatas" click-callback="selectItem" checkbox="multiple" default-checked-devices="defaultDevices"></device-tree-view>
+        </div>
+        <div ng-if="!deviceDatas || !deviceDatas.length" style="padding: 10px; color: #666;">
+            {{'none device' | myTranslate}}
+        </div>
+    </div>
+</div>

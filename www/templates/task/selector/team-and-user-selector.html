@@ -1,0 +1,37 @@
+<div class="mui-poppicker my-picker" ng-class="{'mui-active': visible}">
+    <div class="mui-poppicker-header">
+        <button class="mui-btn mui-poppicker-btn-cancel" ng-click="hide()">{{'cancel' | translate}}</button>
+        <button class="mui-btn mui-btn-blue mui-poppicker-btn-ok" ng-click="confirm()" ng-disabled="!selectedAccounts.length">{{'confirm' | translate}}</button>
+        <div class="mui-poppicker-clear"></div>
+    </div>
+    <div class="mui-poppicker-body">
+        <div ng-if="isTeamSelector">
+            <div ng-if="firstTitle" style="font-size: 13px;text-align: center;padding-top: 10px;">
+                {{firstTitle}}
+            </div>
+            <div ng-if="!firstTitle" style="font-size: 13px;text-align: center;padding-top: 10px;">
+                {{'please.select task.team' | myTranslate}}
+            </div>
+            <div class="teams-selector">
+                <div ng-repeat="team in teams" ng-click="onToggleCheckTeam(team)">
+                    <label ng-class="{'selected': isTeamSelected(team.id)}">{{team.name}}</label>
+                </div>
+            </div>
+        </div>
+        <div ng-if="!isTeamSelector">
+            <div class="team-selector-title">
+                <div style="width: calc(100% - 70px);font-size: 13px;float: left;text-align: left;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;">{{'task.team2' | translate}}：{{selectedTeam.name}}</div>
+                <!--<label class="team-name">{{selectedTeam.name}}</label>-->
+                <a ng-click="reSelectTeam()">{{'reselect' | translate}}</a>
+            </div>
+            <div ng-if="secondTitle" style="font-size: 13px;text-align: center;padding-top: 10px;">{{secondTitle}}</div>
+            <div ng-if="!secondTitle" style="font-size: 13px;text-align: center;padding-top: 10px;">{{'please.select task.repairer' | myTranslate}}</div>
+            <div class="teams-selector" style="height: 198px;">
+                <div ng-repeat="user in selectedTeam.users" ng-click="onToggleCheckUser(user.account)">
+                    <label ng-class="{'selected': isUserSelected(user.account)}">{{getNameAndPhone(user)}}</label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="mui-backdrop" style="opacity:1;" ng-click="hide()" ng-if="visible"></div>

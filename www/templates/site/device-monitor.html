@@ -1,87 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>所有设备</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta http-equiv="Access-Control-Allow-Origin" content="*">
-    <link rel="stylesheet" href="../../components/mui/css/mui.min.css">
-    <link rel="stylesheet" href="../../css/my.css">
-    <link rel="stylesheet" href="../../css/icon.css">
-    <link rel="stylesheet" href="../../css/animate.css">
-    <link rel="stylesheet" href="../../components/mui/css/icons-extra.css">
-    <link rel="stylesheet" href="../../css/setting.css">
-    <script type="text/javascript" src="../../components/libs/jquery-2.1.4.js"></script>
-    <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
-    <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
-    <!--<script type="text/javascript" src="components/ui-router-extras/release/ct-ui-router-extras.js"></script>-->
-    <script type="text/javascript" src="../../components/angular-animate/angular-animate.js"></script>
-    <script type="text/javascript" src="../../components/angular-ui-router/release/stateEvents.min.js"></script>
-    <script type="text/javascript" src="../../js/app/utils.js"></script>
-    <script type="text/javascript" src="../../js/app/app.js"></script>
-    <script type="text/javascript" src="../../js/service/appstore.js"></script>
-    <script type="text/javascript" src="../../js/service/common-service.js"></script>
-    <!--<script type="text/javascript" src="../../js/router/site-router.js"></script>-->
-
-    <style>
-        html,body{
-            height: 100%;
-            padding: 0;
-            margin: 0;
-        }
-        table{
-            width: 100%;
-        }
-        th,td{
-            text-align: left;
-            height: 40px;
-            border-bottom: #eee 1px solid;
-            font-size: 14px;
-        }
-        .mui-table-view.mui-grid-view .mui-table-view-cell .mui-media-body{
-            font-size: 0.8em;
-        }
-        tbody tr:nth-child(odd) {background: rgba(246, 246, 246, 0.6)}
-        tbody tr:nth-child(even) {background: #FFF}
-        td, th{
-            padding-left: 16px;
-        }
-        .mui-btn{
-            margin-right:6px;
-        }
-        @media screen and (max-width: 360px) {
-            th, td {
-                font-size: 12px;
-            }
-        }
-    </style>
-</head>
-<body class="box-vertical-center" ng-app="myApp" ng-controller="DeviceMonitorCtrl">
+<div class="mui-page" ng-controller="DeviceMonitorCtrl" ng-cloak>
 <header class="mui-bar bg-header">
-    <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
+    <a class="mui-icon  mui-icon-left-nav mui-pull-left btn-back" onclick="history.back()"></a>
     <h1 class="mui-title">{{deviceName}}</h1>
-    <!--<a href="/templates/task/add-task.html" class="mui-action-menu mui-icon mui-pull-right" ng-if="hasOpsAuthMenu"><i class="header-icon white icon-add"></i></a>-->
-    <!--<a href="/templates/site/device-monitor/remote-control.html?device_sn={{deviceSn}}"-->
-       <!--class="mui-action-menu mui-icon mui-pull-right" style="color: #fff;font-size: 14px;line-height: 24px;" ng-if="canControl">控制中心</a>-->
+    <a href="/templates/site/device-monitor/remote-control.html?device_sn={{deviceSn}}" ui-sref=".control({deviceSn: deviceSn})"
+       class="mui-action-menu mui-icon mui-pull-right" style="font-size: 14px;line-height: 24px;" ng-if="canControl">{{'device.control.center' | translate}}</a>
 </header>
-<div class="mui-content" ng-cloak style="background-color: #fff;">
+<div class="body-content bg-white" ng-cloak>
     <div class="cascade-selector" style="top: 60px;" ng-class="{'collapse': collapse[0] || collapse[1]}">
         <div class="selector-mask"  ng-if="collapse[0] || collapse[1]" ng-click="toggleCollapse(-1)" style="top: 105px;"></div>
         <div class="selector separator" style="width: 50%" ng-class="{'collapse': collapse[0]}">
             <div ng-click="toggleCollapse(0)"><label class="result-label">{{showType}}</label></div>
             <ul class="option-wrapper option-vertical">
-                <li ng-click="selectShowType('实时数据')" ng-class="{'selected': showType==='实时数据'}">
-                    实时数据
+                <li ng-click="selectShowType(realtimeLabel)" ng-class="{'selected': showType===realtimeLabel}">
+                    {{realtimeLabel}}
                 </li>
-                <li ng-click="selectShowType('历史数据')" ng-class="{'selected': showType==='历史数据'}">
-                    历史数据
+                <li ng-click="selectShowType(historyLabel)" ng-class="{'selected': showType===historyLabel}">
+                    {{historyLabel}}
                 </li>
             </ul>
         </div>
         <div class="selector" style="width: 50%" ng-class="{'collapse': collapse[1]}">
-            <div ng-click="toggleCollapse(1)"><label class="result-label" ng-class="{'nodata': !dataName}">{{dataName ? dataName : '无数据'}}</label></div>
+            <div ng-click="toggleCollapse(1)"><label class="result-label" ng-class="{'nodata': !dataName}">{{dataName ? dataName : ('none data' | myTranslate)}}</label></div>
 
             <ul class="option-wrapper option-horizontal">
                 <li ng-repeat="item in secondOptions[showType]" ng-class="{'selected': dataName===item.name}"
@@ -89,45 +28,45 @@
             </ul>
         </div>
     </div>
-    <div style="margin-top: 45px;" ng-show="showType==='历史数据'" ng-controller="HistoryVarCtrl">
+    <div style="margin-top: 45px;" ng-show="showType===historyLabel" ng-controller="HistoryVarCtrl">
         <ul class="calendar-tabs" ng-if="currentGroup">
             <li class="tab" ng-class="{'active': timeRange==='DAY'}" ng-click="switchTimeRange('DAY')">
-                <label><i class="icon icon-tab-clock"></i>今日</label>
+                <label><i class="iconfont anticon-thisday" style="margin-right: 4px;"></i>{{ 'today' | translate }}</label>
             </li>
             <li class="tab" ng-class="{'active': timeRange==='MONTH'}" ng-click="switchTimeRange('MONTH')">
-                <label><i class="icon icon-tab-calendar"></i>本月</label>
+                <label><i class="iconfont anticon-thismonth" style="margin-right: 4px;"></i>{{ 'thismonth' | translate }}</label>
             </li>
         </ul>
-        <div class="mui-scroll" style="background-color: #ffffff;">
-            <div class="card" style="margin-top: 16px;">
-                <div id="chartContainer"></div>
-                <div class="page-alert-wrapper" ng-if="!currentGroup">
+        <div class="mui-scroll">
+            <div class="card bg-white" ng-if="currentGroup">
+                <div id="chartContainer" style="height: 320px;"></div>
+            </div>
+            <div class="page-alert-wrapper" ng-if="!currentGroup">
+                <div class="page-alert">
                     <div class="page-alert">
-                        <div class="page-alert">
-                            <i class="alert-icon nodata"></i>
-                            <div class="alert-text info">变量未关联标准定义</div>
-                        </div>
+                        <i class="alert-icon nodata"></i>
+                        <div class="alert-text info">{{'tip.nogroupvar.ofdevice' | translate}}</div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="scroll-wrapper" ng-show="showType==='实时数据'" style="margin-top:45px;" ng-controller="VarRealtimeCtrl">
+    <div class="scroll-wrapper" ng-show="showType===realtimeLabel" style="margin-top:45px;" ng-controller="VarRealtimeCtrl">
 
-        <div class="mui-scroll" style="background-color: #ffffff;" ng-if="realtime && !isLoading">
-            <div ng-if="realtimeType==='模拟量'">
-                <table>
+        <div class="mui-scroll" ng-if="realtime && !isLoading">
+            <div ng-if="realtimeType===analogLabel">
+                <table class="device-analog-table">
                     <tbody>
                     <tr ng-repeat="item in realtimeValues">
                         <td>{{item.name}}</td>
-                        <td style="text-align: right;color: #3e7fdb;">{{item.data}}</td>
-                        <td style="padding-left: 4px;">{{item.unit}}</td>
+                        <td class="value">{{item.data}}</td>
+                        <td>{{item.unit}}</td>
                     </tr>
                     </tbody>
                 </table>
             </div>
-            <div ng-if="realtimeType === '状态量'" class=" height-wrap-parent" data-init="false">
-                <table>
+            <div ng-if="realtimeType === digitalLabel" class=" height-wrap-parent" data-init="false">
+                <table class="device-analog-table">
                     <tbody>
                     <tr ng-repeat="item in realtimeValues">
                         <td>{{item.name}}</td>
@@ -137,57 +76,23 @@
                 </table>
             </div>
         </div>
+        <div class="page-alert-wrapper" ng-if="!isLoading && !realtime" style="margin-top: -60px;">
+            <div class="page-alert">
+                <div class="page-alert">
+                    <div class="page-alert">
+                        <i class="alert-icon nodata"></i>
+                        <div class="alert-text info">{{'tip.novar.ofdevice' | translate}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="page-alert-wrapper" ng-if="isLoading">
             <div class="page-alert">
                 <img src="../../img/page-loading.gif" class="loading-img">
-                <div class="alert-text info">正在加载...</div>
+                <div class="alert-text info">{{'loading' | translate}}...</div>
             </div>
         </div>
     </div>
-    <div class="page-alert-wrapper" ng-if="isLoading">
-        <div class="page-alert">
-            <img src="../../img/page-loading.gif" class="loading-img">
-            <div class="alert-text info">正在加载...</div>
-        </div>
-    </div>
-    <!--<div class="scroll-wrapper" ng-if="showType==='history'" style="top:32px;" ng-controller="HistoryVarCtrl1">-->
-        <!--<div ng-if="history.length">-->
-            <!--<div style="padding: 6px 16px;">-->
-                <!--<button class="mui-btn" ng-repeat="item in history" ng-click="switchGroup(item.name)"-->
-                        <!--ng-class="{'mui-btn-primary': currentGroupName===item.name}">-->
-                    <!--{{item.name}}-->
-                <!--</button>-->
-            <!--</div>-->
-            <!--<div style="padding: 0 0 6px 16px;">-->
-                <!--<button class="mui-btn mui-btn-outlined" ng-class="{'mui-btn-primary': timeRange==='DAY'}" ng-click="switchTimeRange('DAY')">今日</button>-->
-                <!--<button class="mui-btn mui-btn-outlined" ng-class="{'mui-btn-primary': timeRange==='MONTH'}" ng-click="switchTimeRange('MONTH')">本月</button>-->
-            <!--</div>-->
-            <!--<div class="mui-scroll">-->
-                <!--<div class="card">-->
-                    <!--<div id="chartContainer"></div>-->
-                <!--</div>-->
-            <!--</div>-->
-        <!--</div>-->
-        <!--<div class="page-alert-wrapper" ng-if="!history.length && !isLoading">-->
-            <!--<div class="page-alert">-->
-                <!--<div class="page-alert">-->
-                    <!--<i class="alert-icon nodata"></i>-->
-                    <!--<div class="alert-text info">变量未关联标准定义</div>-->
-                <!--</div>-->
-            <!--</div>-->
-        <!--</div>-->
-        <!--<div class="page-alert-wrapper" ng-if="isLoading">-->
-            <!--<div class="page-alert">-->
-                <!--<span class="mui-spinner"></span>-->
-                <!--<div class="alert-text info">正在加载...</div>-->
-            <!--</div>-->
-        <!--</div>-->
-    <!--</div>-->
 </div>
-<div class="page page-left" ui-view></div>
-<script src="../../components/fastclick-master/lib/fastclick.js"></script>
-<script src="../../js/my/notify.js"></script>
-<script type="text/javascript" src="../../js/controller/device.js"></script>
-<script src="../../components/highcharts/highcharts.js"></script>
-</body>
-</html>
+    <div ui-view=""></div>
+</div>

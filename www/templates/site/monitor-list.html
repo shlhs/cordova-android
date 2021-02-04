@@ -1,81 +1,43 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>监控列表</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta http-equiv="Access-Control-Allow-Origin" content="*">
-    <link rel="stylesheet" href="../../components/mui/css/mui.min.css">
-    <link rel="stylesheet" href="../../css/my.css">
-    <link rel="stylesheet" href="../../css/icon.css">
-    <link rel="stylesheet" href="../../css/animate.css">
-    <link rel="stylesheet" href="../../components/mui/css/icons-extra.css">
-    <link rel="stylesheet" href="../../css/setting.css">
-    <!--<script type="text/javascript" src="../../cordova.js"></script>-->
-    <!--<script type="text/javascript" src="../../cordova_plugins.js"></script>-->
-    <script type="text/javascript" src="../../components/libs/jquery-2.1.4.js"></script>
-    <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
-    <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
-    <script type="text/javascript" src="../../components/angular-animate/angular-animate.js"></script>
-    <script type="text/javascript" src="../../components/angular-ui-router/release/stateEvents.min.js"></script>
-    <script type="text/javascript" src="../../js/app/utils.js"></script>
-    <script type="text/javascript" src="../../js/app/app.js"></script>
-    <script type="text/javascript" src="../../js/controller/monitor.js"></script>
-    <script type="text/javascript" src="../../js/service/common-service.js"></script>
-    <style>
-    </style>
-<body class="box-vertical-center" ng-app="myApp" ng-controller="MonitorListCtrl">
-<header class="mui-bar bg-header mui-segmented-control-vertical">
-    <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
-    <h1 class="mui-title">所有画面</h1>
-</header>
-<div class="mui-content" ng-cloak>
-    <div class="height-wrap-parent">
-        <div class="scroll-wrapper" id="monitors" ng-if="!loadingFailed && !monitorLoading">
-            <div class="mui-scroll">
-                <ul class="mui-table-view no-margin" style="background-color: #fff;" ng-if="monitorScreens.length">
-                    <li class="mui-table-view-cell mui-media" ng-repeat="screen in monitorScreens" >
-                        <a class="mui-navigate-right" href="/templates/site/monitor-detail.html?url={{screen.mobile_screen_link}}&screen=h">
-                            <i class="mui-media-object mui-pull-left icon icon-md icon-monitor-list" style="width: 50px;height: 50px;max-width: 50px;"></i>
-                            <div class="mui-media-body" style="line-height: 50px;font-size: 18px;">
-                                {{screen.name}}
-                            </div>
-                        </a>
-                    </li>
-                </ul>
-                <div class="page-alert-wrapper" ng-if="!monitorScreens.length && !monitorLoading && !loadingFailed">
-                    <div class="page-alert">
-                        <i class="alert-icon nodata"></i>
-                        <div class="alert-text info">暂无监控页面</div>
+<div class="mui-page" ng-controller="MonitorListCtrl" ng-cloak>
+    <header class="mui-bar bg-header">
+        <a class="mui-icon  mui-icon-left-nav mui-pull-left btn-back" onclick="history.back()"></a>
+        <h1 class="mui-title">{{'menu.monitor.screen' | translate}}</h1>
+    </header>
+    <div class="body-content" ng-cloak>
+        <div class="height-wrap-parent">
+            <div class="scroll-wrapper" id="monitors" ng-if="!loadingFailed && !monitorLoading">
+                <div class="mui-scroll">
+                    <ul class="mui-table-view no-margin" ng-if="monitorScreens.length">
+                        <li class="mui-table-view-cell mui-media" ng-repeat="screen in monitorScreens" >
+                            <a class="mui-navigate-right" ng-click="openMonitorDetail(screen)">
+                                <i class="mui-media-object mui-pull-left iconfont anticon-graph" style="margin-top: 4px;font-size: 24px;"></i>
+                                <div class="mui-media-body" style="line-height: 50px;font-size: 18px;">
+                                    {{screen.name}}
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="page-alert-wrapper" ng-if="!monitorScreens.length && !monitorLoading && !loadingFailed">
+                        <div class="page-alert">
+                            <i class="alert-icon nodata"></i>
+                            <div class="alert-text info">{{'tip.noscreen' | translate}}</div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="page-alert-wrapper" ng-if="monitorLoading">
-            <div class="page-alert">
-                <img src="../../img/page-loading.gif" class="loading-img">
-                <div class="alert-text info">正在加载...</div>
+            <div class="page-alert-wrapper" ng-if="monitorLoading">
+                <div class="page-alert">
+                    <img src="../../img/page-loading.gif" class="loading-img">
+                    <div class="alert-text info">{{'loading' | translate}}...</div>
+                </div>
             </div>
-        </div>
-        <div class="page-alert-wrapper" ng-if="loadingFailed">
-            <div class="page-alert">
-                <i class="alert-icon warning"></i>
-                <div class="alert-text info">加载失败，请检查网络</div>
-                <div class="alert-reload" ng-click="getDataList()">重新加载</div>
+            <div class="page-alert-wrapper" ng-if="loadingFailed">
+                <div class="page-alert">
+                    <i class="alert-icon warning"></i>
+                    <div class="alert-text info">{{'tip.load.failed.network' | translate}}</div>
+                    <div class="alert-reload" ng-click="getDataList()">{{'reload' | translate}}</div>
+                </div>
             </div>
         </div>
     </div>
 </div>
-<div ui-view class="page page-left"></div>
-<div class="page page-left" ui-view=""></div>
-<script src="../../components/fastclick-master/lib/fastclick.js"></script>
-<script src="../../js/my/notify.js"></script>
-<script src="../../components/dropload-gh-pages/dist/dropload.min.js"></script>
-<script type="text/javascript" src="../../js/controller/sites.js"></script>
-<script type="text/javascript" src="../../js/controller/device.js"></script>
-<script src="../../js/controller/monitor.js"></script>
-<script src="../../js/controller/kanban.js"></script>
-</body>
-</html>

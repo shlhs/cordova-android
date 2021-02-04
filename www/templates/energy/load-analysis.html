@@ -1,0 +1,52 @@
+<div ng-controller="EnergyBaseCtrl" class="energy-page page page-left">
+<header class="mui-bar bg-header mui-segmented-control-vertical">
+    <a class="mui-icon  mui-icon-left-nav mui-pull-left btn-back" onclick="history.back()"></a>
+    <h1 class="mui-title">用电负荷</h1>
+</header>
+<div class="body-content energy-page-body" style="background-color: transparent;">
+    <div class="head-select-tabs">
+        <div class="item" ng-click="openDeviceSelector()">
+            <label class="title">监测点</label>
+            <label class="value">{{currentDevice.name}}</label>
+        </div>
+        <div class="item" id="datePicker">
+            <label class="title">用电周期</label>
+            <label class="value">{{showDateName}}</label>
+        </div>
+    </div>
+    <div ng-controller="EnergyLoadAnalysisCtrl">
+        <div style="display: flex;width: 100%;padding-top: 12px;" class="sides-values">
+            <div class="value-tab">
+                <label class="top">变压器容量</label>
+                <label class="value">{{currentDevice.capacity}}<span class="unit">kVA</span></label>
+            </div>
+            <div class="value-tab">
+                <label class="top">基本电费</label>
+                <label class="value">{{charges.capacityCharge === null ? '-' : charges.capacityCharge}}<span class="unit">元</span></label>
+            </div>
+        </div>
+        <div class="bg-white" style="margin-top: 16px;min-height: {{contentHeight - 148}}px;">
+            <div class="light-value-tabs">
+                <div class="value-tab">
+                    <label class="top">最大负荷</label>
+                    <label class="value">{{maxLoad}}kW</label>
+                </div>
+                <div class="value-tab">
+                    <label class="top">最大负荷率</label>
+                    <label class="value">{{maxLoadRatio}}</label>
+                </div>
+            </div>
+            <div>
+                <div class="chart-title">按时段统计平均负荷率</div>
+                <div style="height: 150px;" id="chart1">
+                </div>
+            </div>
+            <div style="margin-top: 12px;">
+                <div class="chart-title">日负荷率曲线</div>
+                <div style="height: 150px;" id="chart2">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>

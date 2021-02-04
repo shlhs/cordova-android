@@ -7,30 +7,14 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta http-equiv="Access-Control-Allow-Origin" content="*">
-    <link rel="stylesheet" href="../../components/mui/css/mui.min.css">
-    <link rel="stylesheet" href="../../css/my.css">
-    <link rel="stylesheet" href="../../css/icon.css">
-    <link rel="stylesheet" href="../../css/animate.css">
-    <link rel="stylesheet" href="../../components/mui/css/icons-extra.css">
-    <link rel="stylesheet" href="../../css/setting.css">
+    <!-- build:css -->
+    <link rel="stylesheet" href="/css/all.css">
+    <!-- endbuild -->
     <!--<script type="text/javascript" src="../../cordova.js"></script>-->
     <!--<script type="text/javascript" src="../../cordova_plugins.js"></script>-->
-    <script type="text/javascript" src="../../components/libs/jquery-2.1.4.js"></script>
-    <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
-    <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
-    <script type="text/javascript" src="../../components/angular-animate/angular-animate.js"></script>
-    <script type="text/javascript" src="../../components/angular-ui-router/release/stateEvents.min.js"></script>
-    <script type="text/javascript" src="../../js/app/utils.js"></script>
-    <script type="text/javascript" src="../../js/app/app.js"></script>
-    <script type="text/javascript" src="../../js/service/appstore.js"></script>
-    <script type="text/javascript" src="../../js/controller/device.js"></script>
-    <script type="text/javascript" src="../../js/service/common-service.js"></script>
     <style>
         .mui-table-view-cell:after{
             right:15px;
-        }
-        .offline h4, .offline span{
-            color: grey;
         }
         h4.mui-ellipsis{
             font-weight: normal;
@@ -39,61 +23,107 @@
             /*padding: 6px 15px 8px 15px;*/
         /*}*/
     </style>
-<body class="box-vertical-center" ng-app="myApp" ng-controller="EventListCtrl">
+    <!--  build:lib -->
+    <script type="text/javascript" src="/lib/jquery-3.5.0.min.js"></script>
+    <script type="text/javascript" src="/lib/angular/angular.min.js"></script>
+    <script type="text/javascript" src="/lib/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script type="text/javascript" src="/lib/angular-animate/angular-animate.js"></script>
+    <script type="text/javascript" src="/lib/angular-ui-router/release/stateEvents.min.js"></script>
+    <script type="text/javascript" src="/lib/angular-translate.min.js"></script>
+    <script src="/lib/fastclick-master/lib/fastclick.js"></script>
+    <script src="/lib/moment.min.js"></script>
+    <script src="/lib/echart/echarts.min-3.x.js"></script>
+    <script src="/lib/mui/js/mui.min.js"></script>
+    <script src="/lib/mui/js/mui.picker.min.js"></script>
+    <script src="/lib/mui/js/mui.poppicker.js"></script>
+    <script src="/lib/slides-playing/js/jquery.slides.js"></script>
+    <script src="/lib/dropload-gh-pages/dist/dropload.min.js"></script>
+    <script type="text/javascript" src="/lib/datatables/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="/lib/datatables/dataTables.fixedColumns.min.js"></script>
+    <script type="text/javascript" src="/lib/datatables/dataTables.fixedHeader.min.js"></script>
+    <!-- endbuild -->
+<body class="box-vertical-center" ng-app="myApp" ng-controller="EventListCtrl" ng-cloak>
     <header class="mui-bar bg-header">
-        <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
-        <h1 class="mui-title">事件列表</h1>
-        <a class="mui-action-menu mui-icon mui-pull-right" style="font-size: 14px;line-height: 28px;color: #fff;margin-right: 6px;"
-           href="/templates/site/closed-event-list.html?status=0&sn={{sn}}">历史事件</a>
+        <a class="mui-icon  mui-icon-left-nav mui-pull-left btn-back" onclick="pageBack()"></a>
+        <h1 class="mui-title">{{'menu.events' | translate}}</h1>
+        <a class="mui-action-menu mui-icon mui-pull-right" style="font-size: 14px;line-height: 28px;margin-right: 6px;" ng-click="openEventHistory()">{{'event.history' | translate}}</a>
     </header>
-    <div class="mui-content" ng-cloak>
+    <div class="body-content" ng-cloak>
         <div class="scroll-wrapper" id="events" ng-if="!loadingFailed">
             <div class="mui-scroll" ng-if="!eventLoading && !loadingFailed">
                 <ul class="mui-table-view mui-table-view-striped mui-table-view-condensed event-list no-border"
                     ng-if="events.length" style="margin-top:0px;padding: 0 8px;">
-                    <li class="mui-table-view-cell no-border" ng-repeat="e in events" data-id="{{e.id}}" style="background-color: #fff;">
+                    <li class="mui-table-view-cell no-border" ng-repeat="e in events" data-id="{{e.id}}">
                         <div class="event-title">
                             {{e.report_time}}
-                            <label class="mui-pull-right" style="color:#97969B;">{{e.device_name}}</label>
+                            <label class="mui-pull-right device-name">{{e.device_name}}</label>
                         </div>
                         <div class="info">
-                            {{e.info}}
+                            <a class="mui-tab-item1 mui-active mui-checkbox checkbox-square" ng-click="onCheckEvent(e.id)" style="width: auto;" href="javascript:void(0)" ng-if="eventConfirmVisible">
+                                <label class="checkbox" ng-class="{checked: isChecked(e.id)}" style="font-size: 15px; color: #333; font-weight: 500;">
+                                    {{e.info}}
+                                </label>
+                            </a>
+                            <span ng-if="!eventConfirmVisible">{{e.info}}</span>
                         </div>
                         <div style="font-size: 13px;">
-                            <a class="event-task" ng-click="goToCreateTaskHtml($event, e.id, e.info)" ng-if="hasOpsAuth">发布任务</a>
-                            <a class="close" ng-click="postCheckEventAction($event, e.id)">确认</a>
+                            <a class="event-task" ng-click="goToCreateTaskHtml($event, e)" ng-if="hasOpsAuth">{{'event.submitorder' | translate}}</a>
+                            <a class="close" ng-click="confirmAndCheckEvent($event, e.id)">{{'event.acknowledge' | translate}}</a>
                             <div style="clear: both"></div>
                         </div>
                     </li>
                 </ul>
+
                 <div class="page-alert-wrapper" ng-if="!events.length && !eventLoading && !loadingFailed">
                     <div class="page-alert">
                         <i class="alert-icon nodata-info"></i>
-                        <div class="alert-text info">当前无事件</div>
+                        <div class="alert-text info">{{'none alarm' | myTranslate}}</div>
                     </div>
                 </div>
             </div>
+            <button type="submit" class="mui-btn mui-btn-primary mui-btn-block" ng-if="checkedEventIds.length"
+                    style="position: fixed; bottom: 0; left: 0; width: 100%;margin-bottom: 0;z-index: 1; padding: 6px;" ng-click="checkAll()">全部确认</button>
         </div>
         <div class="page-alert-wrapper" ng-if="eventLoading">
             <div class="page-alert">
                 <img src="../../img/page-loading.gif" class="loading-img">
-                <div class="alert-text info">正在加载...</div>
+                <div class="alert-text info">{{'loading' | translate}}...</div>
             </div>
         </div>
         <div class="page-alert-wrapper" ng-if="loadingFailed">
             <div class="page-alert">
                 <i class="alert-icon warning"></i>
-                <div class="alert-text info">加载失败，请检查网络</div>
-                <div class="alert-reload" ng-click="getDataList()">重新加载</div>
+                <div class="alert-text info">{{'tip.load.failed.network' | translate}}</div>
+                <div class="alert-reload" ng-click="getDataList()">{{'reload' | translate}}</div>
             </div>
         </div>
     </div>
-<script src="../../components/fastclick-master/lib/fastclick.js"></script>
-<script src="../../js/my/notify.js"></script>
-<script src="../../components/dropload-gh-pages/dist/dropload.min.js"></script>
-<script type="text/javascript" src="../../js/controller/sites.js"></script>
-<script type="text/javascript" src="../../js/controller/device.js"></script>
-<script src="../../js/controller/monitor.js"></script>
-<script src="../../js/controller/kanban.js"></script>
+    <div ui-view=""></div>
+    <!-- build:js -->
+    <script type="text/javascript" src="/js/app/utils.js"></script>
+    <script type="text/javascript" src="/config/config.js"></script>
+    <script src="/js/echartsTheme.js"></script>
+    <script src="/js/my/notify.js"></script>
+    <script type="text/javascript" src="/js/app/app.js"></script>
+    <script type="text/javascript" src="/js/service/appstore.js"></script>
+    <script type="text/javascript" src="/js/service/common-service.js"></script>
+    <script type="text/javascript" src="/js/router/router.js"></script>
+    <script type="text/javascript" src="/js/controller/login.js"></script>
+    <script type="text/javascript" src="/js/controller/task.js"></script>
+    <script type="text/javascript" src="/js/controller/sites.js"></script>
+    <script src="/js/controller/user-energy.js"></script>
+    <script src="/js/controller/setting.js"></script>
+    <script type="text/javascript" src="/js/service/varData.js"></script>
+    <script type="text/javascript" src="/js/controller/kanban.js"></script>
+    <script type="text/javascript" src="/js/controller/monitor.js"></script>
+    <script type="text/javascript" src="/js/controller/device.js"></script>
+    <script type="text/javascript" src="/js/controller/ipc.js"></script>
+    <script type="text/javascript" src="/js/controller/site-monitor.js"></script>
+    <script type="text/javascript" src="/js/controller/site/security_evaluate.js"></script>
+    <script type="text/javascript" src="/js/controller/site/maintenance-checks.js"></script>
+    <script type="text/javascript" src="/js/controller/energy.js"></script>
+    <script type="text/javascript" src="/js/controller/static-devices.js"></script>
+    <script type="text/javascript" src="/js/controller/dts.js"></script>
+    <!-- endbuild -->
 </body>
 </html>

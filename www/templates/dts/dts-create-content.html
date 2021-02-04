@@ -1,91 +1,97 @@
 
-    <div class="mui-content bg-white" ng-cloak="" ng-submit="submitForm()" id="dtsCreatePage" ng-controller="DtsCreateCtrl">
-        <style>
-
-            /*.mui-input-row lab */
-            .create-form.mui-input-group .mui-input-row{
-                min-height: 40px;
-                height: auto;
-            }
-            .mui-input-row label.error{
-                width: 100%;
-            }
-            .error{
-                color: red;
-                margin-left: 146px;
-                font-size: 12px;
-                margin-top: -16px;
-            }
-        </style>
-        <form class="mui-input-group task-create-rows create-form no-border" name="myForm" novalidate >
-            <div class="mui-input-row">
-                <label class="label">设备</label>
-                <label style="line-height: 28px;padding-left: 0;width: calc(100% - 160px)" ng-if="isForDevice">{{device.name}}</label>
-                <input type="text" ng-if="!isForDevice" placeholder="请选择设备" ng-model="device.name">
-                <button class="mui-btn mui-btn-block" type="button" ng-click="openDeviceSelector()" ng-if="!isForDevice">&nbsp;</button>
-            </div>
-            <div class="mui-input-row">
-                <label class="label">所在位置</label>
-                <label style="line-height: 28px;padding-left: 0;width: calc(100% - 160px)">{{device.path}}</label>
-            </div>
-            <div class="mui-input-row">
-                <label class="label">缺陷等级<span style="color:red">*</span></label>
-                <input type="text" name="taskTypeName" ng-model="taskTypeName" placeholder="选择缺陷等级" required>
-                <button id="taskTypePicker" class="mui-btn mui-btn-block" type="button">&nbsp; </button>
-                <label class="error" ng-show="myForm.taskTypeName.$invalid && (myForm.taskTypeName.$dirty || myForm.$submitted)">
-                    <span ng-show="myForm.taskTypeName.$error.required">缺陷等级不能为空</span>
-                </label>
-            </div>
-            <div class="mui-input-row">
-                <label class="label">期望完成时间<span style="color:red">*</span></label>
-                <input type="text" name="expect_complete_time" ng-model="taskData.expect_complete_time" placeholder="选择缺陷处理截止时间" required>
-                <button type="button" id='expectedTime' data-options='{}' class="btn mui-btn mui-btn-block">&nbsp;</button>
-                <label class="error" ng-show="myForm.expect_complete_time.$invalid && (myForm.expect_complete_time.$dirty || myForm.$submitted)">
-                    <span ng-show="myForm.expect_complete_time.$error.required">期望完成时间不能为空</span>
-                </label>
-            </div>
-            <div class="mui-input-row">
-                <label style="line-height: 28px;">责任人<span style="color:red">*</span></label>
-                <input type="text" name="handlerName" style="position: absolute;" ng-model="handlerName" placeholder="选择缺陷解决责任人" required>
-                <button type="button" id='handlerPicker' class="btn mui-btn mui-btn-block">&nbsp;</button>
-                <label class="error" ng-show="myForm.handlerName.$invalid && (myForm.handlerName.$dirty || myForm.$submitted)">
-                    <span ng-show="myForm.handlerName.$error.required">责任人不能为空</span>
-                </label>
-            </div>
-            <!--<div class="mui-input-row">-->
-            <!--<label class="label">缺陷描述<span style="color:red">*</span></label>-->
-            <!--<textarea type="text" name="name" ng-model="taskData.name" placeholder="请描述设备缺陷" required rows="3" style="margin: 6px 0;"></textarea>-->
-            <!--<label class="error" ng-show="myForm.name.$invalid && (myForm.name.$dirty || myForm.$submitted)">-->
-            <!--<span ng-show="myForm.name.$error.required">缺陷描述不能为空</span>-->
-            <!--</label>-->
-            <!--</div>-->
-            <div class="task-result">
-                <div style="padding: 10px 5px;">
-                    <textarea rows="3" placeholder="请添加缺陷描述..." name="name" ng-model="taskData.name" required></textarea>
-                    <label class="error" ng-show="myForm.name.$invalid && (myForm.name.$dirty || myForm.$submitted)" style="margin-left: 16px;">
-                        <span ng-show="myForm.name.$error.required">缺陷描述不能为空</span>
-                    </label>
+<div class="body-content bg-white" ng-cloak="" ng-submit="submitForm()" id="dtsCreatePage" ng-controller="DtsCreateCtrl" style="padding-bottom: 15px;">
+    <form class="mui-input-group task-create-rows dts-create-rows create-form no-border" name="myForm" novalidate>
+        <div class="mui-input-row" ng-if="userStations.length > 1">
+            <label class="label required">{{'station' | translate}}</label>
+            <input type="text" style="position: absolute;" name="stationName" ng-model="stationName" placeholder="{{'please.select station' | myTranslate}}" required>
+            <button type="button" id='stationPicker' class="btn mui-btn mui-btn-block">&nbsp;</button>
+            <label class="error" ng-show="myForm.stationName.$invalid && (myForm.stationName.$dirty || myForm.$submitted)">
+                <span ng-show="myForm.stationName.$error.required">{{'please.select station' | myTranslate}}</span>
+            </label>
+        </div>
+        <div class="mui-input-row" style="padding-bottom: 8px;">
+            <label class="label required" style="padding-bottom: 0">{{'device' | translate}}</label>
+            <div style="display: inline-block; width: calc(100% - 115px)">
+                <button class="mui-btn mui-btn-block" type="button" ng-click="openDeviceSelector()" ng-if="!isForDevice" style="font-size: 14px;text-align: left;padding-left: 0;padding-bottom: 0;min-height: 36px;width: 100%;margin-bottom: 4px;">
+                    {{'select' | translate}}</button>
+                <div class="devices" style="margin-top: 11px;">
+                    <a ng-repeat="d in devices" class="device-name" ng-click="showDeviceDetail(d)">{{d.name}};</a>
                 </div>
-                <ul class="image-list" id="imageList">
-                    <li class="image-item" ng-repeat="file in images">
-                        <div class="content">
-                            <a class="img-file" style="background-image: url({{file}})" ng-click="openGallery($index)"></a>
-                        </div>
-                    </li>
-                    <li class="upload-item">
-                        <div class="content">
-                            <div class="image-uploader">
-                                <input class="add-btn" type="file" accept="image/*" name="upload" multiple onchange="angular.element(this).scope().chooseImage(this.files)" ng-if="!useMobileGallery">
-                                <input class="add-btn" name="upload" ng-model="chosenFile" ng-click="openMobileGallery()" ng-if="useMobileGallery">
-                            </div>
-                        </div>
-                    </li>
-                </ul>
+                <label class="error" ng-show="deviceEmptyError" style="margin: 0;">
+                    {{'please.select device' | myTranslate}}
+                </label>
             </div>
-            <div class="mui-button-row" style="padding: 8px 16px;">
-                <button type="submit" class="mui-btn mui-btn-primary mui-btn-block"
-                        style="background-color: rgba(88,107,243,0.88);border-color: rgba(88,107,243,0.88);height: 42px;">确认提交</button>
+        </div>
+        <div class="mui-input-row">
+            <label class="label required">{{'dts.level' | translate}}</label>
+            <input type="text" name="taskTypeName" ng-model="taskTypeName" placeholder="{{'please.select dts.level' | myTranslate}}" required>
+            <button id="taskTypePicker" class="mui-btn mui-btn-block" type="button">&nbsp; </button>
+            <label class="error" ng-show="myForm.taskTypeName.$invalid && (myForm.taskTypeName.$dirty || myForm.$submitted)">
+                <span ng-show="myForm.taskTypeName.$error.required">{{'please.select dts.level' | myTranslate}}</span>
+            </label>
+        </div>
+        <div class="mui-input-row">
+            <label class="label">{{'ops.security.item.type' | translate}}</label>
+            <input type="text" name="defectType" ng-model="selectedDefectType.name" placeholder="{{'defect.type.input' | translate}}" style="width: calc(100% - 150px);">
+            <button id="defectTypePicker" class="mui-btn mui-btn-block" type="button" style="float: right;width: auto;">{{'select' | translate}}</button>
+        </div>
+        <div class="mui-input-row" ng-show="needResign">
+            <label class="label" style="width: 120px;" ng-class="{'required': needResign}">{{'defect.expecttime' | translate}}</label>
+            <input type="text" name="expectCompleteTime" ng-model="taskData.expect_complete_time" placeholder="{{'please.select defect.expecttime' | myTranslate}}" ng-required="needResign">
+            <button type="button" id='expectedTime' class="btn mui-btn mui-btn-block" style="position: absolute; right: 0;">&nbsp;</button>
+            <label class="error" ng-show="myForm.expectCompleteTime.$invalid && (myForm.expectCompleteTime.$dirty || myForm.$submitted)">
+                <span ng-show="myForm.expectCompleteTime.$error.required">{{'please.select defect.expecttime' | myTranslate}}</span>
+            </label>
+        </div>
+        <div class="mui-input-row" ng-if="needResign">
+            <label class="label required">{{'defect.ops.person' | translate}}</label>
+            <!--<textarea name="handlerName" ng-model="handlerName" placeholder="请选择消缺班组和人员" rows="{{handlerRowSpan}}"></textarea>-->
+            <div class="right-text" ng-if="taskData.current_handler_users.length">
+                <div ng-repeat="h in taskData.current_handler_users"><a ng-click="callPhone(h.phone)">{{h.name}}</a></div>
             </div>
-        </form>
-    </div>
+            <div class="right-placeholder" ng-if="!taskData.current_handler_users.length">
+                {{'defect.ops.person.selectteam' | translate}}
+            </div>
+            <button type="button" data-options='{}' class="btn mui-btn mui-btn-block" ng-click="toggleHandlerSelector()" style="position: absolute;top: 0;left: 115px;bottom: 0;">&nbsp;</button>
+            <div class="error" ng-if="currentHandlerError">{{'defect.ops.person.empty' | translate}}</div>
+        </div>
+        <div class="mui-input-row" ng-if="needResign && showRecheck">
+            <label class="label">{{'defect.recheck.person' | translate}}</label>
+            <div class="right-text" ng-if="taskData.recheck_users.length">
+                <div ng-repeat="h in taskData.recheck_users"><a ng-click="callPhone(h.phone)">{{h.name}}</a></div>
+            </div>
+            <div class="right-placeholder" ng-if="!taskData.recheck_users.length">
+                {{'defect.recheck.persion.empty' | translate}}
+            </div>
+            <button type="button" data-options='{}' class="btn mui-btn mui-btn-block" ng-click="toggleRecheckSelector()" style="position: absolute;top: 0;left: 115px;bottom: 0;">&nbsp;</button>
+        </div>
+        <div class="mui-input-row">
+            <label class="label required">{{'dts.name' | translate}}</label>
+            <textarea rows="2" placeholder="{{'please.input dts.name' | myTranslate}}..." name="name" ng-model="taskData.name" required style="width: calc(100% - 115px)"></textarea>
+            <label class="error" ng-show="myForm.name.$invalid && (myForm.name.$dirty || myForm.$submitted)">
+                <span ng-show="myForm.name.$error.required">{{'dts.name cannotempty' | myTranslate}}</span>
+            </label>
+        </div>
+        <div class="mui-input-row" ng-if="audioVideoEnabled">
+            <label class="label">{{'defect.name.voice' | translate}}</label>
+            <audio-recorder audio="audioUrl" duration="audioDuration" on-update="onUpdateVoice" can-edit="true" class="right-placeholder" style="padding-left: 0;"></audio-recorder>
+        </div>
+        <div class="mui-input-row">
+            <div class="label" style="font-size: 14px;line-height: 15px;">{{'defect.photos' | translate}}</div>
+            <image-uploader images="images" style="margin-left: 12px;"></image-uploader>
+            <div class="label" style="font-size: 14px;line-height: 15px;" ng-if="audioVideoEnabled">{{'defect.video' | translate}}</div>
+            <video-uploader video="videoUrl" on-update="onUpdateVideo" can-edit="true" ng-if="audioVideoEnabled" style="margin-left: 12px;"></video-uploader>
+        </div>
+        <div class="mui-button-row" style="padding: 0 12px;">
+            <button type="submit" class="mui-btn mui-btn-primary mui-btn-block"
+                    style="height: 42px;">{{'submit' | translate}}</button>
+        </div>
+    </form>
+    <!--<operator-team-selector teams="teams" visible="teamVisible" callback="onSelectedTeam"></operator-team-selector>-->
+    <team-and-handler-selector visible="handlerVisible" teams="teams" callback="onSelectedUsers"
+                               first-title="{{'defect.team.select.firsttitle' | translate}}" second-title="{{'defect.team.select.secondtitle' | translate}}"></team-and-handler-selector>
+    <team-and-handler-selector visible="recheckSelectorVisible" teams="teams" callback="onSelectedRecheckHandlers"
+                               first-title="{{'defect.recheck.team.select.firsttitle' | translate}}" second-title="{{'defect.recheck.team.select.secondtitle' | translate}}"></team-and-handler-selector>
+    <div ng-include="'/templates/dts/dts-defect-conflict-devices-warning.html'" ng-if="warningModalVisible"></div>
+    ﻿
 </div>

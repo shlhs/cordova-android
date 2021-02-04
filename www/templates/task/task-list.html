@@ -8,28 +8,9 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
 
-    <!--标准mui.css-->
-    <link rel="stylesheet" href="../../components/mui/css/mui.min.css">
-    <link rel="stylesheet" href="../../components/mui/css/mui.picker.min.css">
-    <link rel="stylesheet" href="../../components/libs/font-awesome-4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="../../css/my.css" />
-    <link rel="stylesheet" href="../../css/icon.css" />
-    <link rel="stylesheet" href="../../css/task.css" />
-    <link rel="stylesheet" href="../../css/animate.css">
-    <link rel="stylesheet" href="../../css/iconfont/iconfont.css">
-    <!--<link rel="stylesheet" href="./components/slides-playing/css/example.css">-->
-    <!--<script type="text/javascript" src="../../cordova.js"></script>-->
-    <!--<script type="text/javascript" src="../../cordova_plugins.js"></script>-->
-    <script type="text/javascript" src="../../components/libs/jquery-2.1.4.js"></script>
-    <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
-    <script type="text/javascript" src="../../components/angular-animate/angular-animate.js"></script>
-    <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
-    <script type="text/javascript" src="../../components/angular-ui-router/release/stateEvents.min.js"></script>
-    <script type="text/javascript" src="../../js/app/utils.js"></script>
-    <script type="text/javascript" src="../../js/app/app.js"></script>
-    <script type="text/javascript" src="../../js/service/appstore.js"></script>
-    <script type="text/javascript" src="../../js/controller/task.js"></script>
-    <script type="text/javascript" src="../../js/service/common-service.js"></script>
+    <!--build:css -->
+    <link rel="stylesheet" href="/css/all.css">
+    <!-- endbuild -->
     <style>
         html,
         body {
@@ -51,12 +32,12 @@
             box-shadow: none;
             background-color: transparent;
         }
-        .mui-bar-tab>a{
-            padding: 8px;
-        }
-        .mui-bar-tab>a>button{
-            margin-bottom: 6px !important;
-        }
+        /*.mui-bar-tab>a{*/
+            /*padding: 8px;*/
+        /*}*/
+        /*.mui-bar-tab>a>button{*/
+            /*margin-bottom: 6px !important;*/
+        /*}*/
         .device-list{
             margin-left: 88px;
         }
@@ -73,98 +54,83 @@
             margin-left: 0;
         }
     </style>
+    <!--  build:lib -->
+    <script type="text/javascript" src="/lib/jquery-3.5.0.min.js"></script>
+    <script type="text/javascript" src="/lib/angular/angular.min.js"></script>
+    <script type="text/javascript" src="/lib/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script type="text/javascript" src="/lib/angular-animate/angular-animate.js"></script>
+    <script type="text/javascript" src="/lib/angular-ui-router/release/stateEvents.min.js"></script>
+    <script type="text/javascript" src="/lib/angular-translate.min.js"></script>
+    <script src="/lib/fastclick-master/lib/fastclick.js"></script>
+    <script src="/lib/moment.min.js"></script>
+    <script src="/lib/echart/echarts.min-3.x.js"></script>
+    <script src="/lib/mui/js/mui.min.js"></script>
+    <script src="/lib/mui/js/mui.picker.min.js"></script>
+    <script src="/lib/mui/js/mui.poppicker.js"></script>
+    <script src="/lib/slides-playing/js/jquery.slides.js"></script>
+    <script src="/lib/dropload-gh-pages/dist/dropload.min.js"></script>
+    <script type="text/javascript" src="/lib/datatables/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="/lib/datatables/dataTables.fixedColumns.min.js"></script>
+    <script type="text/javascript" src="/lib/datatables/dataTables.fixedHeader.min.js"></script>
+    <!-- endbuild -->
 </head>
 
 <body class="mui-android mui-android-5 mui-android-5-1 mui-android-5-1-1 mui-segmented-control-vertical" ng-app="myApp" ng-controller="TaskBaseCtrl" ng-cloak>
     <header class="mui-bar bg-header">
-        <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
+        <a class="mui-icon  mui-icon-left-nav mui-pull-left btn-back" onclick="pageBack()"></a>
         <h1 class="mui-title">{{pageTitle}}</h1>
     </header>
-    <div style="top:61px;" class="mui-content" ng-controller="TaskListCtrl" id="taskListWrapper">
-        <div id="taskList" class="scroll-wrapper">
-            <div class="mui-scroll1" ng-if="!isLoading && !loadingFailed">
-                <ul class="mui-table-view mui-table-view-striped mui-table-view-condensed task-list no-out-border" ng-if="tasks.length">
-                    <li class="mui-table-view-cell mui-media task-item" ng-repeat="task in tasks"
-                        ng-click="openTask(task)" ng-class="{'closed': task.stage_id == TaskStatus.Closed}">
-                        <div ng-if="task.task_type_id !== 11 || !isDeviceOps">
-                            <div class="main-body">
-                                <div class="mui-media-body task-main">
-                                    <h4 class="mui-ellipsis task-title" style="margin-top: 0">
-                                        <img class="mui-pull-left task-icon" src="/img/task_type_{{task.task_type_id}}@2x.png">
-                                        <strong class="task-type" ng-class="{'ergent': task.task_type_id===3}">{{task.task_type_name}}</strong>
-                                    </h4>
-                                </div>
-                            </div>
-                            <div class="sub-body">
-                                <p class="task-name">
-                                    {{task.name}}
-                                </p>
-                                <div ng-if="task.station_name">
-                                    <span class="task-info-label">站点名称</span><span class="task-info-value">{{task.station_name}}</span>
-                                </div>
-                                <div style="padding-bottom: 10px">
-                                    <span class="task-info-label" style="padding-right: 0;">期望完成时间：</span>
-                                    <span class="task-info-value" ng-class="{'timeout': task.isTimeout}">{{task.expect_complete_time.substring(0,16)}}</span>
-                                </div>
-                            </div>
-                            <div class="task-status">
-                                <span style="color: #6f6f6f;margin: 0 2px;">{{task.current_handler_name}}</span>{{task.stage_name}}
-                            </div>
+    <div style="top:61px;" class="body-content" ng-controller="TaskListCtrl" id="taskListWrapper">
+        <div class="filter-btn" ng-click="toggleFilter()">
+            {{'filter' | translate}}<label class="iconfont anticon-filter" style="font-size: 13px;"></label>
+        </div>
+        <div ng-include="'/templates/task/task-list-common.html'" style="margin-top: 30px;"></div>
+        <div class="dropdown-filter-wrapper" ng-if="showFilter">
+            <div class="filter-mask" ng-click="toggleFilter(false)"></div>
+            <div class="filter-inner">
+                <div class="filter-body">
+                    <div class="group" ng-repeat="group in filterItems">
+                        <div class="title">{{group.title}}</div>
+                        <div class="items">
+                            <label class="item" ng-repeat="item in group.items" ng-class="{'checked': tmpSelectedFilter[item.id]}"
+                                   ng-click="toggleFilterItem(item.id)">{{item.name}}</label>
                         </div>
-                        <div ng-if="isDeviceOps && task.task_type_id === 11">
-                            <div class="main-body">
-                                <div class="mui-media-body task-main">
-                                    <h4 class="mui-ellipsis task-title" style="margin-top: 0">
-                                        <img class="mui-pull-left task-icon" src="/img/task_type_{{task.task_type_id}}@2x.png">
-                                        <strong class="task-type" ng-class="{'ergent': task.task_type_id===3}">{{task.task_type_name}}</strong>
-                                    </h4>
-                                </div>
-                            </div>
-                            <div class="sub-body">
-                                <p class="task-name">
-                                    {{task.name}}
-                                </p>
-                                <div style="padding-bottom: 10px;">
-                                    <span class="task-info-label" style="padding-right: 0;">巡检人：</span>
-                                    <span class="task-info-value">{{task.operator_name}}</span>
-                                </div>
-                                <div style="padding-bottom: 10px;margin-top: -10px;" ng-if="task.device_record.desp">
-                                    <span class="task-info-label" style="padding-right: 0;">结论：</span>
-                                    <span class="task-info-value">{{task.device_record.desp}}</span>
-                                </div>
-                            </div>
-                            <div class="task-status">
-                                <span style="margin: 0 2px;" class="text-{{task.device_record.status_name}}">{{task.device_record.status}}</span>
-                            </div>
-                        </div>
-                    </li>
-                </ul>
-                <div class="page-alert-wrapper" ng-if="tasks.length==0 && !isLoading && !loadingFailed">
-                    <div class="page-alert">
-                        <i class="alert-icon no-task"></i>
-                        <div class="alert-text info">无记录</div>
                     </div>
                 </div>
-            </div>
-            <div class="page-alert-wrapper" ng-if="isLoading">
-                <div class="page-alert">
-                    <img src="../../img/page-loading.gif" class="loading-img">
-                    <div class="alert-text info">正在加载...</div>
-                </div>
-            </div>
-            <div class="page-alert-wrapper" ng-if="loadingFailed">
-                <div class="page-alert">
-                    <i class="alert-icon warning"></i>
-                    <div class="alert-text info">加载失败，请检查网络</div>
-                    <div class="alert-reload" ng-click="getDataList()">重新加载</div>
+                <div class="filter-footer">
+                    <div class="btn default" ng-click="clearFilter()">{{'reset' | translate}}</div>
+                    <div class="btn primary" ng-click="confirmFilter()">{{'query' | translate}}</div>
                 </div>
             </div>
         </div>
     </div>
-    <script src="../../components/fastclick-master/lib/fastclick.js"></script>
-    <script src="../../js/my/notify.js"></script>
-    <script src="../../js/controller/static-devices.js"></script>
-    <script src="../../components/dropload-gh-pages/dist/dropload.min.js"></script>
+    <div ui-view=""></div>
+    <!-- build:js -->
+    <script type="text/javascript" src="/js/app/utils.js"></script>
+    <script type="text/javascript" src="/config/config.js"></script>
+    <script src="/js/echartsTheme.js"></script>
+    <script src="/js/my/notify.js"></script>
+    <script type="text/javascript" src="/js/app/app.js"></script>
+    <script type="text/javascript" src="/js/service/appstore.js"></script>
+    <script type="text/javascript" src="/js/service/common-service.js"></script>
+    <script type="text/javascript" src="/js/router/router.js"></script>
+    <script type="text/javascript" src="/js/controller/login.js"></script>
+    <script type="text/javascript" src="/js/controller/task.js"></script>
+    <script type="text/javascript" src="/js/controller/sites.js"></script>
+    <script src="/js/controller/user-energy.js"></script>
+    <script src="/js/controller/setting.js"></script>
+    <script type="text/javascript" src="/js/service/varData.js"></script>
+    <script type="text/javascript" src="/js/controller/kanban.js"></script>
+    <script type="text/javascript" src="/js/controller/monitor.js"></script>
+    <script type="text/javascript" src="/js/controller/device.js"></script>
+    <script type="text/javascript" src="/js/controller/ipc.js"></script>
+    <script type="text/javascript" src="/js/controller/site-monitor.js"></script>
+    <script type="text/javascript" src="/js/controller/site/security_evaluate.js"></script>
+    <script type="text/javascript" src="/js/controller/site/maintenance-checks.js"></script>
+    <script type="text/javascript" src="/js/controller/energy.js"></script>
+    <script type="text/javascript" src="/js/controller/static-devices.js"></script>
+    <script type="text/javascript" src="/js/controller/dts.js"></script>
+    <!-- endbuild -->
 </body>
 
 </html>
