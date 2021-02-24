@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.cto.dianguanjia" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>CTO</name>
+<widget id="com.xingjie.cloud" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>Xingjie</name>
     <description>
-        悉拓物联云
+        兴捷电管家
     </description>
-    <author email="15840364047@163.com" href="http://www.uscada.com/">
-        悉拓（上海）安全技术有限公司
+    <author email="865336535@qq.com" href="http://www.uscada.com/">
+        兴捷
     </author>
     <content src="index.html" />
     <access origin="*" />
