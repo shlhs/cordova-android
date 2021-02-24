@@ -11,8 +11,8 @@ app.controller('MaintenanceBaseCtrl', ['$scope', '$compile', function ($scope, $
     load();
 }]);
 
-app.controller('MaintenanceCheckHistoryCtrl', ['$scope', 'ajax', 'routerService', function ($scope, ajax, routerService) {
-    var sn = GetQueryString('sn');
+app.controller('MaintenanceCheckHistoryCtrl', ['$scope', '$stateParams', 'ajax', 'routerService', function ($scope, $stateParams, ajax, routerService) {
+    var sn = $stateParams.sn; // GetQueryString('sn');
     $scope.stationName = GetQueryString("name");
     $scope.history = [];
     $scope.isLoading = false;
@@ -65,7 +65,7 @@ function onAndroid_powerOffImageDelete(filename) {       // Android手机上删�
     }
 }
 
-app.controller("MaintenanceCheckRecordItemCtrl", ['$scope', 'ajax', 'routerService', 'userService', '$rootScope', function ($scope, ajax, routerService, userService, $rootScope) {
+app.controller("MaintenanceCheckRecordItemCtrl", ['$scope', 'ajax', 'routerService', 'userService', '$rootScope', '$myTranslate', function ($scope, ajax, routerService, userService, $rootScope, $myTranslate) {
     var d = new Date(), today=d.year + d.month + d.day;
     $scope.image_before_check = [];
     $scope.image_in_check = [];
@@ -125,7 +125,7 @@ app.controller("MaintenanceCheckRecordItemCtrl", ['$scope', 'ajax', 'routerServi
                     $scope.$apply();
                 },
                 error: function (xhr, status, error) {
-                    $.notify.error('获取数据失败');
+                    $.notify.error($myTranslate.instant('get data failed'));
                 }
             });
         } else {
@@ -179,7 +179,7 @@ app.controller("MaintenanceCheckRecordItemCtrl", ['$scope', 'ajax', 'routerServi
                 },
                 success: function (data) {
                     $.notify.progressStop();
-                    $.notify.info('保存成功');
+                    $.notify.info($myTranslate.instant('save successful'));
                     $scope.recordData.id = data.id;
                     $scope.image_before_check = [];
                     $scope.image_in_check = [];
@@ -193,7 +193,7 @@ app.controller("MaintenanceCheckRecordItemCtrl", ['$scope', 'ajax', 'routerServi
                 },
                 error: function (xhr, status, error) {
                     $.notify.progressStop();
-                    $.notify.error('保存失败');
+                    $.notify.error($myTranslate.instant('save failed'));
                 }
             })
         } else {
@@ -214,14 +214,14 @@ app.controller("MaintenanceCheckRecordItemCtrl", ['$scope', 'ajax', 'routerServi
                 },
                 success: function (data) {
                     $.notify.progressStop();
-                    $.notify.info('保存成功');
+                    $.notify.info($myTranslate.instant('save successful'));
                     $scope.image_before_check = [];
                     $scope.image_in_check = [];
                     $scope.image_after_check = [];
                 },
                 error: function (xhr, status, error) {
                     $.notify.progressStop();
-                    $.notify.error('保存失败');
+                    $.notify.error($myTranslate.instant('save failed'));
                 }
             })
         }

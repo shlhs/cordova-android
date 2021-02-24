@@ -1,19 +1,11 @@
 <!-- 能源管理模式首页 -->
 <div ng-controller="SiteListCtrl" style="height: 100%;" class="energy-home">
-    <div style="height: 100%;" ng-style="{'background-color': stationSn ? '' : '#fff'}" ng-controller="EnergyBaseCtrl">
+    <div style="height: 100%;" ng-controller="EnergyBaseCtrl">
         <div class="site-header energy-header" style="background-size: cover;">
             <header class="mui-bar bg-header bg-transparent" style="box-shadow: none;position: static;">
                 <a class=" mui-pull-left site-popover" ng-click="openSiteSelectPage()" ng-show="sites.length > 1" ng-if="!isSiteDetail">站点切换</a>
-                <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()" ng-if="isSiteDetail"></a>
+                <a class="mui-icon  mui-icon-left-nav mui-pull-left btn-back" onclick="pageBack()" ng-if="isSiteDetail"></a>
                 <h1 class="mui-title" ng-click="openDeviceSelector()"><label>{{currentDevice ? currentDevice.name : ''}}</label> </h1>
-                <a class="mui-pull-right" href="/templates/site/event-list.html?sn={{currentSite.sn}}&name={{currentSite.name}}" style="position: relative;margin-right: 8px;" ng-if="currentSite.sn">
-                    <i class="icon white icon-events" style="width: 18px;height: 18px;">
-                    </i>
-                    <span class="mui-badge mui-badge-danger" ng-if="currentSite.unclosed_envet_amount"
-                          style="position: absolute;font-size: 9px;top:-8px;left: 10px;font-weight: 300;">
-                        {{currentSite.events_amount}}
-                    </span>
-                </a>
             </header>
         </div>
         <div ng-controller="EnergyHomeCtrl" style="height: calc(100% - 60px);">
@@ -37,44 +29,43 @@
                 <div class="item"><span class="name">当月用电量</span> <span class="value">{{currentMonthData.allDegree}}</span> <span class="unit">kWh</span></div>
                 <div class="item"> <span class="name">当月电费</span> <span class="value">{{currentMonthData.allCharge}}</span> <span class="unit">元</span></div>
             </div>
-            <div style="background-color: #fff;height:{{contentHeight - 220}}px;" ng-show="degreeVarSn" ng-if="!isLoading && currentDevice">
+            <div class="bg-white" style="height:{{contentHeight - 220}}px;" ng-show="degreeVarSn" ng-if="!isLoading && currentDevice">
                 <div style="height: calc(100% - 170px);max-height: 300px;">
                     <div style="text-align: center;padding-top: 8px;">日平均电度电价/元</div>
                     <div id="main_chart" style="width: {{screenWidth}}px;height: {{contentHeight-420 > 270 ? 270 : contentHeight - 420}}px;max-height: 270px;"></div>
                 </div>
                 <!-- app入口 -->
-                <div class="card round-card apps" style="padding: 0;margin-top: 0;" ng-if="stationSn">
-                    <ul class="mui-table-view mui-grid-view mui-grid-9 no-border entrance-list" style="background-color: transparent;border-radius: 0;">
-                        <li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-4 no-padding no-border" ng-repeat="app in selectedApps">
-                            <a style="padding: 6px 0 0 0;" ng-click="openAppPage(app, $index)">
-                            <!--<a style="padding: 6px 0 0 0;" href="{{app.templateUrl}}?sn={{stationSn}}&name={{stationName}}&device_sn={{currentDevice.sn}}&device_name={{currentDevice.name}}&capacity={{currentDevice.capacity}}">-->
-                                <span class="mui-icon icon icon-40 {{app.icon}}"></span>
-                                <div class="mui-media-body">{{app.name}}</div>
-                            </a>
+                <div class="card round-card apps energy-card" style="padding: 0;margin-top: 0;" ng-if="stationSn">
+                    <ul class="no-border energy-apps" style="margin-top: 12px;">
+                        <li class="energy-app" ng-repeat="app in selectedApps" ng-click="openAppPage(app, $index)">
+                            <i class="iconfont anticon-{{app.icon}} app-icon {{app.color}}"></i>
+                            <span class="mui-media-body">{{app.name}}</span>
                         </li>
                     </ul>
                 </div>
             </div>
-            <div style="background-color: #fff;height: calc(100% - 170px)" ng-show="!isLoading && currentDevice && !degreeVarSn">
-                <div class="no-station" style="text-align: center;">
+            <div class="bg-white" style="height: calc(100% - 170px)" ng-show="!isLoading && stationSn && currentDevice && !degreeVarSn">
+                <div class="no-station" style="text-align: center; padding-top: 25%;">
                     <i class="alert-icon"></i>
                     <label class="alert-info">监测点未配置电度变量，无法读取数据</label>
                 </div>
             </div>
-            <div style="background-color: #fff;height: {{contentHeight - 170}}px;" ng-show="!isLoading && !currentDevice">
-                <div class="no-station" style="text-align: center;">
+            <div class="bg-white" style="height: {{contentHeight - 170}}px;" ng-show="!isLoading && stationSn && !currentDevice">
+                <div class="no-station" style="text-align: center; padding-top: 25%;">
                     <i class="alert-icon"></i>
                     <label class="alert-info">站点未配置用电监测点</label>
                 </div>
             </div>
-            <div class="no-station" ng-if="!isLoading && !stationSn" style="text-align: center;height: {{contentHeight - 170}}px;">
-                <i class="alert-icon"></i>
-                <label class="alert-info">未配置站点，<a ng-click="getDataList()">重新加载</a></label>
-            </div>
-            <div class="page-alert-wrapper" ng-if="isLoading" style="background-color: #fff;height: {{contentHeight-220}}px;">
+            <div class="bg-white" style="height: calc(100% - 170px)" ng-if="!isLoading && !stationSn">
+                <div class="no-station" style="padding-top: 25%;">
+                        <i class="alert-icon"></i>
+                        <label class="alert-info">未配置站点，<a ng-click="getDataList()">{{'reload' | translate}}</a></label>
+                    </div>
+                </div>
+            <div class="page-alert-wrapper" ng-if="isLoading" style="height: {{contentHeight-220}}px;">
                 <div class="page-alert">
                     <img src="../../img/page-loading.gif" class="loading-img">
-                    <div class="alert-text info">正在加载...</div>
+                    <div class="alert-text info">{{'loading' | translate}}...</div>
                 </div>
             </div>
         </div>
