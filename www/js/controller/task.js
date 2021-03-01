@@ -944,7 +944,7 @@ app.controller('TaskTodoListCtrl', function ($scope, $rootScope, scrollerService
         else if (type === 'todo'){
             for(var i in allTasks){
                 task = allTasks[i];
-                if (task.stage_id !== TaskStatus.Closed && task.current_handler === username){
+                if (isTodoTask(task, username)){
                     showTasks.push(task);
                 }
             }
@@ -1459,7 +1459,7 @@ app.controller('TaskDetailCtrl', function ($scope, $location, $state, userServic
 
     function formatTaskStatus() {   // 将任务状态转成适合页面显示的格式
         var taskData = $scope.taskData, stageId = taskData.stage_id, activeIndex=0, finishIndex=0, progress=0, canHandle = false;
-        if (taskData.current_handler === username || taskData.stage_id == TaskStatus.Competition){
+        if (isTodoTask(taskData, username) || taskData.stage_id == TaskStatus.Competition){
             canHandle = true;
         }
         switch (stageId){
