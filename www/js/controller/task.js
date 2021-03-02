@@ -300,7 +300,7 @@ app.controller('HomeCtrl', ['$scope', '$state', '$timeout', 'userService', 'appS
         }
     }
 
-    $scope.refreshAllSiteStatus = function () {      // 获取站点详情
+    $scope.refreshAllSiteStatus = function (callback) {      // 获取站点详情
         if (!$scope.sites.length) {
             return;
         }
@@ -323,6 +323,9 @@ app.controller('HomeCtrl', ['$scope', '$state', '$timeout', 'userService', 'appS
                 // 更新站点状态
                 $scope.sitesTree = formatSiteTree(sites)[0].children;
                 $scope.isLoading = false;
+                if (callback) {
+                    callback($scope.sitesTree);
+                }
                 $scope.$apply();
             },
             error: function (a, b, c) {
@@ -424,11 +427,9 @@ app.controller('HomeCtrl', ['$scope', '$state', '$timeout', 'userService', 'appS
     }
 
     $scope.openSiteSelectPage = function () {
-        $scope.refreshAllSiteStatus();
         routerService.openPage($scope, '/templates/site/site-select-page.html',
             {treeData: $scope.sitesTree, onSelect: $scope.chooseSite, selectedSn: $scope.currentSite.sn},
             {hidePrev: false});
-        // $state.go('.siteSelector', {treeData: $scope.sitesTree, onSelect: $scope.chooseSite, selectedSn: $scope.currentSite.sn});
     };
 
     function _getDefaultHomeMenu() {
