@@ -101,7 +101,7 @@
                 <div class="mui-card-content">
                     <div class="mui-card-content-inner" style="padding: 2px 0;">
                         <div class="task-desp mui-ellipsis">
-                            <span class="task-type" ng-class="{'ergent': taskData.task_type_id===3}">{{taskData.task_type_name}}:</span>
+                            <strong class="task-type" ng-class="{'ergent': taskData.task_type_id===3}">{{taskData.task_type_name}}:</strong>
                             <span style="font-size: 14px;">{{taskData.no}}</span>
 
                             <label class="btn-status" style="float: right;"
@@ -191,7 +191,7 @@
                  ng-if="taskData.task_type_id !== TaskTypes.Xunjian">
                 <div class="mui-card-content">
                     <div class="mui-card-content-inner" style="padding: 0;">
-                        <div style="font-size: 13px;">{{taskName}} {{'description' | translate}}：</div>
+                        <div style="font-size: 13px;">{{taskName}}{{'description' | translate}}：</div>
                         <ul class="task-detail-info-group">
                             <li>
                                 <!--<label class="title" style="width: 50px;">{{ 'description' | translate }}</label>-->
@@ -216,7 +216,7 @@
                                     </span>
                             </li>
                             <div ng-if="requestPictures" style="padding: 0 12px;font-size: 13px;">
-                                <div>{{taskName}} {{ 'pictures' | translate }}</div>
+                                <div>{{taskName}}{{ 'pictures' | translate }}</div>
                                 <image-grid-list images="requestPictures" ng-if="requestPictures"></image-grid-list>
                             </div>
                         </ul>
@@ -278,7 +278,7 @@
                 </div>
             </div>
             <!-- 安全评测 -->
-            <div class="mui-card card" ng-if="taskData.task_type_id===1" ng-click="gotoHandleTask()">
+            <div class="mui-card card" ng-if="taskData.task_type_id===1 && false" ng-click="gotoHandleTask()">
                 <div class="mui-card-content mui-navigate-right">
                     <div class="mui-card-content-inner" style="padding: 2px 6px;">
                         <i class="iconfont anticon-app-security app-icon orange pull-left"
@@ -290,7 +290,7 @@
                 </div>
             </div>
             <!-- 停电维护 -->
-            <div class="mui-card card" ng-if="taskData.task_type_id===6" ng-click="gotoHandleTask()">
+            <div class="mui-card card" ng-if="taskData.task_type_id===6 && false" ng-click="gotoHandleTask()">
                 <div class="mui-card-content mui-navigate-right">
                     <div class="mui-card-content-inner" style="padding: 2px 6px;">
                         <i class="iconfont anticon-app-poweroff app-icon orange pull-left"

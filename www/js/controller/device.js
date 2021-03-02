@@ -141,7 +141,7 @@ app.controller('DeviceDetailCtrl', ['$scope', '$rootScope', '$stateParams', 'aja
     };
 }]);
 
-app.controller('DeviceAnalogVarCtrl', ['$scope', 'ajax', '$interval', function ($scope, ajax, $interval) {        //模拟量
+app.controller('DeviceAnalogVarCtrl', ['$scope', 'ajax', '$interval', 'varDataService', function ($scope, ajax, $interval, varDataService) {        //模拟量
 
     var stationSn = GetQueryString('stationSn'), deviceSn=GetQueryString('deviceSn');
     var analogVars = [];
@@ -178,22 +178,11 @@ app.controller('DeviceAnalogVarCtrl', ['$scope', 'ajax', '$interval', function (
     };
 
     function getRealTimeData() {
-        var url = "/devicevars/getrealtimevalues";
         if (analogVars.length){
-            ajax.get({
-                url: url,
-                data: "sns=" + analogVars.join(","),
-                success: function(data) {
-                    $scope.analogValues = data;
-                    $scope.isLoading = false;
-                    $scope.$apply();
-                },
-                error: function(err) {
-                    $.notify.error("获取设备变量实时值失败");
-                    $scope.isLoading = false;
-                    $scope.$apply();
-                    console.log(err);
-                }
+            varDataService.getRealtimeValue(analogVars, function (dataList) {
+                $scope.analogValues = dataList;
+                $scope.isLoading = false;
+                $scope.$apply();
             });
         }else{
             $scope.isLoading = false;
@@ -209,7 +198,7 @@ app.controller('DeviceAnalogVarCtrl', ['$scope', 'ajax', '$interval', function (
     $scope.getDeviceVar();
 }]);
 
-app.controller('DeviceDigitalVarCtrl', ['$scope', 'ajax', '$interval', function ($scope, ajax, $interval) {        //状态量
+app.controller('DeviceDigitalVarCtrl', ['$scope', 'ajax', '$interval', 'varDataService', function ($scope, ajax, $interval, varDataService) {        //状态量
 
     var stationSn = GetQueryString('stationSn'), deviceSn=GetQueryString('deviceSn');
     var digitalVars=[];
@@ -246,22 +235,11 @@ app.controller('DeviceDigitalVarCtrl', ['$scope', 'ajax', '$interval', function 
     };
 
     function getRealTimeData() {
-        var url = "/devicevars/getrealtimevalues";
         if (digitalVars.length){
-            ajax.get({
-                url: url,
-                data: "sns=" + digitalVars.join(","),
-                success: function(data) {
-                    $scope.digitalValues = data;
-                    $scope.isLoading = false;
-                    $scope.$apply();
-                },
-                error: function(err) {
-                    $.notify.error("获取设备变量实时值失败");
-                    $scope.isLoading = false;
-                    $scope.$apply();
-                    console.log(err);
-                }
+            varDataService.getRealtimeValue(digitalVars, function (dataList) {
+                $scope.digitalValues = dataList;
+                $scope.isLoading = false;
+                $scope.$apply();
             });
         }
         else{
@@ -735,7 +713,7 @@ app.controller('DeviceMonitorCtrl', ['$scope', '$stateParams', 'ajax', 'appStore
 
 }]);
 
-app.controller('DeviceRemoteControlCtrl', ['$scope', '$stateParams', '$interval', 'routerService', 'platformService', 'ajax', function ($scope, $stateParams, $interval, routerService, platformService, ajax) {
+app.controller('DeviceRemoteControlCtrl', ['$scope', '$stateParams', '$interval', 'routerService', 'platformService', 'ajax', 'varDataService', function ($scope, $stateParams, $interval, routerService, platformService, ajax, varDataService) {
     $scope.device_sn = $stateParams.deviceSn; // GetQueryString('device_sn');
     $scope.varList = [];
     $scope.confirmVisible = false;
@@ -791,30 +769,25 @@ app.controller('DeviceRemoteControlCtrl', ['$scope', '$stateParams', '$interval'
         $scope.varList.forEach(function (n) {
             sns.push(n.sn);
         });
-        var url = "/devicevars/getrealtimevalues";
-        ajax.get({
-            url: url,
-            data: {sns: sns.join(",")},
-            success: function(data) {
-                $scope.varList.forEach(function (v) {
-                    var exist = false;
-                    for (var i=0; i<data.length; i++) {
-                        if (data[i].var.sn === v.sn) {
-                            if (v.type === 'Digital') {
-                                v.value = data[i].data > 0 ? '1' : '0';
-                            } else {
-                                v.value = (data[i].data === null ? '' : data[i].data) + (data[i].unit || '');
-                            }
-                            exist = true;
-                            break;
+        varDataService.getRealtimeValue(sns, function (data) {
+            $scope.varList.forEach(function (v) {
+                var exist = false;
+                for (var i=0; i<data.length; i++) {
+                    if (data[i].var.sn === v.sn) {
+                        if (v.type === 'Digital') {
+                            v.value = data[i].data > 0 ? '1' : '0';
+                        } else {
+                            v.value = (data[i].data === null ? '' : data[i].data) + (data[i].unit || '');
                         }
+                        exist = true;
+                        break;
                     }
-                    if (!exist) {
-                        v.value = null;
-                    }
-                });
-                $scope.$apply();
-            }
+                }
+                if (!exist) {
+                    v.value = null;
+                }
+            });
+            $scope.$apply();
         });
     }
 
@@ -960,11 +933,11 @@ app.controller('DeviceRemoteControlConfirmCtrl', ['$scope', 'ajax', '$myTranslat
                 $scope.error = $myTranslate.instant('issued failed');
                 $scope.$apply();
             }
-        })
+        });
     }
 }]);
 
-app.controller('VarRealtimeCtrl', ['$scope', 'ajax', '$myTranslate', function ($scope, ajax, $myTranslate) {
+app.controller('VarRealtimeCtrl', ['$scope', 'ajax', '$myTranslate', 'varDataService', function ($scope, ajax, $myTranslate, varDataService) {
 
     var deviceSn=$scope.$parent.deviceSn;
     $scope.realtime = null;       // 实时数据
@@ -1007,54 +980,43 @@ app.controller('VarRealtimeCtrl', ['$scope', 'ajax', '$myTranslate', function ($
             return;
         }
         $scope.isLoading = true;
-        var url = "/devicevars/getrealtimevalues";
-        ajax.get({
-            url: url,
-            data: "sns=" + sns.join(","),
-            success: function(data) {
-                $scope.isLoading = false;
-                if (type === $myTranslate.instant('var.digital')) {   // 状态量
-                    data.forEach(function (n) {
-                        var v = n.data;
-                        var isnull = false;
-                        if (v < 0) { // 值<0表示实际值为NULL，+2=上一次有效值
-                            v += 2;
-                            isnull = true;
-                        }
-                        if (n.data > 0) {
-                            n.value = n.var.one_meaning ? n.var.one_meaning : 'ON';
-                            n.status = 'danger';
-                        } else {
-                            n.value = n.var.zero_meaning ? n.var.zero_meaning : 'OFF';
-                            n.status = 'normal';
-                        }
-                        if (isnull) {
-                            n.value += " ?";
-                        }
-                    });
-                }
-                var dataMap = {};
-                data.forEach(function (d) {
-                    dataMap[d.var.sn] = d;
+        varDataService.getRealtimeValue(sns, function (data) {
+            $scope.isLoading = false;
+            if (type === $myTranslate.instant('var.digital')) {   // 状态量
+                data.forEach(function (n) {
+                    var v = n.data;
+                    var isnull = false;
+                    if (v < 0) { // 值<0表示实际值为NULL，+2=上一次有效值
+                        v += 2;
+                        isnull = true;
+                    }
+                    if (n.data > 0) {
+                        n.value = n.var.one_meaning ? n.var.one_meaning : 'ON';
+                        n.status = 'danger';
+                    } else {
+                        n.value = n.var.zero_meaning ? n.var.zero_meaning : 'OFF';
+                        n.status = 'normal';
+                    }
+                    if (isnull) {
+                        n.value += " ?";
+                    }
                 });
-                var sorted = [];
-                sns.forEach(function (sn) {
-                    sorted.push(dataMap[sn]);
-                });
-                $scope.realtimeValues = sorted;
-                $scope.$apply();
-            },
-            error: function(err) {
-                $.notify.error("获取设备变量实时值失败");
-                $scope.isLoading = false;
-                $scope.$apply();
-                console.log(err);
             }
+            var dataMap = {};
+            data.forEach(function (d) {
+                dataMap[d.var.sn] = d;
+            });
+            var sorted = [];
+            sns.forEach(function (sn) {
+                sorted.push(dataMap[sn]);
+            });
+            $scope.realtimeValues = sorted;
+            $scope.$apply();
         });
     }
 }]);
 
-app.controller('HistoryVarCtrl', ['$scope', 'ajax', '$myTranslate', function ($scope, ajax, $myTranslate) {
+app.controller('HistoryVarCtrl', ['$scope', 'ajax', '$myTranslate', 'varDataService', function ($scope, ajax, $myTranslate, varDataService) {
     $scope.currentGroupName = '';
     $scope.currentGroup = null;
     $scope.history = [];
@@ -1082,23 +1044,16 @@ app.controller('HistoryVarCtrl', ['$scope', 'ajax', '$myTranslate', function ($s
         vars.forEach(function (n) {
             sns.push(n.sn);
         });
-        ajax.get({
-            url: '/devicevars/getstatisticalvalues',
-            data: {
-                sns: sns.join(','),
-                type: $scope.timeRange,
-                calcmethod: 'AVG'
-            },
-            success: function (data) {
-                $scope.isLoading = false;
-                $scope.$apply();
-                drawChart(data);
-            },
-            error: function () {
-                $.notify.error("获取历史趋势数据失败");
-                $scope.isLoading = false;
-                $scope.$apply();
-            }
+        var startTime = $scope.timeRange === 'MONTH' ? moment().format('YYYY-MM-01 00:00:00.000') : moment().format('YYYY-MM-DD 00:00:00.000');
+        var endTime = moment().format('YYYY-MM-DD HH:mm:ss.000');
+        varDataService.getHistoryTrend(sns, startTime, endTime, 'NORMAL', 'AVG', function (data) {
+            $scope.isLoading = false;
+            $scope.$apply();
+            drawChart(data);
+        }, function () {
+            $.notify.error("获取历史趋势数据失败");
+            $scope.isLoading = false;
+            $scope.$apply();
         });
     }
 
