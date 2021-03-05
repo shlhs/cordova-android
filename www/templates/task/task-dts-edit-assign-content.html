@@ -1,0 +1,80 @@
+<div ng-controller="CommonTaskEditAssignCtrl">
+    <header class="mui-bar mui-bar-transparent mui-segmented-control-vertical bg-header" style=" -webkit-box-shadow: none;box-shadow: none;position: relative;">
+        <a class="mui-icon mui-pull-left mui-control-item" style="font-size: 16px;margin-left: 6px;top:5px;" ng-click="cancel()">{{'cancel' |translate}}</a>
+        <h1 class="mui-title" style="font-weight: 400;">{{pageName}}</h1>
+        <a id="dtsEditSubmitBtn" class="mui-icon mui-action-menu mui-pull-right mui-control-item mui-active" style="font-size: 16px;margin-right: 6px;top:5px;" ng-click="submitAndBack()">{{'submit' | translate}}</a>
+    </header>
+    <div class="body-content bg-white">
+        <div class="mui-input-group task-create-rows dts-create-rows" style="padding: 0 12px;">
+            <div class="mui-input-row" ng-if="task.is_defect">
+                <label class="label">{{'dts.level' | translate}}<span style="color:red">*</span></label>
+                <input type="text" name="taskTypeName" ng-model="taskType.name" placeholder="{{'please.select dts.type' | translate}}" required>
+                <button id="taskTypePicker" class="mui-btn mui-btn-block" type="button">&nbsp; </button>
+            </div>
+            <div class="mui-input-row">
+                <label class="label" style="width: 120px;">{{'defect.expecttime' | translate}}<span style="color:red">*</span></label>
+                <input type="text" name="expectTime" ng-model="expectTime" placeholder="{{'please.select defect.expecttime' | myTranslate}}">
+                <button type="button" id='expectedTime1' class="btn mui-btn mui-btn-block" style="position: absolute;left: 120px;"></button>
+                <div class="error" ng-if="error.time">
+                    {{'please.select defect.expecttime' | myTranslate}}
+                </div>
+            </div>
+            <div class="mui-input-row">
+                <label class="label">{{'defect.ops.team' | myTranslate}}<span style="color:red">*</span></label>
+                <div class="right-text" ng-if="selectedTeam">
+                    {{selectedTeam.name}}
+                </div>
+                <div class="right-placeholder" ng-if="!selectedTeam">
+                    {{'please.select defect.ops.team' | myTranslate}}
+                </div>
+                <button type="button" class="btn mui-btn mui-btn-block" ng-click="toggleTeamSelector()" style="position: absolute;top: 0;left: 130px;bottom: 0;">&nbsp;</button>
+                <div class="error" ng-if="error.team">
+                    {{'please.select defect.ops.team' | myTranslate}}
+                </div>
+            </div>
+            <div class="mui-input-row">
+                <label class="label">{{'defect.ops.person' | translate}}<span style="color:red">*</span></label>
+                <div class="right-text" ng-if="selectedUsers.length">
+                    <div ng-repeat="h in selectedUsers">
+                        <a ng-click="callPhone(h.phone)">{{h.name}}</a>
+                    </div>
+                </div>
+                <div class="right-placeholder" ng-if="!selectedUsers.length">
+                    {{'please.select defect.ops.person' | myTranslate}}
+                </div>
+                <button type="button" class="btn mui-btn mui-btn-block" ng-click="toggleHandlerSelector()" style="position: absolute;top: 0;left: 130px;bottom: 0;">&nbsp;</button>
+                <div class="error" ng-if="error.handler">
+                    {{'please.select defect.ops.person' | myTranslate}}
+                </div>
+            </div>
+            <div class="mui-input-row" ng-if="task.is_defect && showRecheck">
+                <label class="label">{{'defect.recheck.team' | translate}}</label>
+                <div class="right-text" ng-if="selectedRecheckTeam">
+                    {{selectedRecheckTeam.name}}
+                </div>
+                <div class="right-placeholder" ng-if="!selectedRecheckTeam">
+                    {{'please.select defect.recheck.team' | myTranslate}}
+                </div>
+                <button type="button" class="btn mui-btn mui-btn-block" ng-click="toggleRecheckTeamSelector()" style="position: absolute;top: 0;left: 130px;bottom: 0;">&nbsp;</button>
+            </div>
+            <div class="mui-input-row" ng-if="task.is_defect && showRecheck">
+                <label class="label">{{'defect.recheck.person' | translate}}</label>
+                <div class="right-text" ng-if="selectedRecheckUsers.length">
+                    <div ng-repeat="h in selectedRecheckUsers">
+                        <a ng-click="callPhone(h.phone)">{{h.name}}</a>
+                    </div>
+                </div>
+                <div class="right-placeholder" ng-if="!selectedRecheckUsers.length">
+                    {{'defect.recheck.persion.empty' | translate}}
+                </div>
+                <button type="button" class="btn mui-btn mui-btn-block" ng-click="toggleRecheckHandlerSelector()" style="position: absolute;top: 0;left: 130px;bottom: 0;">&nbsp;</button>
+            </div>
+        </div>
+    </div>
+    <div ng-if="teamInited">
+        <operator-team-selector default-team="selectedTeam" teams="teams" visible="teamVisible" callback="onSelectedTeam" on-hide="toggleTeamSelector"></operator-team-selector>
+        <handlers-selector default-users="selectedUsers" users="selectedTeamUsers" multiple visible="handlerVisible" callback="onSelectedUsers" on-hide="toggleHandlerSelector"></handlers-selector>
+        <operator-team-selector default-team="selectedRecheckTeam" teams="teams" visible="recheckTeamVisible" callback="onSelectedRecheckTeam" on-hide="toggleRecheckTeamSelector"></operator-team-selector>
+        <handlers-selector default-users="selectedRecheckUsers" users="selectedRecheckTeamUsers" multiple visible="recheckHandlerVisible" callback="onSelectedRecheckUsers" on-hide="toggleRecheckHandlerSelector"></handlers-selector>
+    </div>
+</div>
