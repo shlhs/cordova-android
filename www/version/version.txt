@@ -1,11 +1,11 @@
 {
-	"versionCode": 240,
-	"versionName": "2.4.0",
+	"versionCode": 250,
+	"versionName": "2.5.0",
 	"description": "",
-	"downloadUrl": "http://47.112.124.147:8123/version/comking-2.4.0.apk",
+	"downloadUrl": "http://47.112.124.147:8123/version/release.apk",
 	"isLaunched": true,
 	"isGatedLaunch": true,
 	"forceUpdate": false,
 	"whiteList": ["zoujian"],
-	"webVersion": "20201210 15:40"
+	"webVersion": "20210315 15:40"
 }

@@ -4380,7 +4380,7 @@ var defaultOptions = {
     kind: OptionKind.WORKER
   },
   workerSrc: {
-    value: '/components/pdfjs/build/pdf.worker.js',
+    value: './dist/pdf.worker.js',
     kind: OptionKind.WORKER
   }
 };

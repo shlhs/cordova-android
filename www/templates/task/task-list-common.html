@@ -7,38 +7,39 @@
                     <div class="main-body">
                         <div class="mui-media-body task-main">
                             <h4 class="mui-ellipsis task-title" style="margin-top: 0">
-                                <img class="mui-pull-left task-icon" src="/img/task_type_{{task.task_type_id}}@2x.png">
+                                <!--<img class="mui-pull-left task-icon" src="/img/task_type_{{task.task_type_id}}@2x.png">-->
+                                <i class="task-icon iconfont anticon-task-{{task.iconClass}}"></i>
                                 <strong class="task-type" ng-class="{'ergent': task.task_type_id===TaskTypes.Qiangxiu}">{{task.task_type_name}}</strong>
                             </h4>
                         </div>
                     </div>
                     <div class="sub-body task-infos">
-                        <p class="task-name">
+                        <p class="task-name mui-ellipsis">
                             {{task.name}}
                         </p>
                         <div ng-if="task.station_name && !isDeviceOps">
-                            <span class="task-info-label">站点名称：</span>
+                            <span class="task-info-label">{{'station' | translate}}：</span>
                             <span class="task-info-value">{{task.station_name}}</span>
                         </div>
                         <div ng-if="!task.finish_time">
-                            <span class="task-info-label">{{task.riplan_create_time ? '启动时间：' : '创建时间：'}}</span>
+                            <span class="task-info-label">{{task.riplan_create_time ? ('start time' | myTranslate) + '：' : ('create time' | myTranslate) + '：'}}</span>
                             <span class="task-info-value" ng-if="!task.isToStart">{{task.create_time}}</span>
                             <span class="task-info-value" ng-if="task.isToStart" style="color: rgb(70, 190, 138);">{{task.create_time}}</span>
                         </div>
                         <div ng-if="task.stage_id !== TaskStatus.Closed">
-                            <span class="task-info-label">当前处理人：</span>
+                            <span class="task-info-label">{{'task.person.current' | translate}}：</span>
                             <span class="task-info-value">{{task.current_handler_name}}</span>
                         </div>
                         <div ng-if="task.finish_time">
-                            <span class="task-info-label">完成时间：</span>
+                            <span class="task-info-label">{{'task.time.finished' | translate}}：</span>
                             <span class="task-info-value" ng-class="{'timeout': task.isTimeout}">{{task.finish_time}}</span>
                         </div>
                         <div ng-if="task.task_type_id === TaskTypes.Xunjian && (task.stage_id === TaskStatus.Closed || task.stage_id === TaskStatus.ToClose)">
-                            <span class="task-info-label">巡检结果：</span>
+                            <span class="task-info-label">{{'inspection result' | myTranslate}}：</span>
                             <span class="task-info-value" ng-switch="task.device_record.status">
-                                <span ng-switch-when="1" style="color: #44D36B;">正常</span>
-                                <span ng-switch-when="2" style="color: #ff0000;">有异常</span>
-                                <span ng-switch-default>未巡检</span>
+                                <span ng-switch-when="1" style="color: #44D36B;">{{'inspect.result.normal' | translate}}</span>
+                                <span ng-switch-when="2" style="color: #ff0000;">{{'inspect.result.abnormal' | translate}}</span>
+                                <span ng-switch-default>{{'inspect.result.uncheck' | translate}}</span>
                             </span>
                         </div>
                         <!--<div ng-if="task.task_type_id === TaskTypes.Xunjian && (task.stage_id !== TaskStatus.Closed && task.stage_id !== TaskTypes.ToClose)">-->
@@ -52,8 +53,9 @@
                     </div>
                     <div class="task-status">
                         <!--<span style="color: #6f6f6f;margin: 0 2px;">{{task.current_handler_name}}</span>{{task.stage_name}}-->
-                        <span ng-if="!task.isMyself" style="color: #6f6f6f;">{{task.stage_name}}</span>
-                        <span ng-if="task.isMyself" style="color: #586bf3;">{{task.stage_name}}</span>
+                        <span class="recheck" ng-if="task.recheck_stage_name">{{task.recheck_stage_name}}</span>
+                        <span ng-if="!task.isMyself" class="not-mine">{{task.stage_name}}</span>
+                        <span ng-if="task.isMyself" style="margin-left: 2px;">{{task.stage_name}}</span>
                     </div>
                 </div>
             </li>
@@ -61,21 +63,21 @@
         <div class="page-alert-wrapper" ng-if="tasks.length==0 && !isLoading && !loadingFailed">
             <div class="page-alert">
                 <i class="alert-icon no-task"></i>
-                <div class="alert-text info">无记录</div>
+                <div class="alert-text info">{{'none task.orders' | myTranslate}}</div>
             </div>
         </div>
     </div>
     <div class="page-alert-wrapper" ng-if="isLoading">
         <div class="page-alert">
-            <img src="../../img/page-loading.gif" class="loading-img">
-            <div class="alert-text info">正在加载...</div>
+            <img src="/img/page-loading.gif" class="loading-img">
+            <div class="alert-text info">{{'loading' | translate}}...</div>
         </div>
     </div>
     <div class="page-alert-wrapper" ng-if="loadingFailed">
         <div class="page-alert">
             <i class="alert-icon warning"></i>
-            <div class="alert-text info">加载失败，请检查网络</div>
-            <div class="alert-reload" ng-click="getDataList()">重新加载</div>
+            <div class="alert-text info">{{'tip.load.failed.network' | translate}}</div>
+            <div class="alert-reload" ng-click="getDataList()">{{'reload' | translate}}</div>
         </div>
     </div>
 </div>
