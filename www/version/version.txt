@@ -2,7 +2,7 @@
 	"versionCode": 250,
 	"versionName": "2.5.0",
 	"description": "",
-	"downloadUrl": "http://47.112.124.147:8123/version/release.apk",
+	"downloadUrl": "http://47.112.124.147:8123/version/comking.apk",
 	"isLaunched": true,
 	"isGatedLaunch": true,
 	"forceUpdate": false,
