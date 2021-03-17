@@ -65,7 +65,7 @@ const connect = require("gulp-connect");
 
 gulp.task('compress-img', function () {
     gulp.src(folder.src + "img/**")
-        .pipe(imageMin())
+        // .pipe(imageMin())
         .pipe(gulp.dest(folder.dist + "img/"));
 });
 
