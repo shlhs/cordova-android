@@ -943,6 +943,7 @@ app.controller('KanbanCtrl', function ($scope, $stateParams, ajax, $timeout) {
 
 app.controller('SiteOverviewCtrl', function ($scope, ajax, varDataService) {
     var stationData = null;
+    var pfvSetting = null;
     $scope.fuheLoading = true; // 负荷数据获取
     $scope.fuheError = null; // 负荷变量错误
     $scope.electricLoading = true; // 电量获取
@@ -952,16 +953,25 @@ app.controller('SiteOverviewCtrl', function ($scope, ajax, varDataService) {
     $scope.realtimeLoad = '-'; // 实时负荷
     var realtimeLoadInterval = null;
 
-    ajax.get({
-        url: '/stations/' + $scope.sn,
-        success: function (data) {
-            stationData = data;
-            getLoadTrend(data.realtime_load_var);
-            getLoadRealtime(data.realtime_load_var);
-            getElectricData(data.sum_epf_var);
-            $scope.$apply();
-        }
+    $scope.$on('$destroy', function () {
+       if (realtimeLoadInterval) {
+           clearInterval(realtimeLoadInterval);
+           realtimeLoadInterval = null;
+       }
     });
+
+    setTimeout(function () {
+        ajax.get({
+            url: '/stations/' + $scope.sn,
+            success: function (data) {
+                stationData = data;
+                getLoadTrend(data.realtime_load_var);
+                getLoadRealtime(data.realtime_load_var);
+                getElectricData(data.sum_epf_var);
+                $scope.$apply();
+            }
+        });
+    }, 300);
 
     function getLoadRealtime(varSn) {
         if (!varSn) {
@@ -1046,19 +1056,40 @@ app.controller('SiteOverviewCtrl', function ($scope, ajax, varDataService) {
                     p: [],
                     s: [],
                     v: [],
-                    f: []
+                    f: [],
+                    all: [],
                 };
                 var times = [];
+                var degreePfvValidCount = {p: 0, s: 0, v: 0, f: 0};
                 dataList.forEach(function (item) {
                     var d = Number.parseInt(item.time.substring(8, 10), 10);
                     times.push(d + '日');
+                    degrees.all.push(item.all_degree);
                     degrees.p.push(item.p_degree);
+                    if (item.p_degree) {
+                        degreePfvValidCount.p = 1;
+                    }
                     degrees.f.push(item.f_degree);
+                    if (item.f_degree) {
+                        degreePfvValidCount.f = 1;
+                    }
                     degrees.v.push(item.v_degree);
+                    if (item.v_degree) {
+                        degreePfvValidCount.v = 1;
+                    }
                     degrees.s.push(item.s_degree);
+                    if (item.s_degree) {
+                        degreePfvValidCount.s = 1;
+                    }
                 });
-                paintElectricDegreeTrend(times, degrees);
-                paintElectricDegreeBar(degrees);
+                var validDegree = degreePfvValidCount.p + degreePfvValidCount.s + degreePfvValidCount.v + degreePfvValidCount.f;
+                if (validDegree > 1) { // 如果没有配置峰谷平 或 配置了不分时电价，则不显示峰谷平占比饼图
+                    paintElectricDegreeTrendByPfv(times, degrees);
+                    document.getElementById('pidCard').style.display = 'block';
+                    paintElectricDegreeBar(degrees);
+                } else {
+                    paintElectricDegreeTrendByAllDegree(times, degrees.all);
+                }
             }
 
         });
@@ -1139,8 +1170,8 @@ app.controller('SiteOverviewCtrl', function ($scope, ajax, varDataService) {
         'f': 'rgba(136, 169, 248, 1)',
         's': 'rgba(254,139,106, 1)',
     };
-
-    function paintElectricDegreeTrend(times, data) {
+    // 按峰谷平显示月趋势
+    function paintElectricDegreeTrendByPfv(times, data) {
         var series = [];
         ['s', 'p', 'f', 'v'].forEach(function (key) {
             series.push({
@@ -1167,6 +1198,53 @@ app.controller('SiteOverviewCtrl', function ($scope, ajax, varDataService) {
                     });
                     return lines.join('');
                 }
+            },
+            legend: {
+                bottom: -5,
+                textStyle: {
+                    fontSize: 9,
+                    lineHeight: 10
+                },
+                itemWidth: 15,
+                itemHeight: 10
+            },
+            grid: {
+                top: 15,
+                left: 4,
+                right: 2,
+                bottom: 20,
+                containLabel: true
+            },
+            toolbox: {
+                feature: {
+                    saveAsImage: false
+                }
+            },
+            xAxis: {
+                type: 'category',
+                data: times
+            },
+            yAxis: {
+                name: 'kWh'
+            },
+            series: series
+        };
+        echarts.init(document.getElementById('electricChart')).setOption(option);
+    }
+
+    // 用all_degree显示月趋势
+    function paintElectricDegreeTrendByAllDegree(times, data) {
+        var series = [{
+            type: 'bar',
+            name: '按日',
+            data: data,
+            color: '#8f79ff'
+        }];
+
+        var option = {
+            tooltip: {
+                trigger: 'axis',
+                confine: true,
             },
             legend: {
                 bottom: -5,

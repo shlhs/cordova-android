@@ -6,6 +6,7 @@ var app = angular.module('myApp', ['ngAnimate', 'ui.router', 'ui.router.state.ev
 var defaultPlatIpAddr = "http://106.14.60.253";     // 平台默认ip，格式为：http://118.190.51.135
 var defaultThumborHost = "";        // 缩放图的host，空则使用defaultPlatIpAddr
 var gShowEnergyPage = false;     // 是否显示能效页面，不显示能效页面时运维人员会看到抢单页面
+var gIsEnergyPlatform = false; // 是否能效系统
 
 app.run(function ($animate) {
     $animate.enabled(true);
@@ -27,8 +28,60 @@ app.filter(
     }]
 );      // html显示字符串
 
+app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider){
 
-app.controller('MainCtrl', function ($scope, $rootScope, userService, routerService, cordovaService) {
+    $stateProvider
+        .state('base', {
+            url: '/'
+        })
+        .state('welcome', {
+            url:'/welcome',
+            templateUrl: 'templates/welcome.html'
+        })
+        .state('login', {
+            url: '/login',
+            templateUrl: 'templates/login.html'
+        })
+        .state('index', {
+            url: '/index',
+            templateUrl: 'templates/home.html'
+        })
+    ;
+
+    // 设置相关
+    $stateProvider
+        .state('index.account', {
+            url: 'account/',
+            templateUrl: 'templates/setting/account.html'
+        })
+        .state('index.company', {
+            url: 'company',
+            templateUrl: 'templates/setting/company.html',
+            params: {
+                company: null
+            }
+        })
+        .state('index.share', {
+            url: 'share',
+            templateUrl: 'templates/setting/share.html'
+        })
+        .state('index.account.password', {
+            url: 'password',
+            templateUrl: 'templates/setting/password_setter.html'
+        })
+    ;
+
+    $urlRouterProvider.when('/', '/');
+    $urlRouterProvider.when('', '/');
+}]);
+
+app.controller('MainCtrl', function ($scope, $rootScope, userService, routerService, $state, $location) {
+
+    setTimeout(function () { // 解决最新版本打开后出现白屏的问题
+        if ($location.$$path === '' || $location.$$path === '/') { // 如果打开的是首页，则跳转到欢迎页
+            $state.go('welcome');
+        }
+    }, 150);
 
     $scope.openPage = function(scope, template, params, config){
         routerService.openPage(scope, template, params, config);
@@ -703,7 +756,8 @@ app.controller('mapCtrl', function ($scope, $timeout, cordovaService) {
         }
 
         $scope.$apply();
-        if (cordovaService.deviceReady) {
+        // if (cordovaService.deviceReady) {
+        if (false) { // 不获取用户位置
             navigator.geolocation.getCurrentPosition(function (position) {
                 var longtitude = position.coords.longtitude;
                 var latitude = position.coords.latitude;

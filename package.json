@@ -4,28 +4,24 @@
   "displayName": "HelloWorld",
   "cordova": {
     "plugins": {
-      "cordova-plugin-device": {},
-      "cordova-plugin-wkwebview-engine": {},
-      "cordova-plugin-screen-orientation": {},
+      "cordova-plugin-wkwebview-file-xhr": {},
       "cordova-plugin-inappbrowser": {},
-      "cordova-plugin-wkwebview-file-xhr": {}
+      "cordova-plugin-screen-orientation": {}
     },
     "platforms": [
-      "android",
       "ios"
     ]
   },
   "dependencies": {
-    "cordova-android": "^5.2.2",
-    "cordova-ios": "5.1.1",
-    "cordova-plugin-device": "^2.0.3",
-    "cordova-plugin-inappbrowser": "^4.0.0",
-    "cordova-plugin-screen-orientation": "^3.0.2",
-    "cordova-plugin-wkwebview-engine": "^1.2.1",
-    "cordova-plugin-wkwebview-file-xhr": "^2.1.4",
     "gulp": "^3.9.1",
     "gulp-less": "^3.3.2",
     "gulp-webserver": "^0.9.1",
     "pinch-zoom-js": "^2.0.1"
+  },
+  "devDependencies": {
+    "cordova-ios": "^6.2.0",
+    "cordova-plugin-inappbrowser": "^4.0.0",
+    "cordova-plugin-screen-orientation": "^3.0.2",
+    "cordova-plugin-wkwebview-file-xhr": "^3.0.0"
   }
 }

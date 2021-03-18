@@ -7,20 +7,14 @@
     "files": {}
   },
   "installed_plugins": {
-    "cordova-plugin-device": {
-      "PACKAGE_NAME": "$(PRODUCT_BUNDLE_IDENTIFIER)"
-    },
-    "cordova-plugin-wkwebview-engine": {
-      "PACKAGE_NAME": "$(PRODUCT_BUNDLE_IDENTIFIER)"
+    "cordova-plugin-inappbrowser": {
+      "PACKAGE_NAME": "com.cloud.dnt"
     },
     "cordova-plugin-screen-orientation": {
-      "PACKAGE_NAME": "$(PRODUCT_BUNDLE_IDENTIFIER)"
-    },
-    "cordova-plugin-inappbrowser": {
-      "PACKAGE_NAME": "$(PRODUCT_BUNDLE_IDENTIFIER)"
+      "PACKAGE_NAME": "com.cloud.dnt"
     },
     "cordova-plugin-wkwebview-file-xhr": {
-      "PACKAGE_NAME": "$(PRODUCT_BUNDLE_IDENTIFIER)"
+      "PACKAGE_NAME": "com.cloud.dnt"
     }
   },
   "dependent_plugins": {}

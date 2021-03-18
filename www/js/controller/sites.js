@@ -84,7 +84,7 @@ app.controller('SiteListCtrl', function ($scope, $http, $state, userService, aja
                         });
                     }
                     var platFuncs = response.plat_function_switch ? JSON.parse(response.plat_function_switch) : null;
-                    appStoreProvider.setMenuSns(menuSns, platFuncs);
+                    appStoreProvider.setMenuSns(menuSns, platFuncs, $scope.role);
                     $scope.$emit('$onMenuUpdate', !platFuncs || platFuncs.opsManagement, menuSns);
                     $scope.selectedApps = appStoreProvider.getSelectedApps();
                     $scope.$apply();
@@ -117,6 +117,7 @@ app.controller('SiteListCtrl', function ($scope, $http, $state, userService, aja
 app.controller('SiteTreeCtrl', function ($scope, $stateParams) {
     // $scope.onSelect = $stateParams.onSelect;
     // $scope.selectedSn = $stateParams.selectedSn;
+    $scope.searchText = '';
     $scope.data = JSON.parse(JSON.stringify($scope.sitesTree));
     $scope.itemExpended = function(item, $event){
         item.$$isExpend = ! item.$$isExpend;
@@ -145,12 +146,11 @@ app.controller('SiteTreeCtrl', function ($scope, $stateParams) {
         }
     };
 
-    $scope.searchInputChange = function (input) {
-        var value = input.value.toLowerCase().trim();
+    $scope.searchInputChange = function () {
+        var value = $scope.searchText.toLowerCase().trim();
         $scope.data.forEach(function (child) {
             search(child, value);
         });
-        $scope.$apply();
     };
 
     function search(data, input) {
