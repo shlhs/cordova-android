@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.cloud.dnt" version="1.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>DNT</name>
+<widget id="com.nanzi.dianguanjia" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>Nanzi</name>
     <description>
-        电力运维系统
+        SN物联云
     </description>
-    <author email="isdavid@126.com" href="http://www.uscada.com/">
+    <author email="shnz@shnanzi.com" href="http://www.shnanzi.com">
         罗湖斯自动化技术有限公司
     </author>
     <content src="index.html" />
