@@ -1,73 +1,85 @@
 <div>
     <div style="padding: 12px 0 4px 12px; font-size: 14px;">
-        <strong>检查项：检查项{{total}}个，异常项{{exception}}个</strong>
+        <strong class="title-left-border">{{'inspect.check.item' | translate}}：{{total}}{{'unit.count' | translate}}，{{'inspect.check.items.abnormal' | myTranslate}}：{{exception}}{{'unit.count' | translate}}</strong>
         <a style="margin-left: 16px;" ng-click="onExpandItems()">
-            <span ng-if="!expandItems">显示检查项<i class="navigate-down" /></span>
-            <span ng-if="expandItems">隐藏检查项<i class="navigate-up" /></span>
+            <span ng-if="!expandItems">{{'expand' | myTranslate}}<i class="navigate-down"></i></span>
+            <span ng-if="expandItems">{{'collapse' | myTranslate}}<i class="navigate-up"></i></span>
         </a>
     </div>
     <div ng-repeat="item in checkItems" class="check-item" ng-show="expandItems">
         <div>
-            <label class="title">检查项{{$index+1}}：</label>{{item.name}}
+            <label class="title">{{ 'inspect.check.item' | myTranslate }} {{$index+1}}：</label>{{item.name}}
         </div>
-        <div><label class="title">正常结果：</label>{{item.reference_relation}} {{item.reference_value}}</div>
-        <div ng-if="item.desp"><label class="title">检查方法：</label>{{item.desp}}</div>
-        <div>
-            <label class="title">检查结果：</label>
-            <label ng-if="!canEdit && item.pass === 1" class="text-normal">正常</label>
-            <label ng-if="!canEdit && item.pass === 2" class="text-danger">异常</label>
+        <div><label class="title">{{ 'inspect.check.reference' | myTranslate }}：</label>{{item.reference_relation}} {{item.reference_value}}</div>
+        <div ng-if="item.desp"><label class="title">{{ 'inspect.check.step.info' | myTranslate }}：</label>{{item.desp}}</div>
+        <div ng-if="showResult">
+            <label class="title">{{'result' | myTranslate}}：</label>
+            <label ng-if="!canEdit && item.pass === 1" class="text-normal">{{'inspect.result.normal' | translate}}</label>
+            <label ng-if="!canEdit && item.pass === 2" class="text-danger">{{ 'inspect.result.abnormal' | translate}}</label>
             <label style="float: right" ng-if="canEdit">
-                <button class="item-pass" ng-class="{normal: item.pass !== 2}" ng-click="setItemPass(item, 1)">正常</button>
-                <button class="item-pass" ng-class="{normal: item.pass === 2}" ng-click="setItemPass(item, 2)">异常</button>
+                <button class="item-pass" ng-class="{normal: item.pass !== 2}" ng-click="setItemPass(item, 1)">{{ 'inspect.result.normal' | translate }}</button>
+                <button class="item-pass" ng-class="{exception: item.pass === 2}" ng-click="setItemPass(item, 2)">{{ 'inspect.result.abnormal' | translate }}</button>
             </label>
         </div>
-        <div ng-if="item.pass !== 2">
-            <label class="title">结果描述：</label><input placeholder="请输入结果数值" ng-model="item.result_desp" ng-if="canEdit"><label ng-if="!canEdit">{{item.result_desp}}</label>
+        <div ng-if="showResult && item.pass !== 2">
+            <label class="title">{{'result description' | myTranslate}}：</label>
+            <input placeholder="{{'please.input value' | myTranslate}}" ng-model="item.result_desp" ng-if="canEdit"><label ng-if="!canEdit">{{item.result_desp}}</label>
         </div>
-        <div ng-if="item.pass === 2">
-            <label class="title">异常描述：</label><input placeholder="请输入异常描述" ng-model="item.result_desp" ng-if="canEdit"><label ng-if="!canEdit">{{item.result_desp}}</label>
+        <div ng-if="showResult && item.pass === 2">
+            <label class="title">{{'inspect.result.unusual description' | myTranslate}}：</label>
+            <input placeholder="{{'please describe abnormal appearance' | myTranslate}}" ng-model="item.result_desp" ng-if="canEdit" ng-blur="onItemInputBlur(item)">
+            <label ng-if="!canEdit">{{item.result_desp}}</label>
         </div>
         <div>
-            <image-uploader images="item.images" row-count="6" style="margin-left: -16px;padding-bottom: 0;width: calc(100% + 32px);" ng-if="canEdit && item.pass === 2"></image-uploader>
+            <image-uploader images="item.images" row-count="6" style="padding-bottom: 0;" ng-if="canEdit && item.pass === 2"></image-uploader>
             <image-grid-list images="item.images" ng-if="!canEdit"></image-grid-list>
         </div>
     </div>
 </div>
-<div style="padding: 8px 0 4px 12px; font-size: 14px;border-top: 10px solid #fff;">
-    <strong>设备巡检结果</strong>
+<div style="padding: 8px 0 4px 12px; font-size: 14px;">
+    <strong class="title-left-border">{{'device inspection result' | myTranslate}}</strong>
     <span ng-if="!canEdit">：
-        <span class="text-normal" ng-if="result.status === '1'">正常</span>
-        <span class="text-danger" ng-if="result.status === '2'">异常</span>
+        <span class="text-normal" ng-if="result.status === '1'">{{ 'inspect.result.normal' | translate }}</span>
+        <span class="text-danger" ng-if="result.status === '2'">{{ 'inspect.result.abnormal' | translate }}</span>
     </span>
 </div>
-<div class="card" style="padding-top: 0;">
+<div class="card" style="padding-top: 0;" ng-if="showResult">
     <div class="card-content">
         <div class="device-check-pass-result" ng-if="canEdit">
             <div ng-class="{'checked': result.status !== '2'}" ng-click="setDevicePass('1')">
-                <i class="radio"></i><label>正常</label>
+                <i class="radio"></i><label>{{ 'inspect.result.normal' | translate }}</label>
             </div>
-            <div ng-class="{'checked': result.status === '2'}" ng-click="setDevicePass('2')">
-                <i class="radio"></i><label>异常</label>
+            <div ng-class="{'checked danger': result.status === '2'}" ng-click="setDevicePass('2')">
+                <i class="radio"></i><label>{{ 'inspect.result.abnormal' | translate }}</label>
             </div>
         </div>
-        <div ng-if="result.status === '2'">
-            <div style="color: #333;font-size: 13px;margin: 10px 0 4px 0;">异常情况描述
-                <span style="color: red;margin-left: 2px;font-weight: 600;" ng-if="canEdit">*</span>
-                <div style="font-size: 13px;float: right" ng-click="setEnableDtsSubmit()" ng-if="canEdit">
-                    <label class="mui-checkbox mui-left checkbox-square">
-                        <a class="checkbox" ng-class="{checked: enableSubmitDts}" style="font-size: 13px;"></a>
-                    </label>
-                    <label>自动将异常提交为缺陷单</label>
-                </div>
-            </div>
-            <textarea rows="4" placeholder="{{canEdit ? '请输入设备异常情况描述' : ''}}" name="name" ng-model="result.desp" ng-disabled="!canEdit" required
-                      style="background-color: #F4F5F6; border: none;border-radius: 4px;font-size: 12px;padding: 8px;margin: 0;"></textarea>
-            <label class="error" style="font-size: 12px;color: #ff0000;" ng-if="!result.desp">
-                请输入异常描述
-            </label>
-            <div style="color: #333;font-size: 13px;font-weight: 600;margin: 6px 0 4px 0;">设备图片</div>
-            <image-uploader images="result.images" ng-if="canEdit" style="margin-left: -16px;width: calc(100% + 32px)"></image-uploader>
-        </div>
+        <textarea rows="4" placeholder="{{canEdit ? ('inspect.check.device.desp' | translate) : ''}}" name="name" ng-model="result.desp" ng-disabled="!canEdit" required
+                  style="border: none;border-radius: 4px;font-size: 12px;padding: 8px;margin: 8px 0 0 0;" ng-if="canEdit || result.desp"></textarea>
+        <div style="font-size: 13px;font-weight: 600;margin: 6px 0 4px 0;">{{'device photos' | myTranslate}}</div>
+        <image-uploader images="result.images" ng-if="canEdit"></image-uploader>
         <image-grid-list images="result.images" ng-if="!canEdit && result.images.length"></image-grid-list>
+
     </div>
 </div>
+<div class="card" ng-if="canEdit">
+    <a class="mui-tab-item1 mui-active mui-checkbox checkbox-square" style="width: auto;" href="javascript:void(0)">
+        <label class="checkbox text-link" ng-class="{checked: autoSubmitDts}" ng-click="setSubmitDts()">
+            <span style="margin-left: 2px;font-size: 13px;" class="color-danger">{{'inspect.tip.submitdefect' | translate}}</span>
+        </label>
+    </a>
+    <div id="dtsCreateContent" style="display: none;" class="mui-input-group task-create-rows dts-create-rows create-form no-border">
+        <div class="mui-input-row" style="margin: 0">
+            <label class="label required">{{'dts.level' | translate}}</label>
+            <input type="text" name="taskTypeName" ng-model="selectedDtsLevel.name" placeholder="{{'please.select dts.level' | myTranslate}}" required style="width: calc(100% - 90px)">
+            <button id="dtsLevelPicker" class="mui-btn mui-btn-block" type="button">&nbsp; </button>
+        </div>
+        <div class="mui-input-row" style="margin: 0">
+            <label class="label">{{'ops.security.item.type' | translate}}</label>
+            <input type="text" name="defectType" ng-model="selectedDtsType.name" placeholder="{{'defect.type.input' | translate}}" style="width: calc(100% - 90px);">
+            <button id="dtsTypePicker" class="mui-btn mui-btn-block" type="button" style="float: right;width: auto;">{{'select' | translate}}</button>
+        </div>
+    </div>
+</div>
+<!--<div class="card" ng-if="result.dts_task_ids">-->
+    <!--<a ng-click="openDts()" style="font-size: 13px;">{{'inspect.view.dts' | translate}}</a>-->
+<!--</div>-->

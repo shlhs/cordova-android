@@ -1,29 +1,4 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-    <meta charset="utf-8">
-    <title>缺陷提交</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-
-    <!--标准mui.css-->
-    <link rel="stylesheet" href="../../components/mui/css/mui.min.css">
-    <link rel="stylesheet" href="../../components/mui/css/mui.picker.min.css">
-    <link rel="stylesheet" href="../../components/libs/font-awesome-4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="../../css/my.css" />
-    <link rel="stylesheet" href="../../css/task.css" />
-    <link rel="stylesheet" href="../../css/icon.css" />
-    <script type="text/javascript" src="../../components/libs/jquery-2.1.4.min.js"></script>
-    <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
-    <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
-    <script type="text/javascript" src="../../components/angular-animate/angular-animate.js"></script>
-    <script type="text/javascript" src="../../components/angular-ui-router/release/stateEvents.min.js"></script>
-    <script type="text/javascript" src="../../js/app/utils.js"></script>
-    <script type="text/javascript" src="../../js/app/app.js"></script>
-    <script type="text/javascript" src="../../js/service/common-service.js"></script>
-    <script type="text/javascript" src="../../js/controller/dts.js"></script>
+<div class="mui-page">
     <style>
         .mui-input-row label{
             width: 160px;
@@ -36,6 +11,7 @@
         }
         .mui-input-row label~input, .mui-input-row label~select, .mui-input-row label~textarea{
             width: calc(100% - 160px);
+            right: auto !important;
         }
         .mui-input-group:before{
             display: none;
@@ -70,44 +46,9 @@
             position: absolute;
         }
     </style>
-</head>
-
-<body class="mui-android mui-android-5 mui-android-5-1 mui-android-5-1-1" ng-app="myApp">
-
-<header class="mui-bar bg-header mui-segmented-control-vertical">
-    <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back btn-back" onclick="pageBack()"></a>
-    <h1 class="mui-title">缺陷提交</h1>
-</header>
-<div ng-include="'/templates/dts/dts-create-content.html'"></div>
-
-<script src="../../components/mui/js/mui.min.js"></script>
-<script src="../../components/fastclick-master/lib/fastclick.js"></script>
-<script src="../../components/mui/js/mui.picker.min.js"></script>
-<script src="../../components/mui/js/mui.poppicker.js"></script>
-<script src="../../components/slides-playing/js/jquery.slides.js"></script>
-<script src="../../js/my/notify.js"></script>
-<script>
-    mui.init({
-        swipeBack:true //启用右滑关闭功能
-    });
-//    document.getElementsByClassName('mui-switch')[0].addEventListener('toggle', function(event) {
-//        var scope = $('div[ng-controller="DtsCreateCtrl"]').scope();
-//        //event.detail.isActive 可直接获取当前状态
-//        if (event.detail.isActive){ //开关打开，为抢单任务
-//            var handlerBtn = document.getElementById('handlerPicker');
-//            handlerBtn.disabled = true;
-//            $(handlerBtn.parentNode).addClass('disabled');
-//            scope.toggleTaskType();
-//            // 抢单任务没有责任人
-//
-//        }else{
-//            var handlerBtn = document.getElementById('handlerPicker');
-//            handlerBtn.disabled = false;
-//            $(handlerBtn.parentNode).removeClass('disabled');
-//            scope.toggleTaskType();
-//        }
-//    });
-</script>
-</body>
-
-</html>
+    <header class="mui-bar bg-header mui-segmented-control-vertical">
+        <a class="mui-icon  mui-icon-left-nav mui-pull-left btn-back" onclick="history.back()"></a>
+        <h1 class="mui-title">{{'dts.create' | translate}}</h1>
+    </header>
+    <div ng-include="'/templates/dts/dts-create-content.html'"></div>
+</div>

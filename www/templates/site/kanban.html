@@ -7,27 +7,19 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta http-equiv="Access-Control-Allow-Origin" content="*">
-    <link rel="stylesheet" href="../../components/mui/css/mui.min.css">
-    <link rel="stylesheet" href="../../css/my.css">
-    <link rel="stylesheet" href="../../css/icon.css">
-    <link rel="stylesheet" href="../../css/animate.css">
-    <link rel="stylesheet" href="../../components/mui/css/icons-extra.css">
-    <link rel="stylesheet" href="../../css/setting.css">
-    <!--<script type="text/javascript" src="../../cordova.js"></script>-->
-    <!--<script type="text/javascript" src="../../cordova_plugins.js"></script>-->
-    <script type="text/javascript" src="../../components/libs/jquery-2.1.4.min.js"></script>
-    <script type="text/javascript" src="../../components/angular/angular.min.js"></script>
-    <script type="text/javascript" src="../../components/angular-ui-router/release/angular-ui-router.min.js"></script>
-    <!--<script type="text/javascript" src="components/ui-router-extras/release/ct-ui-router-extras.js"></script>-->
-    <script type="text/javascript" src="../../components/angular-animate/angular-animate.js"></script>
-    <script type="text/javascript" src="../../components/angular-ui-router/release/stateEvents.min.js"></script>
+    <link rel="stylesheet" href="/css/all.css">
+    <script type="text/javascript" src="../../lib/jquery-3.5.0.min.js"></script>
+    <script type="text/javascript" src="../../lib/angular/angular.min.js"></script>
+    <script type="text/javascript" src="../../lib/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script type="text/javascript" src="../../lib/angular-animate/angular-animate.js"></script>
+    <script type="text/javascript" src="../../lib/angular-ui-router/release/stateEvents.min.js"></script>
     <script type="text/javascript" src="../../js/app/utils.js"></script>
     <script type="text/javascript" src="../../js/app/app.js"></script>
     <script type="text/javascript" src="../../js/controller/sites.js"></script>
     <script type="text/javascript" src="../../js/service/common-service.js"></script>
     <script type="text/javascript" src="../../js/service/appstore.js"></script>
     <script src="../../js/controller/kanban.js"></script>
-    <!--<script src="../../components/libs/echarts-all.js"></script>-->
+    <!--<script src="../../lib/libs/echarts-all.js"></script>-->
 
     <style>
 
@@ -141,14 +133,12 @@
         }
     </style>
 </head>
-<body class="box-vertical-center" ng-app="myApp">
+<body class="box-vertical-center" ng-app="myApp" ng-cloak>
     <header class="mui-bar bg-header mui-segmented-control-vertical">
-        <a class="mui-icon  mui-icon-left-nav mui-pull-left text-white btn-back" onclick="pageBack()"></a>
+        <a class="mui-icon  mui-icon-left-nav mui-pull-left btn-back" onclick="pageBack()"></a>
         <h1 class="mui-title">看板</h1>
-        <!--<a onclick="showTopMenu()" class="mui-action-menu mui-icon mui-pull-right" ><i class="header-icon white icon-add"></i></a>-->
     </header>
-    <!--<div ng-include="'../../templates/top-menu.html'"></div>-->
-    <div class="mui-content" ng-cloak ng-controller="KanbanCtrl">
+    <div class="body-content" ng-cloak ng-controller="KanbanCtrl">
         <div id="realtime" class=" height-wrap-parent">
             <div ng-show="!isLoading">
                 <ul class="mui-row summary-list" style="padding-top:6px;">
@@ -191,18 +181,17 @@
             <div class="page-alert-wrapper" ng-if="isLoading">
                 <div class="page-alert">
                     <img src="../../img/page-loading.gif" class="loading-img">
-                    <div class="alert-text info">正在加载...</div>
+                    <div class="alert-text info">{{'loading' | translate}}...</div>
                 </div>
             </div>
         </div>
     </div>
-    <div ui-view class="page page-left"></div>
-    <div class="page page-left" ui-view=""></div>
-    <script src="../../components/fastclick-master/lib/fastclick.js"></script>
+    <script src="../../lib/fastclick-master/lib/fastclick.js"></script>
     <script src="../../js/my/notify.js"></script>
-    <script src="../../components/echart/echarts.common.min.js"></script>
-    <script src="../../components/moment.min.js"></script>
-    <script src="../../components/slides-playing/js/jquery.slides.js"></script>
+    <script src="../../lib/echart/echarts.common.min.js"></script>
+    <script type="text/javascript" src="../../js/echartsTheme.js"></script>
+    <script src="../../lib/moment.min.js"></script>
+    <script src="../../lib/slides-playing/js/jquery.slides.js"></script>
 
 </body>
 </html>

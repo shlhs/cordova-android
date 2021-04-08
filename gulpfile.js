@@ -1,41 +1,34 @@
-//导入工具包 require('node_modules里对应模块')
-var gulp = require('gulp'), //本地安装gulp所用到的地方
-    less = require('gulp-less');
-var webserver = require('gulp-webserver');
+global.gTheme = 'dark'; // light/dark
 
-// 源usr
-var src = {
-    path: './www',
-    html: ['./www/templates/*.html'],
-    css: ['./www/css/*.less', './www/css/*.css'],
-    js: ['./www/js/*.js', './src/script/*.js'],
-    images: ['./www/img/*'],
-    lib: './node_modules/*'
-};
+// 导入工具包 require('node_modules里对应模块')
+const fs = require('fs');
+const gulp = require('gulp'), //本地安装gul所用到的地方
+    less = require('gulp-less'),
+    del = require('del'),
+    webserver = require('gulp-webserver'),
+    autoprefixer = require('gulp-autoprefixer'); //补全浏览器前缀
+const concat = require('gulp-concat');
 
-// 生成
-var build = {
-    path: './build',
-    html: './build/',
-    css: ['./build/style/', './build/usr/style'],
-    js: ['./build/script', './build/script/'],
-    images: ['./build/images', './build/usr/images'],
-    lib: './build/lib'
-};
-gulp.src(['www/*', 'node_modules/*']);
+const themeType = global.gTheme;
 
-gulp.task('js',['jscs', 'jshint'],function(){
+require('./gulpfile-release.js');
+
+
+const root = 'www';
+
+gulp.task('js', function () {
     return gulp
-        .src('./www/**/*.js', {base:'./www/'})
+        .src('./www/**/*.js', { base: './www/' })
         .pipe(uglify())
         .pipe(gulp.dest('./build/'));
 
 });
 
-gulp.task('webserver', function(){
+// 启动服务
+gulp.task('webserver', async function () {
     gulp.src(['www', 'node_modules'])
         .pipe(webserver({
-            port: 8000,//端口
+            port: 7000,//端口
             host: '0.0.0.0',//域名
             //liveload: true,//实时刷新代码。不用f5刷新
             directoryListing: {
@@ -45,7 +38,67 @@ gulp.task('webserver', function(){
         }))
 });
 
-gulp.task('default',['webserver']); //定义默认任务
-//gulp.task(name[, deps], fn) 定义任务  name：任务名称 deps：依赖任务名称 fn：回调函数
-//gulp.src(globs[, options]) 执行任务处理的文件  globs：处理的文件路径(字符串或者字符串数组)
-//gulp.dest(path[, options]) 处理完后文件生成路径
+
+
+// 设置主题色  替换iconfont文件夹
+gulp.task('theme', async function () {
+    const text = `@import './${themeType}.less';`;
+    fs.writeFile('less/theme/index.less', text, 'utf-8', function (err) {
+        if (err) {
+            console.log('写入文件失败:', err);
+        }
+    });
+    await del([`${root}/css/**`, `${root}/css/iconfont`]);
+    gulp.src('less/iconfont/**').pipe(gulp.dest(`${root}/css/iconfont`));
+});
+
+
+// less转css
+gulp.task('less', async function () {
+    gulp.src('less/*.css').pipe(gulp.dest(`${root}/css`));
+    await gulp.src(['./less/**/*.less', '!less/theme/*.less'])
+        .pipe(less())
+        .pipe(autoprefixer({
+            overrideBrowserslist: ['> 1%', 'last 2 versions', 'Firefox ESR'],
+            cascade: false
+        }))
+        .pipe(gulp.dest(`${root}/css`));
+});
+
+// 拷贝不同主题的图片
+gulp.task('themeStatic', async function () {
+    // 设置echarts主题色: 将对应主题色js文件拷贝到index.js，html引用 theme/echarts/index.js
+    gulp.src([`theme/echarts/${themeType}.js`])
+        .pipe(concat('echartsTheme.js'))
+        .pipe(gulp.dest(`${root}/js`));
+    // 图片
+    gulp.src([`theme/img/${themeType}/**`])
+        .pipe(gulp.dest('www/img'));
+});
+
+
+// 侦听less文件变化
+gulp.task('watch', async function () {
+    gulp.watch([`less/**/*.less`], ['less']);
+});
+
+gulp.task('default', ['theme', 'less', 'themeStatic', 'watch', 'webserver']);
+
+/**
+ * 修改主题色：
+ * 1）gulpfile.js： 修改 global.theme='light';
+ * 2）www/config/config.js： var gTheme = 'light';
+ */
+
+/**
+ * 开发：
+ *  www/config/config.js中更改主题色之后, 重启服务
+ * > gulp
+ */
+
+
+/**
+ * 版本发布：脚本：gulpfile-release.js
+ * 1） gulp release  // 将文本压缩打包到dist文件夹
+ * 2） gulp run-release // 运行webserver，对dist文件夹进行测试
+ */
