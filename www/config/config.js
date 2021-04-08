@@ -1,4 +1,4 @@
-var gTheme = 'light'; // 主题色 light/dark
+var gTheme = 'dark'; // 主题色 light/dark
 
 var loginExpireCheckEnable = false;       // 是否检查鉴权过期
 var defaultPlatIpAddr = 'http://106.15.10.92'; // 平台默认ip，格式为：http://118.190.51.135
