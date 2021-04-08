@@ -1,7 +1,7 @@
 var gTheme = 'dark'; // 主题色 light/dark
 
 var loginExpireCheckEnable = false;       // 是否检查鉴权过期
-var defaultPlatIpAddr = 'http://121.36.65.48'; // 平台默认ip， 天虹
+var defaultPlatIpAddr = 'http://47.103.13.24'; // 平台默认ip， 仲浩
 var defaultImgThumbHost = "";     // 如果为空则与 host一样
 var defaultIpcHost = null; // 摄像头服务地址。为空则与host一样
 var gQrDownloadUrl = '/version/qr.png'; // 二维码下载链接
