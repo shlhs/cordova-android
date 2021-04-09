@@ -338,40 +338,37 @@ app.service('platformService', function () {
     };
 
     this.getCloudHost = function () {
-        // return this.host + ':8099/v1';
-        return this.host + ':28099/v1'; // 华源
+        return this.host + ':8099/v1';
+        // return 'http://127.0.0.1:8099/v1';
     };
 
     this.getAuthHost = function () {
-        return this.host + ":28096/v1" // 华源
+        return this.host + ":8096/v1";
     };
 
     this.getImageThumbHost = function () {      // 获取图片压缩服务的地址
         // 格式为： http://ip:8888/unsafe
         if (defaultImgThumbHost) {
-            return defaultImgThumbHost + ":28888/unsafe"; // 华源
+            return defaultImgThumbHost + ":8888/unsafe";
         }
         if (this.host)
         {
-            return this.host + ":28888/unsafe"; // 华源
+            return this.host + ":8888/unsafe";
         }
         return null;
     };
 
     this.getGraphHost = function () {
-        // return this.host + ':8920/v1';
-        return this.host + ':28920/v1'; // 华源
+        return this.host + ':8920/v1';
     };
 
     this.getGraphScreenUrl = function (graphSn) {
         // 新的监控画面服务
-        // return this.host + ':8921/monitor.html?sn=' + graphSn;
-        return this.host + ':28921/monitor.html?sn=' + graphSn; // 华源
+        return this.host + ':8921/monitor.html?sn=' + graphSn;
     };
 
     this.getDeviceMgmtHost = function () {
-        // return this.host + ':8097';
-        return this.host + ':28097'; // 华源
+        return this.host + ':8097';
     };
 
     this.getOldMonitorScreenUrl = function (screenSn) {
@@ -391,14 +388,14 @@ app.service('platformService', function () {
 
     this.getIpcServiceHost = function () {
         if (defaultIpcHost) {
-            return defaultIpcHost + ':28095/v1';
+            return defaultIpcHost + ':8095/v1';
         } else {
-            return this.host + ':28095/v1';
+            return this.host + ':8095/v1';
         }
     };
 
     this.getMediaHost = function () {
-        return this.host + ':28095/v2';
+        return this.host + ':8093/v2';
     };
 
     this.setUiMode = function (mode) {
