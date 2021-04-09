@@ -1,4 +1,4 @@
-global.gTheme = 'light'; // light/dark
+global.gTheme = 'dark'; // light/dark
 
 // 导入工具包 require('node_modules里对应模块')
 const fs = require('fs');
