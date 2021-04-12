@@ -14,7 +14,7 @@
             </header>
             <div class="site-img-wrapper">
                 <div class="img-border">
-                    <img ng-src="{{currentSite.site_image}}" style="width: 100%;height: 100%;" ng-if="currentSite.sn" ng-click="refreshStationStatus(currentSite.sn)">
+                    <img ng-src="{{currentSite.site_image.replace('112.103.231.179', 'www.ljznyw.com').replace('112.103.231.179', 'www.ljznyw.com')}}" style="width: 100%;height: 100%;" ng-if="currentSite.sn" ng-click="refreshStationStatus(currentSite.sn)">
                     <img src="/img/site-default.png" style="width: 100%;height: 100%;" ng-if="!isLoading && !currentSite.sn">
                     <img src="/img/no-station-img.png" style="height:64px;margin-top: 20px;" ng-if="isLoading">
                 </div>
