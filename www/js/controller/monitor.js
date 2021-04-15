@@ -44,6 +44,7 @@ app.controller('MonitorListCtrl', ['$scope', '$stateParams', 'platformService', 
         var backgroundColor = item.background;
         routerService.openPage($scope, "/templates/site/monitor-detail-template.html", {
             url: url,
+            mode: item.mode,
             background: backgroundColor
         });
     };
@@ -55,23 +56,32 @@ app.controller('MonitorListCtrl', ['$scope', '$stateParams', 'platformService', 
 app.controller('MonitorDetailCtrl', ['$scope', function ($scope) {
 
     var url = $scope.url;
+    var mode = $scope.mode;
     var iframe = document.getElementById('iframe');
     $scope.clickedBack = false;     // 是否点击过返回按钮，防止重复点击
     setTimeout(function () {
-        iframe.src = url;
-        $.notify.progressStart();
+        window.android && window.android.setScreenOrient("LANDSCAPE");
         if (!/*@cc_on!@*/0) { //if not IE
             iframe.onload = function(){
                 $.notify.progressStop();
-                window.android && window.android.setScreenOrient("LANDSCAPE");
+                // window.android && window.android.setScreenOrient("LANDSCAPE");
             };
         } else {
             iframe.onreadystatechange = function(){
                 if (iframe.readyState === "complete"){
                     $.notify.progressStop();
-                    window.android && window.android.setScreenOrient("LANDSCAPE");
+                    // window.android && window.android.setScreenOrient("LANDSCAPE");
                 }
             };
+        }
+        if (mode === '3d') {
+            setTimeout(function () {
+                $.notify.progressStart();
+                iframe.src = url;
+            }, 100);
+        } else {
+            $.notify.progressStart();
+            iframe.src = url;
         }
     }, 500);
 
@@ -99,8 +109,7 @@ app.controller('MonitorDetailCtrl', ['$scope', function ($scope) {
     window.addEventListener('popstate', pageBackCallback);
     window.addEventListener('message', postMessageToIframe, false);
 
-    // $scope.$on('$destroy', function () {
-    //     window.removeEventListener('message', postMessageToIframe);
-    //     window.removeEventListener('popstate', pageBackCallback);
-    // });
+    $scope.$on('$destroy', function () {
+        $.notify.progressStop();
+    });
 }]);
