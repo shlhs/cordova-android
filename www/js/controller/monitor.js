@@ -78,7 +78,7 @@ app.controller('MonitorDetailCtrl', ['$scope', function ($scope) {
             setTimeout(function () {
                 $.notify.progressStart();
                 iframe.src = url;
-            }, 100);
+            }, 300);
         } else {
             $.notify.progressStart();
             iframe.src = url;
