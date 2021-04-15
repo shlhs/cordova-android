@@ -188,7 +188,7 @@ app.controller('SiteListCtrl', ['$scope', 'ajax', 'userService', 'appStoreProvid
     }
 }]);
 
-app.controller('SiteTreeCtrl', ['$scope', '$stateParams', function ($scope, $stateParams) {
+app.controller('SiteTreeCtrl', ['$scope', '$stateParams', 'ajax', function ($scope, $stateParams, ajax) {
     // $scope.selectedSn = $stateParams.selectedSn;
     // $scope.onSelect = $stateParams.onSelect;
     $scope.showedTreeData = JSON.parse(JSON.stringify($scope.treeData));
@@ -202,6 +202,14 @@ app.controller('SiteTreeCtrl', ['$scope', '$stateParams', function ($scope, $sta
             data.search_key = data.sn.toLowerCase() + ' ' + data.name.toLowerCase();
         }
     }
+
+    function init() {
+        $scope.refreshAllSiteStatus(function (sitesTree) {
+            $scope.showedTreeData = JSON.parse(JSON.stringify(sitesTree));
+        });
+    }
+
+    init();
 
     $scope.showedTreeData.forEach(function(item){
         setSearchKey(item);
@@ -256,7 +264,7 @@ app.controller('SiteTreeCtrl', ['$scope', '$stateParams', function ($scope, $sta
 
     $scope.cancel = function () {
         history.back();
-    }
+    };
 }]);
 
 app.controller('SiteDetailCtrl', ['$scope', 'ajax', 'platformService', '$myTranslate', function ($scope, ajax, platformService, $myTranslate) {

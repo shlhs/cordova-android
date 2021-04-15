@@ -361,9 +361,9 @@ app.service('platformService', function () {
         return this.host + ':8920/v1';
     };
 
-    this.getGraphScreenUrl = function (graphSn) {
+    this.getGraphScreenUrl = function (graphSn, mode) {
         // 新的监控画面服务
-        return this.host + ':8921/monitor.html?sn=' + graphSn;
+        return this.host + ':8921/monitor.html?sn=' + graphSn + (mode === '3d' ? '&mode=3d' : '');
     };
 
     this.getDeviceMgmtHost = function () {

@@ -21,7 +21,7 @@ app.controller('MonitorListCtrl', ['$scope', '$stateParams', 'platformService', 
                 data.forEach(function (item, i) {
                     if (item.userVisible === 1) {
                         if (item.type === 'KK') {
-                            item.mobile_screen_link = platformService.getGraphScreenUrl(item.sn);
+                            item.mobile_screen_link = platformService.getGraphScreenUrl(item.sn, item.mode);
                         } else {
                             item.mobile_screen_link = platformService.getOldMonitorScreenUrl(item.sn);
                         }
